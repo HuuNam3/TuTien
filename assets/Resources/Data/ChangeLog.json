@@ -3,6 +3,17 @@
   "title": "Lịch sử cập nhật",
   "entries": [
     {
+      "id": "battle-result-mobile-start-screen-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Hiển thị kết quả chiến đấu trong khung trận",
+      "summary": "Kết quả trận đấu hiển thị ngay trong màn hình chiến đấu; màn hình chọn nhân vật được tối ưu cho mobile.",
+      "details": [
+        "Thắng, thua, phần thưởng và hướng tiếp theo được hiển thị trong khung chiến đấu cùng nút tiếp tục.",
+        "Màn hình chọn nhân vật dùng bố cục một cột, thẻ gọn và vừa màn hình mobile 393x852."
+      ],
+      "category": "Giao diện"
+    },
+    {
       "id": "centered-battle-overlay-2026-08-29",
       "date": "2026-08-29",
       "title": "Đưa chiến đấu vào màn hình hiện tại",

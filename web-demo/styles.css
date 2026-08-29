@@ -9075,6 +9075,72 @@ body.battle-active .battle-panel {
   transform: translate(-50%, -50%);
 }
 
+/* Keep character selection readable and compact on the fixed mobile layout. */
+@media (max-width: 560px) {
+  .start-screen {
+    padding: 10px;
+  }
+
+  .start-card {
+    width: min(393px, 100%);
+    padding: 16px 12px;
+  }
+
+  .start-card h1 {
+    margin-top: 2px;
+    font-size: 20px;
+    line-height: 1.2;
+    white-space: normal;
+  }
+
+  .start-name-field {
+    margin-top: 14px;
+  }
+
+  .start-name-field input {
+    height: 42px;
+  }
+
+  .start-section-heading {
+    margin-top: 16px;
+  }
+
+  .school-choice-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .school-choice {
+    grid-template-columns: 72px minmax(0, 1fr);
+    min-height: 80px;
+    padding: 8px;
+    column-gap: 9px;
+    row-gap: 2px;
+  }
+
+  .school-choice-art {
+    grid-row: 1 / span 3;
+    width: 72px;
+    height: 72px;
+  }
+
+  .school-choice strong {
+    font-size: 15px;
+  }
+
+  .school-choice span,
+  .school-choice small {
+    font-size: 11px;
+    line-height: 1.25;
+  }
+
+  .start-submit {
+    margin-top: 14px;
+    height: 42px;
+  }
+}
+
 .map-header {
   flex-direction: row;
   align-items: center;

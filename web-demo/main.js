@@ -4128,32 +4128,23 @@ function renderBattleResult(message, outcome, reward, spiritStoneReward, dropped
     ? `Tiếp tục ngao du, gặp ${nextStage.enemyData.name}`
     : config.unlimited ? 'Đã hết đối thủ đang mở' : `${config.name} đã hết lượt hôm nay`;
 
-  // The overlay is the single battle-result surface; keep the inline legacy block hidden.
-  battleResult.classList.add('is-hidden');
+  // Keep the outcome inside the centered battle screen so the player can read it before continuing.
+  battleResult.classList.remove('is-hidden');
   battleResult.innerHTML = `
     <strong><i class="${resultIcon.startsWith('icon-unique-') ? 'unique-icon' : resultIcon.startsWith('icon-stat') ? 'stat-icon' : 'item-icon'} ${resultIcon}" aria-hidden="true"></i>${resultTitle}</strong>
     <span>${message}</span>
     <em>Tu vi +${formatGameNumber(reward)} | Rớt linh thạch +${formatGameNumber(spiritStoneReward)} | ${bonusRewardText || itemText}</em>
     <small>Tiếp theo: ${nextText}</small>
+    <button type="button" class="breakthrough compact">${getPostBattleButtonText(outcome)}</button>
   `;
 
-  battleResultOverlay.classList.remove('is-hidden');
-  battleResultOverlay.innerHTML = `
-    <div class="wander-event-modal battle-result-modal">
-      <span><i class="${resultIcon.startsWith('icon-unique-') ? 'unique-icon' : resultIcon.startsWith('icon-stat') ? 'stat-icon' : 'item-icon'} ${resultIcon}" aria-hidden="true"></i>${resultTitle}</span>
-      <strong>${message}</strong>
-      <em>Tu vi +${formatGameNumber(reward)} | Linh thạch +${formatGameNumber(spiritStoneReward)}${bonusRewardText ? ` | ${bonusRewardText}` : ''}</em>
-       <small>${droppedItem ? `Nhận ${getDroppedRewardText(droppedItem)}.` : bonusRewardText || 'Không nhận trang bị.'}</small>
-      <button type="button" class="breakthrough compact">${getPostBattleButtonText(outcome)}</button>
-    </div>
-  `;
-  battleResultOverlay.querySelector('button').addEventListener('click', () => {
-    hideBattleResultOverlay();
+  battleResult.querySelector('button').addEventListener('click', () => {
+    battleResult.classList.add('is-hidden');
     continueBattle();
   });
   battleResultTimer = window.setTimeout(() => {
-    if (!battleOver || battleResultOverlay.classList.contains('is-hidden')) return;
-    hideBattleResultOverlay();
+    if (!battleOver || battleResult.classList.contains('is-hidden')) return;
+    battleResult.classList.add('is-hidden');
     continueBattle();
   }, 5000);
 }
