@@ -3,6 +3,16 @@
   "title": "Lịch sử cập nhật",
   "entries": [
     {
+      "id": "restore-dev-tab-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Hiển thị lại tab Dev",
+      "summary": "Khôi phục nút truy cập chế độ Dev trên giao diện mobile.",
+      "details": [
+        "Hiển thị lại tab Dev trong thanh chức năng; panel và logic cộng tài nguyên Dev được giữ nguyên."
+      ],
+      "category": "Tính năng"
+    },
+    {
       "id": "mobile-only-layout-2026-08-29",
       "date": "2026-08-29",
       "title": "Chuẩn hóa giao diện mobile",
