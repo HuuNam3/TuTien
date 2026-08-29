@@ -3,6 +3,91 @@
   "title": "Lịch sử cập nhật",
   "entries": [
     {
+      "id": "wander-enemy-equipment-dialog-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Hiển thị trang bị trong thông tin gặp quái",
+      "summary": "Đưa trang bị của quái vào hộp thông tin Chiến đấu/Chạy và bỏ thẻ quái bị lặp bên dưới.",
+      "details": [
+        "Hộp thông tin gặp đối thủ hiển thị icon, tên, cấp trang bị và LC của từng món.",
+        "Không còn render thêm thẻ Gặp đối thủ phía dưới khi hộp thông tin đang mở.",
+        "Thông tin trang bị vẫn được dùng khi tính lực chiến và chỉ số trong trận đấu."
+      ],
+      "category": "Giao diện"
+    },
+    {
+      "id": "wander-peak-enemy-equipment-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Tăng trang bị quái Đại viên mãn",
+      "summary": "Quái ở tầng Đại viên mãn dùng phẩm chất của đại cảnh giới kế tiếp và rương trang bị cao hơn một cấp.",
+      "details": [
+        "Áp dụng cho tier 10, 20 và 30, tương ứng Đại viên mãn của Thối Thể, Khai Nguyên và Khí Động.",
+        "Phẩm chất trang bị được roll theo hồ sơ của đại cảnh giới kế tiếp.",
+        "Cấp rương dùng để roll cấp trang bị được tăng thêm 1; số lượng và vị trí trang bị không thay đổi."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "wander-map-unlock-tier-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Đổi mốc mở map Ngao du",
+      "summary": "Map 2, 4 và 6 mở ở tầng 6 của đại cảnh giới tương ứng; các map chuyển cảnh mở từ tầng 1.",
+      "details": [
+        "Map 1 mở sẵn; Map 2 cần Thối Thể cảnh Lục tầng.",
+        "Map 3 cần Khai Nguyên cảnh Nhất tầng; Map 4 cần Khai Nguyên cảnh Lục tầng.",
+        "Map 5 cần Khí Động cảnh Nhất tầng; Map 6 cần Khí Động cảnh Lục tầng.",
+        "Toast và trạng thái map khóa dùng cùng mốc tu vi cụ thể này."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "wander-tier-map-balance-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Cân bằng tier, map và tỉ lệ gặp quái",
+      "summary": "Đổi mốc Đại viên mãn, ghép cấp rương theo cặp map và thống nhất tỉ lệ gặp kẻ địch.",
+      "details": [
+        "Tier 10, 20 và 30 lần lượt là Đại viên mãn của Thối Thể, Khai Nguyên và Khí Động; hệ thống dùng 10 tiểu cấp cho mỗi đại cảnh giới.",
+        "Map 1–2 rơi rương cấp 1, map 3–4 rương cấp 2, map 5–6 rương cấp 3; hệ số map lần lượt là 0.65, 0.75, 0.85, 0.95, 1.05 và 1.15.",
+        "Tỉ lệ gặp kẻ địch cố định 50% ở lần đầu và 35% ở các lần sau trên mọi map."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "wander-enemy-equipment-roll-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Roll trang bị kẻ địch khi gặp trong Ngao du",
+      "summary": "Kẻ địch được roll trang bị riêng theo phẩm chất, cấp rương của map và đại cảnh giới hiện tại.",
+      "details": [
+        "Bình thường mang 2 món, mỗi phẩm chất cao hơn tăng thêm 1 món, Chúa tể mang 6 món; các ô trang bị không trùng nhau.",
+        "Trang bị Ngao du không còn lấy danh sách gắn sẵn trong dữ liệu kẻ địch; mỗi lần gặp quái sẽ tạo tên, cấp và chỉ số mới.",
+        "Cấp trang bị dùng cấp rương của map; tỉ lệ phẩm chất trang bị lấy theo đại cảnh giới của tier kẻ địch.",
+        "Thông tin kẻ địch hiển thị trang bị theo dạng tên, cấp và LC; bỏ bù chỉ số cũ cho kẻ địch không có trang bị."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "wander-enemy-realm-range-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Cân chỉnh khoảng tu vi kẻ địch Ngao du",
+      "summary": "Mỗi map có khoảng 5 tiểu cảnh giới; kẻ địch không thấp hơn người chơi quá 1 đại cảnh giới.",
+      "details": [
+        "Sáu map lần lượt dùng các khoảng tier 1–5, 6–10, 11–15, 16–20, 21–25 và 26–30.",
+        "Bỏ giới hạn kẻ địch cao hơn 3 tiểu cảnh giới ở Thôn Tân thủ; kẻ địch có thể roll đến tier tối đa của map.",
+        "Giới hạn thấp nhất được tính theo đại cảnh giới của người chơi, cho phép kẻ địch thấp hơn tối đa 1 đại cảnh giới."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "combat-float-duration-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Kéo dài thông báo trong chiến đấu",
+      "summary": "Sát thương, hồi máu, né/đỡ và tên skill hiển thị lâu hơn một chút để dễ theo dõi.",
+      "details": [
+        "Thông báo số máu và hiệu ứng chiến đấu hiển thị khoảng 1,1 giây.",
+        "Tên skill hiển thị khoảng 1,2 giây; thời gian dọn phần tử được đồng bộ để không biến mất sớm."
+      ],
+      "category": "Giao diện"
+    },
+    {
       "id": "wander-chest-capacity-2026-08-29",
       "date": "2026-08-29",
       "title": "Tăng sức chứa Rương Ngao du",

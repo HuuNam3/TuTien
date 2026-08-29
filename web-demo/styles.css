@@ -1512,7 +1512,7 @@ li {
   font-weight: 900;
   font-size: 28px;
   text-shadow: 0 2px 6px #000;
-  animation: float-up 680ms ease forwards;
+  animation: float-up 1100ms ease forwards;
 }
 
 .float-text.crit,
@@ -1938,6 +1938,12 @@ li {
 
 .wander-map-card.locked {
   opacity: 0.58;
+}
+
+.enemy-equipment-preview {
+  color: #f2d58a;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .wander-event-overlay {
@@ -5969,7 +5975,7 @@ strong > .activity-icon,
   font-size: 13px;
   letter-spacing: 0;
   text-shadow: 0 1px 5px #061018;
-  animation: skill-name-float 780ms ease forwards;
+  animation: skill-name-float 1200ms ease forwards;
 }
 
 .float-text.dodge {

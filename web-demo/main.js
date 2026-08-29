@@ -892,6 +892,7 @@ function renderWanderEnemyOverlay(container, event) {
     <strong>${stage.enemyData.name}</strong>
     <em>${getEnemyRankLabel(stage.enemyData, stage.enemyRankLevel)} | ${stage.realmText} | ${getCombatStyleLabel(stage.enemyData)} | ${stage.enemyData.skillName}</em>
     <small>Lực chiến ${formatGameNumber(getCombatPower(preview))} | Chạy thoát ${toPercent(fleeChance)}</small>
+    <small class="enemy-equipment-preview">Trang bị: ${getEnemyEquipmentText(stage)}</small>
     <div class="wander-actions">
       <button type="button" class="breakthrough compact"><i class="item-icon icon-item-sword" aria-hidden="true"></i>Chiến đấu</button>
       <button type="button" class="secondary compact"><i class="unique-icon icon-unique-flee" aria-hidden="true"></i>Chạy</button>
@@ -922,6 +923,7 @@ function renderWanderAmbushOverlay(container, event) {
     <strong>${stage.enemyData.name}</strong>
     <em>${event.lootResult?.message || 'Cơ duyên vừa lấy phát ra dị động.'}</em>
     <small>${getEnemyRankLabel(stage.enemyData, stage.enemyRankLevel)} | ${stage.realmText} | ${getCombatStyleLabel(stage.enemyData)} | Lực chiến ${formatGameNumber(getCombatPower(preview))} | Chạy thoát ${toPercent(fleeChance)}</small>
+    <small class="enemy-equipment-preview">Trang bị: ${getEnemyEquipmentText(stage)}</small>
     <div class="wander-actions">
       <button type="button" class="breakthrough compact"><i class="item-icon icon-item-sword" aria-hidden="true"></i>Chiến đấu</button>
       <button type="button" class="secondary compact"><i class="unique-icon icon-unique-flee" aria-hidden="true"></i>Chạy</button>
@@ -2002,7 +2004,6 @@ function validateEnemyData(data) {
 }
 
 function normalizeEnemyData(enemy) {
-  const hadNoEquipmentCompensation = enemy.canEquip === false;
   return {
     id: enemy.id,
     name: enemy.name,
@@ -2013,7 +2014,7 @@ function normalizeEnemyData(enemy) {
     tierRange: normalizeTierRange(enemy.tierRange, [1, playerMaxMinorLevel]),
     canEquip: true,
     equipment: Array.isArray(enemy.equipment) ? enemy.equipment : [],
-    statMultiplier: hadNoEquipmentCompensation ? {} : (enemy.statMultiplier || {}),
+    statMultiplier: enemy.statMultiplier || {},
     combatStyle: enemy.combatStyle || inferEnemyCombatStyle(enemy),
     weight: Math.max(1, Number(enemy.weight) || 1),
   };
@@ -2633,12 +2634,10 @@ function renderStageMap() {
   }
 
   if (currentWanderEvent.type === 'enemy') {
-    renderWanderEnemyEvent(currentWanderEvent);
     return;
   }
 
   if (currentWanderEvent.type === 'ambush') {
-    renderWanderAmbushEvent(currentWanderEvent);
     return;
   }
 
@@ -2804,11 +2803,17 @@ function setWanderMap(mapId) {
 
 function isWanderMapUnlocked(map) {
   if (!map) return false;
+  const requiredTier = Number(map.requiredTier);
+  if (Number.isFinite(requiredTier) && requiredTier > 0) {
+    return getPlayerCultivationTier() >= requiredTier;
+  }
   if (!Number.isInteger(map.requiredMajorRealmIndex)) return true;
   return playerMajorRealmIndex >= map.requiredMajorRealmIndex;
 }
 
 function getWanderMapUnlockText(map) {
+  const requiredTier = Number(map?.requiredTier);
+  if (Number.isFinite(requiredTier) && requiredTier > 0) return `Cần ${getTierRealmText(requiredTier)}`;
   if (!Number.isInteger(map?.requiredMajorRealmIndex)) return 'Đã mở';
   const realmName = majorRealmNames[map.requiredMajorRealmIndex] || 'đại cảnh giới tiếp theo';
   return `Cần ${realmName} cảnh trở lên`;
@@ -2996,15 +3001,21 @@ function getWanderMapIconClass(mapId) {
 function getRandomWanderEnemyStage(map = getCurrentWanderMap()) {
   const mapMinTier = Math.max(1, Math.floor(map.minEnemyTier || 1));
   const mapMaxTier = Math.max(mapMinTier, Math.floor(map.maxEnemyTier || stages.length));
-  const minAllowedTier = Math.max(mapMinTier, getPlayerCultivationTier() - 3);
-  const protectedMaxTier = map.id === 'novice'
-    ? Math.min(mapMaxTier, getPlayerCultivationTier() + 3)
-    : mapMaxTier;
+  const playerMajorRealmIndex = clamp(
+    getTierMajorIndex(getPlayerCultivationTier()),
+    0,
+    majorRealmNames.length - 1,
+  );
+  const minimumPlayerRelativeTier = Math.max(
+    1,
+    (playerMajorRealmIndex - 1) * playerMaxMinorLevel + 1,
+  );
+  const minAllowedTier = Math.max(mapMinTier, minimumPlayerRelativeTier);
 
-  if (minAllowedTier > protectedMaxTier) return null;
+  if (minAllowedTier > mapMaxTier) return null;
 
   const availableTiers = [];
-  for (let tier = minAllowedTier; tier <= protectedMaxTier; tier += 1) {
+  for (let tier = minAllowedTier; tier <= mapMaxTier; tier += 1) {
     if (getMapEnemyCandidates(map, tier).length) availableTiers.push(tier);
   }
   if (!availableTiers.length) return null;
@@ -3792,13 +3803,45 @@ function getCombatStyleLabel(source = {}) {
   return source.combatStyleLabel || getCombatStyleDefinition(source.combatStyle).label || 'Phản đòn';
 }
 
+function isMajorRealmCompletionTier(tier) {
+  return Number.isInteger(Number(tier))
+    && Number(tier) > 0
+    && getTierMinorLevel(Number(tier)) === playerMaxMinorLevel;
+}
+
+function getEnemyEquipmentMajorRealmIndex(stage) {
+  const baseIndex = getEquipmentMajorRealmIndex(stage);
+  return clamp(
+    baseIndex + (isMajorRealmCompletionTier(stage?.enemyTier) ? 1 : 0),
+    0,
+    25,
+  );
+}
+
+function getEnemyEquipmentChestTier(stage) {
+  const baseTier = getEquipmentChestTier(stage);
+  return baseTier + (isMajorRealmCompletionTier(stage?.enemyTier) ? 1 : 0);
+}
+
 function getEnemyEquipment(stage) {
   if (!stage.enemyEquipment) {
-    const defaultEquipment = equipmentSlots.map((slot) => [slot.id, 'common']);
-    const rawEquipment = stage.isTrialTower || stage.isResourceDungeon
-      ? equipmentSlots.map((slot) => [
-        slot.id,
-        stage.enemyRankLevel >= 5
+    const isFixedEquipmentStage = stage.isTrialTower || stage.isResourceDungeon;
+    const equipmentCount = isFixedEquipmentStage
+      ? equipmentSlots.length
+      : clamp(Math.floor(Number(stage.enemyRankLevel) || 1) + 1, 2, equipmentSlots.length);
+    const availableSlots = [...equipmentSlots];
+    const rarityProfile = isFixedEquipmentStage
+      ? null
+      : getEquipmentRarityProfile({
+        ...stage,
+        majorRealmIndex: getEnemyEquipmentMajorRealmIndex(stage),
+      });
+    stage.enemyEquipment = [];
+    for (let index = 0; index < equipmentCount && availableSlots.length; index += 1) {
+      const slotIndex = Math.floor(Math.random() * availableSlots.length);
+      const slot = availableSlots.splice(slotIndex, 1)[0];
+      const rarityKey = isFixedEquipmentStage
+        ? stage.enemyRankLevel >= 5
           ? 'legendary'
           : stage.enemyRankLevel >= 4
           ? 'epic'
@@ -3806,29 +3849,21 @@ function getEnemyEquipment(stage) {
           ? 'rare'
           : stage.enemyRankLevel >= 2
           ? 'uncommon'
-          : 'common',
-      ])
-      : (stage.enemyData.equipment?.length ? stage.enemyData.equipment : defaultEquipment);
-    const equipmentPairs = rawEquipment.length === 2
-      && rawEquipment.every((entry) => typeof entry === 'string')
-      ? [rawEquipment]
-      : rawEquipment;
-    stage.enemyEquipment = equipmentPairs
-      .map((entry) => (Array.isArray(entry) ? entry : [entry, 'common']))
-      .filter(([slotId, rarityKey]) => equipmentTemplates[slotId] && rarityData[rarityKey])
-      .map(([slotId, rarityKey]) => createEquipmentLikeItem(
-        slotId,
-        stage.isTrialTower || stage.isResourceDungeon ? stage.enemyTier : stage.enemyLevel,
-        rarityKey,
-      ));
+          : 'common'
+        : rollEquipmentRarity(rarityProfile);
+      const level = isFixedEquipmentStage
+        ? stage.enemyTier
+        : rollEquipmentLevel({ chestTier: getEnemyEquipmentChestTier(stage) });
+      stage.enemyEquipment.push(createEquipmentLikeItem(slot.id, level, rarityKey));
+    }
   }
   return stage.enemyEquipment;
 }
 
 function getEnemyEquipmentText(stage) {
   const equipmentText = getEnemyEquipment(stage)
-    .map((item) => `${getRarityName(item)} ${getSlotName(item.slotId)}`)
-    .join(', ');
+    .map((item) => `${item.name} [Cấp ${formatGameNumber(item.level)}] | LC ${formatGameNumber(getItemPower(item))}`)
+    .join(' · ');
   return equipmentText || 'không mang trang bị';
 }
 
@@ -5387,7 +5422,7 @@ function spawnFloat(parent, text, className) {
   el.className = `float-text ${className}`;
   el.textContent = text;
   parent.appendChild(el);
-  window.setTimeout(() => el.remove(), 760);
+  window.setTimeout(() => el.remove(), 1250);
 }
 
 function render() {

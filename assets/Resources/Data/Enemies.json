@@ -7,7 +7,7 @@
       "type": "Yêu thú",
       "tierRange": [
         1,
-        4
+        2
       ],
       "skillName": "Cắn Xé",
       "description": "Yêu thú nhỏ lang thang ngoài thôn, máu không cao nhưng ra đòn nhanh.",
@@ -28,7 +28,7 @@
       "type": "Tu sĩ",
       "tierRange": [
         1,
-        6
+        3
       ],
       "skillName": "Toái Thạch Quyền",
       "description": "Tán tu mới nhập đạo, thường chặn đường cướp linh thạch.",
@@ -53,7 +53,7 @@
       "type": "Tu sĩ",
       "tierRange": [
         2,
-        8
+        4
       ],
       "skillName": "Thạch Bì Chưởng",
       "description": "Luyện thân thô thiển, phòng thủ cao hơn tán tu thường.",
@@ -83,7 +83,7 @@
       "type": "Tu sĩ",
       "tierRange": [
         3,
-        10
+        5
       ],
       "skillName": "Thanh Phong Kiếm",
       "description": "Đệ tử canh ngoài sơn môn, công kích ổn định và có kiếm pháp.",
@@ -112,7 +112,7 @@
       "type": "Ma quỷ",
       "tierRange": [
         4,
-        10
+        5
       ],
       "skillName": "Âm Khí Nhập Thể",
       "description": "Oán hồn yếu ẩn trong sương, né tránh cao nhưng rất sợ đòn mạnh.",
@@ -132,8 +132,8 @@
       "name": "Huyết Trảo Lang Yêu",
       "type": "Yêu thú",
       "tierRange": [
-        10,
-        13
+        6,
+        7
       ],
       "skillName": "Huyết Trảo Liên Kích",
       "description": "Yêu lang trong Rừng Yêu, có sát thương cao và dễ chí mạng.",
@@ -153,8 +153,8 @@
       "name": "Độc Đằng Tinh",
       "type": "Yêu thực",
       "tierRange": [
-        11,
-        15
+        7,
+        8
       ],
       "skillName": "Độc Vân Chỉ",
       "description": "Yêu thực hút linh khí, phòng thủ khá và đánh dai.",
@@ -174,8 +174,8 @@
       "name": "Đao Tu Hắc Nham",
       "type": "Tu sĩ",
       "tierRange": [
-        13,
-        17
+        8,
+        9
       ],
       "skillName": "Hắc Nham Trảm",
       "description": "Tu sĩ dùng trọng đao, đòn đánh chậm nhưng đau.",
@@ -204,8 +204,8 @@
       "name": "Bạch Cốt Mị Ảnh",
       "type": "Ma quỷ",
       "tierRange": [
-        14,
-        17
+        8,
+        9
       ],
       "skillName": "Mị Ảnh Tập Kích",
       "description": "Quỷ ảnh trong rừng sâu, né tránh và chí mạng đều cao.",
@@ -231,8 +231,8 @@
       "name": "Thiết Bối Hùng Yêu",
       "type": "Yêu thú",
       "tierRange": [
-        15,
-        18
+        9,
+        10
       ],
       "skillName": "Địa Chấn Chưởng",
       "description": "Yêu hùng thân cứng như sắt, rất trâu máu.",
@@ -252,8 +252,8 @@
       "name": "Nội Môn Sa Ngã",
       "type": "Tu sĩ",
       "tierRange": [
-        16,
-        19
+        9,
+        10
       ],
       "skillName": "Hàn Quang Trảm",
       "description": "Đệ tử nội môn lạc lối, có trang bị và kỹ năng tốt.",
@@ -286,8 +286,8 @@
       "name": "Tinh Thạch Hộ Vệ",
       "type": "Khôi lỗi",
       "tierRange": [
-        19,
-        22
+        11,
+        12
       ],
       "skillName": "Tinh Thạch Chấn",
       "description": "Khôi lỗi bảo vệ mạch linh thạch, phòng thủ rất cao.",
@@ -316,8 +316,8 @@
       "name": "Âm Hỏa Tinh",
       "type": "Ma quỷ",
       "tierRange": [
-        20,
-        24
+        11,
+        13
       ],
       "skillName": "Âm Hỏa Thiêu Tâm",
       "description": "Linh thể sinh ra từ âm hỏa, sát thương phép mạnh.",
@@ -343,8 +343,8 @@
       "name": "Thạch Giáp Yêu",
       "type": "Yêu thú",
       "tierRange": [
-        21,
-        25
+        12,
+        13
       ],
       "skillName": "Nham Cốt Chấn",
       "description": "Yêu vật khoác giáp đá, đánh không nhanh nhưng rất khó hạ.",
@@ -364,8 +364,8 @@
       "name": "Quỷ Diện Kiếm Khách",
       "type": "Tu sĩ",
       "tierRange": [
-        23,
-        26
+        13,
+        14
       ],
       "skillName": "Quỷ Ảnh Kiếm",
       "description": "Kiếm khách đeo mặt nạ, tốc độ và chính xác đều cao.",
@@ -399,8 +399,8 @@
       "name": "Thủ Khoáng Giả",
       "type": "Tu sĩ",
       "tierRange": [
-        24,
-        27
+        13,
+        14
       ],
       "skillName": "Cửu Tinh Chưởng",
       "description": "Kẻ canh giữ mỏ linh thạch, toàn diện và có nhiều trang bị.",
@@ -434,8 +434,8 @@
       "name": "Cổ Oán Linh",
       "type": "Ma quỷ",
       "tierRange": [
-        25,
-        28
+        14,
+        15
       ],
       "skillName": "Oán Niệm Trói Hồn",
       "description": "Oán linh cổ xưa dưới hang sâu, là kẻ thù nguy hiểm nhất khu vực hiện tại.",
@@ -467,7 +467,7 @@
       "type": "Yêu thú",
       "tierRange": [
         1,
-        5
+        2
       ],
       "skillName": "Gai Độc",
       "description": "Yêu thú nhỏ có lớp gai độc.",
@@ -488,7 +488,7 @@
       "type": "Ma quỷ",
       "tierRange": [
         4,
-        8
+        5
       ],
       "skillName": "Bùn Âm",
       "description": "Thi thể vùi trong bùn hấp thụ âm khí.",
@@ -507,8 +507,8 @@
       "name": "Tán Tu Khai Khoáng",
       "type": "Tu sĩ",
       "tierRange": [
-        5,
-        10
+        4,
+        5
       ],
       "skillName": "Khoáng Sơn Chưởng",
       "description": "Tán tu tranh giành mạch linh thạch.",
@@ -530,8 +530,8 @@
       "name": "Mộc Võng Yêu",
       "type": "Yêu thú",
       "tierRange": [
-        6,
-        10
+        4,
+        5
       ],
       "skillName": "Thiên Ti Võng",
       "description": "Yêu nhện ẩn trong rừng, chuyên khóa chân con mồi.",
@@ -551,8 +551,8 @@
       "name": "Xích Mao Trư Yêu",
       "type": "Yêu thú",
       "tierRange": [
-        10,
-        14
+        6,
+        8
       ],
       "skillName": "Cuồng Nộ Xung Kích",
       "description": "Yêu thú hung bạo ở bìa Rừng Yêu.",
@@ -571,8 +571,8 @@
       "name": "Hắc Vụ Quỷ Sinh",
       "type": "Ma quỷ",
       "tierRange": [
-        12,
-        16
+        7,
+        9
       ],
       "skillName": "Hắc Vụ Thực Hồn",
       "description": "Quỷ sinh ẩn trong màn sương đen.",
@@ -592,8 +592,8 @@
       "name": "Độc Nhận Tà Tu",
       "type": "Tu sĩ",
       "tierRange": [
-        15,
-        19
+        9,
+        10
       ],
       "skillName": "Độc Nhận Phá Khí",
       "description": "Tà tu dùng độc kiếm đánh lén.",
@@ -622,8 +622,8 @@
       "name": "Tinh Giáp Thú",
       "type": "Yêu thú",
       "tierRange": [
-        19,
-        23
+        11,
+        12
       ],
       "skillName": "Tinh Giáp Phản Chấn",
       "description": "Yêu thú có mai tinh thể cứng rắn.",
@@ -643,8 +643,8 @@
       "name": "Hư Không Khôi Lỗi",
       "type": "Khôi lỗi",
       "tierRange": [
-        22,
-        26
+        12,
+        14
       ],
       "skillName": "Hư Không Toái",
       "description": "Khôi lỗi cổ đại canh giữ đường hầm.",
@@ -664,8 +664,8 @@
       "name": "Mộ Huyệt Quỷ Vương",
       "type": "Ma quỷ",
       "tierRange": [
-        26,
-        28
+        14,
+        15
       ],
       "skillName": "Quỷ Vương Áp",
       "description": "Quỷ vương ngủ say dưới hang linh thạch.",
@@ -686,8 +686,8 @@
       "name": "Huyền Môn Thủ Vệ",
       "type": "Khôi lỗi",
       "tierRange": [
-        28,
-        30
+        16,
+        17
       ],
       "skillName": "Huyền Môn Trấn",
       "description": "Khôi lỗi canh giữ cánh cửa dẫn vào tầng sâu của Huyền Không Cổ Cảnh.",
@@ -707,8 +707,8 @@
       "name": "Ly Hợp Tàn Hồn",
       "type": "Ma quỷ",
       "tierRange": [
-        31,
-        33
+        17,
+        19
       ],
       "skillName": "Tàn Hồn Đoạt Phách",
       "description": "Tàn hồn bị xé khỏi thân xác, lướt qua hư không bằng những đòn đánh hiểm độc.",
@@ -729,8 +729,8 @@
       "name": "Thái Hư Cổ Thú",
       "type": "Yêu thú",
       "tierRange": [
-        34,
-        36
+        19,
+        20
       ],
       "skillName": "Thái Hư Phá Giới",
       "description": "Cổ thú ngủ quên giữa các mảnh không gian, chỉ thức giấc trước khí tức của người tu hành.",
@@ -750,8 +750,8 @@
       "name": "Lôi Giác Dị Thú",
       "type": "Yêu thú",
       "tierRange": [
-        37,
-        39
+        21,
+        22
       ],
       "skillName": "Lôi Giác Xung Kích",
       "description": "Dị thú mang sừng lôi đình, mỗi lần lao tới đều để lại một vệt điện quang trên mặt đất.",
@@ -771,8 +771,8 @@
       "name": "Lôi Vũ Kiếm Tu",
       "type": "Tu sĩ",
       "tierRange": [
-        40,
-        42
+        22,
+        24
       ],
       "skillName": "Phong Lôi Liên Trảm",
       "description": "Kiếm tu ẩn cư trên Lôi Minh Sơn, lấy tiếng sấm rèn luyện kiếm ý và thân pháp.",
@@ -793,8 +793,8 @@
       "name": "Lôi Mạch Hộ Vệ",
       "type": "Khôi lỗi",
       "tierRange": [
-        43,
-        45
+        24,
+        25
       ],
       "skillName": "Lôi Mạch Trấn Sơn",
       "description": "Khôi lỗi được đúc từ quặng lôi mạch, phòng thủ vững như núi giữa thiên lôi.",
@@ -814,8 +814,8 @@
       "name": "Thái Cổ Cốt Long",
       "type": "Yêu thú",
       "tierRange": [
-        46,
-        48
+        26,
+        27
       ],
       "skillName": "Cốt Long Phệ Thiên",
       "description": "Cốt long ngủ vùi dưới hoang nguyên, hơi thở lạnh lẽo có thể nuốt cả linh khí quanh mình.",
@@ -836,8 +836,8 @@
       "name": "Hư Diễm Tôn Giả",
       "type": "Tu sĩ",
       "tierRange": [
-        49,
-        51
+        28,
+        29
       ],
       "skillName": "Hư Diễm Luyện Hồn",
       "description": "Tôn giả điều khiển ngọn lửa hư không, chuyên thiêu đốt hộ thể chân nguyên của đối thủ.",
@@ -858,8 +858,8 @@
       "name": "Hoang Nguyên Cổ Đế",
       "type": "Cổ tộc",
       "tierRange": [
-        52,
-        54
+        29,
+        30
       ],
       "skillName": "Cổ Đế Trấn Thế",
       "description": "Cổ đế trấn giữ vùng đất không tên, uy áp nặng nề khiến vạn vật quanh đó lặng im.",

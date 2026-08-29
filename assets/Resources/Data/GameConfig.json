@@ -7,7 +7,7 @@
   "gameplay": {
     "maxTurns": 20,
     "turnInterval": 1400,
-    "playerMaxMinorLevel": 9,
+    "playerMaxMinorLevel": 10,
     "wanderEventDelay": 10000,
     "rewardMultiplier": 1,
     "spiritStoneToCultivationRatio": 0.5,
@@ -64,8 +64,8 @@
         "spiritStone",
         "chest"
       ],
-      "enemyChance": 0.3,
-      "firstEnemyChance": 0.4,
+      "enemyChance": 0.35,
+      "firstEnemyChance": 0.5,
       "enemyRankWeights": {
         "1": 0.85,
         "2": 0.15
@@ -73,6 +73,7 @@
     },
     "demonForest": {
       "requiredMajorRealmIndex": 1,
+      "requiredTier": 6,
       "lootTypes": [
         "cultivation",
         "cultivation",
@@ -84,8 +85,8 @@
         "spiritStone",
         "chest"
       ],
-      "enemyChance": 0.33,
-      "firstEnemyChance": 0.43,
+      "enemyChance": 0.35,
+      "firstEnemyChance": 0.5,
       "enemyRankWeights": {
         "1": 0.82,
         "2": 0.18
@@ -93,6 +94,7 @@
     },
     "spiritCave": {
       "requiredMajorRealmIndex": 2,
+      "requiredTier": 11,
       "lootTypes": [
         "spiritStone",
         "spiritStone",
@@ -104,8 +106,8 @@
         "chest",
         "cultivation"
       ],
-      "enemyChance": 0.36,
-      "firstEnemyChance": 0.46,
+      "enemyChance": 0.35,
+      "firstEnemyChance": 0.5,
       "enemyRankWeights": {
         "1": 0.79,
         "2": 0.21
@@ -113,6 +115,7 @@
     },
     "hollowRealm": {
       "requiredMajorRealmIndex": 3,
+      "requiredTier": 16,
       "lootTypes": [
         "spiritStone",
         "spiritStone",
@@ -124,8 +127,8 @@
         "cultivation",
         "cultivation"
       ],
-      "enemyChance": 0.39,
-      "firstEnemyChance": 0.49,
+      "enemyChance": 0.35,
+      "firstEnemyChance": 0.5,
       "enemyRankWeights": {
         "1": 0.76,
         "2": 0.24
@@ -133,6 +136,7 @@
     },
     "thunderPeak": {
       "requiredMajorRealmIndex": 4,
+      "requiredTier": 21,
       "lootTypes": [
         "spiritStone",
         "spiritStone",
@@ -144,8 +148,8 @@
         "cultivation",
         "cultivation"
       ],
-      "enemyChance": 0.42,
-      "firstEnemyChance": 0.52,
+      "enemyChance": 0.35,
+      "firstEnemyChance": 0.5,
       "enemyRankWeights": {
         "1": 0.7,
         "2": 0.25,
@@ -154,6 +158,7 @@
     },
     "primordialWastes": {
       "requiredMajorRealmIndex": 5,
+      "requiredTier": 26,
       "lootTypes": [
         "spiritStone",
         "spiritStone",
@@ -165,8 +170,8 @@
         "cultivation",
         "cultivation"
       ],
-      "enemyChance": 0.45,
-      "firstEnemyChance": 0.55,
+      "enemyChance": 0.35,
+      "firstEnemyChance": 0.5,
       "enemyRankWeights": {
         "1": 0.65,
         "2": 0.25,
