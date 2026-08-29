@@ -3,6 +3,16 @@
   "title": "Lịch sử cập nhật",
   "entries": [
     {
+      "id": "wander-chest-inline-label-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Làm rõ nút rương Ngao du",
+      "summary": "Đặt icon và nhãn rương Ngao du cùng hàng với tiêu đề Ngao du.",
+      "details": [
+        "Nút rương Ngao du hiển thị icon kèm chữ Rương Ngao du và giữ cùng một hàng trên khung mobile."
+      ],
+      "category": "Giao diện"
+    },
+    {
       "id": "restore-dev-tab-2026-08-29",
       "date": "2026-08-29",
       "title": "Hiển thị lại tab Dev",
