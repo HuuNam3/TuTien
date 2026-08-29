@@ -388,14 +388,6 @@
       "power": 1000
     },
     {
-      "id": "skillCritRate",
-      "name": "Kiếm ý",
-      "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
-      "valueRange": [0.01, 0.1],
-      "descriptionTemplate": "Kỹ năng tăng {value} tỉ lệ chí mạng",
-      "power": 1000
-    },
-    {
       "id": "spiritStoneBonus",
       "name": "Tầm bảo",
       "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],

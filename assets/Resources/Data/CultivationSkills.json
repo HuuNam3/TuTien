@@ -22,7 +22,13 @@
   "upgrade": {
     "maxLevel": 12,
     "multiplierPerLevel": 0.03,
-    "skillCritRatePerLevel": 0.005,
+    "multiplierPerLevelByGrade": {
+      "mortal": 0.03,
+      "yellow": 0.04,
+      "mysterious": 0.05,
+      "earth": 0.06,
+      "heaven": 0.07
+    },
     "skillBookRequiredLevels": [3, 6, 9],
     "manaRegenPerTurn": 3,
     "combatPowerPerLevel": 10,
@@ -58,90 +64,87 @@
       "schoolId": "sword_cultivator",
       "name": "Ngự Kiếm Quyết",
       "description": "Kiếm khí nhanh, sát thương thấp nhưng hồi chiêu ngắn; tăng chính xác khi nhập môn.",
-      "note": "Gây 120% Công lên kẻ địch và tăng 2% Chính xác trong 2 lượt, không cộng dồn; thời gian hồi 1 lượt.",
+      "note": "Gây 120% Công lên kẻ địch và tăng Chính xác 2% trong 2 lượt, không cộng dồn; mỗi cấp tăng 0,2%; thời gian hồi 1 lượt.",
       "gradeId": "mortal",
       "combatPower": 68,
       "requiredTier": 1,
       "multiplier": 1.2,
       "cost": 14,
       "cooldown": 1,
-      "skillCritRate": 0,
-      "effects": [{ "type": "selfBuff", "stat": "accuracy", "value": 0.02, "duration": 2, "chance": 1 }]
+      "effects": [{ "type": "selfBuff", "stat": "accuracy", "value": 0.02, "levelIncrease": 0.002, "duration": 2, "chance": 1 }]
     },
     {
       "id": "sword_quickdraw",
       "schoolId": "sword_cultivator",
       "name": "Khoái Kiếm Liên Tâm",
-      "description": "Liên kiếm liên tục, có cơ hội tăng chính xác trong thời gian ngắn.",
-      "note": "35% cơ hội tăng Chính xác +4% trong 2 lượt.",
+      "description": "Liên kiếm liên tục, có cơ hội tăng công trong thời gian ngắn.",
+      "note": "50% cơ hội tăng Công 2% trong 2 lượt, không cộng dồn; mỗi cấp tăng 0,2%.",
       "gradeId": "mortal",
       "combatPower": 72,
       "requiredTier": 1,
       "multiplier": 1.25,
       "cost": 16,
-      "cooldown": 1,
-      "skillCritRate": 0,
-      "effects": [{ "type": "selfBuff", "stat": "accuracy", "value": 0.04, "duration": 2, "chance": 0.35 }]
+      "cooldown": 2,
+      "effects": [{ "type": "selfBuff", "stat": "attack", "value": 0.02, "levelIncrease": 0.002, "duration": 2, "chance": 0.5, "nonStacking": true }]
     },
     {
       "id": "sword_flash",
       "schoolId": "sword_cultivator",
       "name": "Phá Không Kiếm",
-      "description": "Một kiếm phá không, có thêm tỉ lệ chí mạng kỹ năng và tăng công ngắn hạn.",
-      "note": "Tăng Công +1 trong 2 lượt; skill có Chí mạng +5%.",
+      "description": "Một kiếm phá không, dồn lực gây sát thương cao.",
+      "note": "Không có hiệu ứng thêm.",
       "gradeId": "yellow",
-      "combatPower": 110,
+      "combatPower": 122,
       "requiredTier": 4,
-      "multiplier": 1.45,
+      "multiplier": 1.6,
       "cost": 20,
       "cooldown": 2,
-      "skillCritRate": 0.05,
-      "effects": [{ "type": "selfBuff", "stat": "attack", "value": 1, "duration": 2, "chance": 1 }]
+      "effects": []
     },
     {
       "id": "sword_flow",
       "schoolId": "sword_cultivator",
       "name": "Lưu Quang Kiếm Ảnh",
-      "description": "Kiếm ảnh lướt qua, có cơ hội tăng tốc độ ra đòn.",
-      "note": "30% cơ hội tăng Tốc độ +1 trong 2 lượt; skill có Chí mạng +4%.",
+      "description": "Kiếm ảnh lướt qua, có cơ hội hoàn lại linh lực vừa sử dụng.",
+      "note": "45% cơ hội hoàn lại linh lực khi sử dụng; thời gian hồi 2 lượt, mỗi cấp tăng 1% tỉ lệ hoàn lại.",
       "gradeId": "yellow",
-      "combatPower": 116,
+      "combatPower": 104,
       "requiredTier": 4,
-      "multiplier": 1.5,
+      "multiplier": 1.35,
       "cost": 22,
       "cooldown": 2,
-      "skillCritRate": 0.04,
-      "effects": [{ "type": "selfBuff", "stat": "speed", "value": 1, "duration": 2, "chance": 0.3 }]
+      "effects": [{ "type": "manaRefund", "value": 1, "chance": 0.45, "levelIncrease": 0.01, "levelIncreaseField": "chance" }]
     },
     {
       "id": "sword_domain",
       "schoolId": "sword_cultivator",
       "name": "Vạn Kiếm Quy Tông",
-      "description": "Kiếm vực dồn lực vào một đòn đánh mạnh, tăng tốc độ và nhanh hồi lại.",
-      "note": "Tăng Tốc độ +2 trong 2 lượt; skill có Chí mạng +10%.",
+      "description": "Kiếm vực dồn lực vào một đòn đánh mạnh, tăng công và chí mạng trong thời gian ngắn.",
+      "note": "Tăng Công 2% và Chí mạng 2% trong 3 lượt; mỗi cấp tăng 0,2% cho cả hai thuộc tính.",
       "gradeId": "mysterious",
       "combatPower": 165,
       "requiredTier": 7,
-      "multiplier": 1.7,
+      "multiplier": 1.5,
       "cost": 28,
       "cooldown": 3,
-      "skillCritRate": 0.1,
-      "effects": [{ "type": "selfBuff", "stat": "speed", "value": 2, "duration": 2, "chance": 1 }]
+      "effects": [
+        { "type": "selfBuff", "stat": "attack", "value": 0.02, "levelIncrease": 0.002, "duration": 3, "chance": 1, "nonStacking": true },
+        { "type": "selfBuff", "stat": "critRate", "value": 0.02, "levelIncrease": 0.002, "duration": 3, "chance": 1, "nonStacking": true }
+      ]
     },
     {
       "id": "sword_storm",
       "schoolId": "sword_cultivator",
       "name": "Kiếm Vũ Lưu Tinh",
-      "description": "Kiếm vũ liên hoàn, có cơ hội tăng chính xác và chí mạng kỹ năng.",
-      "note": "25% cơ hội tăng Chính xác +6% trong 2 lượt; skill có Chí mạng +12%.",
+      "description": "Kiếm vũ liên hoàn, có cơ hội thi triển kỹ năng lần thứ hai.",
+      "note": "25% cơ hội thi triển lần 2, không tiêu hao thêm linh lực và không kích hoạt lặp lại trong cùng lượt; mỗi cấp tăng 1%.",
       "gradeId": "mysterious",
-      "combatPower": 171,
+      "combatPower": 141,
       "requiredTier": 7,
-      "multiplier": 1.8,
+      "multiplier": 1.5,
       "cost": 30,
       "cooldown": 3,
-      "skillCritRate": 0.12,
-      "effects": [{ "type": "selfBuff", "stat": "accuracy", "value": 0.06, "duration": 2, "chance": 0.25 }]
+      "effects": [{ "type": "extraCast", "chance": 0.25, "levelIncrease": 0.01, "levelIncreaseField": "chance" }]
     },
     {
       "id": "beginner_blade_art",
@@ -155,7 +158,6 @@
       "multiplier": 1.55,
       "cost": 24,
       "cooldown": 3,
-      "skillCritRate": 0,
       "effects": [{ "type": "selfBuff", "stat": "attack", "value": 1, "duration": 2, "chance": 1 }]
     },
     {
@@ -163,14 +165,13 @@
       "schoolId": "blade_cultivator",
       "name": "Trọng Sơn Đao",
       "description": "Một đao nặng như núi, gây sát thương lớn và tăng công trong thời gian ngắn.",
-      "note": "Tăng Công +2 trong 2 lượt; skill có Chí mạng +2%.",
+      "note": "Tăng Công +2 trong 2 lượt.",
       "gradeId": "mortal",
       "combatPower": 74,
       "requiredTier": 1,
       "multiplier": 1.65,
       "cost": 28,
       "cooldown": 4,
-      "skillCritRate": 0.02,
       "effects": [{ "type": "selfBuff", "stat": "attack", "value": 2, "duration": 2, "chance": 1 }]
     },
     {
@@ -178,14 +179,13 @@
       "schoolId": "blade_cultivator",
       "name": "Huyết Đao",
       "description": "Đòn đao bộc phát, có thêm tỉ lệ chí mạng kỹ năng.",
-      "note": "35% cơ hội tăng Hút máu +3% trong 2 lượt; skill có Chí mạng +8%.",
+      "note": "35% cơ hội tăng Hút máu +3% trong 2 lượt.",
       "gradeId": "yellow",
       "combatPower": 112,
       "requiredTier": 4,
       "multiplier": 1.9,
       "cost": 34,
       "cooldown": 4,
-      "skillCritRate": 0.08,
       "effects": [{ "type": "selfBuff", "stat": "lifeSteal", "value": 0.03, "duration": 2, "chance": 0.35 }]
     },
     {
@@ -193,14 +193,13 @@
       "schoolId": "blade_cultivator",
       "name": "Liệt Địa Trảm",
       "description": "Đao lực xé giáp, gây sát thương rất cao và tăng xuyên giáp tạm thời.",
-      "note": "Tăng Xuyên giáp +4% trong 2 lượt; skill có Chí mạng +10%.",
+      "note": "Tăng Xuyên giáp +4% trong 2 lượt.",
       "gradeId": "yellow",
       "combatPower": 118,
       "requiredTier": 4,
       "multiplier": 2,
       "cost": 38,
       "cooldown": 5,
-      "skillCritRate": 0.1,
       "effects": [{ "type": "selfBuff", "stat": "armorPierce", "value": 0.04, "duration": 2, "chance": 1 }]
     },
     {
@@ -208,14 +207,13 @@
       "schoolId": "blade_cultivator",
       "name": "Phách Sơn Đoạn Nhạc",
       "description": "Một đao phá núi, gây sát thương chí mạng mạnh và tăng sát thương chí mạng.",
-      "note": "Tăng Sát thương chí mạng +10% trong 2 lượt; skill có Chí mạng +12%.",
+      "note": "Tăng Sát thương chí mạng +10% trong 2 lượt.",
       "gradeId": "mysterious",
       "combatPower": 168,
       "requiredTier": 7,
       "multiplier": 2.3,
       "cost": 46,
       "cooldown": 5,
-      "skillCritRate": 0.12,
       "effects": [{ "type": "selfBuff", "stat": "critDamage", "value": 0.1, "duration": 2, "chance": 1 }]
     },
     {
@@ -223,14 +221,13 @@
       "schoolId": "blade_cultivator",
       "name": "Diệt Thế Cuồng Đao",
       "description": "Cuồng đao toàn lực, tăng công và giảm sát thương nhận vào nhưng tiêu hao lớn.",
-      "note": "Tăng Công +2 và Giảm sát thương +3% trong 2 lượt; skill có Chí mạng +15%.",
+      "note": "Tăng Công +2 và Giảm sát thương +3% trong 2 lượt.",
       "gradeId": "mysterious",
       "combatPower": 174,
       "requiredTier": 7,
       "multiplier": 2.5,
       "cost": 52,
       "cooldown": 6,
-      "skillCritRate": 0.15,
       "effects": [
         { "type": "selfBuff", "stat": "attack", "value": 2, "duration": 2, "chance": 1 },
         { "type": "selfBuff", "stat": "damageReduction", "value": 0.03, "duration": 2, "chance": 1 }
@@ -248,7 +245,6 @@
       "multiplier": 1.1,
       "cost": 12,
       "cooldown": 2,
-      "skillCritRate": 0,
       "effects": [{ "type": "selfBuff", "stat": "defense", "value": 1, "duration": 3, "chance": 1 }]
     },
     {
@@ -263,7 +259,6 @@
       "multiplier": 1.05,
       "cost": 14,
       "cooldown": 2,
-      "skillCritRate": 0,
       "effects": [{ "type": "selfBuff", "stat": "damageReduction", "value": 0.04, "duration": 3, "chance": 1 }]
     },
     {
@@ -271,14 +266,13 @@
       "schoolId": "martial_cultivator",
       "name": "Thiết Quyền Chấn Sơn",
       "description": "Quyền lực chấn sơn, vừa gây sát thương vừa tăng công và thủ.",
-      "note": "Tăng Thủ +2 và Công +1 trong 3 lượt; skill có Chí mạng +5%.",
+      "note": "Tăng Thủ +2 và Công +1 trong 3 lượt.",
       "gradeId": "yellow",
       "combatPower": 109,
       "requiredTier": 4,
       "multiplier": 1.35,
       "cost": 18,
       "cooldown": 3,
-      "skillCritRate": 0.05,
       "effects": [
         { "type": "selfBuff", "stat": "defense", "value": 2, "duration": 3, "chance": 1 },
         { "type": "selfBuff", "stat": "attack", "value": 1, "duration": 3, "chance": 1 }
@@ -296,7 +290,6 @@
       "multiplier": 1.3,
       "cost": 20,
       "cooldown": 3,
-      "skillCritRate": 0,
       "effects": [{ "type": "selfBuff", "stat": "damageReduction", "value": 0.06, "duration": 3, "chance": 1 }]
     },
     {
@@ -304,14 +297,13 @@
       "schoolId": "martial_cultivator",
       "name": "Kim Cương Phá Thiên",
       "description": "Đòn phá thiên toàn lực, kết hợp sức mạnh và khả năng chịu đựng.",
-      "note": "Tăng Giảm sát thương +10% trong 3 lượt; skill có Chí mạng +8%.",
+      "note": "Tăng Giảm sát thương +10% trong 3 lượt.",
       "gradeId": "mysterious",
       "combatPower": 164,
       "requiredTier": 7,
       "multiplier": 1.6,
       "cost": 24,
       "cooldown": 4,
-      "skillCritRate": 0.08,
       "effects": [{ "type": "selfBuff", "stat": "damageReduction", "value": 0.1, "duration": 3, "chance": 1 }]
     },
     {
@@ -326,7 +318,6 @@
       "multiplier": 1.5,
       "cost": 26,
       "cooldown": 4,
-      "skillCritRate": 0,
       "effects": [{ "type": "healPercent", "value": 0.08, "chance": 1 }]
     }
   ]

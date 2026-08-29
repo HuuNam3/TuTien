@@ -3,6 +3,70 @@
   "title": "Lịch sử cập nhật",
   "entries": [
     {
+      "id": "feature-entry-and-school-selection-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Giới hạn mở tính năng và phái khởi đầu",
+      "summary": "Xác nhận điều kiện mở Tháp, Phụ bản, Cường hóa và tạm thời chỉ cho tạo nhân vật Kiếm Tu.",
+      "details": [
+        "Tháp thí luyện mở từ Khai Nguyên cảnh Nhất tầng.",
+        "Phụ bản mở từ Khai Nguyên cảnh Tam tầng.",
+        "Cường hóa mở từ Khai Nguyên cảnh Lục tầng.",
+        "Màn hình tạo nhân vật chỉ cho chọn Kiếm Tu; Đao Tu và Võ Tu hiển thị Đang phát triển và bấm vào sẽ hiện toast thông báo."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "sword-skill-balance-effects-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Cân bằng hiệu ứng skill Kiếm Tu",
+      "summary": "Cập nhật sáu skill Kiếm Tu theo hướng thiên về kỹ năng và bổ sung cơ chế hiệu ứng trong chiến đấu.",
+      "details": [
+        "Skill 1 tăng Chính xác 0,2% mỗi cấp.",
+        "Skill 2 có 50% cơ hội tăng Công, tăng 0,2% mỗi cấp; hiệu ứng không cộng dồn và chỉ làm mới thời gian.",
+        "Skill 3 gây 160% sát thương gốc và không còn hiệu ứng thêm.",
+        "Skill 4 gây 135% sát thương, hồi chiêu 2 lượt và có tỉ lệ hoàn lại linh lực tăng 1% mỗi cấp.",
+        "Skill 5 tăng Công và Chí mạng 0,2% mỗi cấp trong 3 lượt.",
+        "Skill 6 gây 150% sát thương, có tỉ lệ thi triển lần 2 tăng 1% mỗi cấp; lần 2 không tiêu hao thêm linh lực và không lặp trong cùng lượt.",
+        "Sát thương theo cấp Kiếm Tu dùng hệ số Phàm 3%, Hoàng 4% và Huyền 5% mỗi cấp."
+      ],
+      "category": "Cân bằng"
+    },
+    {
+      "id": "damage-variance-90-110-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Điều chỉnh dao động sát thương",
+      "summary": "Dao động sát thương của đòn đánh được đổi thành 90% đến 110%.",
+      "details": [
+        "Áp dụng cho đòn đánh thường, skill và phản đòn vì cùng dùng công thức dao động sát thương.",
+        "Giá trị ngẫu nhiên được roll trong khoảng 0,9 đến 1,1 lần sát thương trước khi xử lý phòng thủ."
+      ],
+      "category": "Cân bằng"
+    },
+    {
+      "id": "remove-skill-crit-equipment-effect-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Xóa chí mạng skill khỏi trang bị",
+      "summary": "Loại bỏ thuộc tính Kiếm ý/CM kỹ năng khỏi các thuộc tính đặc biệt của trang bị.",
+      "details": [
+        "Trang bị mới không còn roll thuộc tính chí mạng riêng cho skill.",
+        "Chí mạng chung của nhân vật và trang bị vẫn được giữ nguyên.",
+        "Các dòng dữ liệu cũ của skill và trang bị không còn được dùng trong tính toán chiến đấu."
+      ],
+      "category": "Cân bằng"
+    },
+    {
+      "id": "dantian-capacity-and-resource-regen-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Hiển thị sức chứa Đan điền và chỉnh hồi phục",
+      "summary": "Đan điền hiển thị tu vi hiện có trên sức chứa tối đa; hồi phục tự động sinh lực và linh lực còn 1% mỗi giây.",
+      "details": [
+        "Sức chứa Đan điền dùng công thức Căn cơ × 8 × 60 × 60 và hiển thị theo dạng hiện có/tối đa.",
+        "Hồi phục tự động của Sinh lực và Linh lực giảm từ 2% xuống 1% giới hạn tối đa mỗi giây.",
+        "Tỉ lệ hồi phục của Sinh Huyết Đan và Tụ Linh Đan không thay đổi."
+      ],
+      "category": "Cân bằng"
+    },
+    {
       "id": "fix-production-dev-hidden-style-2026-08-29",
       "date": "2026-08-29",
       "title": "Sửa ẩn Dev trên bản phát hành",

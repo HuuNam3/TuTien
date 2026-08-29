@@ -628,13 +628,10 @@ function getTotalSkillBooks() {
 }
 
 function getSkillMultiplier(skill, level = getSkillLevel(skill.id)) {
-  const perLevel = Number(cultivationSkillData.upgrade?.multiplierPerLevel) || 0;
+  const perLevelByGrade = cultivationSkillData.upgrade?.multiplierPerLevelByGrade || {};
+  const perLevel = Number(perLevelByGrade[skill?.gradeId]
+    ?? cultivationSkillData.upgrade?.multiplierPerLevel) || 0;
   return (Number(skill.multiplier) || 1) + Math.max(0, level) * perLevel;
-}
-
-function getSkillCritRate(skill, level = getSkillLevel(skill.id)) {
-  const perLevel = Number(cultivationSkillData.upgrade?.skillCritRatePerLevel) || 0;
-  return (Number(skill.skillCritRate) || 0) + Math.max(0, level) * perLevel;
 }
 
 function getSkillCombatPower(skill, level = getSkillLevel(skill.id)) {
@@ -679,6 +676,14 @@ function getSkillEffects(skill, level = getSkillLevel(skill.id)) {
   const growth = getSkillPracticeConfig().milestoneEffectGrowth || {};
   const milestoneCount = getSkillMilestoneCount(level);
   return (skill?.effects || []).map((effect) => {
+    const levelIncrease = Number(effect.levelIncrease) || 0;
+    if (levelIncrease) {
+      const field = effect.levelIncreaseField || 'value';
+      return {
+        ...effect,
+        [field]: (Number(effect[field]) || 0) + levelIncrease * Math.max(0, level),
+      };
+    }
     const growthKey = effect.type === 'healPercent' ? 'healPercent' : effect.stat;
     const perMilestone = Number(effect.milestoneIncrease ?? growth[growthKey]) || 0;
     if (!perMilestone || !milestoneCount) return { ...effect };
@@ -730,7 +735,6 @@ function createSkillRuntime(skill) {
     multiplier: getSkillMultiplier(skill, level),
     cooldown: Math.max(1, Number(skill.cooldown) || 1),
     cooldownRemaining: Math.max(1, Number(skill.cooldown) || 1),
-    skillCritRate: getSkillCritRate(skill, level),
     combatPowerValue: getSkillCombatPower(skill, level),
     effects: getSkillEffects(skill, level),
   };
@@ -846,17 +850,25 @@ function renderStartScreen() {
     .map((id) => cultivationSchools.find((school) => school.id === id))
     .filter(Boolean);
 
-  schoolChoiceGrid.innerHTML = availableSchools.map((school) => `
-    <button type="button" class="school-choice ${school.id === playerSchoolId ? 'selected' : ''}" data-school-id="${school.id}">
+  schoolChoiceGrid.innerHTML = availableSchools.map((school) => {
+    const available = school.id === 'sword_cultivator';
+    return `
+    <button type="button" class="school-choice ${school.id === playerSchoolId ? 'selected' : ''} ${available ? '' : 'is-developing'}" data-school-id="${school.id}" aria-disabled="${!available}">
       <span class="school-choice-art ${getSchoolVisualClass(school.id)}" aria-hidden="true"></span>
       <strong>${school.name}</strong>
       <span>${school.starterSkill?.name || school.skills?.[0]?.name || 'Nhập môn'}</span>
-      <small>${getSchoolFocusText(school)}</small>
+      <small>${available ? getSchoolFocusText(school) : 'Đang phát triển'}</small>
     </button>
-  `).join('');
+  `;
+  }).join('');
 
   schoolChoiceGrid.querySelectorAll('[data-school-id]').forEach((button) => {
     button.addEventListener('click', () => {
+      if (button.dataset.schoolId !== 'sword_cultivator') {
+        const school = cultivationSchools.find((entry) => entry.id === button.dataset.schoolId);
+        showGameToast(`${school?.name || 'Phái này'} đang phát triển.`, 'locked');
+        return;
+      }
       playerSchoolId = button.dataset.schoolId;
       renderStartScreen();
       updateStartScreenAvailability();
@@ -868,7 +880,7 @@ function renderStartScreen() {
 
 function updateStartScreenAvailability() {
   const hasName = Boolean(sanitizePlayerName(startPlayerNameInput?.value));
-  const hasSchool = Boolean(getPlayerSchool());
+  const hasSchool = playerSchoolId === 'sword_cultivator';
   if (enterGameButton) enterGameButton.disabled = !hasName || !hasSchool;
   if (startSchoolHint) {
     startSchoolHint.textContent = hasSchool
@@ -879,6 +891,7 @@ function updateStartScreenAvailability() {
 
 function showStartScreen() {
   gameStarted = false;
+  if (playerSchoolId !== 'sword_cultivator') playerSchoolId = 'sword_cultivator';
   startScreen?.classList.remove('is-hidden');
   if (startPlayerNameInput) startPlayerNameInput.value = playerName || defaultPlayerName;
   renderStartScreen();
@@ -2583,7 +2596,6 @@ function createFighter(name, minorLevel, includeEquipment = false, majorRealmInd
     luck: baseStats.luck,
     spiritSense: baseStats.spiritSense,
     comprehension: includeEquipment ? playerComprehension : getGrowthStat('comprehension'),
-    skillCritRate: selectedSkill?.skillCritRate || 0,
     victoryRecovery: 0,
     spiritStoneBonus: 0,
     reflectDamage: 0,
@@ -3959,6 +3971,9 @@ function playerTurn() {
   const manaRecovered = regenerateBattleMana(player);
   const result = attack(player, enemy);
   animateAttack('playerCard', 'enemyCard', 'enemyFloat', result, player);
+  if (result.bonusHit) {
+    window.setTimeout(() => animateAttack('playerCard', 'enemyCard', 'enemyFloat', result.bonusHit, player), 180);
+  }
   render();
   if (manaRecovered > 0) pushLog(`${player.name} hồi ${manaRecovered} linh lực.`);
   pushLog(formatAttackLog(player, result));
@@ -4001,6 +4016,9 @@ function enemyTurn() {
   const result = attack(enemy, player);
   enemy.combatStyleState.critBoost = 0;
   animateAttack('enemyCard', 'playerCard', 'playerFloat', result, enemy);
+  if (result.bonusHit) {
+    window.setTimeout(() => animateAttack('enemyCard', 'playerCard', 'playerFloat', result.bonusHit, enemy), 180);
+  }
   render();
   if (manaRecovered > 0) pushLog(`${enemy.name} hồi ${manaRecovered} linh lực.`);
   pushLog(formatAttackLog(enemy, result));
@@ -4042,7 +4060,6 @@ function getReadySkill(attacker) {
       multiplier: attacker.skillMultiplier,
       cooldown: attacker.skillCooldown,
       cooldownRemaining: attacker.skillCooldownRemaining,
-      skillCritRate: attacker.skillCritRate,
       effects: [],
     };
   }
@@ -4116,6 +4133,7 @@ function resolveCounterStrike(target, attacker) {
 function applySkillEffects(attacker, target, skill) {
   const effectTexts = [];
   (skill.effects || []).forEach((effect) => {
+    if (effect.type === 'extraCast' || effect.type === 'manaRefund') return;
     const chance = Math.max(0, Math.min(1, Number(effect.chance) || 0));
     if (Math.random() > chance) return;
     const receiver = effect.target === 'enemy' ? target : attacker;
@@ -4123,9 +4141,17 @@ function applySkillEffects(attacker, target, skill) {
       const value = Number(effect.value) || 0;
       const duration = Math.max(1, Number(effect.duration) || 1);
       if (!(effect.stat in receiver)) return;
-      receiver[effect.stat] = (receiver[effect.stat] || 0) + value;
+      const buffKey = `${skill.id}:${effect.stat}`;
       receiver.battleBuffs = receiver.battleBuffs || [];
-      receiver.battleBuffs.push({ stat: effect.stat, value, remaining: duration });
+      if (effect.nonStacking) {
+        receiver.battleBuffs = receiver.battleBuffs.filter((buff) => {
+          if (buff.key !== buffKey) return true;
+          receiver[buff.stat] = (receiver[buff.stat] || 0) - buff.value;
+          return false;
+        });
+      }
+      receiver[effect.stat] = (receiver[effect.stat] || 0) + value;
+      receiver.battleBuffs.push({ key: buffKey, stat: effect.stat, value, remaining: duration });
       effectTexts.push(`${getStatLabel(effect.stat)} +${isPercentStat(effect.stat) ? toPercent(value) : value}`);
     }
     if (effect.type === 'healPercent') {
@@ -4139,32 +4165,15 @@ function applySkillEffects(attacker, target, skill) {
   return effectTexts;
 }
 
-function attack(attacker, target) {
-  const selectedSkill = getReadySkill(attacker);
-  const skill = Boolean(selectedSkill);
-  if (selectedSkill) {
-    attacker.skillId = selectedSkill.id;
-    attacker.skillName = selectedSkill.name;
-  }
+function resolveAttackHit(attacker, target, multiplier = 1) {
   const dodged = Math.random() > getHitChance(attacker, target);
-
-  if (skill) {
-    attacker.mana = Math.max(0, attacker.mana - selectedSkill.cost);
-  }
-  tickSkillCooldowns(attacker, selectedSkill?.id || '');
-
-  if (dodged) {
-    return { damage: 0, counterDamage: 0, skill, skillName: selectedSkill?.name, critical: false, dodged: true, blocked: false };
-  }
+  if (dodged) return { damage: 0, critical: false, dodged: true, blocked: false, heal: 0, reflectDamage: 0 };
 
   const styleCritBoost = attacker.combatStyleState?.critBoost || 0;
-  const critChance = clamp(attacker.critRate + styleCritBoost + (skill ? selectedSkill.skillCritRate : 0), 0, 0.95);
+  const critChance = clamp(attacker.critRate + styleCritBoost, 0, 0.95);
   const critical = Math.random() < critChance;
   const rawDamage = Math.round(
-    attacker.attack *
-    (skill ? selectedSkill.multiplier : 1) *
-    rollDamagePercent() *
-    (critical ? attacker.critDamage : 1)
+    attacker.attack * multiplier * rollDamagePercent() * (critical ? attacker.critDamage : 1),
   );
   const blocked = Math.random() < target.blockRate;
   const blockMultiplier = blocked ? 0.2 : 1;
@@ -4180,21 +4189,15 @@ function attack(attacker, target) {
   if (target.combatStyleState?.guarding) target.combatStyleState.guarding = false;
   const heal = Math.min(attacker.maxHp - attacker.hp, Math.floor(damage * attacker.lifeSteal));
   if (heal > 0) attacker.hp += heal;
-  const effectTexts = skill ? applySkillEffects(attacker, target, selectedSkill) : [];
   const reflectDamage = Math.min(
     attacker.hp,
     Math.max(0, Math.round(damage * (Number(target.reflectDamage) || 0))),
   );
   if (reflectDamage > 0) attacker.hp -= reflectDamage;
-  const counterDamage = resolveCounterStrike(target, attacker);
 
   return {
     damage,
-    counterDamage,
     heal,
-    skill,
-    skillName: selectedSkill?.name,
-    effectTexts,
     reflectDamage,
     critical,
     dodged: false,
@@ -4203,12 +4206,56 @@ function attack(attacker, target) {
   };
 }
 
+function attack(attacker, target) {
+  const selectedSkill = getReadySkill(attacker);
+  const skill = Boolean(selectedSkill);
+  if (selectedSkill) {
+    attacker.skillId = selectedSkill.id;
+    attacker.skillName = selectedSkill.name;
+  }
+  if (skill) {
+    attacker.mana = Math.max(0, attacker.mana - selectedSkill.cost);
+  }
+  tickSkillCooldowns(attacker, selectedSkill?.id || '');
+
+  let manaRefunded = 0;
+  const manaRefundEffect = selectedSkill?.effects?.find((effect) => effect.type === 'manaRefund');
+  if (manaRefundEffect && Math.random() <= clamp(Number(manaRefundEffect.chance) || 0, 0, 1)) {
+    manaRefunded = selectedSkill.cost;
+    attacker.mana = Math.min(attacker.maxMana, attacker.mana + manaRefunded);
+  }
+
+  const primaryHit = resolveAttackHit(attacker, target, skill ? selectedSkill.multiplier : 1);
+  const effectTexts = skill && !primaryHit.dodged ? applySkillEffects(attacker, target, selectedSkill) : [];
+  let bonusHit = null;
+  const extraCastEffect = selectedSkill?.effects?.find((effect) => effect.type === 'extraCast');
+  if (extraCastEffect
+    && !primaryHit.dodged
+    && target.hp > 0
+    && Math.random() <= clamp(Number(extraCastEffect.chance) || 0, 0, 1)) {
+    bonusHit = resolveAttackHit(attacker, target, selectedSkill.multiplier);
+    bonusHit.skill = true;
+    bonusHit.skillName = selectedSkill.name;
+  }
+  const counterDamage = primaryHit.dodged ? 0 : resolveCounterStrike(target, attacker);
+
+  return {
+    ...primaryHit,
+    counterDamage,
+    manaRefunded,
+    skill,
+    skillName: selectedSkill?.name,
+    effectTexts,
+    bonusHit,
+  };
+}
+
 function getHitChance(attacker, target) {
   return clamp(attacker.accuracy - target.dodgeRate, 0.1, 0.98);
 }
 
 function rollDamagePercent() {
-  return 0.95 + Math.random() * 0.1;
+  return 0.9 + Math.random() * 0.2;
 }
 
 function getTrialTowerChestMap(tier) {
@@ -5171,11 +5218,11 @@ function getTrainingCultivationRate() {
 }
 
 function getPassiveHpGain(max = getPlayerMaxResources()) {
-  return Math.ceil(max.maxHp * 0.02);
+  return Math.ceil(max.maxHp * 0.01);
 }
 
 function getPassiveManaGain(max = getPlayerMaxResources()) {
-  return Math.ceil(max.maxMana * 0.02);
+  return Math.ceil(max.maxMana * 0.01);
 }
 
 function isCultivationHomeActive() {
@@ -5350,7 +5397,6 @@ function applySpecialsToFighter(fighter, specials) {
   const getSpecial = (id) => Math.max(0, Number(specials[id]) || 0);
   fighter.lifeSteal += getSpecial('lifeSteal');
   fighter.armorPierce += getSpecial('armorPierce');
-  fighter.skillCritRate += getSpecial('skillCritRate');
   fighter.spiritStoneBonus += getSpecial('spiritStoneBonus');
   fighter.damageReduction += getSpecial('damageReduction');
   fighter.dodgeRate += getSpecial('dodgeRate');
@@ -5363,7 +5409,6 @@ function applySpecialsToFighter(fighter, specials) {
 
   fighter.lifeSteal = clamp(fighter.lifeSteal, 0, 0.35);
   fighter.armorPierce = clamp(fighter.armorPierce, 0, 0.55);
-  fighter.skillCritRate = clamp(fighter.skillCritRate, 0, 0.45);
   fighter.damageReduction = clamp(fighter.damageReduction, 0, 0.9);
   fighter.dodgeRate = clamp(fighter.dodgeRate, 0, 0.45);
   fighter.critDamage = Math.max(1.5, fighter.critDamage);
@@ -5444,9 +5489,15 @@ function formatAttackLog(attacker, result) {
     result.pierced ? 'phá giáp' : '',
     result.heal > 0 ? `hấp huyết +${formatGameNumber(result.heal)}` : '',
     result.reflectDamage > 0 ? `phản chấn ${formatGameNumber(result.reflectDamage)}` : '',
+    result.manaRefunded > 0 ? `hoàn linh lực +${formatGameNumber(result.manaRefunded)}` : '',
     ...(result.effectTexts || []),
   ].filter(Boolean);
-  return `Lượt ${turn}: ${attacker.name} ${action} gây ${formatGameNumber(result.damage)} sát thương${extras.length ? ` (${extras.join(', ')})` : ''}.`;
+  const bonusText = result.bonusHit
+    ? result.bonusHit.dodged
+      ? ' Thi triển lần 2 nhưng mục tiêu né tránh.'
+      : ` Thi triển lần 2 gây ${formatGameNumber(result.bonusHit.damage)} sát thương${result.bonusHit.blocked ? ' (đỡ đòn)' : ''}.`
+    : '';
+  return `Lượt ${turn}: ${attacker.name} ${action} gây ${formatGameNumber(result.damage)} sát thương${extras.length ? ` (${extras.join(', ')})` : ''}.${bonusText}`;
 }
 
 function animateAttack(sourceId, targetId, floatId, result, attacker) {
@@ -5557,9 +5608,7 @@ function renderCultivation() {
   $('trainingRateText').textContent = `Tu vi +${formatGameNumber(getTrainingCultivationRate())}/giây`;
   if ($('skillsList')) renderSkills();
   if ($('questList')) renderQuests();
-  $('dantianCultivationText').textContent = dantianCultivation > 0
-    ? `${formatGameNumber(dantianCultivation)} tu vi dự trữ`
-    : 'Đan điền đang trống';
+  $('dantianCultivationText').textContent = `${formatGameNumber(dantianCultivation)}/${formatGameNumber(getDantianCultivationCap())} tu vi dự trữ`;
   useHealthPotionButton.textContent = `Sinh Huyết Đan x${healthPotionCount}`;
   useManaPotionButton.textContent = `Tụ Linh Đan x${manaPotionCount}`;
   useHealthPotionButton.disabled = busy || healthPotionCount <= 0 || resourceView.hp >= playerSnapshot.maxHp;
@@ -5623,6 +5672,12 @@ function formatSkillEffects(skill, level = getSkillLevel(skill.id)) {
   const effects = getSkillEffects(skill, level).map((effect) => {
     const chance = Number(effect.chance);
     const chanceText = Number.isFinite(chance) && chance < 1 ? `${toPercent(chance)}: ` : '';
+    if (effect.type === 'extraCast') {
+      return `${toPercent(chance)} cơ hội thi triển kỹ năng lần 2, không tiêu hao thêm linh lực và không lặp trong cùng lượt`;
+    }
+    if (effect.type === 'manaRefund') {
+      return `${toPercent(chance)} cơ hội hoàn lại linh lực vừa sử dụng`;
+    }
     if (effect.type === 'selfBuff') {
       const value = Number(effect.value) || 0;
       const amount = isPercentStat(effect.stat) ? toPercent(value) : value;
@@ -5638,8 +5693,6 @@ function formatSkillDisplayNote(skill, level = getSkillLevel(skill.id)) {
   const parts = [`Gây ${Math.round(getSkillMultiplier(skill, level) * 100)}% Công lên kẻ địch`];
   const effectText = formatSkillEffects(skill, level);
   if (effectText !== 'Không có hiệu ứng thêm') parts.push(effectText);
-  const skillCritRate = getSkillCritRate(skill, level);
-  if (skillCritRate > 0) parts.push(`skill có Chí mạng +${toPercent(skillCritRate)}`);
   const cooldownText = `thời gian hồi ${Math.max(1, Number(skill.cooldown) || 1)} lượt`;
   return `${parts.join(' và ')}; ${cooldownText}.`;
 }
@@ -7009,7 +7062,6 @@ function getStatIconClass(stat) {
     armorPierce: 'icon-unique-armor-pierce',
     damageReduction: 'icon-unique-damage-reduction',
     lifeSteal: 'icon-unique-life-steal',
-    skillCritRate: 'icon-stat-crit',
     spiritStoneBonus: 'icon-unique-spirit-stone',
     maxHpPercent: 'icon-stat-hp',
     maxManaPercent: 'icon-stat-mana',
@@ -7034,7 +7086,6 @@ function getStatLabel(stat) {
     critDamage: 'ST chí mạng',
     lifeSteal: 'Hấp huyết',
     armorPierce: 'Phá giáp',
-    skillCritRate: 'CM kỹ năng',
     victoryRecovery: 'Dưỡng khí',
     spiritStoneBonus: 'Tầm bảo',
     damageReduction: 'Hộ thể',
@@ -7048,7 +7099,7 @@ function getStatLabel(stat) {
 }
 
 function isPercentStat(stat) {
-  return ['accuracy', 'dodgeRate', 'blockRate', 'blockReduction', 'critRate', 'critDamage', 'lifeSteal', 'armorPierce', 'skillCritRate', 'victoryRecovery', 'spiritStoneBonus', 'damageReduction', 'maxHpPercent', 'maxManaPercent', 'defensePercent', 'reflectDamage', 'attackPercent'].includes(stat);
+  return ['accuracy', 'dodgeRate', 'blockRate', 'blockReduction', 'critRate', 'critDamage', 'lifeSteal', 'armorPierce', 'victoryRecovery', 'spiritStoneBonus', 'damageReduction', 'maxHpPercent', 'maxManaPercent', 'defensePercent', 'reflectDamage', 'attackPercent'].includes(stat);
 }
 
 function roundStat(value) {
