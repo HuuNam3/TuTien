@@ -3,17 +3,6 @@
   "title": "Lịch sử cập nhật",
   "entries": [
     {
-      "id": "ignore-docs-no-auto-push-2026-08-29",
-      "date": "2026-08-29",
-      "title": "Bỏ qua thư mục docs và chỉ push khi được yêu cầu",
-      "summary": "Thêm docs/ vào .gitignore và thống nhất không tự động push thay đổi lên GitHub.",
-      "details": [
-        "Thư mục docs/ ở thư mục gốc không còn được Git theo dõi.",
-        "Các thay đổi sau này chỉ được push khi người dùng yêu cầu rõ ràng."
-      ],
-      "category": "Cấu hình"
-    },
-    {
       "id": "battle-result-mobile-start-screen-2026-08-29",
       "date": "2026-08-29",
       "title": "Hiển thị kết quả chiến đấu trong khung trận",
@@ -122,90 +111,6 @@
       "category": "Tính năng"
     },
     {
-      "id": "equipment-selling-tools-2026-08-29",
-      "date": "2026-08-29",
-      "title": "Bổ sung bán trang bị",
-      "summary": "Có thể bán từng món hoặc bán nhiều trang bị theo phẩm cấp, luôn giữ lại trang bị đang mặc.",
-      "details": [
-        "Thêm nút Bán nhiều trong mục Trang bị để bán hàng loạt theo từng phẩm cấp hoặc tất cả phẩm cấp.",
-        "Trang bị đang mặc bị loại khỏi danh sách bán và không thể bị bán nhầm.",
-        "Nút bán từng món hiển thị ngay trong danh sách Trang bị trong túi.",
-        "Giá bán mỗi món bằng một phần tư giá rương trang bị tương ứng trong Cửa hàng; giao dịch hiển thị toast và cập nhật linh thạch ngay."
-      ],
-      "category": "Trang bị"
-    },
-    {
-      "id": "dev-foundation-100-wan-2026-08-29",
-      "date": "2026-08-29",
-      "title": "Điều chỉnh căn cơ tab Dev",
-      "summary": "Kích hoạt Dev sẽ cấp 100 vạn căn cơ.",
-      "details": [
-        "Căn cơ Dev được đặt thành 1.000.000 (100 vạn).",
-        "Linh thạch, ngộ tính và các chức năng Dev khác giữ nguyên."
-      ],
-      "category": "Dev"
-    },
-    {
-      "id": "inventory-hide-category-list-2026-08-29",
-      "date": "2026-08-29",
-      "title": "Gọn danh sách Túi đồ",
-      "summary": "Ẩn phân loại ở danh sách Túi đồ nhưng vẫn giữ trong Chi tiết vật phẩm.",
-      "details": [
-        "Danh sách Túi đồ chỉ còn icon, tên, số lượng và các thao tác.",
-        "Cửa sổ Chi tiết vật phẩm vẫn hiển thị đầy đủ dòng Phân loại."
-      ],
-      "category": "Túi đồ"
-    },
-    {
-      "id": "wander-tab-notification-conditions-2026-08-29",
-      "date": "2026-08-29",
-      "title": "Cập nhật chấm đỏ tab Ngao du",
-      "summary": "Tab Ngao du báo khi đủ sinh lực nhưng chưa ngao du hoặc khi Rương Ngao du đã đầy.",
-      "details": [
-        "Bỏ điều kiện cũ báo chấm đỏ khi rương có từ 10 phần thưởng.",
-        "Khi sinh lực đủ để ngao du và không có lượt ngao du đang chạy, tab Ngao du sẽ hiện chấm đỏ nhấp nháy.",
-        "Khi số phần thưởng đạt đúng sức chứa tối đa của Rương Ngao du, tab Ngao du cũng hiện chấm đỏ để nhắc người chơi mở rương.",
-        "Khi tải hoặc lưu dữ liệu, các rương cùng cấp trong Túi đồ được gộp thành một chồng duy nhất."
-      ],
-      "category": "Ngao du"
-    },
-    {
-      "id": "wander-tab-notification-conditions-2026-08-29",
-      "date": "2026-08-29",
-      "title": "Cập nhật chấm đỏ tab Ngao du",
-      "summary": "Tab Ngao du chỉ báo khi đủ sinh lực nhưng chưa ngao du hoặc khi Rương Ngao du đã đầy.",
-      "details": [
-        "Bỏ điều kiện cũ báo chấm đỏ khi rương có từ 10 phần thưởng.",
-        "Khi sinh lực đủ để ngao du và không có lượt ngao du đang chạy, tab Ngao du sẽ hiện chấm đỏ nhấp nháy.",
-        "Khi số phần thưởng đạt đúng sức chứa tối đa của Rương Ngao du, tab Ngao du cũng hiện chấm đỏ để nhắc người chơi mở rương."
-      ],
-      "category": "Ngao du"
-    },
-    {
-      "id": "chest-open-current-realm-rarity-2026-08-29",
-      "date": "2026-08-29",
-      "title": "Tính phẩm chất rương khi mở",
-      "summary": "Tỉ lệ phẩm chất được lấy theo đại cảnh giới hiện tại tại thời điểm mở mọi loại rương.",
-      "details": [
-        "Cấp rương chỉ quyết định khoảng cấp trang bị được tạo ra.",
-        "Khi mở rương, hệ thống dùng bảng tỉ lệ của đại cảnh giới hiện tại để roll phẩm chất.",
-        "Rương đã cất trong Túi đồ, gồm cả rương mua trong shop, cũng tự áp dụng tỉ lệ mới khi mở, không bị giữ tỉ lệ lúc nhận rương."
-      ],
-      "category": "Trang bị"
-    },
-    {
-      "id": "quest-major-realm-order-2026-08-29",
-      "date": "2026-08-29",
-      "title": "Sắp xếp lại mốc Từng bước đăng tiên",
-      "summary": "Mỗi đại cảnh giới nay đi theo thứ tự tầng 3, tầng 6, tầng 9 rồi mới thăng lên đại cảnh giới tiếp theo.",
-      "details": [
-        "Thối Thể gồm Tam tầng, Lục tầng, Cửu tầng và Thối Thể lên Khai Nguyên.",
-        "Khai Nguyên, Khí Động, Ly Hợp và Chân Nguyên lặp lại cùng thứ tự 3, 6, 9 rồi thăng cảnh.",
-        "Điều kiện tiến độ dùng đúng mốc tu luyện tương ứng; không chỉ thay đổi nhãn hiển thị."
-      ],
-      "category": "Nhiệm vụ"
-    },
-    {
       "id": "dantian-ascension-shop-fixes-2026-08-29",
       "date": "2026-08-29",
       "title": "Giới hạn Đan điền và hoàn thiện mua vật phẩm",
@@ -231,19 +136,6 @@
         "Giới hạn mua vật phẩm trong shop là tối đa 999 món mỗi lần."
       ],
       "category": "Tính năng"
-    },
-    {
-      "id": "equipment-rarity-by-major-realm-2026-08-29",
-      "date": "2026-08-29",
-      "title": "Điều chỉnh tỉ lệ phẩm chất trang bị theo đại cảnh giới",
-      "summary": "Lưu bảng tỉ lệ phẩm chất trang bị cho đủ 26 đại cảnh giới và áp dụng chung cho trang bị rơi, rương và shop.",
-      "details": [
-        "Cảnh giới 1–2 chỉ xuất hiện Phàm phẩm và Linh phẩm.",
-        "Cứ mỗi 3 đại cảnh giới mở thêm một phẩm chất mới: Địa, Huyền, Thiên, Tiên, Thánh, Thần, Đế và Hỗn Độn.",
-        "Mỗi hồ sơ gồm đủ 10 phẩm chất và tổng tỉ lệ luôn bằng 100%.",
-        "Tỉ lệ trang bị rơi vẫn giữ riêng ở mức 25%; bảng này chỉ quyết định phẩm chất sau khi đã rớt trang bị."
-      ],
-      "category": "Dữ liệu"
     },
     {
       "id": "enhancement-random-stat-growth-2026-08-28",
@@ -298,150 +190,6 @@
         "Thông báo tab hoặc map chưa mở dùng toast nổi ở giữa màn hình, tự ẩn sau vài giây và hiển thị rõ cảnh giới cần đạt."
       ],
       "category": "Tính năng"
-    },
-    {
-      "id": "wander-auto-continue-health-stop-2026-08-28",
-      "date": "2026-08-28",
-      "title": "Ngao du tự động tiếp tục",
-      "summary": "Ngao du tự chuyển sang lượt kế tiếp sau cơ duyên và chỉ dừng khi người chơi chủ động dừng hoặc sinh lực xuống thấp.",
-      "details": [
-        "Sau khi nhận cơ duyên hoặc chạy thoát, hệ thống tự bắt đầu lượt ngao du mới.",
-        "Nút Ngừng ngao du hủy cả timer đang chờ để người chơi dừng ngay lập tức.",
-        "Sau khi thua trận, nếu sinh lực thấp thì Ngao du dừng và chuyển về tu luyện; chỉ tự tiếp tục khi vẫn đủ sinh lực.",
-        "Bộ hồi phục tài nguyên và bộ timer ngao du dùng setTimeout tự lặp để không bị kẹt trong môi trường demo."
-      ],
-      "category": "Ngao du"
-    },
-    {
-      "id": "hide-quest-milestone-label-2026-08-28",
-      "date": "2026-08-28",
-      "title": "Ẩn nhãn mốc trong Từng bước đăng tiên",
-      "summary": "Giữ nguyên tên nhiệm vụ và mô tả cảnh giới, chỉ xóa nhãn Mốc tu vi bên cạnh tiêu đề.",
-      "details": [
-        "Tên nhiệm vụ Từng bước đăng tiên vẫn được giữ nguyên.",
-        "Ẩn các nhãn như Mốc tu vi 3 hoặc Tiểu cảnh giới mốc trong phần tiêu đề nhiệm vụ.",
-        "Mô tả Đạt tu vi theo đúng tên cảnh giới vẫn hiển thị bên dưới."
-      ],
-      "category": "Nhiệm vụ"
-    },
-    {
-      "id": "wander-stop-full-width-and-encounter-order-2026-08-28",
-      "date": "2026-08-28",
-      "title": "Hoàn thiện luồng Ngao du",
-      "summary": "Nút Ngừng ngao du chiếm toàn bộ chiều ngang và sự kiện sau 10 giây xét gặp quái trước khi xét cơ duyên.",
-      "details": [
-        "Nút Ngừng ngao du hiển thị thành một hàng riêng, chiếm toàn bộ kích thước thẻ Ngao du.",
-        "Sau thời gian chờ 10 giây, hệ thống roll tỉ lệ gặp quái trước; nếu không gặp quái mới roll cơ duyên theo tỉ lệ 50% tu vi, 35% linh thạch và 15% rương trang bị."
-      ],
-      "category": "Ngao du"
-    },
-    {
-      "id": "inventory-detail-and-skill-book-upgrade-2026-08-28",
-      "date": "2026-08-28",
-      "title": "Cải thiện skill, Túi đồ và Cửa hàng",
-      "summary": "Hiển thị sách skill cần dùng khi nâng cấp, thêm chi tiết vật phẩm trong Túi đồ và giới hạn shop đến rương cấp 3.",
-      "details": [
-        "Khi skill nâng đến các mốc cần sách, nút Nâng cấp hiển thị số sách skill yêu cầu, ví dụ cần 1 sách skill ở mốc +3.",
-        "Nhãn mốc trong nhiệm vụ Từng bước đăng tiên hiển thị trực tiếp tên cảnh giới, không còn chữ Mốc tu vi hoặc Tiểu cảnh giới mốc.",
-        "Túi đồ hiển thị icon, tên, phân loại, số lượng và mô tả ngắn; vật phẩm dùng được có nút Dùng hoặc Mở cùng nút Chi tiết.",
-        "Hộp Chi tiết cho phép nhập số lượng; khi dùng nhiều thuốc hoặc mở nhiều rương sẽ hỏi xác nhận.",
-        "Cửa hàng chỉ còn bán Rương trang bị cấp 1, cấp 2 và cấp 3; nút Mua x1 đổi thành Mua."
-      ],
-      "category": "Túi đồ"
-    },
-    {
-      "id": "wander-stop-fixed-rewards-and-chest-levels-2026-08-28",
-      "date": "2026-08-28",
-      "title": "Điều chỉnh phần thưởng Ngao du",
-      "summary": "Thêm lựa chọn ngừng Ngao du, bỏ cơ duyên dạng lựa chọn và chuẩn hóa tỉ lệ, hệ số thưởng cùng khoảng cấp rương.",
-      "details": [
-        "Đang di chuyển hoặc vừa nhận cơ duyên đều có thể chọn Ngừng ngao du; người chơi tự chọn tiếp tục hay dừng lại.",
-        "Cơ duyên tự xác định một phần thưởng theo tỉ lệ: 50% tu vi, 35% linh thạch và 15% rương trang bị cho mọi map.",
-        "Hệ số tu vi và linh thạch theo map là 0.65, 0.85, 1.05, 1.25, 1.45 và 1.65.",
-        "Khoảng cấp rương theo map được đổi thành 1–5, 6–10, 11–15, 16–20, 21–25 và 26–30."
-      ],
-      "category": "Ngao du"
-    },
-    {
-      "id": "two-wander-maps-and-skill-mana-cost-2026-08-28",
-      "date": "2026-08-28",
-      "title": "Thêm map Lôi Minh Sơn và Hoang Nguyên Thái Cổ",
-      "summary": "Mở rộng Ngao du thêm hai map cùng nhóm kẻ địch mới; skill trong Tu luyện hiển thị Linh lực cần.",
-      "details": [
-        "Lôi Minh Sơn nối tiếp khoảng kẻ địch 37–45, rương cấp 5 cho trang bị cấp 41–50 và mở từ đại cảnh giới Chân Nguyên.",
-        "Hoang Nguyên Thái Cổ nối tiếp khoảng kẻ địch 46–54, rương cấp 6 cho trang bị cấp 51–60 và mở từ đại cảnh giới Trúc Cơ.",
-        "Mỗi map có nhóm kẻ địch riêng, tỉ lệ gặp quái, phẩm cấp và phần thưởng được cấu hình độc lập.",
-        "Thẻ skill trong Tu luyện thêm dòng Linh lực cần theo dữ liệu cost của từng skill."
-      ],
-      "category": "Ngao du"
-    },
-    {
-      "id": "shop-chest-metadata-and-product-details-2026-08-28",
-      "date": "2026-08-28",
-      "title": "Sửa rương trang bị và giao diện Cửa hàng",
-      "summary": "Rương lưu khoảng cấp cùng tỉ lệ phẩm cấp riêng; cửa hàng có thẻ gọn và bảng chi tiết mua theo số lượng.",
-      "details": [
-        "Rương cấp 1–4 lưu trực tiếp khoảng cấp tương ứng, kể cả khi tải lại dữ liệu cũ; cấp cụ thể vẫn được roll lúc mở rương.",
-        "Tỉ lệ phẩm cấp được lưu trong rương khi nhận hoặc mua, không lấy lại theo tỉ lệ map lúc mở.",
-        "Chế độ Dev chỉ cộng Linh thạch, Căn cơ và Ngộ tính; không còn mở khóa map, chức năng, skill, shop, trang bị hoặc Phá Cảnh.",
-        "Phân loại Cửa hàng dùng bố cục 3 cột; thẻ sản phẩm chỉ hiển thị icon, tên, mô tả ngắn và trạng thái giá.",
-        "Bấm sản phẩm để xem chi tiết, chọn số lượng và xác nhận tổng giá; bên ngoài có nút Mua x1 và Mua nhiều."
-      ],
-      "category": "Cửa hàng"
-    },
-    {
-      "id": "skill-training-speed-and-pill-prices-2026-08-28",
-      "date": "2026-08-28",
-      "title": "Điều chỉnh tốc độ luyện skill và giá đan tu vi",
-      "summary": "Tốc độ luyện skill lấy theo Ngộ tính; giá Phá Cảnh cố định và ba loại đan tu vi tăng tuyến tính theo mỗi lần mua.",
-      "details": [
-        "Mỗi giây luyện skill nhận lượng tiến độ bằng Ngộ tính hiện tại của nhân vật.",
-        "Phá Cảnh Đan giữ giá cố định 500 linh thạch và chỉ mua một lần cho mỗi lần mở khóa đại cảnh giới.",
-        "Tiểu Tu Vi Đan có giá gốc 50, mỗi lần mua tiếp theo tăng 25 linh thạch.",
-        "Trung Tu Vi Đan có giá gốc 130, mỗi lần mua tiếp theo tăng 20 linh thạch.",
-        "Cao Tu Vi Đan có giá gốc 450, mỗi lần mua tiếp theo tăng 15 linh thạch."
-      ],
-      "category": "Tu luyện"
-    },
-    {
-      "id": "equipment-chest-roll-on-open-2026-08-28",
-      "date": "2026-08-28",
-      "title": "Sửa cách mở rương trang bị",
-      "summary": "Rương chỉ xác định khoảng cấp và tỉ lệ phẩm chất theo map; cấp cụ thể được roll lúc mở rương.",
-      "details": [
-        "Rương trang bị cấp 1 mở ra trang bị ngẫu nhiên từ cấp 1 đến 10.",
-        "Rương cấp 2, 3 và 4 lần lượt mở ra trang bị trong khoảng 11–20, 21–30 và 31–40.",
-        "Rương rớt từ map và rương mua trong Cửa hàng dùng chung khoảng cấp cùng bảng tỉ lệ phẩm chất của map tương ứng.",
-        "Mua hoặc nhận rương không roll cấp cố định; mỗi món chỉ được tạo khi người chơi mở rương."
-      ],
-      "category": "Trang bị"
-    },
-    {
-      "id": "auto-transfer-dantian-cultivation-2026-08-28",
-      "date": "2026-08-28",
-      "title": "Tự động chuyển tu vi từ Đan điền",
-      "summary": "Tu vi dự trữ tự động rót xuống thanh tu vi khi thanh chưa đầy.",
-      "details": [
-        "Khi thanh tu vi còn chỗ trống, hệ thống tự chuyển vừa đủ tu vi từ Đan điền xuống thanh.",
-        "Tu vi nhận thêm được ưu tiên lấp thanh trước; phần vượt quá giới hạn vẫn được lưu trong Đan điền.",
-        "Cơ chế áp dụng khi nhận thưởng, hồi tu vi theo thời gian, mở lại tab Tu luyện và tải lại game.",
-        "Nút hấp thu cũ vẫn hoạt động nhưng không còn cộng trùng tu vi."
-      ],
-      "category": "Tu luyện"
-    },
-    {
-      "id": "enemy-equipment-and-trial-tower-rebalance-2026-08-28",
-      "date": "2026-08-28",
-      "title": "Cập nhật trang bị kẻ địch và Tháp thí luyện",
-      "summary": "Trang bị ngẫu nhiên chỉ còn tối đa hai dòng có xác suất xuất hiện; toàn bộ kẻ địch được trang bị và Tháp chuyển sang Khai Nguyên.",
-      "details": [
-        "Mỗi trang bị luôn có 2 chỉ số cố định; 2 chỉ số ngẫu nhiên độc lập có 50% cơ hội xuất hiện, nên tổng cộng có thể là 2, 3 hoặc 4 dòng.",
-        "Toàn bộ kẻ địch đều được phép trang bị; kẻ địch từng không có trang bị sẽ dùng loadout mặc định và không còn nhận hệ số bù chỉ số cũ.",
-        "Kẻ thù trong Tháp thí luyện luôn có đủ 6 loại trang bị, cấp trang bị bằng cấp cảnh giới đầy đủ của kẻ thù.",
-        "Tháp có cảnh giới Khai Nguyên từ tầng 1 đến 9, tầng 10 là Khai Nguyên Đại viên mãn.",
-        "Phân loại tầng: 1–3 Bình thường, 4–6 Tinh anh, 7–8 Thủ lĩnh, 9 Vương giả, 10 Chúa tể."
-      ],
-      "category": "Trang bị"
     },
     {
       "id": "shop-items-and-feature-unlocks-2026-08-28",
@@ -826,21 +574,6 @@
         "Tiến trình đang có cũng được chuẩn hóa lại nếu trận chờ cũ đang giữ phẩm chất ngoài cấu hình mới."
       ],
       "category": "Tính năng"
-    },
-    {
-      "id": "dev-mode-and-enhancement-rules-2026-08-28",
-      "date": "2026-08-28",
-      "title": "Thêm chế độ Dev và hoàn thiện cường hóa",
-      "summary": "Khóa các tab chưa mở, bỏ tab Hướng dẫn, thêm chế độ Dev và đổi cách sinh chỉ số cùng cường hóa trang bị.",
-      "details": [
-        "Cường hóa, Phụ bản và Tháp thí luyện chưa đủ cảnh giới sẽ bị khóa ngay trên thanh tab và không thể bấm mở.",
-        "Bỏ tab Hướng dẫn khỏi giao diện và không còn tải dữ liệu hướng dẫn khi khởi động.",
-        "Tab Dev cấp 10.000.000 linh thạch, 10.000 Căn cơ, 10.000 Ngộ tính và bỏ qua điều kiện map, chức năng, cửa hàng, trang bị.",
-        "Trang bị mới luôn có 2 chỉ số cố định; mỗi trong 2 chỉ số ngẫu nhiên có 50% cơ hội xuất hiện, nên tổng cộng có thể có 2, 3 hoặc 4 dòng.",
-        "Mỗi cấp cường hóa dùng số đá bằng cấp đích và linh thạch; tỉ lệ thành công bắt đầu 100%, mỗi cấp giảm 3% và không thấp hơn 5%.",
-        "Cường hóa thất bại chỉ mất đá, không mất linh thạch và không tăng cấp trang bị."
-      ],
-      "category": "Trang bị"
     }
   ]
 }
