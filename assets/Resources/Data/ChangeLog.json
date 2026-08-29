@@ -3,6 +3,17 @@
   "title": "Lịch sử cập nhật",
   "entries": [
     {
+      "id": "mobile-only-layout-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Chuẩn hóa giao diện mobile",
+      "summary": "Bản public dùng một bố cục mobile duy nhất, tối đa theo khung iPhone 15 Pro.",
+      "details": [
+        "Giới hạn khung game ở chiều rộng mobile tối đa 393px và tự co theo màn hình hẹp hơn.",
+        "Ép các bố cục chính về kiểu mobile để không chuyển sang giao diện desktop khi mở trên màn hình lớn."
+      ],
+      "category": "Giao diện"
+    },
+    {
       "id": "tower-dungeon-enhancement-equipment-2026-08-29",
       "date": "2026-08-29",
       "title": "Cập nhật Tháp, Phụ bản và Cường hóa",

@@ -9010,3 +9010,40 @@ strong > .unique-icon {
     gap: 5px;
   }
 }
+
+/* Public build is intentionally mobile-only: keep one phone-width layout on every screen. */
+body {
+  width: 100%;
+  min-width: 0;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.battle-shell {
+  width: min(393px, 100%);
+  max-width: 393px;
+  min-width: 0;
+  padding-inline: 10px;
+}
+
+.topbar,
+.profile-header,
+.map-header,
+.cultivation-main,
+.controls {
+  align-items: stretch;
+  flex-direction: column;
+}
+
+.profile-layout,
+.profile-stat-grid,
+.profile-stage-list,
+.stage-grid,
+.arena {
+  grid-template-columns: 1fr;
+}
+
+.cultivation-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
