@@ -2697,7 +2697,7 @@ function renderWanderMapSelector() {
     button.setAttribute('aria-selected', String(active));
     button.innerHTML = `
       <strong><i class="activity-icon ${mapIcon}" aria-hidden="true"></i>${mapTitle}</strong>
-      <span>${unlocked ? 'Đã mở' : getWanderMapUnlockText(map)}</span>
+      <span class="map-lock-status"><i class="activity-icon ${unlocked ? 'icon-activity-path' : 'icon-activity-locked'}" aria-hidden="true"></i>${unlocked ? 'Đã mở' : 'Chưa mở'}</span>
     `;
     button.title = unlocked ? map.name : `${map.name} - ${getWanderMapUnlockText(map)}`;
     button.addEventListener('click', () => setWanderMap(map.id));

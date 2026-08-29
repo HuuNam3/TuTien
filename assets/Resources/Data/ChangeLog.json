@@ -3,6 +3,17 @@
   "title": "Lịch sử cập nhật",
   "entries": [
     {
+      "id": "wander-map-lock-status-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Làm rõ trạng thái khóa của map Ngao du",
+      "summary": "Ẩn dòng yêu cầu tu vi dưới tên map và hiển thị trạng thái mở hoặc khóa bằng nhãn và icon.",
+      "details": [
+        "Map đã mở hiển thị Đã mở; map chưa mở hiển thị Chưa mở và nhãn KHÓA.",
+        "Điều kiện tu vi vẫn được giữ trong toast khi người chơi chọn map bị khóa."
+      ],
+      "category": "Giao diện"
+    },
+    {
       "id": "battle-result-mobile-start-screen-2026-08-29",
       "date": "2026-08-29",
       "title": "Hiển thị kết quả chiến đấu trong khung trận",

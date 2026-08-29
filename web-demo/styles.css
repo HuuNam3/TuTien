@@ -9174,3 +9174,51 @@ body.battle-active .battle-panel {
   font-size: 11px;
   font-weight: 800;
 }
+
+/* Map cards show a compact state label; unlock requirements stay in the toast. */
+.stage-grid.main-dungeon-grid .wander-map-card .map-lock-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 0;
+  margin-top: 4px;
+  color: #79d9a0;
+  font-weight: 800;
+}
+
+.stage-grid.main-dungeon-grid .wander-map-card {
+  position: relative;
+}
+
+.stage-grid.main-dungeon-grid .wander-map-card .map-lock-status .activity-icon {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  background-size: 400% 400%;
+  vertical-align: middle;
+}
+
+.stage-grid.main-dungeon-grid .wander-map-card.locked {
+  opacity: 0.82;
+  border-color: #536075;
+  background: #18202b;
+}
+
+.stage-grid.main-dungeon-grid .wander-map-card.locked::after {
+  content: 'KHÓA';
+  position: absolute;
+  top: 7px;
+  right: 8px;
+  padding: 2px 5px;
+  border: 1px solid rgba(226, 151, 143, 0.58);
+  border-radius: 3px;
+  color: #ffb3aa;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+}
+
+.stage-grid.main-dungeon-grid .wander-map-card.locked .map-lock-status {
+  color: #ffb3aa;
+}
