@@ -3,6 +3,18 @@
   "title": "Lịch sử cập nhật",
   "entries": [
     {
+      "id": "merge-change-log-categories-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Gọn phân loại ghi chú",
+      "summary": "Loại bỏ nhóm Tài nguyên và gộp toàn bộ ghi chú Cân bằng vào Tính năng.",
+      "details": [
+        "Xóa các ghi chú thuộc nhóm Tài nguyên khỏi dữ liệu lịch sử.",
+        "Chuyển các ghi chú Cân bằng sang nhóm Tính năng.",
+        "Bộ lọc ghi chú chỉ còn Tính năng, Sửa lỗi và Giao diện cùng mục Tất cả."
+      ],
+      "category": "Tính năng"
+    },
+    {
       "id": "wander-chest-inline-label-2026-08-29",
       "date": "2026-08-29",
       "title": "Làm rõ nút rương Ngao du",
@@ -425,7 +437,7 @@
         "Tiểu, Trung và Cao Tu Vi Đan lần lượt cho 50, 150 và 500 tu vi; giá gốc 100, 250 và 900, mỗi lần mua tiếp theo tăng gấp 5.",
         "Đá Cường Hóa giảm còn 30 linh thạch; chỉ số trang bị có giá trị 0 được ẩn và mỗi dòng chỉ số có icon riêng."
       ],
-      "category": "Cân bằng"
+      "category": "Tính năng"
     },
     {
       "id": "wander-chest-inventory-2026-08-28",
@@ -465,7 +477,7 @@
         "Bỏ chỉ số Giảm khi đỡ khỏi trang bị; khi Đỡ đòn kích hoạt, sát thương nhận vào còn 20%, tức giảm 80%.",
         "Các trang bị cũ có dòng Giảm khi đỡ sẽ được lọc khi nạp dữ liệu save."
       ],
-      "category": "Cân bằng"
+      "category": "Tính năng"
     },
     {
       "id": "combat-power-conversion-rules-2026-08-28",
@@ -479,7 +491,7 @@
         "Sát thương chí mạng cơ bản 150% không cộng lực chiến; phần vượt quy đổi 1% = 1 lực chiến.",
         "Lực chiến trang bị cộng riêng chỉ số và hiệu ứng, không trừ nhầm mốc cơ bản của nhân vật."
       ],
-      "category": "Cân bằng"
+      "category": "Tính năng"
     },
     {
       "id": "equipment-roll-rules-and-name-bands-2026-08-28",
@@ -496,7 +508,7 @@
         "Mười hai hiệu ứng đều có thể xuất hiện trên mọi loại trang bị; thông số chung là 1–10%, riêng Liệt kích tăng sát thương chí mạng là 10–20%, không phân theo phẩm chất hoặc cấp độ.",
         "Tên vật phẩm được gom thành 3 loại trong mỗi khoảng 30 cấp: 1–30, 31–60 và 61–90; các khoảng sau tạm dùng nhóm cuối hiện có."
       ],
-      "category": "Cân bằng"
+      "category": "Tính năng"
     },
     {
       "id": "separate-equipment-level-and-enhancement-2026-08-28",
@@ -533,7 +545,7 @@
         "Căn cơ và Ngộ tính nhận riêng theo mốc Đại cảnh giới, từ +1 đến +8.",
         "Giữ đối chiếu với các mốc đã nhận trong tiến trình cũ."
       ],
-      "category": "Cân bằng"
+      "category": "Tính năng"
     },
     {
       "id": "non-equipment-inventory-2026-08-28",
@@ -557,7 +569,7 @@
         "Nhiệm vụ Đại cảnh giới được thêm thưởng Ngộ tính và cộng trực tiếp vào thuộc tính người chơi khi nhận.",
         "Bảng 10 mốc đầu của hai chuỗi nhiệm vụ chỉ hiển thị trong ghi chú trao đổi, không thêm vào giao diện game."
       ],
-      "category": "Cân bằng"
+      "category": "Tính năng"
     },
     {
       "id": "quest-category-lock-and-realm-table-2026-08-28",
@@ -582,7 +594,7 @@
         "Mỗi lần nhận chính tuyến tiếp theo cộng thêm 30 Tu vi và 15 Linh thạch.",
         "Áp dụng cho các mốc chính tuyến lặp lại về sau."
       ],
-      "category": "Cân bằng"
+      "category": "Tính năng"
     },
     {
       "id": "spirit-stone-cultivation-ratio-2026-08-28",
@@ -595,7 +607,7 @@
         "Tỉ lệ được đặt trong GameConfig để có thể điều chỉnh tập trung về sau.",
         "Shop và phụ bản chỉ thưởng một loại tài nguyên nên không bị ép ghép tỉ lệ."
       ],
-      "category": "Cân bằng"
+      "category": "Tính năng"
     },
     {
       "id": "focus-change-log-categories-2026-08-28",
@@ -655,7 +667,7 @@
         "Mỗi cấp tăng thêm áp dụng multiplierPerLevel và skillCritRatePerLevel.",
         "Ví dụ hệ số 120% hiển thị 120% ở cấp 0, 123% ở cấp 1 và 126% ở cấp 2."
       ],
-      "category": "Cân bằng"
+      "category": "Tính năng"
     },
     {
       "id": "dynamic-skill-damage-and-color-coding-2026-08-28",
@@ -668,7 +680,7 @@
         "Tách màu tên skill, phẩm phẩm, cấp, lực chiến và hiệu ứng skill.",
         "Bỏ nội dung ghi chú cố định để mọi skill hiển thị đúng hiệu ứng và thời gian hồi riêng."
       ],
-      "category": "Cân bằng"
+      "category": "Tính năng"
     },
     {
       "id": "compact-training-skill-display-2026-08-28",
@@ -732,7 +744,7 @@
         "Bảng rớt trang bị: Huyền Không Cổ Cảnh 25% với Phàm 73% / Linh 24% / Địa 3%.",
         "Kẻ thù tại Thôn Tân thủ không tạo hoặc mang trang bị."
       ],
-      "category": "Cân bằng"
+      "category": "Tính năng"
     },
     {
       "id": "map-enemy-rate-step-2026-08-28",
@@ -745,7 +757,7 @@
         "Huyền Không Cổ Cảnh: lần đầu 49%, các lần sau 39%.",
         "Thôn Tân thủ giữ nguyên 40% lần đầu và 30% các lần sau."
       ],
-      "category": "Cân bằng"
+      "category": "Tính năng"
     },
     {
       "id": "remove-starter-equipment-2026-08-28",
@@ -756,19 +768,7 @@
         "Xóa món Thanh Cương Kiếm khỏi starterInventory.",
         "Chỉ áp dụng cho ván chơi mới hoặc sau khi xóa dữ liệu; trang bị trong tiến trình hiện tại được giữ nguyên."
       ],
-      "category": "Cân bằng"
-    },
-    {
-      "id": "first-twelve-skill-item-art-2026-08-28",
-      "date": "2026-08-28",
-      "title": "Thêm 12 ảnh item skill đầu tiên",
-      "summary": "Tạo bộ ảnh chibi riêng cho 12 skill đầu tiên theo thứ tự dữ liệu skill.",
-      "details": [
-        "Bổ sung sprite sheet 4x3 cho sáu skill Kiếm Tu và sáu skill Đao Tu đầu tiên.",
-        "Gắn ảnh theo skill id vào sách skill trong Cửa hàng, danh sách Tu luyện và Trang cá nhân.",
-        "Các skill từ vị trí 13 trở đi vẫn dùng icon sách skill chung cho đến khi có bộ ảnh tiếp theo."
-      ],
-      "category": "Tài nguyên"
+      "category": "Tính năng"
     },
     {
       "id": "hide-dantian-absorb-label-2026-08-28",
@@ -792,20 +792,7 @@
         "Các phẩm chất Thủ lĩnh, Vương giả và Chúa tể không còn xuất hiện ở map này.",
         "Tiến trình đang có cũng được chuẩn hóa lại nếu trận chờ cũ đang giữ phẩm chất ngoài cấu hình mới."
       ],
-      "category": "Cân bằng"
-    },
-    {
-      "id": "enemy-chibi-portraits-2026-08-28",
-      "date": "2026-08-28",
-      "title": "Thêm ảnh chibi riêng cho kẻ thù",
-      "summary": "Đọc dữ liệu 30 kẻ thù và gắn chân dung chibi tương ứng vào màn hình chiến đấu.",
-      "details": [
-        "Bổ sung sprite sheet chibi cho các nhóm Yêu thú, Tu sĩ, Ma quỷ, Khôi lỗi/Cổ thú và nhóm kẻ thù đặc biệt.",
-        "Mỗi id kẻ thù trong Enemies.json được nối với một ô ảnh riêng thay vì gom vào bốn ảnh dùng chung.",
-        "Màn hình chiến đấu và các lớp sự kiện Ngao du tự chọn đúng ảnh theo id hoặc tên để tương thích với tiến trình cũ.",
-        "Kiểm tra trực tiếp ở viewport iPhone 15 Pro 393x852, ảnh tải đúng và không phát sinh lỗi console."
-      ],
-      "category": "Tài nguyên"
+      "category": "Tính năng"
     },
     {
       "id": "dev-mode-and-enhancement-rules-2026-08-28",

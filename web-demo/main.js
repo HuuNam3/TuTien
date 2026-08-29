@@ -1328,14 +1328,12 @@ function renderChangeLog() {
     const dateOrder = String(right.date || '').localeCompare(String(left.date || ''));
     return dateOrder || left.sortIndex - right.sortIndex;
   });
-  const categories = ['all', 'Tính năng', 'Sửa lỗi', 'Giao diện', 'Cân bằng', 'Tài nguyên'];
+  const categories = ['all', 'Tính năng', 'Sửa lỗi', 'Giao diện'];
   if (!categories.includes(changeLogCategory)) changeLogCategory = 'all';
   if (changeLogCategoryFilters) {
     const iconByCategory = {
       all: 'icon-activity-history',
       'Giao diện': 'icon-activity-guide',
-      'Cân bằng': 'icon-activity-breakthrough',
-      'Tài nguyên': 'icon-activity-chest',
       'Sửa lỗi': 'icon-activity-locked',
       'Tính năng': 'icon-activity-skill',
       'Tu luyện': 'icon-activity-lotus',
