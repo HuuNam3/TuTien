@@ -3,6 +3,119 @@
   "title": "Lịch sử cập nhật",
   "entries": [
     {
+      "id": "wander-chest-capacity-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Tăng sức chứa Rương Ngao du",
+      "summary": "Rương Ngao du có thể lưu tối đa 30 phần thưởng chờ mở.",
+      "details": [
+        "Giới hạn được tăng từ 20 lên 30 phần thưởng.",
+        "Cơ chế dừng Ngao du khi rương đầy vẫn được giữ nguyên."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "wander-reward-map-context-fix-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Sửa tính thưởng cơ duyên theo map đang chọn",
+      "summary": "Tu vi và linh thạch cơ duyên không còn lấy nhầm hệ số từ map đã đi trước đó.",
+      "details": [
+        "Stage dùng để tính phần thưởng luôn được tạo theo khoảng tier và pool của map hiện tại.",
+        "Khi quay lại map thấp hơn sau khi đã mở map cao, phần thưởng vẫn dùng đúng hệ số của map thấp."
+      ],
+      "category": "Sửa lỗi"
+    },
+    {
+      "id": "wander-reward-consumables-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Mở rộng phần thưởng cơ duyên Ngao du",
+      "summary": "Thêm Sinh Huyết Đan, Tụ Linh Đan và Đá cường hóa vào phần thưởng cơ duyên với tỉ lệ mới.",
+      "details": [
+        "Tỉ lệ mới: tu vi 35%, linh thạch 30%, rương 15%, Sinh Huyết Đan 7%, Tụ Linh Đan 7%, Đá cường hóa 6%.",
+        "Phần thưởng được cất vào Rương Ngao du và khi mở sẽ cộng đúng vật phẩm vào túi hoặc tài nguyên tương ứng.",
+        "Danh sách phần thưởng hiển thị icon riêng cho từng loại."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "wander-map-tier-range-display-fix-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Sửa hiển thị khoảng tu vi theo map",
+      "summary": "Hiển thị đúng khoảng tu vi kẻ địch từ tier đã chuẩn hóa của từng map Ngao du.",
+      "details": [
+        "Không còn mặc định mọi map về Thối Thể cảnh Nhất tầng.",
+        "Khoảng tu vi trên giao diện được lấy từ minEnemyTier và maxEnemyTier sau khi nạp dữ liệu map."
+      ],
+      "category": "Sửa lỗi"
+    },
+    {
+      "id": "wander-enemy-pool-sync-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Đồng bộ kẻ địch theo từng map",
+      "summary": "Kẻ địch Ngao du chỉ được chọn từ pool và khoảng tu vi của map hiện tại.",
+      "details": [
+        "Không còn rơi về danh sách kẻ địch chung khi map không có ứng viên phù hợp.",
+        "Tier kẻ địch được roll trong các tier mà pool riêng của map thực sự hỗ trợ."
+      ],
+      "category": "Sửa lỗi"
+    },
+    {
+      "id": "compact-wander-map-cards-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Thu gọn chiều cao ô map Ngao du",
+      "summary": "Giảm chiều cao và khoảng đệm của các ô map trong bộ chọn Ngao du trên mobile.",
+      "details": [
+        "Giữ bố cục hai cột và cho tên map dài tự xuống dòng trong chiều cao gọn hơn.",
+        "Không thay đổi điều kiện mở map hoặc hành vi chọn map."
+      ],
+      "category": "Giao diện"
+    },
+    {
+      "id": "wander-map-reward-icons-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Tinh gọn phần thưởng cơ duyên trên map",
+      "summary": "Bỏ mô tả tỉ lệ phần trăm và hiển thị tu vi, linh thạch, rương trang bị bằng icon riêng.",
+      "details": [
+        "Thông tin map chỉ còn liệt kê các loại phần thưởng cơ duyên và cấp rương.",
+        "Các phần thưởng được trình bày bằng icon để dễ nhận biết trên giao diện mobile."
+      ],
+      "category": "Giao diện"
+    },
+    {
+      "id": "wander-map-remove-lock-icon-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Tối giản trạng thái map chưa mở",
+      "summary": "Bỏ icon và phần trạng thái dưới tên map; map chưa mở chỉ dùng viền nét đứt để nhận biết.",
+      "details": [
+        "Không còn hiển thị icon khóa, Đã mở hoặc Chưa mở trên thẻ map.",
+        "Viền nét đứt của map chưa mở và toast điều kiện tu vi vẫn được giữ lại."
+      ],
+      "category": "Giao diện"
+    },
+    {
+      "id": "wander-map-dashed-locked-style-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Tinh gọn trạng thái map bị khóa",
+      "summary": "Bỏ chữ trạng thái trên thẻ map và dùng icon khóa cùng viền nét đứt cho map chưa mở.",
+      "details": [
+        "Map đã mở không còn hiển thị chữ Đã mở.",
+        "Map chưa mở không còn hiển thị chữ Chưa mở; icon khóa và viền nét đứt giúp nhận biết trực quan.",
+        "Toast điều kiện tu vi khi bấm map khóa vẫn được giữ nguyên."
+      ],
+      "category": "Giao diện"
+    },
+    {
+      "id": "wander-map-description-rules-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Viết lại thông tin map Ngao du",
+      "summary": "Thay mô tả dài của map bằng khoảng tu vi kẻ địch, tỉ lệ phần thưởng và thời gian xuất hiện sự kiện.",
+      "details": [
+        "Hiển thị tu vi kẻ địch theo khoảng tier đã cấu hình cho từng map.",
+        "Hiển thị tỉ lệ tu vi, linh thạch và rương trang bị cấp tương ứng.",
+        "Nêu rõ sau 10 giây sẽ gặp cơ duyên hoặc kẻ địch."
+      ],
+      "category": "Giao diện"
+    },
+    {
       "id": "wander-map-lock-status-2026-08-29",
       "date": "2026-08-29",
       "title": "Làm rõ trạng thái khóa của map Ngao du",

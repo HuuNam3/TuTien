@@ -2697,7 +2697,6 @@ function renderWanderMapSelector() {
     button.setAttribute('aria-selected', String(active));
     button.innerHTML = `
       <strong><i class="activity-icon ${mapIcon}" aria-hidden="true"></i>${mapTitle}</strong>
-      <span class="map-lock-status"><i class="activity-icon ${unlocked ? 'icon-activity-path' : 'icon-activity-locked'}" aria-hidden="true"></i>${unlocked ? 'Đã mở' : 'Chưa mở'}</span>
     `;
     button.title = unlocked ? map.name : `${map.name} - ${getWanderMapUnlockText(map)}`;
     button.addEventListener('click', () => setWanderMap(map.id));
@@ -2723,6 +2722,9 @@ function renderWanderChestButton() {
 function getWanderRewardIconClass(type) {
   if (type === 'cultivation') return 'stat-icon icon-stat-cultivation';
   if (type === 'spiritStone') return 'item-icon icon-item-spirit-stone';
+  if (type === 'healthPotion') return 'item-icon icon-item-health-pill';
+  if (type === 'manaPotion') return 'item-icon icon-item-mana-flame';
+  if (type === 'enhancementStone') return 'item-icon icon-item-enhancement-stone';
   if (type === 'foundation') return 'stat-icon icon-stat-gem';
   if (type === 'equipment') return 'unique-icon icon-unique-equipment';
   return 'activity-icon icon-activity-chest';
@@ -2820,14 +2822,29 @@ function getBestUnlockedWanderMap() {
 
 function renderWanderStart(enoughHealth) {
   const map = getCurrentWanderMap();
+  const minTier = Math.max(1, Number(map.minEnemyTier) || 1);
+  const maxTier = Math.max(minTier, Number(map.maxEnemyTier) || minTier);
+  const chestTier = getEquipmentChestTier(map);
+  const enemyRealmRange = `${getTierRealmText(minTier)} - ${getTierRealmText(maxTier)}`;
   const panel = document.createElement('section');
   panel.className = 'wander-info-panel';
   panel.innerHTML = `
     <div class="wander-info-heading">
       <strong><i class="activity-icon ${getWanderMapIconClass(map.id)}" aria-hidden="true"></i>${map.name}</strong>
     </div>
-    <p>${map.description}</p>
-    <small>Sau ${Math.ceil(wanderEventDelay / 1000)} giây sẽ gặp cơ duyên, rương trang bị hoặc đối thủ. Khi gặp đối thủ, bạn có thể chiến đấu hoặc chạy.</small>
+    <div class="wander-map-rules">
+      <p><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i>Kẻ thù trong ${map.name} có tu vi từ ${enemyRealmRange}.</p>
+      <div class="wander-reward-list">
+        <strong><i class="activity-icon icon-activity-fortune" aria-hidden="true"></i>Phần thưởng cơ duyên</strong>
+        <span><i class="stat-icon icon-stat-cultivation" aria-hidden="true"></i>Tu vi</span>
+        <span><i class="item-icon icon-item-spirit-stone" aria-hidden="true"></i>Linh thạch</span>
+        <span><i class="activity-icon icon-activity-chest" aria-hidden="true"></i>Rương trang bị cấp ${chestTier}</span>
+        <span><i class="item-icon icon-item-health-pill" aria-hidden="true"></i>Sinh Huyết Đan</span>
+        <span><i class="item-icon icon-item-mana-flame" aria-hidden="true"></i>Tụ Linh Đan</span>
+        <span><i class="item-icon icon-item-enhancement-stone" aria-hidden="true"></i>Đá cường hóa</span>
+      </div>
+    </div>
+    <small>Sau ${Math.ceil(wanderEventDelay / 1000)} giây sẽ gặp cơ duyên hoặc kẻ địch.</small>
     <button class="${enoughHealth ? 'breakthrough' : 'secondary'}" type="button">
       <i class="activity-icon icon-activity-path" aria-hidden="true"></i>${enoughHealth ? 'Bắt đầu ngao du' : 'Đang trọng thương'}
     </button>
@@ -2930,6 +2947,7 @@ function createWanderReward(map = getCurrentWanderMap()) {
   const type = pickWanderRewardType();
   if (type === 'cultivation') return createWanderCultivationChoice(map);
   if (type === 'spiritStone') return createWanderSpiritStoneChoice(map);
+  if (['healthPotion', 'manaPotion', 'enhancementStone'].includes(type)) return createWanderConsumableChoice(type);
   return createWanderChestChoice(map);
 }
 
@@ -2985,7 +3003,13 @@ function getRandomWanderEnemyStage(map = getCurrentWanderMap()) {
 
   if (minAllowedTier > protectedMaxTier) return null;
 
-  const enemyTier = minAllowedTier + Math.floor(Math.random() * (protectedMaxTier - minAllowedTier + 1));
+  const availableTiers = [];
+  for (let tier = minAllowedTier; tier <= protectedMaxTier; tier += 1) {
+    if (getMapEnemyCandidates(map, tier).length) availableTiers.push(tier);
+  }
+  if (!availableTiers.length) return null;
+
+  const enemyTier = availableTiers[Math.floor(Math.random() * availableTiers.length)];
   return createWanderEnemyStage(enemyTier, map);
 }
 
@@ -3010,13 +3034,17 @@ function createWanderEnemyStage(enemyTier, map = getCurrentWanderMap()) {
 }
 
 function pickEnemyDataForMapTier(map, tier) {
+  const mapCandidates = getMapEnemyCandidates(map, tier);
+  if (mapCandidates.length) return pickWeightedEnemy(mapCandidates);
+  return null;
+}
+
+function getMapEnemyCandidates(map, tier) {
   const mapEnemyIds = new Set(map.enemyPoolIds || []);
-  const mapCandidates = stageEnemyData.filter((enemyData) => (
+  return stageEnemyData.filter((enemyData) => (
     (!mapEnemyIds.size || mapEnemyIds.has(enemyData.id)) &&
     isEnemyAvailableForTier(enemyData, tier)
   ));
-  const fallbackCandidates = stageEnemyData.filter((enemyData) => isEnemyAvailableForTier(enemyData, tier));
-  return pickWeightedEnemy(mapCandidates.length ? mapCandidates : fallbackCandidates);
 }
 
 function isEnemyAvailableForTier(enemyData, tier) {
@@ -3084,6 +3112,9 @@ function getWanderRewardTypeWeights() {
     { type: 'cultivation', weight: Math.max(0, Number(weights.cultivation) || 0) },
     { type: 'spiritStone', weight: Math.max(0, Number(weights.spiritStone) || 0) },
     { type: 'chest', weight: Math.max(0, Number(weights.chest) || 0) },
+    { type: 'healthPotion', weight: Math.max(0, Number(weights.healthPotion) || 0) },
+    { type: 'manaPotion', weight: Math.max(0, Number(weights.manaPotion) || 0) },
+    { type: 'enhancementStone', weight: Math.max(0, Number(weights.enhancementStone) || 0) },
   ];
 }
 
@@ -3100,7 +3131,7 @@ function pickWanderRewardType() {
 }
 
 function createWanderCultivationChoice(map = getCurrentWanderMap()) {
-  const stage = getRandomWanderEnemyStage(map) || currentStage || stages[0];
+  const stage = createWanderRewardStage(map);
   const settings = getRewardSettings(stage);
   const amount = getWanderCultivationAmount(stage, settings);
   return {
@@ -3112,7 +3143,7 @@ function createWanderCultivationChoice(map = getCurrentWanderMap()) {
 }
 
 function createWanderSpiritStoneChoice(map = getCurrentWanderMap()) {
-  const stage = getRandomWanderEnemyStage(map) || currentStage || stages[0];
+  const stage = createWanderRewardStage(map);
   const settings = getRewardSettings(stage);
   const cultivationAmount = getWanderCultivationAmount(stage, settings);
   const bonus = createFighter(playerName, playerLevel, true).spiritStoneBonus || 0;
@@ -3122,6 +3153,47 @@ function createWanderSpiritStoneChoice(map = getCurrentWanderMap()) {
     title: 'Mạch linh thạch nhỏ',
     detail: `Nhận ${formatGameNumber(amount)} linh thạch.`,
     amount,
+  };
+}
+
+function createWanderRewardStage(map = getCurrentWanderMap()) {
+  const minTier = Math.max(1, Math.floor(Number(map.minEnemyTier) || 1));
+  const maxTier = Math.max(minTier, Math.floor(Number(map.maxEnemyTier) || minTier));
+  const availableTiers = [];
+  for (let tier = minTier; tier <= maxTier; tier += 1) {
+    if (getMapEnemyCandidates(map, tier).length) availableTiers.push(tier);
+  }
+  const tier = availableTiers.length
+    ? availableTiers[Math.floor(Math.random() * availableTiers.length)]
+    : minTier;
+  return createWanderEnemyStage(tier, map) || {
+    mapId: map.id,
+    enemyTier: tier,
+    enemyLevel: getTierMinorLevel(tier),
+  };
+}
+
+function createWanderConsumableChoice(type) {
+  const rewardData = {
+    healthPotion: {
+      title: 'Sinh Huyết Đan',
+      detail: 'Nhận 1 Sinh Huyết Đan vào Rương Ngao du.',
+    },
+    manaPotion: {
+      title: 'Tụ Linh Đan',
+      detail: 'Nhận 1 Tụ Linh Đan vào Rương Ngao du.',
+    },
+    enhancementStone: {
+      title: 'Đá cường hóa',
+      detail: 'Nhận 1 Đá cường hóa vào Rương Ngao du.',
+    },
+  }[type];
+  if (!rewardData) return null;
+  return {
+    type,
+    title: rewardData.title,
+    detail: rewardData.detail,
+    amount: 1,
   };
 }
 
@@ -3250,6 +3322,25 @@ function applyWanderChoice(choice) {
     return {
       title: 'Đã nhặt linh thạch',
       message: `Nhận ${formatGameNumber(choice.amount)} linh thạch.`,
+    };
+  }
+
+  if (choice.type === 'healthPotion' || choice.type === 'manaPotion') {
+    const amount = Math.max(1, Math.floor(Number(choice.amount) || 1));
+    if (choice.type === 'healthPotion') healthPotionCount += amount;
+    if (choice.type === 'manaPotion') manaPotionCount += amount;
+    return {
+      title: `Đã nhận ${choice.title}`,
+      message: `Nhận ${formatGameNumber(amount)} ${choice.title}.`,
+    };
+  }
+
+  if (choice.type === 'enhancementStone') {
+    const amount = Math.max(1, Math.floor(Number(choice.amount) || 1));
+    enhancementStones += amount;
+    return {
+      title: 'Đã nhận Đá cường hóa',
+      message: `Nhận ${formatGameNumber(amount)} Đá cường hóa.`,
     };
   }
 

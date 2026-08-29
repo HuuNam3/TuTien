@@ -9175,50 +9175,74 @@ body.battle-active .battle-panel {
   font-weight: 800;
 }
 
-/* Map cards show a compact state label; unlock requirements stay in the toast. */
-.stage-grid.main-dungeon-grid .wander-map-card .map-lock-status {
+.stage-grid.main-dungeon-grid .wander-map-card.locked {
+  opacity: 0.82;
+  border-color: #536075;
+  border-style: dashed;
+  background: #18202b;
+}
+
+.stage-grid.main-dungeon-grid .wander-map-rules {
+  display: grid;
+  gap: 6px;
+}
+
+.stage-grid.main-dungeon-grid .wander-map-rules p {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.stage-grid.main-dungeon-grid .wander-map-rules p > .activity-icon {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  vertical-align: middle;
+}
+
+.stage-grid.main-dungeon-grid .wander-reward-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  padding: 8px;
+  border: 1px solid rgba(82, 98, 119, 0.65);
+  background: rgba(13, 19, 28, 0.42);
+}
+
+.stage-grid.main-dungeon-grid .wander-reward-list strong,
+.stage-grid.main-dungeon-grid .wander-reward-list span {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  min-height: 0;
-  margin-top: 4px;
-  color: #79d9a0;
-  font-weight: 800;
+  color: #e1e9f2;
+  font-size: 12px;
+  line-height: 1.25;
 }
 
-.stage-grid.main-dungeon-grid .wander-map-card {
-  position: relative;
+.stage-grid.main-dungeon-grid .wander-reward-list strong {
+  flex-basis: 100%;
+  color: #f2bb4b;
 }
 
-.stage-grid.main-dungeon-grid .wander-map-card .map-lock-status .activity-icon {
+.stage-grid.main-dungeon-grid .wander-reward-list .activity-icon,
+.stage-grid.main-dungeon-grid .wander-reward-list .stat-icon,
+.stage-grid.main-dungeon-grid .wander-reward-list .item-icon {
   flex: 0 0 18px;
   width: 18px;
   height: 18px;
   margin: 0;
-  background-size: 400% 400%;
   vertical-align: middle;
 }
 
-.stage-grid.main-dungeon-grid .wander-map-card.locked {
-  opacity: 0.82;
-  border-color: #536075;
-  background: #18202b;
+/* Keep the two-column map picker compact while allowing long names to wrap. */
+.stage-grid.main-dungeon-grid .wander-map-card {
+  min-height: 48px;
+  padding: 5px 6px;
 }
 
-.stage-grid.main-dungeon-grid .wander-map-card.locked::after {
-  content: 'KHÓA';
-  position: absolute;
-  top: 7px;
-  right: 8px;
-  padding: 2px 5px;
-  border: 1px solid rgba(226, 151, 143, 0.58);
-  border-radius: 3px;
-  color: #ffb3aa;
-  font-size: 9px;
-  font-weight: 900;
-  letter-spacing: 0.4px;
-}
-
-.stage-grid.main-dungeon-grid .wander-map-card.locked .map-lock-status {
-  color: #ffb3aa;
+.stage-grid.main-dungeon-grid .wander-map-card strong {
+  font-size: 12px;
+  line-height: 1.15;
 }
