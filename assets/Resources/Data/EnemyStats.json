@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "description": "Thông số chung dùng để tạo kẻ thù, tách khỏi dữ liệu yêu cầu tu vi của người chơi.",
+  "baseStats": {
+    "maxHp": 85,
+    "maxMana": 20,
+    "attack": 10,
+    "defense": 3,
+    "speed": 10,
+    "accuracy": 0.8,
+    "dodgeRate": 0.05,
+    "blockRate": 0.05,
+    "blockReduction": 0.8,
+    "critRate": 0.05,
+    "critDamage": 1.5,
+    "armorPierce": 0,
+    "damageReduction": 0,
+    "lifeSteal": 0,
+    "luck": 0,
+    "spiritSense": 0,
+    "comprehension": 0
+  },
+  "defaultMinorGrowth": {
+    "maxHp": 13,
+    "maxMana": 4,
+    "attack": 3,
+    "defense": 1,
+    "speed": 1
+  },
+  "minorGrowthByRealm": [
+    {
+      "maxHp": 13,
+      "maxMana": 4,
+      "attack": 3,
+      "defense": 1,
+      "speed": 1
+    },
+    {
+      "maxHp": 24,
+      "maxMana": 7,
+      "attack": 5,
+      "defense": 2,
+      "speed": 1.5
+    },
+    {
+      "maxHp": 42,
+      "maxMana": 12,
+      "attack": 8,
+      "defense": 3,
+      "speed": 2
+    },
+    {
+      "maxHp": 60,
+      "maxMana": 18,
+      "attack": 12,
+      "defense": 4,
+      "speed": 2.5
+    }
+  ],
+  "majorBreakthroughByRealm": {
+    "1": {},
+    "2": {
+      "maxHp": 100,
+      "maxMana": 30,
+      "attack": 20,
+      "defense": 8,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "3": {
+      "maxHp": 180,
+      "maxMana": 55,
+      "attack": 36,
+      "defense": 14,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "4": {
+      "maxHp": 260,
+      "maxMana": 80,
+      "attack": 50,
+      "defense": 18,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    }
+  },
+  "defaultMajorBreakthrough": {
+    "accuracy": 0.005,
+    "dodgeRate": 0.005,
+    "critRate": 0.005,
+    "blockRate": 0.005,
+    "critDamage": 0.05,
+    "armorPierce": 0.005,
+    "damageReduction": 0.005
+  }
+}

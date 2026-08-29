@@ -16,6 +16,7 @@ const cultivationSchoolsPath = '/assets/Resources/Data/CultivationSchools.json';
 const cultivationSkillsPath = '/assets/Resources/Data/CultivationSkills.json';
 const combatStatsPath = '/assets/Resources/Data/CombatStats.json';
 const combatStylesPath = '/assets/Resources/Data/CombatStyles.json';
+const enemyStatsPath = '/assets/Resources/Data/EnemyStats.json';
 const trialTowerPath = '/assets/Resources/Data/TrialTower.json';
 const changeLogPath = '/assets/Resources/Data/ChangeLog.json';
 const questDataPath = '/assets/Resources/Data/Quests.json';
@@ -32,7 +33,6 @@ let baseStats = {};
 
 let perLevel = {};
 
-let minorRealmNames = [];
 let majorRealmNames = [];
 let majorRealmBreakthroughs = [];
 let majorRealmMinorGrowths = [];
@@ -45,10 +45,14 @@ let stages = [];
 let wanderMaps = {};
 let wanderMapList = [];
 let enemyRankData = {};
+let enemyStats = {};
 let featureAccessNoticeTimer = 0;
 
 function getCultivationTier(majorIndex, minorLevel) {
-  return majorIndex * playerMaxMinorLevel + minorLevel;
+  const index = Math.max(0, Math.floor(Number(majorIndex) || 0));
+  const level = Math.max(1, Math.floor(Number(minorLevel) || 1));
+  if (!cultivationProgression.length) return index * playerMaxMinorLevel + level;
+  return getRealmTierStart(index) + Math.min(level, getMinorRealmLevelCap(index)) - 1;
 }
 
 function getPlayerCultivationTier() {
@@ -56,17 +60,59 @@ function getPlayerCultivationTier() {
 }
 
 function getTierMajorIndex(tier) {
-  return Math.max(0, Math.floor((Math.max(1, tier) - 1) / playerMaxMinorLevel));
+  const normalizedTier = Math.max(1, Math.floor(Number(tier) || 1));
+  if (!cultivationProgression.length) {
+    return Math.max(0, Math.floor((normalizedTier - 1) / playerMaxMinorLevel));
+  }
+  let start = 1;
+  for (let index = 0; index < cultivationProgression.length; index += 1) {
+    const cap = getMinorRealmLevelCap(index);
+    if (normalizedTier < start + cap) return index;
+    start += cap;
+  }
+  return Math.max(0, cultivationProgression.length - 1);
 }
 
 function getTierMinorLevel(tier) {
-  return ((Math.max(1, tier) - 1) % playerMaxMinorLevel) + 1;
+  const normalizedTier = Math.max(1, Math.floor(Number(tier) || 1));
+  const majorIndex = getTierMajorIndex(normalizedTier);
+  return Math.max(1, Math.min(
+    getMinorRealmLevelCap(majorIndex),
+    normalizedTier - getRealmTierStart(majorIndex) + 1,
+  ));
+}
+
+function getMinorRealmNames(majorIndex = playerMajorRealmIndex) {
+  const configured = cultivationProgression[majorIndex]?.minorRealms;
+  return Array.isArray(configured) && configured.length
+    ? [...configured]
+    : ['Nhất tầng', 'Nhị tầng', 'Tam tầng', 'Tứ tầng', 'Ngũ tầng', 'Lục tầng', 'Thất tầng', 'Bát tầng', 'Cửu tầng'];
+}
+
+function getMinorRealmLevelCap(majorIndex = playerMajorRealmIndex) {
+  const names = cultivationProgression[majorIndex]?.minorRealms;
+  return Array.isArray(names) && names.length ? names.length : playerMaxMinorLevel;
+}
+
+function getRealmTierStart(majorIndex = playerMajorRealmIndex) {
+  const index = Math.max(0, Math.floor(Number(majorIndex) || 0));
+  let start = 1;
+  for (let realmIndex = 0; realmIndex < index; realmIndex += 1) {
+    start += getMinorRealmLevelCap(realmIndex);
+  }
+  return start;
+}
+
+function getMinorRealmName(level, majorIndex = playerMajorRealmIndex) {
+  const names = getMinorRealmNames(majorIndex);
+  const index = Math.max(0, Math.floor(Number(level) || 1) - 1);
+  return names[index] || `Tầng ${index + 1}`;
 }
 
 function getTierRealmText(tier) {
   const majorIndex = clamp(getTierMajorIndex(tier), 0, majorRealmNames.length - 1);
   const minorLevel = getTierMinorLevel(tier);
-  return `${majorRealmNames[majorIndex]} cảnh ${minorRealmNames[minorLevel - 1]}`;
+  return `${majorRealmNames[majorIndex]} cảnh ${getMinorRealmName(minorLevel, majorIndex)}`;
 }
 
 function getStageDifficulty(stage) {
@@ -280,6 +326,10 @@ const isPublicDeployment = window.location.hostname.toLowerCase() === 'dao-huu-t
 if (devButton) {
   devButton.hidden = isPublicDeployment;
   devButton.setAttribute('aria-hidden', String(isPublicDeployment));
+}
+if (changeLogButton) {
+  changeLogButton.hidden = isPublicDeployment;
+  changeLogButton.setAttribute('aria-hidden', String(isPublicDeployment));
 }
 const closeResetModalButton = $('closeResetModalButton');
 const cancelResetButton = $('cancelResetButton');
@@ -1092,6 +1142,7 @@ function showTrialTower() {
 }
 
 function showChangeLog() {
+  if (isPublicDeployment) return;
   prepareFeatureView(changeLogPanel, 'changeLog', renderChangeLog);
 }
 
@@ -1485,6 +1536,9 @@ function createTrialTowerStage(floorNumber) {
   if (!floor) return null;
   const guardian = floor.guardian || {};
   const rankLevel = Math.max(1, Number(floor.rankLevel) || 1);
+  const majorIndex = Number(floor.realmMajorIndex) || 0;
+  const realmLevel = Number(floor.realmLevel) || 1;
+  const towerTier = getRealmTierStart(majorIndex) + realmLevel - 1;
   const towerRarityByRank = ['common', 'common', 'uncommon', 'rare', 'epic', 'legendary'];
   const equipment = equipmentSlots.map((slot) => [
     slot.id,
@@ -1493,10 +1547,10 @@ function createTrialTowerStage(floorNumber) {
   return {
     id: `trial-tower-${floor.floor}`,
     title: floor.title || `Tầng ${floor.floor}`,
-    enemyLevel: Number(floor.realmLevel) || 1,
-    enemyTier: (Number(floor.realmMajorIndex) || 0) * playerMaxMinorLevel + (Number(floor.realmLevel) || 1),
-    enemyMajorRealmIndex: Number(floor.realmMajorIndex) || 0,
-    realmText: floor.realmText || getTierRealmText((Number(floor.realmMajorIndex) || 0) * playerMaxMinorLevel + (Number(floor.realmLevel) || 1)),
+    enemyLevel: realmLevel,
+    enemyTier: towerTier,
+    enemyMajorRealmIndex: majorIndex,
+    realmText: floor.realmText || getTierRealmText(towerTier),
     enemyRankLevel: rankLevel,
     enemyData: {
       id: guardian.id || `trial-guardian-${floor.floor}`,
@@ -1530,13 +1584,9 @@ function formatTrialTowerReward(reward = {}) {
 }
 
 function renderTrialTower() {
-  const entryTier = Math.max(1, Number(trialTowerData.entryRequiredTier) || 10);
   const entered = canEnterTrialTower();
   const totalFloors = trialTowerData.floors.length;
   trialTowerHighestCleared = clamp(Number(trialTowerHighestCleared) || 0, 0, totalFloors);
-  $('trialTowerEntryText').textContent = entered
-    ? `${trialTowerData.entryText || `Cần ${getTierRealmText(entryTier)}`} · Thắng mở tầng kế`
-    : `Chưa đủ điều kiện · Cần ${getTierRealmText(entryTier)}`;
   $('trialTowerProgressText').textContent = `Đã vượt ${trialTowerHighestCleared}/${totalFloors}`;
   $('trialTowerList').innerHTML = trialTowerData.floors.map((floor) => {
     const floorNumber = Number(floor.floor);
@@ -1794,15 +1844,17 @@ async function loadAllResources() {
   updateResourceLoading(1, 'Chuẩn bị linh mạch...');
   await loadDemoConfig();
   updateResourceLoading(16, 'Đã tải cấu hình game.');
+  await loadCultivationRealms();
+  updateResourceLoading(20, 'Đã tải dữ liệu cảnh giới.');
 
   const resourceTasks = [
     ['trang bị', loadEquipmentData],
     ['bản đồ và quái', loadEnemyData],
-    ['cảnh giới', loadCultivationRealms],
     ['tính năng tu luyện', loadProgressionFeatures],
     ['hệ phái', loadCultivationSchools],
     ['skill', loadCultivationSkills],
     ['chỉ số chiến đấu', loadCombatStats],
+    ['thông số kẻ thù', loadEnemyStats],
     ['lối đánh', loadCombatStyles],
     ['Tháp thí luyện', loadTrialTowerData],
     ['ghi chú', loadChangeLogData],
@@ -1920,6 +1972,20 @@ async function loadCombatStats() {
   combatStatDefinitions = data.stats;
 }
 
+async function loadEnemyStats() {
+  const response = await fetch(enemyStatsPath);
+  if (!response.ok) throw new Error(`Cannot load enemy stats: ${response.status}`);
+  const data = await response.json();
+  if (!data.baseStats || !data.defaultMinorGrowth || !data.defaultMajorBreakthrough
+    || !Array.isArray(data.minorGrowthByRealm) || !data.majorBreakthroughByRealm) {
+    throw new Error('Enemy stats data is incomplete.');
+  }
+  enemyStats = data;
+  baseStats = data.baseStats;
+  perLevel = data.defaultMinorGrowth;
+  majorRealmMinorGrowths = data.minorGrowthByRealm;
+}
+
 async function loadCombatStyles() {
   const response = await fetch(combatStylesPath);
   if (!response.ok) throw new Error(`Cannot load combat styles: ${response.status}`);
@@ -1978,15 +2044,11 @@ async function loadCultivationRealms() {
   const response = await fetch(cultivationRealmsPath);
   if (!response.ok) throw new Error(`Cannot load cultivation realms: ${response.status}`);
   const data = await response.json();
-  if (!data.baseStats || !Array.isArray(data.realms) || data.realms.length < 3) {
+  if (!Array.isArray(data.realms) || data.realms.length < 3) {
     throw new Error('Cultivation realms data is incomplete.');
   }
-  baseStats = data.baseStats;
-  minorRealmNames = data.minorRealmNames;
   majorRealmNames = data.realms.map((realm) => realm.name);
-  perLevel = data.realms[0].perMinorLevel;
-  majorRealmBreakthroughs = data.realms.map((realm) => realm.majorBreakthrough || {});
-  majorRealmMinorGrowths = data.realms.map((realm) => realm.perMinorLevel || perLevel);
+  majorRealmBreakthroughs = data.realms.map(() => ({}));
   cultivationProgression = data.realms;
   data.realms.forEach((realm, index) => {
     const isFinalRealm = index === data.realms.length - 1;
@@ -2068,11 +2130,14 @@ async function loadEnemyData() {
   wanderMapList = Object.values(wanderMaps);
   stages = stageEnemyData.slice(0, 10).map((enemyData, index) => {
     const level = index + 1;
+    const majorIndex = getTierMajorIndex(level);
     return {
       id: level,
       enemyLevel: level,
+      enemyTier: level,
+      enemyMajorRealmIndex: majorIndex,
       title: `Tầng ${level}`,
-      realmText: `Thối Thể cảnh ${minorRealmNames[level - 1]}`,
+      realmText: getTierRealmText(level),
       enemyData,
     };
   });
@@ -2085,7 +2150,7 @@ function validateEnemyData(data) {
     if (!map.id || !map.name || !Array.isArray(map.tierRange)) throw new Error(`Invalid enemy map: ${map.id || 'unknown'}`);
   });
   data.enemyPools.forEach((enemy) => {
-    if (!enemy.id || !enemy.name || !enemy.skillName || !Array.isArray(enemy.tierRange)) {
+    if (!enemy.id || !enemy.name || !enemy.skillName) {
       throw new Error(`Invalid enemy: ${enemy.id || enemy.name || 'unknown'}`);
     }
   });
@@ -2099,7 +2164,6 @@ function normalizeEnemyData(enemy) {
     rank: enemy.rank || 'normal',
     skillName: enemy.skillName,
     description: enemy.description || '',
-    tierRange: normalizeTierRange(enemy.tierRange, [1, playerMaxMinorLevel]),
     canEquip: true,
     equipment: Array.isArray(enemy.equipment) ? enemy.equipment : [],
     statMultiplier: enemy.statMultiplier || {},
@@ -2209,7 +2273,7 @@ function loadSavedGame() {
       : '';
     hasCompletedStartScreen = Boolean(data.hasCompletedStartScreen) && Boolean(playerSchoolId);
     playerMajorRealmIndex = clamp(Number(data.playerMajorRealmIndex) || 0, 0, majorRealmNames.length - 1);
-    playerLevel = clamp(Number(data.playerLevel) || 1, 1, playerMaxMinorLevel);
+    playerLevel = clamp(Number(data.playerLevel) || 1, 1, getMinorRealmLevelCap(playerMajorRealmIndex));
     playerCultivation = Math.max(0, Number(data.playerCultivation) || 0);
     playerSpiritStones = Math.max(0, Number(data.playerSpiritStones) || 0);
     playerFoundation = Math.max(1, Number(data.playerFoundation) || 1);
@@ -2293,6 +2357,10 @@ function loadSavedGame() {
 function normalizeSavedItem(item) {
   if (!item || !equipmentTemplates[item.slotId] || !rarityData[item.rarityKey]) return null;
   const itemLevel = Number(item.level) || 1;
+  const stats = item.stats
+    ? Object.fromEntries(Object.entries(item.stats).filter(([stat]) => stat !== 'blockReduction'))
+    : createEquipmentStats(item.slotId, Number(item.level) || 1, item.rarityKey);
+  const enhancementLevel = Math.max(0, Number(item.enhancementLevel) || 0);
   return {
     id: Number(item.id) || equipmentIdSeed++,
     slotId: item.slotId,
@@ -2304,11 +2372,10 @@ function normalizeSavedItem(item) {
     sourceChestTier: Math.max(0, Number(item.sourceChestTier) || 0),
     enhancementLevel: Math.min(
       getEquipmentEnhancementQualityMax(item),
-      Math.max(0, Number(item.enhancementLevel) || 0),
+      enhancementLevel,
     ),
-    stats: item.stats
-      ? Object.fromEntries(Object.entries(item.stats).filter(([stat]) => stat !== 'blockReduction'))
-      : createEquipmentStats(item.slotId, Number(item.level) || 1, item.rarityKey),
+    stats,
+    baseStats: getBaseEquipmentStats({ stats, baseStats: item.baseStats, enhancementLevel }),
     specialLines: Array.isArray(item.specialLines)
       ? item.specialLines.filter((line) => line?.id !== 'victoryRecovery')
       : [],
@@ -2560,11 +2627,36 @@ function canRunDungeon(dungeonId = currentDungeonId) {
   return getDungeonConfig(dungeonId).unlimited || getRemainingDungeonAttempts(dungeonId) > 0;
 }
 
-function createFighter(name, minorLevel, includeEquipment = false, majorRealmIndex = playerMajorRealmIndex) {
-  const level = Math.max(1, Math.min(minorRealmNames.length, Math.floor(minorLevel)));
+function createEnemyProgressionStats(majorIndex, level) {
+  const config = enemyStats || {};
+  const stats = { ...(config.baseStats || baseStats) };
+  const minorGrowthByRealm = Array.isArray(config.minorGrowthByRealm) ? config.minorGrowthByRealm : [];
+  const defaultMinorGrowth = config.defaultMinorGrowth || perLevel;
+  const defaultMajorGrowth = config.defaultMajorBreakthrough || {};
+  const majorGrowthByRealm = config.majorBreakthroughByRealm || {};
+  const addGrowth = (growth, times) => {
+    Object.entries(growth || {}).forEach(([stat, value]) => {
+      stats[stat] = (stats[stat] || 0) + (Number(value) || 0) * times;
+    });
+  };
+  const getMinorGrowth = (realmIndex) => minorGrowthByRealm[realmIndex] || defaultMinorGrowth;
+
+  for (let realmIndex = 0; realmIndex < majorIndex; realmIndex += 1) {
+    addGrowth(getMinorGrowth(realmIndex), getMinorRealmLevelCap(realmIndex));
+    addGrowth(majorGrowthByRealm[String(realmIndex + 1)] || defaultMajorGrowth, 1);
+  }
+  addGrowth(getMinorGrowth(majorIndex), Math.max(0, level - 1));
+  return stats;
+}
+
+function createFighter(name, minorLevel, includeEquipment = false, majorRealmIndex = playerMajorRealmIndex, useEnemyStats = false) {
   const majorIndex = clamp(Number(majorRealmIndex) || 0, 0, majorRealmNames.length - 1);
-  const progressionStats = getProgressionStats(majorIndex, level, includeEquipment ? playerSchoolId : '');
-  const getGrowthStat = (stat) => progressionStats[stat] ?? baseStats[stat] ?? 0;
+  const level = Math.max(1, Math.min(getMinorRealmLevelCap(majorIndex), Math.floor(minorLevel)));
+  const progressionStats = useEnemyStats
+    ? createEnemyProgressionStats(majorIndex, level)
+    : getProgressionStats(majorIndex, level, includeEquipment ? playerSchoolId : '');
+  const statBase = useEnemyStats ? (enemyStats.baseStats || baseStats) : baseStats;
+  const getGrowthStat = (stat) => progressionStats[stat] ?? statBase[stat] ?? 0;
   const maxHp = getGrowthStat('maxHp');
   const maxMana = getGrowthStat('maxMana');
 
@@ -2575,7 +2667,7 @@ function createFighter(name, minorLevel, includeEquipment = false, majorRealmInd
     isPlayerFighter: includeEquipment && name === playerName,
     realm: majorRealmNames[majorIndex],
     level,
-    minorRealm: minorRealmNames[level - 1],
+    minorRealm: getMinorRealmName(level, majorIndex),
     hp: maxHp,
     maxHp,
     mana: maxMana,
@@ -2587,14 +2679,14 @@ function createFighter(name, minorLevel, includeEquipment = false, majorRealmInd
     accuracy: getGrowthStat('accuracy'),
     dodgeRate: getGrowthStat('dodgeRate'),
     blockRate: getGrowthStat('blockRate'),
-    blockReduction: baseStats.blockReduction,
-    critRate: baseStats.critRate,
-    critDamage: baseStats.critDamage,
-    armorPierce: baseStats.armorPierce,
+    blockReduction: statBase.blockReduction,
+    critRate: statBase.critRate,
+    critDamage: statBase.critDamage,
+    armorPierce: statBase.armorPierce,
     damageReduction: getGrowthStat('damageReduction'),
-    lifeSteal: baseStats.lifeSteal,
-    luck: baseStats.luck,
-    spiritSense: baseStats.spiritSense,
+    lifeSteal: statBase.lifeSteal,
+    luck: statBase.luck,
+    spiritSense: statBase.spiritSense,
     comprehension: includeEquipment ? playerComprehension : getGrowthStat('comprehension'),
     victoryRecovery: 0,
     spiritStoneBonus: 0,
@@ -2624,10 +2716,14 @@ function getProgressionStats(majorIndex, level, schoolId = '') {
   };
   const getCommonMinorGrowth = (realmIndex) => majorRealmMinorGrowths[realmIndex] || perLevel;
   const getMinorGrowth = (realmIndex) => school?.minorGrowthByRealm?.[realmIndex] || getCommonMinorGrowth(realmIndex);
+  const getMajorGrowth = (realmIndex) => majorRealmBreakthroughs[realmIndex + 1]
+    || enemyStats.majorBreakthroughByRealm?.[String(realmIndex + 1)]
+    || enemyStats.defaultMajorBreakthrough
+    || {};
 
   for (let realmIndex = 0; realmIndex < majorIndex; realmIndex += 1) {
-    addGrowth(getMinorGrowth(realmIndex), playerMaxMinorLevel);
-    addGrowth(majorRealmBreakthroughs[realmIndex + 1], 1);
+    addGrowth(getMinorGrowth(realmIndex), getMinorRealmLevelCap(realmIndex));
+    addGrowth(getMajorGrowth(realmIndex), 1);
     addGrowth(school?.majorBreakthroughGrowth, 1);
   }
   addGrowth(getMinorGrowth(majorIndex), Math.max(0, level - 1));
@@ -3099,7 +3195,7 @@ function getRandomWanderEnemyStage(map = getCurrentWanderMap()) {
   );
   const minimumPlayerRelativeTier = Math.max(
     1,
-    (playerMajorRealmIndex - 1) * playerMaxMinorLevel + 1,
+    getRealmTierStart(Math.max(0, playerMajorRealmIndex - 1)),
   );
   const minAllowedTier = Math.max(mapMinTier, minimumPlayerRelativeTier);
 
@@ -3141,17 +3237,9 @@ function pickEnemyDataForMapTier(map, tier) {
   return null;
 }
 
-function getMapEnemyCandidates(map, tier) {
+function getMapEnemyCandidates(map) {
   const mapEnemyIds = new Set(map.enemyPoolIds || []);
-  return stageEnemyData.filter((enemyData) => (
-    (!mapEnemyIds.size || mapEnemyIds.has(enemyData.id)) &&
-    isEnemyAvailableForTier(enemyData, tier)
-  ));
-}
-
-function isEnemyAvailableForTier(enemyData, tier) {
-  const [minTier, maxTier] = enemyData.tierRange || [1, playerMaxMinorLevel];
-  return tier >= minTier && tier <= maxTier;
+  return stageEnemyData.filter((enemyData) => !mapEnemyIds.size || mapEnemyIds.has(enemyData.id));
 }
 
 function pickWeightedEnemy(candidates) {
@@ -3782,13 +3870,14 @@ function createStageEnemy(stage) {
       stage.enemyLevel,
       false,
       stage.enemyMajorRealmIndex || 0,
+      true,
     );
     const stats = stage.ambushStats;
     const enemyFighter = {
       ...base,
       name: stage.enemyData.name,
       realm: stage.title,
-      minorRealm: minorRealmNames[Math.min(stage.enemyLevel - 1, minorRealmNames.length - 1)],
+      minorRealm: getMinorRealmName(stage.enemyLevel, stage.enemyMajorRealmIndex || 0),
       maxHp: stats.maxHp,
       maxMana: stats.maxMana,
       attack: stats.attack,
@@ -3804,18 +3893,26 @@ function createStageEnemy(stage) {
     applyEnemyRankMultiplier(enemyFighter, stage.enemyRankLevel);
     applyEnemyCombatStyle(enemyFighter, stage.enemyData);
     applyItemStats(enemyFighter, getEnemyEquipment(stage));
+    enemyFighter.dodgeRate = 0;
     enemyFighter.hp = enemyFighter.maxHp;
     enemyFighter.mana = enemyFighter.maxMana;
     return enemyFighter;
   }
 
-  const enemyFighter = createFighter(stage.enemyData.name, stage.enemyLevel, false, stage.enemyMajorRealmIndex || 0);
+  const enemyFighter = createFighter(
+    stage.enemyData.name,
+    stage.enemyLevel,
+    false,
+    stage.enemyMajorRealmIndex || 0,
+    true,
+  );
   applyEnemyStatMultipliers(enemyFighter, stage.enemyData.statMultiplier);
   applyEnemyRankMultiplier(enemyFighter, stage.enemyRankLevel);
   enemyFighter.skillName = stage.enemyData.skillName;
   enemyFighter.skillMultiplier = 1.4;
   applyEnemyCombatStyle(enemyFighter, stage.enemyData);
   applyItemStats(enemyFighter, getEnemyEquipment(stage));
+  enemyFighter.dodgeRate = 0;
   enemyFighter.hp = enemyFighter.maxHp;
   enemyFighter.mana = enemyFighter.maxMana;
   return enemyFighter;
@@ -3895,9 +3992,10 @@ function getCombatStyleLabel(source = {}) {
 }
 
 function isMajorRealmCompletionTier(tier) {
+  const majorIndex = getTierMajorIndex(tier);
   return Number.isInteger(Number(tier))
     && Number(tier) > 0
-    && getTierMinorLevel(Number(tier)) === playerMaxMinorLevel;
+    && getTierMinorLevel(Number(tier)) === getMinorRealmLevelCap(majorIndex);
 }
 
 function getEnemyEquipmentMajorRealmIndex(stage) {
@@ -4346,12 +4444,12 @@ function finishBattle(message, outcome = 'lose') {
   if (droppedItem) pushLog(`Nhặt được ${getDroppedRewardText(droppedItem)}.`);
   if (bonusRewardText) pushLog(`Nhận ${bonusRewardText}. Căn cơ hiện tại: ${playerFoundation}.`);
   if (playerCultivation >= getCultivationRequiredForNextLevel()) {
-    if (playerLevel >= playerMaxMinorLevel && hasNextMajorRealm() && getShopInventoryCount('majorAscensionPermit') <= 0) {
+    if (playerLevel >= getMinorRealmLevelCap() && hasNextMajorRealm() && getShopInventoryCount('majorAscensionPermit') <= 0) {
       pushLog(`Tu vi đã đầy, hãy mua Phá Cảnh Đan trong shop để thăng ${getNextMajorRealmName()}.`);
     } else if (canBreakthrough()) {
-      pushLog(playerLevel >= playerMaxMinorLevel
+      pushLog(playerLevel >= getMinorRealmLevelCap()
         ? `Tu vi đã đầy, có thể thăng ${getNextMajorRealmName()}.`
-        : `Tu vi đã đầy, có thể đột phá ${minorRealmNames[playerLevel]}.`);
+        : `Tu vi đã đầy, có thể đột phá ${getMinorRealmName(playerLevel + 1)}.`);
     }
   }
   renderCultivation();
@@ -4648,7 +4746,7 @@ function rollSpiritStoneDrop(outcome) {
 function breakthrough() {
   if (busy || !canBreakthrough()) return;
 
-  if (playerLevel >= playerMaxMinorLevel) {
+  if (playerLevel >= getMinorRealmLevelCap()) {
     const permitItemId = 'majorAscensionPermit';
     const required = getCultivationRequiredForNextLevel();
     playerCultivation -= required;
@@ -4680,21 +4778,21 @@ function breakthrough() {
   renderProfile();
   renderEquipment();
   renderShop();
-  pushLog(`Đột phá thành công: Thối Thể cảnh ${minorRealmNames[playerLevel - 1]}.`);
+  pushLog(`Đột phá thành công: ${getCurrentRealmText()}.`);
   showGameToast(`Đột phá thành công: ${getCurrentRealmText()}.`, 'success');
   saveGame();
 }
 
 function canBreakthrough() {
   if (playerCultivation < getCultivationRequiredForNextLevel()) return false;
-  if (playerLevel < playerMaxMinorLevel) return true;
+  if (playerLevel < getMinorRealmLevelCap()) return true;
   return getShopInventoryCount('majorAscensionPermit') > 0 && hasNextMajorRealm();
 }
 
 function getCultivationRequiredForNextLevel() {
   const progression = cultivationProgression[playerMajorRealmIndex];
   if (!progression) return 0;
-  if (playerLevel >= playerMaxMinorLevel) return progression.majorBreakthroughRequirement;
+  if (playerLevel >= getMinorRealmLevelCap()) return progression.majorBreakthroughRequirement;
   return progression.minorBaseRequirement + (playerLevel - 1) * progression.minorStepRequirement;
 }
 
@@ -4703,7 +4801,7 @@ function hasNextMajorRealm() {
 }
 
 function isApproachingMajorAscension() {
-  return playerLevel >= playerMaxMinorLevel && hasNextMajorRealm();
+  return playerLevel >= getMinorRealmLevelCap() && hasNextMajorRealm();
 }
 
 function isMajorAscensionGate() {
@@ -4715,10 +4813,11 @@ function getNextMajorRealmName() {
 }
 
 function getCurrentRealmText() {
-  return `${majorRealmNames[playerMajorRealmIndex]} cảnh ${minorRealmNames[playerLevel - 1]}`;
+  return `${majorRealmNames[playerMajorRealmIndex]} cảnh ${getMinorRealmName(playerLevel)}`;
 }
 
 function createEquipmentItem(slotId, level, rarityKey, options = {}) {
+  const stats = options.stats || createEquipmentStats(slotId, level, rarityKey);
   return {
     id: equipmentIdSeed++,
     slotId,
@@ -4728,12 +4827,14 @@ function createEquipmentItem(slotId, level, rarityKey, options = {}) {
     requiredLevel: Math.min(level, playerMaxMinorLevel),
     requiredTier: Math.max(1, Number(options.requiredTier) || getEquipmentRequiredTier(rarityKey, level)),
     enhancementLevel: 0,
-    stats: options.stats || createEquipmentStats(slotId, level, rarityKey),
+    stats,
+    baseStats: options.baseStats || { ...stats },
     specialLines: options.specialLines ?? createEquipmentSpecialLines(slotId, level, rarityKey),
   };
 }
 
 function createEquipmentLikeItem(slotId, level, rarityKey) {
+  const stats = createEquipmentStats(slotId, level, rarityKey);
   return {
     id: 0,
     slotId,
@@ -4743,7 +4844,8 @@ function createEquipmentLikeItem(slotId, level, rarityKey) {
     requiredLevel: Math.min(level, playerMaxMinorLevel),
     requiredTier: getEquipmentRequiredTier(rarityKey, level),
     enhancementLevel: 0,
-    stats: createEquipmentStats(slotId, level, rarityKey),
+    stats,
+    baseStats: { ...stats },
     specialLines: createEquipmentSpecialLines(slotId, level, rarityKey),
   };
 }
@@ -5638,7 +5740,7 @@ function absorbDantianCultivation() {
 }
 
 function getBreakthroughButtonText() {
-  if (playerLevel < playerMaxMinorLevel) return 'Đột phá';
+  if (playerLevel < getMinorRealmLevelCap()) return 'Đột phá';
   if (!hasNextMajorRealm()) return 'Chưa mở';
   return getShopInventoryCount('majorAscensionPermit') > 0
     ? `Thăng ${getNextMajorRealmName()}`
@@ -5915,6 +6017,40 @@ function getEnhancedStatValue(stat, value) {
   return Math.max(1, Math.round(current * (1 + growth)));
 }
 
+function getBaseEquipmentStats(item) {
+  const storedBase = item?.baseStats && typeof item.baseStats === 'object'
+    ? Object.fromEntries(Object.entries(item.baseStats).filter(([stat]) => stat !== 'blockReduction'))
+    : null;
+  if (storedBase && Object.keys(storedBase).length) return storedBase;
+
+  const levels = Math.max(0, Math.floor(Number(item?.enhancementLevel) || 0));
+  const stats = Object.fromEntries(Object.entries(item?.stats || {}));
+  for (let level = 0; level < levels; level += 1) {
+    Object.entries(stats).forEach(([stat, value]) => {
+      const growth = getEnhancementStatGrowth(stat);
+      stats[stat] = isPercentStat(stat)
+        ? roundStat(Number(value) - growth)
+        : Math.max(1, Math.round(Number(value) / (1 + growth)));
+    });
+  }
+  return stats;
+}
+
+function formatEnhancementStats(item) {
+  const baseStats = getBaseEquipmentStats(item);
+  return Object.entries(item.stats || {})
+    .filter(([, value]) => Number(value) !== 0)
+    .map(([stat, value]) => {
+      const icon = getStatIconClass(stat);
+      const iconType = icon.startsWith('icon-unique-') ? 'unique-icon' : 'stat-icon';
+      const baseValue = Number(baseStats[stat]) || 0;
+      const addedValue = Math.max(0, Number(value) - baseValue);
+      const formatValue = (amount) => isPercentStat(stat) ? toPercent(amount) : formatGameNumber(amount);
+      return `<span class="enhancement-stat-line" title="${getStatLabel(stat)}"><i class="${iconType} ${icon}" aria-hidden="true"></i><b>+${formatValue(baseValue)}</b>${addedValue > 0 ? `<small>+${formatValue(addedValue)}</small>` : ''}</span>`;
+    })
+    .join('');
+}
+
 function getEnhancementStoneCost(item, targetLevel = (Number(item.enhancementLevel) || 0) + 1) {
   const perLevel = Math.max(1, Number(progressionFeatures.enhancement.stoneCostPerLevel) || 1);
   return Math.max(1, Math.floor(targetLevel) * perLevel);
@@ -5948,15 +6084,15 @@ function renderEnhancement() {
         && enhancementStones >= stoneCost;
       return `
         <div class="feature-item enhancement-equipment-item ${rarityData[item.rarityKey].className}">
-          ${renderEquippedEquipmentSummary(item, getSlotName(item.slotId))}
+          ${renderEquippedEquipmentSummary(item, getSlotName(item.slotId), { showStats: false, showSpecials: false })}
+          <div class="enhancement-stat-list">${formatEnhancementStats(item)}</div>
           <div class="enhancement-cost-grid">
             <span><i class="item-icon icon-item-enhancement-stone" aria-hidden="true"></i><b>${formatGameNumber(stoneCost)}</b> đá</span>
             <span><i class="game-icon icon-hammer" aria-hidden="true"></i><b>+${formatGameNumber(currentLevel)}/${formatGameNumber(qualityMax)}</b></span>
             <span><i class="unique-icon icon-unique-spirit-stone" aria-hidden="true"></i><b>${formatGameNumber(cost)}</b></span>
             <span><i class="stat-icon icon-stat-reward" aria-hidden="true"></i><b>${toPercent(successRate)}</b></span>
           </div>
-          <small class="enhancement-limit-text">${maxed ? 'Đã đạt giới hạn phẩm cấp.' : cultivationLocked ? `Tu vi hiện tại chỉ mở đến +${maxLevel}.` : `Cần ${formatGameNumber(stoneCost)} đá và ${formatGameNumber(cost)} linh thạch để cường hóa lên +${targetLevel}.`}</small>
-          <button type="button" class="secondary compact" data-enhance-item="${item.id}" ${canEnhance ? '' : 'disabled'}>
+          <button type="button" class="secondary compact enhancement-action-button" data-enhance-item="${item.id}" ${canEnhance ? '' : 'disabled'}>
             <i class="game-icon icon-hammer" aria-hidden="true"></i>${maxed ? 'Đã tối đa phẩm cấp' : cultivationLocked ? `Tu vi chỉ mở đến +${maxLevel}` : canEnhance ? `Cường hóa lên +${targetLevel}` : stoneCost && enhancementStones < stoneCost ? `Cần ${formatGameNumber(stoneCost)} đá cường hóa` : `Cần ${formatGameNumber(cost)} linh thạch`}
           </button>
         </div>
@@ -6036,11 +6172,7 @@ function createResourceDungeonStage(dungeonId, floor) {
   const tier = getResourceDungeonRequiredTier(dungeon, floor);
   const map = getCurrentWanderMap();
   const enemyData = pickEnemyDataForMapTier(map, tier)
-    || [...stageEnemyData].sort((left, right) => {
-      const leftMax = Number(left.tierRange?.[1]) || 0;
-      const rightMax = Number(right.tierRange?.[1]) || 0;
-      return rightMax - leftMax;
-    })[0];
+    || stageEnemyData[stageEnemyData.length - 1];
   if (!enemyData) return null;
   const rankLevel = floor % 10 === 0 ? 3 : floor % 5 === 0 ? 2 : 1;
   return {
@@ -6218,7 +6350,7 @@ function getShopItemLockText(item) {
   if (lockedByMap) return `Cần mở ${wanderMaps[item.requiredMapId]?.name || 'map yêu cầu'}`;
   if (lockedByTier) return `Yêu cầu ${getTierRealmText(skillRequiredTier)}`;
   if (lockedByRealm) return `Yêu cầu ${majorRealmNames[item.requiredMajorRealmIndex]}`;
-  if (lockedByLevel) return `Yêu cầu ${minorRealmNames[item.requiredLevel - 1]}`;
+  if (lockedByLevel) return `Yêu cầu ${getMinorRealmName(item.requiredLevel)}`;
   return '';
 }
 
@@ -6364,7 +6496,7 @@ function renderShop() {
         ? `Yêu cầu ${getTierRealmText(skillRequiredTier)}`
         : lockedByRealm
         ? `Yêu cầu ${majorRealmNames[item.requiredMajorRealmIndex]}`
-        : `Yêu cầu ${minorRealmNames[item.requiredLevel - 1]}`
+        : `Yêu cầu ${getMinorRealmName(item.requiredLevel)}`
       : `${formatGameNumber(getShopItemCost(item))} linh thạch`;
     const buttonText = item.type === 'skillBook'
       ? skillBookMaxed ? 'Đã đạt cấp 12' : locked ? 'Chưa mở' : 'Mua sách'
@@ -6909,17 +7041,21 @@ function renderEquipmentSummary(item, options = {}) {
   `;
 }
 
-function renderEquippedEquipmentSummary(item, slotName) {
+function renderEquippedEquipmentSummary(item, slotName, options = {}) {
   const enhancementLevel = Number(item.enhancementLevel) || 0;
+  const enhancementMax = getEquipmentEnhancementQualityMax(item);
   const iconClass = getEquipmentIconClass(item.slotId);
   const iconType = iconClass.startsWith('icon-unique-') ? 'unique-icon' : 'item-icon';
   const specialText = formatSpecialLinesWithoutIcons(item.specialLines || []);
   return `
     <div class="equipped-equipment-summary">
       <div class="equipped-equipment-heading"><span>${slotName}</span><b>LC +${formatGameNumber(getItemPower(item))}</b></div>
-      <strong class="equipped-equipment-name"><i class="${iconType} ${iconClass}" aria-hidden="true"></i>${item.name}<em>[Cấp ${formatGameNumber(item.level)}] +${formatGameNumber(enhancementLevel)}</em></strong>
-      ${formatItemStats(item.stats) ? `<div class="equipped-equipment-stats">${formatItemStats(item.stats)}</div>` : ''}
-      ${specialText ? `<div class="equipped-equipment-specials">${specialText}</div>` : ''}
+      <div class="equipped-equipment-name">
+        <span class="equipped-equipment-visual"><i class="${iconType} ${iconClass}" aria-hidden="true"></i><em>Cấp ${formatGameNumber(item.level)}</em></span>
+        <span class="equipped-equipment-name-copy"><strong>${item.name}</strong><b>+${formatGameNumber(enhancementLevel)}/${formatGameNumber(enhancementMax)}</b></span>
+      </div>
+      ${options.showStats !== false && formatItemStats(item.stats) ? `<div class="equipped-equipment-stats">${formatItemStats(item.stats)}</div>` : ''}
+      ${options.showSpecials !== false && specialText ? `<div class="equipped-equipment-specials">${specialText}</div>` : ''}
     </div>
   `;
 }

@@ -94,7 +94,7 @@
     },
     "spiritCave": {
       "requiredMajorRealmIndex": 2,
-      "requiredTier": 11,
+      "requiredTier": 10,
       "lootTypes": [
         "spiritStone",
         "spiritStone",
@@ -115,7 +115,7 @@
     },
     "hollowRealm": {
       "requiredMajorRealmIndex": 3,
-      "requiredTier": 16,
+      "requiredTier": 15,
       "lootTypes": [
         "spiritStone",
         "spiritStone",
@@ -136,7 +136,7 @@
     },
     "thunderPeak": {
       "requiredMajorRealmIndex": 4,
-      "requiredTier": 21,
+      "requiredTier": 19,
       "lootTypes": [
         "spiritStone",
         "spiritStone",
@@ -158,7 +158,7 @@
     },
     "primordialWastes": {
       "requiredMajorRealmIndex": 5,
-      "requiredTier": 26,
+      "requiredTier": 24,
       "lootTypes": [
         "spiritStone",
         "spiritStone",

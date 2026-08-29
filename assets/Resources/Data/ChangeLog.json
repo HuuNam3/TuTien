@@ -3,6 +3,145 @@
   "title": "Lịch sử cập nhật",
   "entries": [
     {
+      "id": "update-map-3-to-6-enemy-ranges-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Điều chỉnh khoảng quái map 3-6",
+      "summary": "Đồng bộ khoảng tu vi kẻ địch Ngao du theo các mốc Khai Nguyên, Khí Động và Ly Hợp.",
+      "details": [
+        "Map 3: Khai Nguyên Nhất đến Ngũ tầng.",
+        "Map 4: Khai Nguyên Lục tầng đến Khí Động Nhất tầng.",
+        "Map 5: Khí Động Nhất đến Ngũ tầng.",
+        "Map 6: Khí Động Lục tầng đến Ly Hợp Nhất tầng."
+      ],
+      "category": "Cân bằng"
+    },
+    {
+      "id": "map-realm-ranges-and-public-log-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Đồng bộ khoảng tu vi Ngao du",
+      "summary": "Cập nhật khoảng gặp kẻ thù theo tier giao nhau giữa các map và ẩn tab Ghi chú trên domain public.",
+      "details": [
+        "Map 1: Thối Thể Nhất đến Ngũ tầng; map 2: tier 6-10; map 3: tier 10-15; các map sau tiếp tục theo cùng mốc giao nhau.",
+        "Tier 10, 12 và 15 lần lượt hiển thị Khai Nguyên Nhất, Tam và Lục tầng.",
+        "Tháp, Phụ bản và Cường hóa dùng điều kiện tier 10, 12 và 15; toast hiển thị đúng tên cảnh giới.",
+        "Bỏ nhãn điều kiện cố định trong Tháp thí luyện; domain dao-huu-tu-tien.vercel.app ẩn tab Ghi chú."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "tier-ranges-and-public-log-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Đồng bộ tier map và điều kiện mở tính năng",
+      "summary": "Map dùng khoảng tu vi giao nhau theo các mốc cảnh giới thực tế; Tháp, Phụ bản và Cường hóa hiển thị đúng điều kiện mở bằng toast.",
+      "details": [
+        "Map 1 dùng tier 1-5, map 2 dùng 6-10, map 3 dùng 10-15, các map sau tiếp tục theo mốc giao nhau.",
+        "Tier được tính nối tiếp theo số minorRealms thực tế của từng đại cảnh giới.",
+        "Tháp thí luyện mở từ Khai Nguyên Nhất tầng, Phụ bản từ Khai Nguyên Tam tầng, Cường hóa từ Khai Nguyên Lục tầng.",
+        "Xóa nhãn điều kiện khỏi phần Tháp thí luyện vì đã có toast; domain public ẩn tab Ghi chú."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "respect-minor-realm-cap-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Tôn trọng giới hạn tầng theo dữ liệu realm",
+      "summary": "Không tự thêm Đại viên mãn khi minorRealms không khai báo tầng này và không cho đột phá vượt tầng cuối đã cấu hình.",
+      "details": [
+        "Thối Thể chỉ có Nhất đến Cửu tầng theo CultivationRealms.json.",
+        "Dữ liệu lưu cũ ở tầng không còn tồn tại sẽ được đưa về tầng cuối hợp lệ.",
+        "Nút và điều kiện đột phá sử dụng số lượng minorRealms của đại cảnh giới hiện tại."
+      ],
+      "category": "Sửa lỗi"
+    },
+    {
+      "id": "use-realm-minor-names-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Dùng tên tiểu cảnh giới theo từng realm",
+      "summary": "Bỏ phụ thuộc vào minorRealmNames dùng chung và chuyển các hàm hiển thị sang minorRealms của từng đại cảnh giới.",
+      "details": [
+        "Tên tiểu cảnh giới của kẻ thù và người chơi được lấy theo đại cảnh giới tương ứng.",
+        "Các realm chỉ sử dụng đúng danh sách minorRealms đã khai báo, không tự động thêm Đại viên mãn.",
+        "CultivationRealms.json không còn cần trường minorRealmNames ở cấp root.",
+        "Sửa dấu phẩy thừa sau khi xóa các trường cũ khiến game báo lỗi tải tài nguyên."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "remove-minor-growth-from-realms-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Tách tăng trưởng tiểu cảnh giới khỏi CultivationRealms",
+      "summary": "Xóa perMinorLevel khỏi dữ liệu realm và dùng tăng trưởng tiểu cảnh giới trong EnemyStats.json.",
+      "details": [
+        "CultivationRealms.json hiện chỉ giữ tên cảnh giới, tầng, điều kiện và yêu cầu tu vi.",
+        "EnemyStats.json cung cấp tăng trưởng tiểu cảnh giới dùng chung cho hệ thống chỉ số hiện tại.",
+        "Dữ liệu enemy không còn phụ thuộc vào các trường thông số chung đã tách khỏi CultivationRealms."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "remove-base-stats-from-realms-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Tách baseStats khỏi CultivationRealms",
+      "summary": "Xóa baseStats khỏi dữ liệu cảnh giới và dùng thông số nền từ EnemyStats.json trong runtime.",
+      "details": [
+        "CultivationRealms.json không còn baseStats và majorBreakthrough; dữ liệu tên cảnh giới, tầng, yêu cầu tu vi và tăng theo tiểu cảnh giới vẫn được giữ.",
+        "EnemyStats.json cung cấp thông số nền dùng để khởi tạo kẻ thù và nhân vật khi chạy game.",
+        "Công thức tăng trưởng theo cảnh giới vẫn được giữ nguyên."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "remove-major-breakthrough-from-realms-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Tách tăng trưởng đại cảnh giới khỏi CultivationRealms",
+      "summary": "Xóa majorBreakthrough khỏi dữ liệu từng cảnh giới và dùng dữ liệu tăng trưởng riêng trong EnemyStats.json.",
+      "details": [
+        "CultivationRealms.json không còn chứa trường majorBreakthrough.",
+        "Yêu cầu tu vi đột phá vẫn giữ nguyên trong majorBreakthroughRequirement.",
+        "Công thức tăng chỉ số đại cảnh giới vẫn được giữ qua dữ liệu riêng và fallback runtime."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "separate-enemy-stats-data-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Tách dữ liệu thông số kẻ thù",
+      "summary": "Tạo file EnemyStats.json để lưu thông số chung dùng khi tạo kẻ thù, không còn lấy trực tiếp từ bảng tiến trình tu vi của người chơi.",
+      "details": [
+        "EnemyStats.json lưu chỉ số nền, tăng trưởng theo tiểu cảnh giới và tăng trưởng theo đại cảnh giới của kẻ thù.",
+        "Kẻ thù vẫn lấy tu vi và tên cảnh giới theo map và CultivationRealms.json.",
+        "Công thức sau khi tạo vẫn cộng hệ số riêng của kẻ thù, phẩm chất và trang bị.",
+        "Giữ mức tăng 0,5% cho các chỉ số phần trăm ở mỗi đại cảnh giới và 5% cho sát thương chí mạng."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "wander-enemy-pools-and-dodge-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Điều chỉnh pool kẻ thù Ngao du",
+      "summary": "Tu vi kẻ thù lấy theo map, pool quái chuyển sang dạng cuốn chiếu và kẻ thù không còn né tránh.",
+      "details": [
+        "Map 1 dùng 5 kẻ thù đầu tiên; map 2 giữ 5 kẻ thù đó và thêm 3 kẻ thù mới.",
+        "Map 3 thay toàn bộ pool cũ bằng 5 kẻ thù mới; map 4 giữ 5 kẻ thù map 3 và thêm 3 kẻ thù mới.",
+        "Map 5 thay bằng 5 kẻ thù mới; map 6 giữ 5 kẻ thù map 5 và thêm 3 kẻ thù mới.",
+        "Tu vi kẻ thù được chọn trong khoảng tu vi của map, không còn lọc theo tierRange riêng của từng kẻ thù.",
+        "DodgeRate của kẻ thù được đặt về 0 sau khi cộng chỉ số và trang bị; người chơi vẫn giữ khả năng né bình thường."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "resource-dungeon-floor-one-reward-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Giảm thưởng Phụ bản tầng 1",
+      "summary": "Điều chỉnh phần thưởng khởi điểm của Phụ bản xuống 70–100 tu vi và 30–50 linh thạch.",
+      "details": [
+        "Động phủ tu vi tầng 1 nhận ngẫu nhiên 70–100 tu vi.",
+        "Mạch linh thạch tầng 1 nhận ngẫu nhiên 30–50 linh thạch.",
+        "Mức tăng thưởng từ tầng sau được giữ nguyên theo cấu hình hiện tại."
+      ],
+      "category": "Cân bằng"
+    },
+    {
       "id": "feature-entry-and-school-selection-2026-08-29",
       "date": "2026-08-29",
       "title": "Giới hạn mở tính năng và phái khởi đầu",

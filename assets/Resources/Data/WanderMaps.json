@@ -39,11 +39,7 @@
         "rogue_cultivator",
         "stone_skin_bandit",
         "young_sword_servant",
-        "mist_ghost",
-        "thorn_rat_demon",
-        "mud_corpse",
-        "wandering_miner",
-        "forest_spider"
+        "mist_ghost"
       ],
       "rewardSettings": {
         "cultivationMultiplier": 0.65,
@@ -73,15 +69,14 @@
       ],
       "description": "Rừng rậm có yêu khí, kẻ địch nhanh hơn và hay có đòn chí mạng.",
       "enemyPoolIds": [
+        "wild_dog_demon",
+        "rogue_cultivator",
+        "stone_skin_bandit",
+        "young_sword_servant",
+        "mist_ghost",
         "blood_claw_wolf",
         "poison_vine_spirit",
-        "dark_saber_cultivator",
-        "bone_charm_ghost",
-        "iron_back_bear_demon",
-        "fallen_inner_disciple",
-        "red_mane_boar",
-        "black_mist_scholar",
-        "poison_blade_rogue"
+        "dark_saber_cultivator"
       ],
       "rewardSettings": {
         "cultivationMultiplier": 0.75,
@@ -101,8 +96,8 @@
       "id": "spiritCave",
       "name": "Hang Linh Thạch",
       "tierRange": [
-        11,
-        15
+        10,
+        14
       ],
       "equipmentChestTier": 2,
       "equipmentLevelRange": [
@@ -111,15 +106,11 @@
       ],
       "description": "Hang sâu nhiều linh khí, kẻ thù mạnh hơn và có trang bị tốt hơn.",
       "enemyPoolIds": [
+        "bone_charm_ghost",
+        "iron_back_bear_demon",
+        "fallen_inner_disciple",
         "crystal_cave_guard",
-        "yin_flame_spirit",
-        "stone_armor_demon",
-        "ghost_faced_swordsman",
-        "spirit_mine_keeper",
-        "ancient_grudge_wraith",
-        "crystal_shell_beast",
-        "void_miner",
-        "grave_lord"
+        "yin_flame_spirit"
       ],
       "rewardSettings": {
         "cultivationMultiplier": 0.85,
@@ -139,8 +130,8 @@
       "id": "hollowRealm",
       "name": "Huyền Không Cổ Cảnh",
       "tierRange": [
-        16,
-        20
+        15,
+        19
       ],
       "equipmentChestTier": 2,
       "equipmentLevelRange": [
@@ -149,9 +140,14 @@
       ],
       "description": "Cổ cảnh Ly Hợp chồng lên hư không, nơi truyền thừa cổ xưa và sát cơ cùng tồn tại.",
       "enemyPoolIds": [
-        "void_gate_guardian",
-        "fractured_soul",
-        "ancient_sky_beast"
+        "bone_charm_ghost",
+        "iron_back_bear_demon",
+        "fallen_inner_disciple",
+        "crystal_cave_guard",
+        "yin_flame_spirit",
+        "stone_armor_demon",
+        "ghost_faced_swordsman",
+        "spirit_mine_keeper"
       ],
       "rewardSettings": {
         "cultivationMultiplier": 0.95,
@@ -171,8 +167,8 @@
       "id": "thunderPeak",
       "name": "Lôi Minh Sơn",
       "tierRange": [
-        21,
-        25
+        19,
+        23
       ],
       "equipmentChestTier": 3,
       "equipmentLevelRange": [
@@ -181,9 +177,11 @@
       ],
       "description": "Núi cao quanh năm vang sấm, nơi tu sĩ Chân Nguyên tranh đoạt linh mạch giữa lôi quang.",
       "enemyPoolIds": [
-        "thunderhorn_beast",
-        "stormblade_scholar",
-        "lightning_vein_guardian"
+        "ancient_grudge_wraith",
+        "thorn_rat_demon",
+        "mud_corpse",
+        "wandering_miner",
+        "forest_spider"
       ],
       "rewardSettings": {
         "cultivationMultiplier": 1.05,
@@ -204,8 +202,8 @@
       "id": "primordialWastes",
       "name": "Hoang Nguyên Thái Cổ",
       "tierRange": [
-        26,
-        30
+        24,
+        28
       ],
       "equipmentChestTier": 3,
       "equipmentLevelRange": [
@@ -214,9 +212,14 @@
       ],
       "description": "Hoang nguyên cổ xưa ngập tràn đạo vận, mỗi bước chân đều có thể đánh thức di thú viễn cổ.",
       "enemyPoolIds": [
-        "primordial_bone_dragon",
-        "voidflame_lord",
-        "ancient_wasteland_emperor"
+        "ancient_grudge_wraith",
+        "thorn_rat_demon",
+        "mud_corpse",
+        "wandering_miner",
+        "forest_spider",
+        "red_mane_boar",
+        "black_mist_scholar",
+        "poison_blade_rogue"
       ],
       "rewardSettings": {
         "cultivationMultiplier": 1.15,
