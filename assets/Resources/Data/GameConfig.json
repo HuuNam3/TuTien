@@ -1,0 +1,175 @@
+{
+  "display": {
+    "targetViewportWidth": 390,
+    "targetViewportHeight": 850,
+    "targetViewportLabel": "390x850"
+  },
+  "gameplay": {
+    "maxTurns": 20,
+    "turnInterval": 1400,
+    "playerMaxMinorLevel": 9,
+    "wanderEventDelay": 10000,
+    "rewardMultiplier": 1,
+    "spiritStoneToCultivationRatio": 0.5,
+    "questRewardGrowthMultiplier": 1.3,
+    "wanderRewardTypeWeights": {
+      "cultivation": 0.5,
+      "spiritStone": 0.35,
+      "chest": 0.15
+    }
+  },
+  "dailyFarmLimit": 3,
+  "runtime": {
+    "ascensionPermitItemId": "majorAscensionPermit",
+    "wanderChestCapacity": 20,
+    "offlineCapSeconds": 28800
+  },
+  "persistence": {
+    "saveKey": "tuTienBattleSave:v9",
+    "legacySaveKeys": [
+      "tuTienBattleSave:v2",
+      "tuTienBattleSave:v3",
+      "tuTienBattleSave:v4",
+      "tuTienBattleSave:v5",
+      "tuTienBattleSave:v6",
+      "tuTienBattleSave:v7",
+      "tuTienBattleSave:v8"
+    ]
+  },
+  "dungeonConfigs": {
+    "main": {
+      "id": "main",
+      "name": "Ngao du",
+      "description": "Gặp đối thủ trên đường ngao du",
+      "unlimited": true,
+      "cultivationMultiplier": 1,
+      "spiritStoneMultiplier": 1,
+      "equipmentDropChance": 0.25,
+      "equipmentRarityBonus": 0
+    }
+  },
+  "wanderMapDefaults": {
+    "novice": {
+      "lootTypes": [
+        "cultivation",
+        "cultivation",
+        "spiritStone",
+        "spiritStone",
+        "spiritStone",
+        "spiritStone",
+        "spiritStone",
+        "spiritStone",
+        "chest"
+      ],
+      "enemyChance": 0.3,
+      "firstEnemyChance": 0.4,
+      "enemyRankWeights": {
+        "1": 0.85,
+        "2": 0.15
+      }
+    },
+    "demonForest": {
+      "requiredMajorRealmIndex": 1,
+      "lootTypes": [
+        "cultivation",
+        "cultivation",
+        "spiritStone",
+        "spiritStone",
+        "spiritStone",
+        "spiritStone",
+        "spiritStone",
+        "spiritStone",
+        "chest"
+      ],
+      "enemyChance": 0.33,
+      "firstEnemyChance": 0.43,
+      "enemyRankWeights": {
+        "1": 0.82,
+        "2": 0.18
+      }
+    },
+    "spiritCave": {
+      "requiredMajorRealmIndex": 2,
+      "lootTypes": [
+        "spiritStone",
+        "spiritStone",
+        "spiritStone",
+        "spiritStone",
+        "spiritStone",
+        "spiritStone",
+        "spiritStone",
+        "chest",
+        "cultivation"
+      ],
+      "enemyChance": 0.36,
+      "firstEnemyChance": 0.46,
+      "enemyRankWeights": {
+        "1": 0.79,
+        "2": 0.21
+      }
+    },
+    "hollowRealm": {
+      "requiredMajorRealmIndex": 3,
+      "lootTypes": [
+        "spiritStone",
+        "spiritStone",
+        "spiritStone",
+        "spiritStone",
+        "spiritStone",
+        "chest",
+        "chest",
+        "cultivation",
+        "cultivation"
+      ],
+      "enemyChance": 0.39,
+      "firstEnemyChance": 0.49,
+      "enemyRankWeights": {
+        "1": 0.76,
+        "2": 0.24
+      }
+    },
+    "thunderPeak": {
+      "requiredMajorRealmIndex": 4,
+      "lootTypes": [
+        "spiritStone",
+        "spiritStone",
+        "spiritStone",
+        "spiritStone",
+        "spiritStone",
+        "chest",
+        "chest",
+        "cultivation",
+        "cultivation"
+      ],
+      "enemyChance": 0.42,
+      "firstEnemyChance": 0.52,
+      "enemyRankWeights": {
+        "1": 0.7,
+        "2": 0.25,
+        "3": 0.05
+      }
+    },
+    "primordialWastes": {
+      "requiredMajorRealmIndex": 5,
+      "lootTypes": [
+        "spiritStone",
+        "spiritStone",
+        "spiritStone",
+        "spiritStone",
+        "chest",
+        "chest",
+        "chest",
+        "cultivation",
+        "cultivation"
+      ],
+      "enemyChance": 0.45,
+      "firstEnemyChance": 0.55,
+      "enemyRankWeights": {
+        "1": 0.65,
+        "2": 0.25,
+        "3": 0.08,
+        "4": 0.02
+      }
+    }
+  }
+}

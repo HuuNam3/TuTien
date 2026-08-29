@@ -1,0 +1,356 @@
+{
+  "version": 1,
+  "worldId": "zhongduWorld",
+  "worldName": "Trung Đô thế giới",
+  "scope": "Các địa danh và thế lực có tên trong tuyến Trung Đô thế giới của Võ Luyện Đỉnh Phong.",
+  "mapAsset": "assets/Art/Textures/zhongdu-world-map-chibi.png",
+  "mapAssetNote": "Bản đồ nền phong cách chibi đơn giản, không gắn marker tròn; icon địa danh sẽ được đặt bằng dữ liệu vị trí tương đối.",
+  "mapMarkers": [
+    { "id": "playerStart", "name": "Khởi đầu", "type": "player", "x": 0.10, "y": 0.86, "note": "Điểm xuất phát của người chơi tại góc tây nam bản đồ." },
+    { "id": "tanThuVillage", "name": "Thôn Tân thủ", "type": "settlement", "x": 0.18, "y": 0.76, "note": "Khu vực nhập môn, nơi người chơi bắt đầu hành trình ngao du." },
+    { "id": "blackWindMountain", "name": "Hắc Phong Sơn", "type": "danger", "x": 0.37, "y": 0.43, "note": "Khu vực nguy hiểm nằm gần cụm Hắc Phong, đặt cạnh dãy núi thay vì trên địa hình núi." },
+    { "id": "lingxiaoPavilion", "name": "Lăng Tiêu Các", "type": "sect", "x": 0.30, "y": 0.58, "note": "Tông môn khởi đầu của tuyến Trung Đô thế giới." },
+    { "id": "blackWindMarket", "name": "Hắc Phong Mậu Thị", "type": "settlement", "x": 0.54, "y": 0.52, "note": "Nơi giao dịch và gặp gỡ tu sĩ trong vùng Hắc Phong." },
+    { "id": "inheritanceCaveHeaven", "name": "Truyền Thừa Động Thiên", "type": "dungeon", "x": 0.46, "y": 0.74, "note": "Động thiên ẩn chứa truyền thừa và cơ duyên, phù hợp làm điểm lịch luyện." },
+    { "id": "zhongduCity", "name": "Trung Đô thành", "type": "city", "x": 0.80, "y": 0.55, "note": "Thành trì trung tâm, nơi tập trung nhiều thế lực và gia tộc lớn." },
+    { "id": "tianyuanCity", "name": "Thiên Nguyên Thành", "type": "city", "x": 0.84, "y": 0.31, "note": "Một thành trì lớn thuộc phạm vi Đại Hán quốc." },
+    { "id": "medicineKingValley", "name": "Dược Vương Cốc", "type": "sect", "x": 0.68, "y": 0.18, "note": "Thế lực chuyên về đan dược, đặt ở vùng đồng bằng phía bắc." }
+  ],
+  "canonNotes": [
+    "Trung Đô thế giới là một tiểu thế giới độc lập, không phải tinh vực hay một khu vực của Thông Huyền Đại Lục.",
+    "Lăng Tiêu Các, Hắc Phong Sơn và Hắc Phong Lâm thuộc cụm địa danh mở đầu của Trung Đô thế giới.",
+    "Bản đồ nguyên tác không cung cấp tọa độ đầy đủ; vị trí tương đối chỉ ghi khi truyện có căn cứ rõ ràng.",
+    "Các làng nhỏ không có tên riêng trong truyện được ghi ở mục settlementNotes thay vì tự đặt tên mới."
+  ],
+  "regions": [
+    {
+      "id": "greatHan",
+      "name": "Đại Hán quốc",
+      "category": "realm",
+      "note": "Khu vực quốc gia lớn chứa Trung Đô và phần lớn các thế lực nhân tộc được nhắc trong tuyến đầu.",
+      "position": "Vùng lớn; Trung Đô nằm trong phạm vi Đại Hán.",
+      "positionConfidence": "high"
+    },
+    {
+      "id": "zhongdu",
+      "name": "Trung Đô",
+      "category": "central_region",
+      "note": "Khu vực trung tâm chính trị và nơi diễn ra tuyến tranh đoạt của Dương gia.",
+      "position": "Trung tâm Trung Đô thế giới và thuộc Đại Hán quốc.",
+      "positionConfidence": "high"
+    },
+    {
+      "id": "tianlang",
+      "name": "Thiên Lang quốc",
+      "category": "realm",
+      "note": "Khu vực quốc gia được nhắc ở phần mở rộng của Trung Đô thế giới.",
+      "position": "Ngoài phạm vi trung tâm Trung Đô; hướng và khoảng cách cụ thể chưa được xác định rõ.",
+      "positionConfidence": "medium"
+    },
+    {
+      "id": "overseas",
+      "name": "Hải ngoại",
+      "category": "region",
+      "note": "Khu vực ngoài đất liền, nơi có nhiều tông môn và đảo được nhắc đến.",
+      "position": "Ngoài lục địa chính của Đại Hán.",
+      "positionConfidence": "medium"
+    }
+  ],
+  "locations": [
+    {
+      "id": "lingxiaoPavilion",
+      "name": "Lăng Tiêu Các",
+      "category": "sect",
+      "note": "Tông môn Dương Khai bắt đầu tu luyện; ban đầu là đệ tử thử luyện kiêm người quét dọn.",
+      "position": "Trong cụm Hắc Phong; Hắc Phong Sơn cách khoảng hai mươi dặm.",
+      "positionConfidence": "high",
+      "visitedByYangKai": true,
+      "importance": "startingPoint"
+    },
+    {
+      "id": "blackWindMountain",
+      "name": "Hắc Phong Sơn",
+      "category": "mountain",
+      "note": "Núi hoang dã có dược liệu và yêu thú, là khu rèn luyện sớm của Dương Khai.",
+      "position": "Cách Lăng Tiêu Các khoảng hai mươi dặm.",
+      "positionConfidence": "high",
+      "visitedByYangKai": true,
+      "importance": "earlyAdventure"
+    },
+    {
+      "id": "blackWindForest",
+      "name": "Hắc Phong Lâm",
+      "category": "forest",
+      "note": "Rừng nằm trong tuyến đường chung giữa các thế lực quanh Lăng Tiêu Các; có giao tranh và hoạt động buôn bán.",
+      "position": "Gần Hắc Phong Sơn và Lăng Tiêu Các.",
+      "positionConfidence": "high",
+      "visitedByYangKai": true,
+      "importance": "earlyAdventure"
+    },
+    {
+      "id": "blackWindMarket",
+      "name": "Hắc Phong Mậu Thị",
+      "category": "market",
+      "note": "Chợ giao dịch của tu luyện giả, nơi trao đổi tài nguyên và tin tức.",
+      "position": "Trong hoặc sát Hắc Phong Lâm.",
+      "positionConfidence": "high",
+      "visitedByYangKai": true,
+      "importance": "socialHub"
+    },
+    {
+      "id": "blackPlumTown",
+      "name": "Hắc Mai Trấn",
+      "aliases": ["Black Plum Village", "Wumei Town"],
+      "category": "settlement",
+      "note": "Khu dân cư nhỏ được nhắc trong các bản dịch với tên không hoàn toàn thống nhất; dùng làm điểm nghỉ chân và giao dịch dân sự.",
+      "position": "Gần cụm Hắc Phong Lâm; hướng cụ thể chưa được xác nhận chắc chắn.",
+      "positionConfidence": "low",
+      "visitedByYangKai": false,
+      "translationCaution": true
+    },
+    {
+      "id": "fourWayJunction",
+      "name": "Ngã tư Hắc Phong",
+      "category": "roadJunction",
+      "note": "Tên quy ước cho giao điểm nơi các tuyến đường từ Lăng Tiêu Các, Phong Vũ Lâu và Huyết Chiến Bang hội tụ; nguyên tác chủ yếu mô tả địa điểm, không đặt tên riêng rõ ràng.",
+      "position": "Trong vùng Hắc Phong Lâm, giữa các thế lực lân cận.",
+      "positionConfidence": "high",
+      "visitedByYangKai": true,
+      "isAdaptedLabel": true
+    },
+    {
+      "id": "bloodBattleMine",
+      "name": "Khu mỏ Huyết Chiến Bang",
+      "category": "mine",
+      "note": "Khu mỏ dưới quyền Huyết Chiến Bang, gắn với tuyến bí cảnh và truyền thừa.",
+      "position": "Trong vùng Hắc Phong; gần Hắc Phong Lâm theo tuyến sự kiện.",
+      "positionConfidence": "medium",
+      "visitedByYangKai": true,
+      "importance": "dungeonEntrance"
+    },
+    {
+      "id": "inheritanceCaveHeaven",
+      "name": "Truyền Thừa Động Thiên",
+      "category": "inheritanceRealm",
+      "note": "Không gian truyền thừa ẩn dưới khu mỏ Huyết Chiến Bang; nơi Dương Khai gặp Địa Ma và thu được cơ duyên quan trọng.",
+      "position": "Bên dưới khu mỏ Huyết Chiến Bang.",
+      "positionConfidence": "high",
+      "visitedByYangKai": true,
+      "importance": "majorSecret"
+    },
+    {
+      "id": "coilingDragonRavine",
+      "name": "Khốn Long Giản",
+      "category": "ravine",
+      "note": "Khu vực nguy hiểm gắn với ma đầu bị trấn áp và quá khứ của Lăng Tiêu Các.",
+      "position": "Thuộc khu vực Lăng Tiêu Các; vị trí tương đối trong sơn môn chưa có tọa độ cụ thể.",
+      "positionConfidence": "high",
+      "visitedByYangKai": true,
+      "importance": "majorSecret"
+    },
+    {
+      "id": "lingxiaoUndergroundChamber",
+      "name": "Khu vực địa cung Lăng Tiêu Các",
+      "category": "undergroundRuins",
+      "note": "Các không gian ngầm và nơi phong ấn liên quan đến bí mật cổ của Lăng Tiêu Các; tên gọi được chuẩn hóa để gom các đoạn mô tả rải rác.",
+      "position": "Bên dưới hoặc trong phạm vi Lăng Tiêu Các.",
+      "positionConfidence": "medium",
+      "visitedByYangKai": true,
+      "isAdaptedLabel": true
+    },
+    {
+      "id": "zhongduYangResidence",
+      "name": "Dương gia Trung Đô",
+      "category": "familyEstate",
+      "note": "Gia tộc của Dương Khai và trung tâm của tuyến tranh đoạt gia tộc.",
+      "position": "Trong Trung Đô thành.",
+      "positionConfidence": "high",
+      "visitedByYangKai": true,
+      "importance": "majorStory"
+    },
+    {
+      "id": "youmingMountain",
+      "name": "U Minh Sơn",
+      "category": "mountain",
+      "note": "Khu vực hiểm trở được dùng làm nơi lịch luyện, có liên quan đến Thiên Lang quốc và Sâm La Điện.",
+      "position": "Thuộc tuyến Thiên Lang quốc; không có tọa độ liền kề với Trung Đô được xác nhận.",
+      "positionConfidence": "medium",
+      "visitedByYangKai": true,
+      "importance": "dangerZone"
+    },
+    {
+      "id": "wasteland",
+      "name": "Phế Thổ",
+      "category": "wasteland",
+      "note": "Vùng đất hoang trong phạm vi Thiên Lang quốc, gắn với một tuyến phiêu lưu riêng.",
+      "position": "Thuộc Thiên Lang quốc; xa cụm Trung Đô trung tâm.",
+      "positionConfidence": "medium",
+      "visitedByYangKai": true,
+      "importance": "dangerZone"
+    },
+    {
+      "id": "demonCapital",
+      "name": "Ma Đô",
+      "category": "demonStronghold",
+      "note": "Đô thành/căn cứ được nhắc trong khu vực Ma Cương.",
+      "position": "Trong Ma Cương; vị trí cụ thể chưa được xác định rõ.",
+      "positionConfidence": "medium",
+      "visitedByYangKai": true
+    },
+    {
+      "id": "sandCity",
+      "name": "Sa Thành",
+      "category": "demonSettlement",
+      "note": "Khu thành trấn thuộc tuyến Ma Cương.",
+      "position": "Trong Ma Cương, không có tọa độ liền kề với Trung Đô được xác nhận.",
+      "positionConfidence": "medium",
+      "visitedByYangKai": true
+    },
+    {
+      "id": "thunderWoodMansion",
+      "name": "Lôi Mộc Phủ",
+      "category": "monsterStronghold",
+      "note": "Thế lực/căn cứ được nhắc trong Yêu Vực.",
+      "position": "Trong Yêu Vực; hướng và khoảng cách cụ thể chưa được xác định rõ.",
+      "positionConfidence": "medium",
+      "visitedByYangKai": true
+    },
+    {
+      "id": "sealedLand",
+      "name": "Phong Ấn Chi Địa",
+      "category": "sealedRealm",
+      "note": "Khu vực phong ấn được liệt kê trong hệ thống địa danh của Trung Đô thế giới; vị trí cụ thể chưa được mô tả đầy đủ.",
+      "position": "Chưa xác định.",
+      "positionConfidence": "low",
+      "visitedByYangKai": false
+    }
+  ],
+  "cities": [
+    {
+      "id": "zhongduCity",
+      "name": "Trung Đô thành",
+      "note": "Thành trì trung tâm, nơi tập trung tám đại gia tộc và nhiều thế lực lớn.",
+      "position": "Trung tâm Trung Đô thế giới.",
+      "positionConfidence": "high",
+      "visitedByYangKai": true
+    },
+    {
+      "id": "tianyuanCity",
+      "name": "Thiên Nguyên Thành",
+      "note": "Thành trì/thế lực được nhắc trong danh sách các lực lượng của Đại Hán.",
+      "position": "Trong Đại Hán; hướng cụ thể chưa rõ.",
+      "positionConfidence": "low",
+      "visitedByYangKai": false
+    }
+  ],
+  "factions": {
+    "sects": [
+      { "id": "lingxiaoPavilion", "name": "Lăng Tiêu Các", "position": "Cụm Hắc Phong, gần Hắc Phong Sơn", "note": "Tông môn khởi đầu của Dương Khai." },
+      { "id": "bloodBattleGang", "name": "Huyết Chiến Bang", "position": "Lân cận cụm Hắc Phong", "note": "Có khu mỏ và Truyền Thừa Động Thiên." },
+      { "id": "windRainTower", "name": "Phong Vũ Lâu", "position": "Lân cận cụm Hắc Phong", "note": "Một trong các thế lực có tuyến đường hội tụ tại khu vực Hắc Phong." },
+      { "id": "cangyunEvilLand", "name": "Thương Vân Tà Địa", "position": "Một vùng lớn trong Đại Hán", "note": "Thế lực tà đạo lớn, do các Tà Vương cai quản." },
+      { "id": "medicineKingValley", "name": "Dược Vương Cốc", "position": "Trong Đại Hán; vị trí tương đối chưa rõ", "note": "Thế lực chuyên về đan dược." },
+      { "id": "artifactSect", "name": "Bảo Khí Tông", "position": "Trong Đại Hán; vị trí tương đối chưa rõ", "note": "Thế lực luyện khí." },
+      { "id": "nineStarSwordSect", "name": "Cửu Tinh Kiếm Phái", "position": "Trong Đại Hán; vị trí tương đối chưa rõ", "note": "Tông môn kiếm đạo." },
+      { "id": "myriadFlowersPalace", "name": "Vạn Hoa Cung", "position": "Trong Đại Hán; vị trí tương đối chưa rõ", "note": "Thế lực lớn được nhắc trong hệ thống Trung Đô." },
+      { "id": "ziweiValley", "name": "Tử Vi Cốc", "position": "Trong Đại Hán; vị trí tương đối chưa rõ", "note": "Tông môn được nhắc trong danh sách thế lực." },
+      { "id": "huitianGate", "name": "Hội Thiên Môn", "position": "Trong Đại Hán; vị trí tương đối chưa rõ", "note": "Tông môn được nhắc trong danh sách thế lực." },
+      { "id": "ghostKingValley", "name": "Quỷ Vương Cốc", "position": "Trong Đại Hán; vị trí tương đối chưa rõ", "note": "Thế lực tu luyện công pháp quỷ đạo." },
+      { "id": "xiaoyaoSect", "name": "Tiêu Dao Tông", "position": "Trong Đại Hán; vị trí tương đối chưa rõ", "note": "Tông môn được nhắc trong tuyến Trung Đô." },
+      { "id": "moonReflectionGate", "name": "Ánh Nguyệt Môn", "position": "Trong Đại Hán; vị trí tương đối chưa rõ", "note": "Tông môn được nhắc trong danh sách thế lực." },
+      { "id": "askingHeartPalace", "name": "Vấn Tâm Cung", "position": "Trong Đại Hán; vị trí tương đối chưa rõ", "note": "Tông môn được nhắc trong danh sách thế lực." },
+      { "id": "bambooJointGang", "name": "Trúc Tiết Bang", "position": "Trong Đại Hán; vị trí tương đối chưa rõ", "note": "Bang phái được nhắc trong danh sách thế lực." },
+      { "id": "flyingFeatherPavilion", "name": "Phi Vũ Các", "position": "Trong Đại Hán; vị trí tương đối chưa rõ", "note": "Tông môn được nhắc trong danh sách thế lực." },
+      { "id": "senluoHall", "name": "Sâm La Điện", "position": "U Minh Sơn, Thiên Lang quốc", "note": "Thế lực thuộc tuyến Thiên Lang quốc." }
+    ],
+    "families": [
+      { "id": "yangFamily", "name": "Dương gia", "position": "Trung Đô thành", "note": "Gia tộc của Dương Khai." },
+      { "id": "qiuFamily", "name": "Thu gia", "position": "Trung Đô thành", "note": "Một trong tám đại gia tộc." },
+      { "id": "huoFamily", "name": "Hoắc gia", "position": "Trung Đô thành", "note": "Một trong tám đại gia tộc." },
+      { "id": "mengFamily", "name": "Mạnh gia", "position": "Trung Đô thành", "note": "Một trong tám đại gia tộc." },
+      { "id": "liuFamily", "name": "Liễu gia", "position": "Trung Đô thành", "note": "Một trong tám đại gia tộc." },
+      { "id": "kangFamily", "name": "Khang gia", "position": "Trung Đô thành", "note": "Một trong tám đại gia tộc." },
+      { "id": "gaoFamily", "name": "Cao gia", "position": "Trung Đô thành", "note": "Một trong tám đại gia tộc." },
+      { "id": "yeFamily", "name": "Diệp gia", "position": "Trung Đô thành", "note": "Một trong tám đại gia tộc." },
+      { "id": "dongFamily", "name": "Đổng gia", "position": "Đại Hán; vị trí cụ thể chưa rõ", "note": "Gia tộc được nhắc ngoài tám đại gia tộc." },
+      { "id": "baiFamily", "name": "Bạch gia", "position": "Đại Hán; vị trí cụ thể chưa rõ", "note": "Gia tộc được nhắc ngoài tám đại gia tộc." },
+      { "id": "xiangFamily", "name": "Hướng gia", "position": "Đại Hán; vị trí cụ thể chưa rõ", "note": "Gia tộc được nhắc ngoài tám đại gia tộc." },
+      { "id": "nanFamily", "name": "Nam gia", "position": "Đại Hán; vị trí cụ thể chưa rõ", "note": "Gia tộc được nhắc ngoài tám đại gia tộc." },
+      { "id": "lvFamily", "name": "Lữ gia", "position": "Đại Hán; vị trí cụ thể chưa rõ", "note": "Gia tộc được nhắc ngoài tám đại gia tộc." },
+      { "id": "duanmuFamily", "name": "Đoan Mộc gia", "position": "Đại Hán; vị trí cụ thể chưa rõ", "note": "Gia tộc được nhắc ngoài tám đại gia tộc." }
+    ],
+    "overseas": [
+      { "id": "taiyiGate", "name": "Thái Nhất Môn", "position": "Hải ngoại", "note": "Tông môn hải ngoại." },
+      { "id": "asuraGate", "name": "Tu La Môn", "position": "Hải ngoại", "note": "Tông môn hải ngoại." },
+      { "id": "fallenFlowerDivineSect", "name": "Lạc Hoa Thần Giáo", "position": "Hải ngoại", "note": "Thế lực hải ngoại." },
+      { "id": "redLotusSect", "name": "Xích Luyện Tông", "position": "Hải ngoại", "note": "Tông môn hải ngoại." },
+      { "id": "twinIsles", "name": "Song Tử Đảo", "position": "Hải ngoại", "note": "Đảo/thế lực hải ngoại." },
+      { "id": "yunlongIsland", "name": "Vân Long Đảo", "position": "Hải ngoại", "note": "Đảo/thế lực hải ngoại." },
+      { "id": "guyunIsland", "name": "Cổ Vân Đảo", "position": "Hải ngoại", "note": "Đảo/thế lực hải ngoại." },
+      { "id": "yunxiaSect", "name": "Vân Hà Tông", "position": "Hải ngoại", "note": "Tông môn hải ngoại." }
+    ]
+  },
+  "settlementNotes": [
+    "Trung Đô thành là khu dân cư/thành trì có tên rõ ràng.",
+    "Hắc Mai Trấn xuất hiện không thống nhất giữa các bản dịch, cần kiểm tra lại bản dịch người dùng chọn trước khi đưa vào cốt truyện chính.",
+    "Nhiều làng, thôn và thành trấn nhỏ chỉ được mô tả chung trong lúc Dương Khai đi đường, không có tên riêng cố định trong nguyên tác."
+  ],
+  "connections": [
+    {
+      "from": "lingxiaoPavilion",
+      "to": "blackWindMountain",
+      "relation": "nearby",
+      "note": "Khoảng hai mươi dặm."
+    },
+    {
+      "from": "blackWindForest",
+      "to": "blackWindMarket",
+      "relation": "containsOrAdjacent",
+      "note": "Mậu thị nằm trong hoặc sát khu rừng theo các đoạn mô tả."
+    },
+    {
+      "from": "bloodBattleMine",
+      "to": "inheritanceCaveHeaven",
+      "relation": "below",
+      "note": "Động thiên truyền thừa nằm dưới khu mỏ."
+    },
+    {
+      "from": "lingxiaoPavilion",
+      "to": "fourWayJunction",
+      "relation": "roadConnection",
+      "note": "Tuyến đường chung của các thế lực quanh Hắc Phong."
+    },
+    {
+      "from": "zhongduCity",
+      "to": "zhongduYangResidence",
+      "relation": "contains",
+      "note": "Dương gia nằm trong Trung Đô thành."
+    }
+  ],
+  "sources": [
+    {
+      "title": "Chương 15 - Hắc Phong Sơn và Lăng Tiêu Các",
+      "url": "https://www.xxsy.net/chapter/22329826000011202/95905992670641662"
+    },
+    {
+      "title": "Chương 37 - tuyến đường và các thế lực quanh Hắc Phong",
+      "url": "https://www.xxsy.net/chapter/22329826000011202/95906001245044232"
+    },
+    {
+      "title": "Chương 43 - Hắc Phong Lâm và Hắc Phong Mậu Thị",
+      "url": "https://www.xxsy.net/chapter/22329826000011202/95906001245486599"
+    },
+    {
+      "title": "Chương 698 - Thiên Tiêu Tông, Cự Thạch Thành và động phủ vô danh",
+      "url": "https://www.69shuba.com/txt/1428/29312937"
+    },
+    {
+      "title": "Chương 894 - di tích Chiến Hồn Điện và Thạch Lâm Phá Huyền Phủ",
+      "url": "https://www.ranwen.la/files/article/16/16866/187401386.html"
+    },
+    {
+      "title": "Tổng hợp thế lực và địa danh Trung Đô thế giới",
+      "url": "https://wapbaike.baidu.com/item/%E6%AD%A6%E7%82%BC%E5%B7%85%E5%B3%B0/6114666"
+    }
+  ]
+}

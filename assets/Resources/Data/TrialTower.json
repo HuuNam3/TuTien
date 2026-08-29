@@ -1,0 +1,177 @@
+{
+  "version": 1,
+  "entryRequiredTier": 10,
+  "entryText": "Cần đạt Khai Nguyên cảnh Nhất tầng",
+  "floors": [
+    {
+      "floor": 1,
+      "title": "Tầng 1",
+      "rankLevel": 1,
+      "realmMajorIndex": 1,
+      "realmLevel": 1,
+      "realmText": "Khai Nguyên cảnh Nhất tầng",
+      "guardian": {
+        "name": "Thiết Giáp Thủ Vệ",
+        "type": "Tu sĩ",
+        "skillName": "Thiết Bích Chưởng",
+        "description": "Tinh anh canh cửa, thân thể cứng như sắt luyện.",
+        "statMultiplier": { "maxHp": 1.18, "attack": 1.06, "defense": 1.12, "blockRate": 1.15 },
+        "equipment": [["weapon", "common"], ["armor", "common"], ["boots", "common"], ["ring", "common"], ["amulet", "common"], ["artifact", "common"]]
+      },
+      "reward": { "cultivation": 100, "spiritStones": 50, "equipmentChestTier": 1 }
+    },
+    {
+      "floor": 2,
+      "title": "Tầng 2",
+      "rankLevel": 1,
+      "realmMajorIndex": 1,
+      "realmLevel": 2,
+      "realmText": "Khai Nguyên cảnh Nhị tầng",
+      "guardian": {
+        "name": "Huyết Nhận Thủ Vệ",
+        "type": "Tu sĩ",
+        "skillName": "Huyết Nhận Trảm",
+        "description": "Tinh anh dùng sát chiêu đổi lấy sức công phá lớn.",
+        "statMultiplier": { "maxHp": 1.12, "attack": 1.2, "defense": 1.06, "critRate": 1.2 },
+        "equipment": [["weapon", "common"], ["armor", "common"], ["boots", "common"], ["ring", "common"], ["amulet", "common"], ["artifact", "common"]]
+      },
+      "reward": { "cultivation": 150, "spiritStones": 75, "equipmentChestTier": 1 }
+    },
+    {
+      "floor": 3,
+      "title": "Tầng 3",
+      "rankLevel": 1,
+      "realmMajorIndex": 1,
+      "realmLevel": 3,
+      "realmText": "Khai Nguyên cảnh Tam tầng",
+      "guardian": {
+        "name": "Bách Luyện Thủ Lĩnh",
+        "type": "Tu sĩ",
+        "skillName": "Bách Luyện Trấn Sơn",
+        "description": "Thủ lĩnh đã tôi luyện thân thể đến cực hạn của Thối Thể.",
+        "statMultiplier": { "maxHp": 1.16, "attack": 1.16, "defense": 1.16, "blockRate": 1.18 },
+        "equipment": [["weapon", "common"], ["armor", "common"], ["boots", "common"], ["ring", "common"], ["amulet", "common"], ["artifact", "common"]]
+      },
+      "reward": { "cultivation": 200, "spiritStones": 100, "enhancementStones": 1, "equipmentChestTier": 1 }
+    },
+    {
+      "floor": 4,
+      "title": "Tầng 4",
+      "rankLevel": 2,
+      "realmMajorIndex": 1,
+      "realmLevel": 4,
+      "realmText": "Khai Nguyên cảnh Tứ tầng",
+      "guardian": {
+        "name": "Thanh Lân Hộ Pháp",
+        "type": "Tu sĩ",
+        "skillName": "Thanh Lân Kình",
+        "description": "Tinh anh Khai Nguyên vận chuyển linh lực mạnh mẽ.",
+        "statMultiplier": { "maxHp": 1.15, "attack": 1.12, "defense": 1.1, "speed": 1.08 },
+        "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]]
+      },
+      "reward": { "cultivation": 250, "spiritStones": 125, "equipmentChestTier": 1 }
+    },
+    {
+      "floor": 5,
+      "title": "Tầng 5",
+      "rankLevel": 2,
+      "realmMajorIndex": 1,
+      "realmLevel": 5,
+      "realmText": "Khai Nguyên cảnh Ngũ tầng",
+      "guardian": {
+        "name": "Linh Giáp Tinh Anh",
+        "type": "Tu sĩ",
+        "skillName": "Linh Giáp Phản Chấn",
+        "description": "Tinh anh thủ vững, mỗi lần phản kích đều rất nặng.",
+        "statMultiplier": { "maxHp": 1.22, "attack": 1.1, "defense": 1.18, "blockRate": 1.2 },
+        "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]]
+      },
+      "reward": { "cultivation": 300, "spiritStones": 150, "equipmentChestTier": 1 }
+    },
+    {
+      "floor": 6,
+      "title": "Tầng 6",
+      "rankLevel": 2,
+      "realmMajorIndex": 1,
+      "realmLevel": 6,
+      "realmText": "Khai Nguyên cảnh Lục tầng",
+      "guardian": {
+        "name": "Khai Nguyên Thủ Lĩnh",
+        "type": "Tu sĩ",
+        "skillName": "Khai Nguyên Phá Thiên",
+        "description": "Thủ lĩnh Khai Nguyên dồn linh lực vào một đòn phá giáp.",
+        "statMultiplier": { "maxHp": 1.2, "attack": 1.2, "defense": 1.15, "armorPierce": 1.25 },
+        "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]]
+      },
+      "reward": { "cultivation": 350, "spiritStones": 175, "enhancementStones": 2, "equipmentChestTier": 2 }
+    },
+    {
+      "floor": 7,
+      "title": "Tầng 7",
+      "rankLevel": 3,
+      "realmMajorIndex": 1,
+      "realmLevel": 7,
+      "realmText": "Khai Nguyên cảnh Thất tầng",
+      "guardian": {
+        "name": "Tử Vân Tinh Anh",
+        "type": "Tu sĩ",
+        "skillName": "Tử Vân Liệt Không",
+        "description": "Tinh anh Khí Động điều khiển linh lực thành những mũi kiếm sắc bén.",
+        "statMultiplier": { "maxHp": 1.18, "attack": 1.2, "defense": 1.08, "critRate": 1.25 },
+        "equipment": [["weapon", "rare"], ["armor", "rare"], ["boots", "rare"], ["ring", "rare"], ["amulet", "rare"], ["artifact", "rare"]]
+      },
+      "reward": { "cultivation": 400, "spiritStones": 200, "equipmentChestTier": 2 }
+    },
+    {
+      "floor": 8,
+      "title": "Tầng 8",
+      "rankLevel": 3,
+      "realmMajorIndex": 1,
+      "realmLevel": 8,
+      "realmText": "Khai Nguyên cảnh Bát tầng",
+      "guardian": {
+        "name": "Huyền Lôi Tinh Anh",
+        "type": "Tu sĩ",
+        "skillName": "Huyền Lôi Chấn",
+        "description": "Tinh anh mang theo lôi lực, vừa công vừa làm tê liệt đối thủ.",
+        "statMultiplier": { "maxHp": 1.2, "attack": 1.24, "defense": 1.12, "speed": 1.12 },
+        "equipment": [["weapon", "rare"], ["armor", "rare"], ["boots", "rare"], ["ring", "rare"], ["amulet", "rare"], ["artifact", "rare"]]
+      },
+      "reward": { "cultivation": 450, "spiritStones": 225, "equipmentChestTier": 2 }
+    },
+    {
+      "floor": 9,
+      "title": "Tầng 9",
+      "rankLevel": 4,
+      "realmMajorIndex": 1,
+      "realmLevel": 9,
+      "realmText": "Khai Nguyên cảnh Cửu tầng",
+      "guardian": {
+        "name": "Huyền Môn Thủ Lĩnh",
+        "type": "Tu sĩ",
+        "skillName": "Huyền Môn Vạn Pháp",
+        "description": "Thủ lĩnh Khí Động đã nắm được biến hóa của nhiều loại pháp thuật.",
+        "statMultiplier": { "maxHp": 1.24, "attack": 1.22, "defense": 1.2, "damageReduction": 1.2 },
+        "equipment": [["weapon", "epic"], ["armor", "epic"], ["boots", "epic"], ["ring", "epic"], ["amulet", "epic"], ["artifact", "epic"]]
+      },
+      "reward": { "cultivation": 500, "spiritStones": 250, "enhancementStones": 3, "equipmentChestTier": 2 }
+    },
+    {
+      "floor": 10,
+      "title": "Tầng 10",
+      "rankLevel": 5,
+      "realmMajorIndex": 1,
+      "realmLevel": 10,
+      "realmText": "Khai Nguyên cảnh Đại viên mãn",
+      "guardian": {
+        "name": "Ly Hợp Vương Giả",
+        "type": "Tu sĩ",
+        "skillName": "Ly Hợp Vương Ấn",
+        "description": "Vương giả trấn thủ đỉnh tháp, thực lực vượt xa người cùng cảnh.",
+        "statMultiplier": { "maxHp": 1.28, "attack": 1.3, "defense": 1.24, "damageReduction": 1.3, "critRate": 1.3 },
+        "equipment": [["weapon", "legendary"], ["armor", "legendary"], ["boots", "legendary"], ["ring", "legendary"], ["amulet", "legendary"], ["artifact", "legendary"]]
+      },
+      "reward": { "cultivation": 550, "spiritStones": 275, "equipmentChestTier": 2 }
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "version": 2,
+  "title": "Cẩm nang tu tiên",
+  "intro": "Tra cứu nhanh phẩm cấp, chỉ số, skill, tu vi và các hoạt động chính trước khi bước vào Ngao du.",
+  "sections": [
+    {
+      "number": 1,
+      "title": "Bắt đầu và hệ phái",
+      "steps": [
+        "Đặt tên rồi chọn một phái: Kiếm Tu, Đao Tu hoặc Võ Tu. Tên không bị mất khi đổi lựa chọn phái.",
+        "Kiếm Tu: tốc độ và tần suất thi triển tốt, hồi chiêu ngắn, sát thương mỗi lần thấp hơn.",
+        "Đao Tu: sát thương kỹ năng cao, nhưng hồi chiêu lâu và tiêu hao nhiều Linh lực.",
+        "Võ Tu: tập trung cường hóa thân thể, tăng Thủ, Giảm sát thương và khả năng hồi phục.",
+        "Mỗi phái có thể trang bị tối đa 2 skill; ô thứ hai mở từ Thối Thể cảnh Tứ tầng."
+      ]
+    },
+    {
+      "number": 2,
+      "title": "Phẩm cấp quái",
+      "steps": [
+        "Bình thường: hệ số Sinh lực, Linh lực, Công, Thủ và Tốc độ là 1.00 lần.",
+        "Tinh anh: Sinh lực x1.14, Linh lực x1.08, Công x1.12, Thủ x1.10, Tốc độ x1.06.",
+        "Thủ lĩnh: Sinh lực x1.30, Linh lực x1.18, Công x1.26, Thủ x1.22, Tốc độ x1.12.",
+        "Vương giả: Sinh lực x1.55, Linh lực x1.32, Công x1.48, Thủ x1.42, Tốc độ x1.20.",
+        "Chúa tể: Sinh lực x1.90, Linh lực x1.55, Công x1.78, Thủ x1.70, Tốc độ x1.30.",
+        "Quái còn có lối đánh riêng: Thủ vững giảm mạnh sát thương lượt kế, Hồi phục hồi máu, Bạo kích tăng chí mạng, Phản đòn có thể gây sát thương ngược.",
+        "Thôn Tân thủ gặp quái tầng 1-10; Rừng Yêu tầng 10-19; Hang Linh Thạch tầng 19-28."
+      ]
+    },
+    {
+      "number": 3,
+      "title": "Phẩm cấp trang bị",
+      "steps": [
+        "Thứ tự phẩm cấp: Phàm phẩm, Linh phẩm, Địa phẩm, Huyền phẩm, Thiên phẩm, Tiên phẩm, Thánh phẩm, Thần phẩm, Đế phẩm, Hỗn Độn phẩm.",
+        "Phàm phẩm: hệ số chỉ số x1.00, 2 dòng chỉ số, 6% cơ hội có hiệu ứng đặc biệt.",
+        "Linh phẩm: x1.45, 3 dòng chỉ số, 14% cơ hội hiệu ứng đặc biệt.",
+        "Địa phẩm: x2.05, 4 dòng chỉ số, 28% cơ hội hiệu ứng đặc biệt.",
+        "Huyền phẩm: x2.80, 4 dòng chỉ số, 34% cơ hội hiệu ứng đặc biệt.",
+        "Thiên phẩm: x3.80, 5 dòng chỉ số, 40% cơ hội hiệu ứng đặc biệt.",
+        "Tiên phẩm: x5.10, 5 dòng chỉ số, 46% cơ hội hiệu ứng đặc biệt; Thánh phẩm x6.70 và 52%.",
+        "Thần phẩm: x8.70, 6 dòng chỉ số, 58%; Đế phẩm x11.20 và 64%; Hỗn Độn phẩm x14.50 và 70%.",
+        "Trang bị có 6 vị trí: Vũ khí, Áo giáp, Giày, Nhẫn, Ngọc bội và Pháp bảo.",
+        "Phẩm chất không cộng lực chiến riêng. Lực chiến chỉ đến từ chỉ số và hiệu ứng thật trên trang bị."
+      ]
+    },
+    {
+      "number": 4,
+      "title": "Skill và phẩm cấp",
+      "steps": [
+        "Skill có 5 phẩm cấp: Phàm phẩm, Hoàng phẩm, Huyền phẩm, Địa phẩm và Thiên phẩm.",
+        "Tu vi mở phẩm cấp skill theo mốc: Phàm từ tầng 1, Hoàng từ tầng 10, Huyền từ tầng 19, Địa từ tầng 28, Thiên từ tầng 37.",
+        "Mỗi skill có sát thương riêng, phí Linh lực, hồi chiêu, tỉ lệ chí mạng skill và hiệu ứng ghi trong phần Ghi chú.",
+        "Skill cấp 0 là cấp ban đầu. Cấp tối đa là +12; cần điểm Tu luyện skill để nâng từng cấp.",
+        "Điểm cần tăng theo phẩm cấp: Phàm x1, Hoàng x1.5, Huyền x2, Địa x2.5, Thiên x3.",
+        "Mốc +3, +6 và +9 cần thêm 1 sách skill tương ứng; các mốc này làm hiệu quả skill tăng mạnh hơn.",
+        "Lực chiến skill tăng 10 mỗi cấp và cộng thêm 5 ở mốc nâng mạnh. Linh lực chiến đấu tự hồi 3 điểm mỗi lượt."
+      ]
+    },
+    {
+      "number": 5,
+      "title": "Danh sách skill theo phái",
+      "steps": [
+        "Kiếm Tu - Phàm: Ngự Kiếm Quyết (x1.20, 14 Linh lực, hồi 1 lượt, tăng Chính xác); Khoái Kiếm Liên Tâm (x1.25, 16 Linh lực, hồi 1 lượt, có cơ hội tăng Chính xác).",
+        "Kiếm Tu - Hoàng: Phá Không Kiếm (x1.45, 20 Linh lực, hồi 2 lượt, chí mạng skill); Lưu Quang Kiếm Ảnh (x1.50, 22 Linh lực, hồi 2 lượt, tăng Tốc độ).",
+        "Kiếm Tu - Huyền: Vạn Kiếm Quy Tông (x1.70, 28 Linh lực, hồi 3 lượt, tăng Tốc độ); Kiếm Vũ Lưu Tinh (x1.80, 30 Linh lực, hồi 3 lượt, tăng Chính xác và chí mạng).",
+        "Đao Tu - Phàm: Truy Phong Đao Quyết (x1.55, 24 Linh lực, hồi 3 lượt, tăng Công); Trọng Sơn Đao (x1.65, 28 Linh lực, hồi 4 lượt, tăng Công).",
+        "Đao Tu - Hoàng: Huyết Đao (x1.90, 34 Linh lực, hồi 4 lượt, có cơ hội tăng Hút máu); Liệt Địa Trảm (x2.00, 38 Linh lực, hồi 5 lượt, tăng Xuyên giáp).",
+        "Đao Tu - Huyền: Phách Sơn Đoạn Nhạc (x2.30, 46 Linh lực, hồi 5 lượt, tăng Sát thương chí mạng); Diệt Thế Cuồng Đao (x2.50, 52 Linh lực, hồi 6 lượt, tăng Công và Giảm sát thương).",
+        "Võ Tu - Phàm: Kim Cương Luyện Thể Quyết (x1.10, 12 Linh lực, hồi 2 lượt, tăng Thủ); Thiết Bì Hộ Thể (x1.05, 14 Linh lực, hồi 2 lượt, tăng Giảm sát thương).",
+        "Võ Tu - Hoàng: Thiết Quyền Chấn Sơn (x1.35, 18 Linh lực, hồi 3 lượt, tăng Công và Thủ); Kim Chung Hộ Thể (x1.30, 20 Linh lực, hồi 3 lượt, tăng Giảm sát thương).",
+        "Võ Tu - Huyền: Kim Cương Phá Thiên (x1.60, 24 Linh lực, hồi 4 lượt, tăng Giảm sát thương); Huyết Nhục Trùng Sinh (x1.50, 26 Linh lực, hồi 4 lượt, hồi 8% Sinh lực tối đa)."
+      ]
+    },
+    {
+      "number": 6,
+      "title": "Chỉ số và lực chiến",
+      "steps": [
+        "Sinh lực: lượng sát thương có thể chịu. 1 điểm = 0.42 lực chiến.",
+        "Linh lực: năng lượng thi triển skill. 1 điểm = 0.32 lực chiến.",
+        "Căn cơ: nền tảng tu luyện, hỗ trợ tích lũy tu vi khi Ngao du. 1 điểm = 2 lực chiến.",
+        "Công: sát thương cơ bản. 1 điểm = 7.4 lực chiến; Thủ: giảm sát thương nhận. 1 điểm = 6.2 lực chiến.",
+        "Tốc độ: quyết định thứ tự ra đòn. 1 điểm = 4 lực chiến.",
+        "Chính xác tăng khả năng đánh trúng và làm biên độ sát thương ổn định; Né tránh là tỉ lệ né đòn.",
+        "Đỡ đòn là tỉ lệ kích hoạt giảm sát thương, kể cả skill; Chí mạng là tỉ lệ phát sinh đòn chí mạng.",
+        "Sát thương chí mạng mặc định là 150%; Hút máu đổi một phần sát thương gây ra thành Sinh lực.",
+        "Giảm sát thương áp dụng khi nhận đòn; Xuyên giáp bỏ qua một phần Thủ nhưng không cộng lực chiến.",
+        "May mắn, Thần thức và Ngộ tính phục vụ cơ duyên hoặc skill đặc biệt, không cộng lực chiến."
+      ]
+    },
+    {
+      "number": 7,
+      "title": "Tu luyện và cảnh giới",
+      "steps": [
+        "Tu luyện tự nhận 1 tu vi mỗi giây. Khi đủ thanh tu vi, vào Tu luyện và nhấn Đột phá.",
+        "Các đại cảnh giới đầu: Thối Thể, Khai Nguyên, Khí Động và Ly Hợp; mỗi đại cảnh giới có các tầng nhỏ từ Nhất tầng đến Cửu tầng.",
+        "Thối Thể tập trung da thịt và huyết khí; Khai Nguyên khai mở đan điền; Khí Động vận hành Nguyên Khí; Ly Hợp điều hòa Tinh-Khí-Thần.",
+        "Mỗi tiểu cảnh giới tăng Sinh lực, Linh lực, Công, Thủ, Tốc độ và một phần tỉ lệ phòng thủ tùy đại cảnh giới.",
+        "Khi tu vi đầy ở Cửu tầng, cần điều kiện thăng đại cảnh giới theo nhiệm vụ hoặc vật phẩm mở khóa."
+      ]
+    },
+    {
+      "number": 8,
+      "title": "Ngao du và chiến đấu",
+      "steps": [
+        "Ngao du là vòng chơi chính: bắt đầu chuyến đi, chờ sự kiện, xử lý đối thủ rồi tiếp tục chuyến mới.",
+        "Sự kiện có thể cho Tu vi, Linh thạch, Căn cơ hoặc Rương trang bị; mở rương để nhận phần thưởng.",
+        "Khi gặp đối thủ, chọn Chiến đấu hoặc Chạy. Hộp thoại phải được xử lý trước khi chuyển tab khác.",
+        "Thua trận sẽ chuyển về Tu luyện hồi Sinh lực. Chỉ khi Sinh lực trên 50% tối đa mới được Ngao du tiếp.",
+        "Trong chiến đấu, mỗi lượt nhân vật hồi 3 Linh lực; skill chỉ dùng khi đủ Linh lực và hết hồi chiêu.",
+        "Map mới chỉ yêu cầu tu vi: Rừng Yêu cần Khai Nguyên, Hang Linh Thạch cần Khí Động."
+      ]
+    },
+    {
+      "number": 9,
+      "title": "Phụ bản và Tháp thí luyện",
+      "steps": [
+        "Phụ bản có Động phủ tu vi và Mạch linh thạch, mỗi nơi có 30 tầng và dùng chung 3 lượt mỗi ngày.",
+        "Tầng sau cần đủ tu vi và phải thắng tầng trước. Tầng đã thắng có thể Quét bằng 1 lượt để nhận thưởng.",
+        "Đánh thắng hoặc Quét mới tiêu hao lượt; đánh thua sẽ hoàn lại 1 lượt Phụ bản.",
+        "Tháp thí luyện yêu cầu Thối Thể cảnh Lục tầng. Thắng từng tầng để mở tầng tiếp theo và nhận thưởng một lần.",
+        "Tháp có 10 tầng; tầng 1-3 rơi Phàm phẩm, tầng 4-6 rơi Linh phẩm, tầng 7-10 rơi Địa phẩm.",
+        "Tầng 3, 6 và 9 có thêm Căn Cơ Đan +1; tầng 10 là trận Vương giả Ly Hợp cảnh Nhất tầng."
+      ]
+    },
+    {
+      "number": 10,
+      "title": "Lộ trình đề xuất",
+      "steps": [
+        "Tu luyện đến đầy tu vi, đột phá, rồi quay lại Ngao du liên tục để lấy tài nguyên.",
+        "Mua sách skill nhập môn đúng phái, chọn skill trong Tu luyện và tích điểm luyện đến +3 trước.",
+        "Mặc trang bị tốt nhất, bán món thừa, mua Đá Cường Hóa và nâng trang bị khi đủ Linh thạch.",
+        "Dùng Phụ bản khi đủ tu vi để lấy thêm tài nguyên; nhớ rằng thua không mất lượt.",
+        "Đạt Thối Thể Lục tầng, hồi đầy Sinh lực rồi vào Tháp thí luyện tầng 1.",
+        "Ưu tiên tab có chấm thông báo, nhưng luôn xử lý hộp thoại Ngao du trước mọi thao tác khác."
+      ]
+    }
+  ]
+}

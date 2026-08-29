@@ -1,0 +1,135 @@
+{
+  "version": 5,
+  "title": "Nhiệm vụ",
+  "quests": [
+    {
+      "id": "cultivation-milestones",
+      "category": "main",
+      "title": "Từng bước đăng tiên",
+      "description": "Tiến từng bước qua các mốc tu luyện.",
+      "objective": {
+        "type": "combinedMilestones",
+        "label": "Tiến độ tu luyện",
+        "milestones": [
+          { "id": "minor-1", "kind": "minor", "target": 3, "label": "Thối Thể cảnh Tam tầng", "reward": { "cultivation": 60, "spiritStones": 30 } },
+          { "id": "minor-2", "kind": "minor", "target": 6, "label": "Thối Thể cảnh Lục tầng", "reward": { "cultivation": 80, "spiritStones": 40 } },
+          { "id": "minor-3", "kind": "minor", "target": 9, "label": "Thối Thể cảnh Cửu tầng", "reward": { "cultivation": 130, "spiritStones": 70 } },
+          { "id": "major-1", "kind": "major", "target": 1, "label": "Thối Thể lên Khai Nguyên", "reward": { "cultivation": 200, "spiritStones": 100, "foundation": 1, "comprehension": 1 } },
+          { "id": "minor-4", "kind": "minor", "target": 12, "label": "Khai Nguyên cảnh Tam tầng", "reward": { "cultivation": 170, "spiritStones": 90 } },
+          { "id": "minor-5", "kind": "minor", "target": 15, "label": "Khai Nguyên cảnh Lục tầng", "reward": { "cultivation": 290, "spiritStones": 150 } },
+          { "id": "minor-6", "kind": "minor", "target": 18, "label": "Khai Nguyên cảnh Cửu tầng", "reward": { "cultivation": 380, "spiritStones": 190 } },
+          { "id": "major-2", "kind": "major", "target": 2, "label": "Khai Nguyên lên Khí Động", "reward": { "cultivation": 430, "spiritStones": 220, "foundation": 2, "comprehension": 2 } },
+          { "id": "minor-7", "kind": "minor", "target": 21, "label": "Khí Động cảnh Tam tầng", "reward": { "cultivation": 830, "spiritStones": 410 } },
+          { "id": "minor-8", "kind": "minor", "target": 24, "label": "Khí Động cảnh Lục tầng", "reward": { "cultivation": 1080, "spiritStones": 540 } },
+          { "id": "minor-9", "kind": "minor", "target": 27, "label": "Khí Động cảnh Cửu tầng", "reward": { "cultivation": 1820, "spiritStones": 910 } },
+          { "id": "major-3", "kind": "major", "target": 3, "label": "Khí Động lên Ly Hợp", "reward": { "cultivation": 950, "spiritStones": 480, "foundation": 3, "comprehension": 3 } },
+          { "id": "minor-10", "kind": "minor", "target": 30, "label": "Ly Hợp cảnh Tam tầng", "reward": { "cultivation": 2360, "spiritStones": 1180 } },
+          { "id": "minor-11", "kind": "minor", "target": 33, "label": "Ly Hợp cảnh Lục tầng", "reward": { "cultivation": 3990, "spiritStones": 2000 } },
+          { "id": "minor-12", "kind": "minor", "target": 36, "label": "Ly Hợp cảnh Cửu tầng", "reward": { "cultivation": 5190, "spiritStones": 2600 } },
+          { "id": "major-4", "kind": "major", "target": 4, "label": "Ly Hợp lên Chân Nguyên", "reward": { "cultivation": 1240, "spiritStones": 620, "foundation": 4, "comprehension": 4 } },
+          { "id": "minor-13", "kind": "minor", "target": 39, "label": "Chân Nguyên cảnh Tam tầng", "reward": { "cultivation": 2730, "spiritStones": 1360 } },
+          { "id": "minor-14", "kind": "minor", "target": 42, "label": "Chân Nguyên cảnh Lục tầng", "reward": { "cultivation": 5990, "spiritStones": 2990 } },
+          { "id": "minor-15", "kind": "minor", "target": 45, "label": "Chân Nguyên cảnh Cửu tầng", "reward": { "cultivation": 13160, "spiritStones": 6580 } },
+          { "id": "major-5", "kind": "major", "target": 5, "label": "Chân Nguyên lên Trúc Cơ", "reward": { "cultivation": 17100, "spiritStones": 8550, "foundation": 5, "comprehension": 5 } }
+        ]
+      },
+      "reward": { "cultivation": 60, "spiritStones": 30 }
+    },
+    {
+      "id": "daily-wander-wins",
+      "category": "daily",
+      "title": "Săn yêu trừ ma",
+      "description": "Đánh bại 3 đối thủ trong Ngao du hôm nay.",
+      "objective": { "type": "dailyWanderWins", "target": 3, "label": "Thắng hôm nay" },
+      "reward": { "cultivation": 35, "spiritStones": 45 }
+    },
+    {
+      "id": "daily-wander-rewards",
+      "category": "daily",
+      "title": "Thu hoạch cơ duyên",
+      "description": "Nhận phần thưởng Ngao du 5 lần hôm nay.",
+      "objective": { "type": "dailyWanderRewards", "target": 5, "label": "Nhận thưởng hôm nay" },
+      "reward": { "cultivation": 30, "spiritStones": 55 }
+    },
+    {
+      "id": "wander-reward-milestones",
+      "category": "side",
+      "title": "Thu hoạch Ngao du",
+      "description": "Nhận phần thưởng Ngao du {target} lần.",
+      "objective": {
+        "type": "wanderRewards",
+        "milestones": [10, 50, 100, 150, 200],
+        "repeatStep": 50,
+        "label": "Lần nhận thưởng",
+        "repeatable": true
+      },
+      "reward": { "cultivation": 50, "spiritStones": 80 }
+    },
+    {
+      "id": "wander-win-milestones",
+      "category": "side",
+      "title": "Luyện chiến",
+      "description": "Đánh bại {target} đối thủ trong Ngao du.",
+      "objective": {
+        "type": "wanderWins",
+        "milestones": [1, 2, 5, 10, 20, 50, 100],
+        "repeatStep": 50,
+        "label": "Đối thủ đã thắng",
+        "repeatable": true
+      },
+      "reward": { "cultivation": 45, "spiritStones": 70 }
+    },
+    {
+      "id": "learn-first-skill",
+      "category": "side",
+      "title": "Học kỹ năng nhập môn",
+      "description": "Tu luyện một skill nhập môn lên cấp +{target}.",
+      "objective": {
+        "type": "skillLevel",
+        "milestones": [3, 6, 9, 12],
+        "label": "Cấp skill cao nhất"
+      },
+      "reward": { "cultivation": 70, "spiritStones": 90 }
+    },
+    {
+      "id": "equip-common-milestones",
+      "category": "side",
+      "title": "Mặc trang bị Phàm phẩm",
+      "description": "Mặc đủ {target} trang bị Phàm phẩm.",
+      "objective": {
+        "type": "equippedRarityCount",
+        "rarityKey": "common",
+        "milestones": [1, 3, 6],
+        "label": "Phàm phẩm đã mặc"
+      },
+      "reward": { "spiritStones": 35 }
+    },
+    {
+      "id": "equip-uncommon-milestones",
+      "category": "side",
+      "title": "Mặc trang bị Linh phẩm",
+      "description": "Mặc đủ {target} trang bị Linh phẩm.",
+      "objective": {
+        "type": "equippedRarityCount",
+        "rarityKey": "uncommon",
+        "milestones": [1, 3, 6],
+        "label": "Linh phẩm đã mặc"
+      },
+      "reward": { "cultivation": 40, "spiritStones": 70 }
+    },
+    {
+      "id": "trial-tower-milestones",
+      "category": "side",
+      "title": "Thử sức trong tháp",
+      "description": "Vượt qua {target} tầng trong Tháp thí luyện.",
+      "objective": {
+        "type": "trialTowerWins",
+        "milestones": [1, 2, 3, 5, 10, 20, 50],
+        "repeatStep": 50,
+        "label": "Tầng đã vượt",
+        "repeatable": true
+      },
+      "reward": { "cultivation": 70, "spiritStones": 90 }
+    }
+  ]
+}

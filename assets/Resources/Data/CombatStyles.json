@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "styles": [
+    {
+      "id": "defense",
+      "label": "Thủ vững",
+      "description": "Định kỳ bỏ lượt để thủ thế, giảm mạnh sát thương nhận ở lượt kế.",
+      "guardReduction": 0.62
+    },
+    {
+      "id": "crit",
+      "label": "Bạo kích",
+      "description": "Có lúc dồn sát ý, tăng tỉ lệ chí mạng cho đòn đánh kế tiếp.",
+      "critBonus": 0.24
+    },
+    {
+      "id": "heal",
+      "label": "Hồi phục",
+      "description": "Khi sinh lực thấp sẽ bỏ lượt để hồi lại một phần sinh lực.",
+      "healPercent": 0.2
+    },
+    {
+      "id": "counter",
+      "label": "Phản đòn",
+      "description": "Có cơ hội phản kích ngay sau khi bị đánh trúng.",
+      "counterChance": 0.32,
+      "counterMultiplier": 0.58
+    }
+  ]
+}

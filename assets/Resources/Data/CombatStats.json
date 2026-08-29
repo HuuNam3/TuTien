@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "stats": [
+    {
+      "id": "maxHp",
+      "name": "Sinh lực",
+      "unit": "point",
+      "powerPerPoint": 0.5,
+      "description": "Lượng sát thương nhân vật có thể chịu trước khi bị hạ gục."
+    },
+    {
+      "id": "maxMana",
+      "name": "Linh lực",
+      "unit": "point",
+      "powerPerPoint": 0.4,
+      "description": "Năng lượng dùng để thi triển kỹ năng."
+    },
+    {
+      "id": "foundation",
+      "name": "Căn cơ",
+      "unit": "point",
+      "powerPerPoint": 2,
+      "description": "Nền tảng tu luyện, hỗ trợ tích lũy tu vi khi ngao du."
+    },
+    {
+      "id": "attack",
+      "name": "Công",
+      "unit": "point",
+      "powerPerPoint": 8,
+      "description": "Sát thương cơ bản gây ra trong mỗi đòn đánh."
+    },
+    {
+      "id": "defense",
+      "name": "Thủ",
+      "unit": "point",
+      "powerPerPoint": 8,
+      "description": "Giảm sát thương trực tiếp nhận từ đòn đánh của đối thủ."
+    },
+    {
+      "id": "speed",
+      "name": "Tốc độ",
+      "unit": "point",
+      "powerPerPoint": 5,
+      "description": "Quyết định thứ tự ra đòn và khả năng chiếm lượt đầu."
+    },
+    {
+      "id": "accuracy",
+      "name": "Chính xác",
+      "unit": "rate",
+      "baseValue": 0.8,
+      "powerPerPoint": 1000,
+      "description": "Tăng tỉ lệ đánh trúng, giảm khả năng đối thủ né hoặc đỡ đòn và làm sát thương ổn định hơn."
+    },
+    {
+      "id": "dodgeRate",
+      "name": "Né tránh",
+      "unit": "rate",
+      "powerPerPoint": 1000,
+      "description": "Tỉ lệ né đòn; một số kỹ năng đặc biệt vẫn có thể đánh trúng."
+    },
+    {
+      "id": "blockRate",
+      "name": "Đỡ đòn",
+      "unit": "rate",
+      "powerPerPoint": 1000,
+      "description": "Tỉ lệ kích hoạt đỡ đòn để giảm sát thương nhận vào, kể cả sát thương kỹ năng."
+    },
+    {
+      "id": "blockReduction",
+      "name": "Giảm đỡ",
+      "unit": "rate",
+      "baseValue": 0.8,
+      "powerPerPoint": 1000,
+      "description": "Tỉ lệ sát thương bị loại bỏ khi đỡ đòn thành công."
+    },
+    {
+      "id": "critRate",
+      "name": "Chí mạng",
+      "unit": "rate",
+      "powerPerPoint": 1000,
+      "description": "Tỉ lệ phát sinh đòn chí mạng; chỉ kỹ năng được phép chí mạng mới áp dụng tỉ lệ riêng của kỹ năng."
+    },
+    {
+      "id": "critDamage",
+      "name": "Sát thương chí mạng",
+      "unit": "multiplier",
+      "baseValue": 1.5,
+      "powerPerPoint": 100,
+      "description": "Mức sát thương tăng thêm của đòn chí mạng, mặc định là 150%."
+    },
+    {
+      "id": "lifeSteal",
+      "name": "Hút máu",
+      "unit": "rate",
+      "powerPerPoint": 1000,
+      "description": "Chuyển một phần sát thương gây ra thành sinh lực hồi phục."
+    },
+    {
+      "id": "damageReduction",
+      "name": "Giảm sát thương",
+      "unit": "rate",
+      "powerPerPoint": 1000,
+      "description": "Tỉ lệ giảm sát thương nhận vào từ đòn đánh và kỹ năng."
+    },
+    {
+      "id": "luck",
+      "name": "May mắn",
+      "unit": "rate",
+      "powerPerPoint": 0,
+      "countsTowardCombatPower": false,
+      "description": "Tăng cơ hội gặp cơ duyên khi ngao du."
+    },
+    {
+      "id": "spiritSense",
+      "name": "Thần thức",
+      "unit": "point",
+      "powerPerPoint": 0,
+      "countsTowardCombatPower": false,
+      "description": "Năng lực cần cho một số kỹ năng tấn công đặc biệt."
+    },
+    {
+      "id": "comprehension",
+      "name": "Ngộ tính",
+      "unit": "point",
+      "powerPerPoint": 0,
+      "countsTowardCombatPower": false,
+      "description": "Khả năng lĩnh ngộ công pháp."
+    },
+    {
+      "id": "armorPierce",
+      "name": "Xuyên giáp",
+      "unit": "rate",
+      "powerPerPoint": 1000,
+      "countsTowardCombatPower": false,
+      "description": "Tỉ lệ bỏ qua giáp để gây sát thương trực tiếp vào sinh lực đối thủ."
+    }
+  ]
+}

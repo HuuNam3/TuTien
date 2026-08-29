@@ -1,0 +1,483 @@
+{
+  "slots": [
+    {
+      "id": "weapon",
+      "name": "Vũ khí"
+    },
+    {
+      "id": "armor",
+      "name": "Áo giáp"
+    },
+    {
+      "id": "boots",
+      "name": "Giày"
+    },
+    {
+      "id": "ring",
+      "name": "Nhẫn"
+    },
+    {
+      "id": "amulet",
+      "name": "Ngọc bội"
+    },
+    {
+      "id": "artifact",
+      "name": "Pháp bảo"
+    }
+  ],
+  "statGeneration": {
+    "varianceMin": 0.8,
+    "varianceMax": 1.2,
+    "levelBase": 1,
+    "levelGrowth": 0.1,
+    "fixedCount": 2,
+    "randomCount": 2,
+    "randomCountMin": 0,
+    "randomCountMax": 2,
+    "randomStatChance": 0.5
+  },
+  "majorRealmRarityProfiles": [
+    { "majorRealmId": 1, "weights": [85, 15, 0, 0, 0, 0, 0, 0, 0, 0] },
+    { "majorRealmId": 2, "weights": [82, 18, 0, 0, 0, 0, 0, 0, 0, 0] },
+    { "majorRealmId": 3, "weights": [79, 20, 1, 0, 0, 0, 0, 0, 0, 0] },
+    { "majorRealmId": 4, "weights": [73, 24, 3, 0, 0, 0, 0, 0, 0, 0] },
+    { "majorRealmId": 5, "weights": [70, 25, 5, 0, 0, 0, 0, 0, 0, 0] },
+    { "majorRealmId": 6, "weights": [65, 25, 8, 2, 0, 0, 0, 0, 0, 0] },
+    { "majorRealmId": 7, "weights": [60, 25, 10, 4, 1, 0, 0, 0, 0, 0] },
+    { "majorRealmId": 8, "weights": [55, 25, 12, 6, 2, 0, 0, 0, 0, 0] },
+    { "majorRealmId": 9, "weights": [50, 24, 14, 9, 3, 0, 0, 0, 0, 0] },
+    { "majorRealmId": 10, "weights": [45, 23, 15, 10, 5, 2, 0, 0, 0, 0] },
+    { "majorRealmId": 11, "weights": [40, 22, 16, 12, 7, 3, 0, 0, 0, 0] },
+    { "majorRealmId": 12, "weights": [35, 21, 17, 13, 9, 5, 0, 0, 0, 0] },
+    { "majorRealmId": 13, "weights": [30, 20, 17, 14, 11, 8, 0, 0, 0, 0] },
+    { "majorRealmId": 14, "weights": [25, 19, 17, 15, 13, 11, 0, 0, 0, 0] },
+    { "majorRealmId": 15, "weights": [20, 18, 17, 15, 13, 10, 7, 0, 0, 0] },
+    { "majorRealmId": 16, "weights": [16, 17, 17, 16, 14, 11, 6, 3, 0, 0] },
+    { "majorRealmId": 17, "weights": [12, 16, 17, 16, 15, 12, 8, 4, 0, 0] },
+    { "majorRealmId": 18, "weights": [9, 14, 16, 16, 15, 13, 10, 7, 0, 0] },
+    { "majorRealmId": 19, "weights": [7, 12, 15, 15, 15, 14, 11, 8, 3, 0] },
+    { "majorRealmId": 20, "weights": [5, 10, 14, 15, 15, 15, 12, 10, 4, 0] },
+    { "majorRealmId": 21, "weights": [4, 8, 12, 14, 15, 15, 13, 10, 6, 3] },
+    { "majorRealmId": 22, "weights": [3, 6, 10, 13, 15, 15, 14, 11, 8, 5] },
+    { "majorRealmId": 23, "weights": [2, 5, 8, 11, 14, 15, 15, 12, 10, 8] },
+    { "majorRealmId": 24, "weights": [2, 4, 6, 8, 10, 12, 14, 15, 14, 15] },
+    { "majorRealmId": 25, "weights": [1, 3, 5, 7, 9, 11, 13, 15, 16, 20] },
+    { "majorRealmId": 26, "weights": [0, 2, 4, 6, 8, 10, 12, 14, 20, 24] }
+  ],
+  "rarities": {
+    "common": {
+      "name": "Phàm phẩm",
+      "className": "common",
+      "statScale": 1,
+      "statLines": 2,
+      "specialChance": 0.05,
+      "maxSpecialLines": 1
+    },
+    "uncommon": {
+      "name": "Linh phẩm",
+      "className": "uncommon",
+      "statScale": 1.45,
+      "statLines": 3,
+      "specialChance": 0.1,
+      "maxSpecialLines": 1
+    },
+    "rare": {
+      "name": "Địa phẩm",
+      "className": "rare",
+      "statScale": 2.05,
+      "statLines": 4,
+      "specialChance": 0.15,
+      "maxSpecialLines": 2
+    },
+    "epic": {
+      "name": "Huyền phẩm",
+      "className": "epic",
+      "statScale": 2.8,
+      "statLines": 4,
+      "specialChance": 0.2,
+      "maxSpecialLines": 2
+    },
+    "legendary": {
+      "name": "Thiên phẩm",
+      "className": "legendary",
+      "statScale": 3.8,
+      "statLines": 5,
+      "specialChance": 0.25,
+      "maxSpecialLines": 2
+    },
+    "immortal": {
+      "name": "Tiên phẩm",
+      "className": "immortal",
+      "statScale": 5.1,
+      "statLines": 5,
+      "specialChance": 0.3,
+      "maxSpecialLines": 3
+    },
+    "sacred": {
+      "name": "Thánh phẩm",
+      "className": "sacred",
+      "statScale": 6.7,
+      "statLines": 5,
+      "specialChance": 0.35,
+      "maxSpecialLines": 3
+    },
+    "divine": {
+      "name": "Thần phẩm",
+      "className": "divine",
+      "statScale": 8.7,
+      "statLines": 6,
+      "specialChance": 0.4,
+      "maxSpecialLines": 3
+    },
+    "emperor": {
+      "name": "Đế phẩm",
+      "className": "emperor",
+      "statScale": 11.2,
+      "statLines": 6,
+      "specialChance": 0.45,
+      "maxSpecialLines": 3
+    },
+    "chaos": {
+      "name": "Hỗn Độn phẩm",
+      "className": "chaos",
+      "statScale": 14.5,
+      "statLines": 6,
+      "specialChance": 0.5,
+      "maxSpecialLines": 3
+    }
+  },
+  "templates": {
+    "weapon": {
+      "names": [
+        "Thanh Cương Kiếm",
+        "Hàn Thiết Đao",
+        "Xích Mộc Thương",
+        "Lưu Vân Kiếm",
+        "Tử Vân Kiếm",
+        "Cửu U Đao",
+        "Thiên Lôi Thương",
+        "Phá Vân Kiếm",
+        "Kim Ô Thương"
+      ],
+      "guaranteedStats": [
+        {
+          "stat": "attack",
+          "min": 1,
+          "max": 5
+        },
+        {
+          "stat": "speed",
+          "min": 1,
+          "max": 10
+        }
+      ],
+      "randomStats": [
+        {
+          "stat": "critRate",
+          "min": 0.001,
+          "max": 0.005
+        },
+        {
+          "stat": "accuracy",
+          "min": 0.002,
+          "max": 0.01
+        }
+      ]
+    },
+    "armor": {
+      "names": [
+        "Huyền Thiết Y",
+        "Lân Văn Giáp",
+        "Thanh Mộc Bào",
+        "Hộ Thân Khải",
+        "Bách Luyện Chiến Giáp",
+        "Huyền Vũ Bào",
+        "Thiên Cương Khải",
+        "Tử Hà Bảo Y",
+        "Liệt Sơn Giáp"
+      ],
+      "guaranteedStats": [
+        {
+          "stat": "maxHp",
+          "min": 10,
+          "max": 50
+        },
+        {
+          "stat": "defense",
+          "min": 1,
+          "max": 5
+        }
+      ],
+      "randomStats": [
+        {
+          "stat": "blockRate",
+          "min": 0.001,
+          "max": 0.005
+        },
+        {
+          "stat": "damageReduction",
+          "min": 0.001,
+          "max": 0.005
+        }
+      ]
+    },
+    "boots": {
+      "names": [
+        "Truy Phong Ngoa",
+        "Đạp Vân Lý",
+        "Khinh Linh Ngoa",
+        "Tật Phong Hài",
+        "Lôi Ảnh Ngoa",
+        "Vạn Lý Vân Ngoa",
+        "Thiên Hành Ngoa",
+        "Phi Vũ Ngoa",
+        "Lưu Quang Hài"
+      ],
+      "guaranteedStats": [
+        {
+          "stat": "maxHp",
+          "min": 10,
+          "max": 50
+        },
+        {
+          "stat": "speed",
+          "min": 1,
+          "max": 10
+        }
+      ],
+      "randomStats": [
+        {
+          "stat": "dodgeRate",
+          "min": 0.001,
+          "max": 0.005
+        },
+        {
+          "stat": "accuracy",
+          "min": 0.002,
+          "max": 0.01
+        }
+      ]
+    },
+    "ring": {
+      "names": [
+        "Tụ Linh Giới",
+        "Huyết Ngọc Giới",
+        "Tinh Thiết Nhẫn",
+        "Ẩn Lôi Giới",
+        "Cửu Linh Giới",
+        "Thái Hư Giới",
+        "Tinh Hà Nhẫn",
+        "Bích Hải Giới",
+        "Thiên Tâm Nhẫn"
+      ],
+      "guaranteedStats": [
+        {
+          "stat": "maxMana",
+          "min": 1,
+          "max": 10
+        },
+        {
+          "stat": "attack",
+          "min": 1,
+          "max": 5
+        }
+      ],
+      "randomStats": [
+        {
+          "stat": "critRate",
+          "min": 0.001,
+          "max": 0.005
+        },
+        {
+          "stat": "accuracy",
+          "min": 0.002,
+          "max": 0.01
+        }
+      ]
+    },
+    "amulet": {
+      "names": [
+        "Hộ Tâm Bội",
+        "Thanh Ngọc Bội",
+        "An Thần Phù",
+        "Bích Huyết Bội",
+        "Trấn Hồn Bội",
+        "Càn Khôn Ngọc",
+        "Thiên Mệnh Bội",
+        "Lưu Ly Hộ Bội",
+        "Tĩnh Tâm Ngọc"
+      ],
+      "guaranteedStats": [
+        {
+          "stat": "maxHp",
+          "min": 10,
+          "max": 50
+        },
+        {
+          "stat": "defense",
+          "min": 1,
+          "max": 5
+        }
+      ],
+      "randomStats": [
+        {
+          "stat": "blockRate",
+          "min": 0.001,
+          "max": 0.005
+        },
+        {
+          "stat": "dodgeRate",
+          "min": 0.001,
+          "max": 0.005
+        }
+      ]
+    },
+    "artifact": {
+      "names": [
+        "Tiểu Pháp Ấn",
+        "Tụ Khí Phiên",
+        "Linh Quang Kính",
+        "Bạch Cốt Châu",
+        "Thiên Cơ Phiến",
+        "Sơn Hà Ấn",
+        "Hỗn Nguyên Châu",
+        "Cửu Tiêu Lệnh",
+        "Trấn Hải Châu"
+      ],
+      "guaranteedStats": [
+        {
+          "stat": "attack",
+          "min": 1,
+          "max": 5
+        },
+        {
+          "stat": "maxMana",
+          "min": 1,
+          "max": 10
+        }
+      ],
+      "randomStats": [
+        {
+          "stat": "armorPierce",
+          "min": 0.001,
+          "max": 0.005
+        },
+        {
+          "stat": "critDamage",
+          "min": 0.01,
+          "max": 0.05
+        }
+      ]
+    }
+  },
+  "specialLines": [
+    {
+      "id": "lifeSteal",
+      "name": "Hấp huyết",
+      "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
+      "valueRange": [0.01, 0.1],
+      "descriptionTemplate": "Hấp huyết {value} sát thương gây ra",
+      "power": 1000
+    },
+    {
+      "id": "armorPierce",
+      "name": "Phá giáp",
+      "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
+      "valueRange": [0.01, 0.1],
+      "descriptionTemplate": "Bỏ qua {value} phòng ngự mục tiêu",
+      "power": 1000
+    },
+    {
+      "id": "skillCritRate",
+      "name": "Kiếm ý",
+      "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
+      "valueRange": [0.01, 0.1],
+      "descriptionTemplate": "Kỹ năng tăng {value} tỉ lệ chí mạng",
+      "power": 1000
+    },
+    {
+      "id": "spiritStoneBonus",
+      "name": "Tầm bảo",
+      "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
+      "valueRange": [0.01, 0.1],
+      "descriptionTemplate": "Linh thạch rớt tăng {value}",
+      "power": 1000
+    },
+    {
+      "id": "damageReduction",
+      "name": "Hộ thể",
+      "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
+      "valueRange": [0.01, 0.1],
+      "descriptionTemplate": "Giảm {value} sát thương nhận vào",
+      "power": 1000
+    },
+    {
+      "id": "maxHpPercent",
+      "name": "Cường thân",
+      "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
+      "valueRange": [0.01, 0.1],
+      "descriptionTemplate": "Tăng {value} sinh lực tối đa",
+      "power": 1000
+    },
+    {
+      "id": "maxManaPercent",
+      "name": "Tụ linh",
+      "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
+      "valueRange": [0.01, 0.1],
+      "descriptionTemplate": "Tăng {value} linh lực tối đa",
+      "power": 1000
+    },
+    {
+      "id": "dodgeRate",
+      "name": "Thân pháp",
+      "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
+      "valueRange": [0.01, 0.1],
+      "descriptionTemplate": "Tăng {value} né tránh",
+      "power": 1000
+    },
+    {
+      "id": "critDamage",
+      "name": "Liệt kích",
+      "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
+      "valueRange": [0.1, 0.2],
+      "descriptionTemplate": "Tăng {value} sát thương chí mạng",
+      "power": 100
+    },
+    {
+      "id": "defensePercent",
+      "name": "Tăng thủ",
+      "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
+      "valueRange": [0.01, 0.1],
+      "descriptionTemplate": "Tăng {value} phòng ngự",
+      "power": 1000
+    },
+    {
+      "id": "reflectDamage",
+      "name": "Phản chấn",
+      "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
+      "valueRange": [0.01, 0.1],
+      "descriptionTemplate": "Phản lại {value} sát thương nhận vào",
+      "power": 1000
+    },
+    {
+      "id": "attackPercent",
+      "name": "Tăng tấn công",
+      "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
+      "valueRange": [0.01, 0.1],
+      "descriptionTemplate": "Tăng {value} công kích",
+      "power": 1000
+    }
+  ],
+  "qualityOrder": [
+    "common",
+    "uncommon",
+    "rare",
+    "epic",
+    "legendary",
+    "immortal",
+    "sacred",
+    "divine",
+    "emperor",
+    "chaos"
+  ]
+}

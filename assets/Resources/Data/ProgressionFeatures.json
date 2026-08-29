@@ -1,0 +1,123 @@
+{
+  "skills": [
+    {
+      "id": "shadowSword",
+      "name": "Tuyệt Ảnh Kiếm",
+      "description": "Một kiếm xuyên ảnh, gây sát thương ổn định.",
+      "requiredLevel": 1,
+      "multiplier": 1.4,
+      "cost": 20,
+      "cooldown": 2
+    },
+    {
+      "id": "thunderPalm",
+      "name": "Lôi Vân Chưởng",
+      "description": "Chưởng lực nặng, gây sát thương cao hơn nhưng tốn linh lực.",
+      "requiredLevel": 4,
+      "multiplier": 1.65,
+      "cost": 28,
+      "cooldown": 3
+    },
+    {
+      "id": "mountainBreaker",
+      "name": "Khai Sơn Quyền",
+      "description": "Quyền thế mạnh mẽ, hồi chiêu lâu nhưng uy lực lớn.",
+      "requiredLevel": 7,
+      "multiplier": 1.95,
+      "cost": 36,
+      "cooldown": 4
+    }
+  ],
+  "enhancement": {
+    "entryRequiredTier": 15,
+    "maxLevelByRarity": {
+      "common": 30,
+      "uncommon": 40,
+      "rare": 50,
+      "epic": 60,
+      "legendary": 70,
+      "immortal": 80,
+      "sacred": 90,
+      "divine": 100,
+      "emperor": 110,
+      "chaos": 120
+    },
+    "cultivationLimitPerMajorRealm": 10,
+    "stoneCostPerLevel": 1,
+    "successRateBase": 1,
+    "successRateLossPerLevel": 0.03,
+    "successRateMinimum": 0.05,
+    "stoneRarityMultiplier": {
+      "common": 1,
+      "uncommon": 2,
+      "rare": 3,
+      "epic": 4,
+      "legendary": 5,
+      "immortal": 6,
+      "sacred": 7,
+      "divine": 8,
+      "emperor": 9,
+      "chaos": 10
+    },
+    "linhThachRarityMultiplier": {
+      "common": 1,
+      "uncommon": 1.5,
+      "rare": 2,
+      "epic": 2.5,
+      "legendary": 3,
+      "immortal": 3.5,
+      "sacred": 4,
+      "divine": 4.5,
+      "emperor": 5,
+      "chaos": 6
+    },
+    "baseCost": 12,
+    "costGrowth": 1.35,
+    "statGrowth": {
+      "coreMultiplier": 0.1,
+      "normalMultiplier": 0.002,
+      "critDamage": 0.02
+    },
+    "equipmentRequiredTierByRarity": {
+      "common": 1,
+      "uncommon": 4,
+      "rare": 8,
+      "epic": 13,
+      "legendary": 18,
+      "immortal": 23,
+      "sacred": 28,
+      "divine": 33,
+      "emperor": 38,
+      "chaos": 43
+    }
+  },
+  "resourceDungeonEntryRequiredTier": 12,
+  "resourceDungeons": [
+    {
+      "id": "cultivationFarm",
+      "name": "Động phủ tu vi",
+      "description": "Đánh quái để lấy thêm tu vi.",
+      "rewardType": "cultivation",
+      "rewardMin": 100,
+      "rewardMax": 120,
+      "rewardGrowthMin": 15,
+      "rewardGrowthMax": 20,
+      "totalFloors": 30,
+      "dailyLimit": 3,
+      "requiredLevel": 10
+    },
+    {
+      "id": "spiritStoneFarm",
+      "name": "Mạch linh thạch",
+      "description": "Khai thác linh thạch từ quặng linh khí.",
+      "rewardType": "spiritStone",
+      "rewardMin": 50,
+      "rewardMax": 70,
+      "rewardGrowthMin": 8,
+      "rewardGrowthMax": 12,
+      "totalFloors": 30,
+      "dailyLimit": 3,
+      "requiredLevel": 10
+    }
+  ]
+}

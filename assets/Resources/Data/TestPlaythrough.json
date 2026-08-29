@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "title": "Kịch bản test trải nghiệm cơ bản",
+  "purpose": "Dùng lại làm checklist cho các lần test sau.",
+  "priorityRules": [
+    "Nếu đang có hộp thoại Ngao du với lựa chọn Chiến đấu hoặc Chạy, xử lý hộp thoại đó trước mọi tab khác.",
+    "Trước mỗi bước test, kiểm tra chấm thông báo trên các tab và ưu tiên tab đang có thông báo.",
+    "Sau khi xử lý xong tab có thông báo, mới chuyển sang hoạt động kế tiếp trong checklist.",
+    "Ngao du là vòng chơi chính; mỗi đợt test phải duy trì Ngao du liên tục và chỉ tạm dừng khi cần xử lý chức năng khác hoặc hồi phục."
+  ],
+  "character": {
+    "name": "test",
+    "school": "Kiếm Tu",
+    "targetRealm": "Thối Thể cảnh Lục tầng"
+  },
+  "sequence": [
+    "Xóa dữ liệu và tạo nhân vật test với Kiếm Tu.",
+    "Tu luyện, đột phá lần lượt đến Thối Thể cảnh Lục tầng.",
+    "Bắt đầu Ngao du liên tục; duy trì vòng đi, xử lý mọi hộp thoại đối thủ, kiểm tra thua trận, hồi sinh lực và tự đi tiếp.",
+    "Học Ngự Kiếm Quyết, tu luyện skill lên +3 và kiểm tra nâng cấp.",
+    "Mặc trang bị, bán một trang bị trong túi đồ.",
+    "Mua vật phẩm bằng linh thạch trong Cửa hàng.",
+    "Cường hóa trang bị và kiểm tra lực chiến.",
+    "Vượt Phụ bản khi đủ tu vi, kiểm tra lượt dùng chung và quét.",
+    "Mở Tháp thí luyện ở Thối Thể cảnh Lục tầng và thử tầng đầu."
+  ],
+  "expectedChecks": [
+    "Tu vi và đột phá tăng đúng cảnh giới.",
+    "Ngao du tự tiếp tục sau khi sinh lực hồi đủ.",
+    "Skill đã học xuất hiện trong Tu luyện và nâng được theo điểm luyện cùng sách.",
+    "Trang bị mặc, bán, mua và cường hóa cập nhật đúng LC.",
+    "Phụ bản dùng chung 3 lượt/ngày, thắng tầng mở tầng kế tiếp.",
+    "Đánh thua trong Phụ bản hoàn lại 1 lượt; chỉ thắng hoặc quét mới tiêu hao lượt.",
+    "Tháp yêu cầu đúng Thối Thể cảnh Lục tầng."
+  ],
+  "lastRun": {
+    "status": "completed",
+    "date": "2026-08-26",
+    "character": "test",
+    "school": "Kiếm Tu",
+    "progress": "Thối Thể cảnh Lục tầng",
+    "completedChecks": [
+      "Reset dữ liệu và tạo nhân vật test với Kiếm Tu; tên vẫn giữ đúng sau khi chọn phái.",
+      "Tu luyện và đột phá lần lượt đến Thối Thể cảnh Lục tầng.",
+      "Mua và dùng Tiểu Tu Vi Đan bằng linh thạch.",
+      "Nhiệm vụ mốc +3 hiển thị rõ Thối Thể cảnh Tam tầng; đã nhận thưởng và mở mốc Lục tầng.",
+      "Mua sách Ngự Kiếm Quyết; skill đã học xuất hiện trong Tu luyện.",
+      "Nâng Ngự Kiếm Quyết từ cấp 0 lên +3; điểm luyện reset theo cấp và mốc +3 dùng 1 sách.",
+      "Mặc Hộ Thân Khải, bán Thanh Cương Kiếm và kiểm tra lực chiến cập nhật.",
+      "Mua Đá Cường Hóa và cường hóa Hộ Thân Khải lên +1; chỉ số và lực chiến tăng đúng.",
+      "Phụ bản: thắng Động phủ tu vi tầng 1, thua Mạch linh thạch tầng 1 và quét tầng đã thắng; lượt dùng chung về 0/3.",
+      "Tháp thí luyện: mở ở Thối Thể Lục tầng và vượt tầng 1, nhận tu vi, linh thạch và trang bị Phàm phẩm.",
+      "Ngao du: nhận cơ duyên và mở rương; thắng trận thì tự đi tiếp.",
+      "Ngao du: thua trận chuyển hồi phục, tự đi tiếp khi sinh lực vượt 50%; đã xử lý cả nhánh Chạy và bị đuổi kịp.",
+      "Sửa lỗi dữ liệu trang bị đối thủ dạng rút gọn làm hộp thoại Chiến đấu/Chạy rỗng; kiểm tra lại không còn lỗi mới.",
+      "Rà soát Cửa hàng, Cường hóa, Phụ bản, Tháp, Ghi chú và Hướng dẫn."
+    ],
+    "remainingChecks": []
+  }
+}

@@ -1,0 +1,305 @@
+{
+  "shopItems": [
+    {
+      "id": "equipmentTier1Chest",
+      "name": "Rương trang bị cấp 1",
+      "description": "Mở ra 1 trang bị cấp 1–5 theo tỉ lệ phẩm chất của đại cảnh giới tương ứng.",
+      "cost": 100,
+      "type": "equipmentChest",
+      "equipmentChestTier": 1,
+      "equipmentMajorRealmId": 1,
+      "rarityQualityMax": 3,
+      "rarityWeights": [85, 15, 0],
+      "requiredMajorRealmIndex": 0
+    },
+    {
+      "id": "equipmentTier2Chest",
+      "name": "Rương trang bị cấp 2",
+      "description": "Mở ra 1 trang bị cấp 5–10 theo tỉ lệ phẩm chất của đại cảnh giới tương ứng.",
+      "cost": 200,
+      "type": "equipmentChest",
+      "equipmentChestTier": 2,
+      "equipmentMajorRealmId": 2,
+      "rarityQualityMax": 3,
+      "rarityWeights": [82, 18, 0],
+      "requiredMajorRealmIndex": 1
+    },
+    {
+      "id": "equipmentTier3Chest",
+      "name": "Rương trang bị cấp 3",
+      "description": "Mở ra 1 trang bị cấp 10–15 theo tỉ lệ phẩm chất của đại cảnh giới tương ứng.",
+      "cost": 300,
+      "type": "equipmentChest",
+      "equipmentChestTier": 3,
+      "equipmentMajorRealmId": 3,
+      "rarityQualityMax": 3,
+      "rarityWeights": [79, 20, 1],
+      "requiredMajorRealmIndex": 2
+    },
+    {
+      "id": "enhancementStone",
+      "name": "Đá Cường Hóa",
+      "description": "Nguyên liệu dùng ở mỗi cấp cường hóa.",
+      "cost": 30,
+      "type": "enhancementStone",
+      "amount": 1
+    },
+    {
+      "id": "book_beginner_sword_art",
+      "name": "Ngự Kiếm Quyết",
+      "description": "Phàm phẩm · Công pháp nhập môn của Kiếm tu.",
+      "cost": 120,
+      "type": "skillBook",
+      "skillId": "beginner_sword_art",
+      "schoolId": "sword_cultivator",
+      "gradeId": "mortal",
+      "requiredTier": 1
+    },
+    {
+      "id": "book_sword_quickdraw",
+      "name": "Khoái Kiếm Liên Tâm",
+      "description": "Phàm phẩm · Liên kiếm nhanh, tăng chính xác.",
+      "cost": 140,
+      "type": "skillBook",
+      "skillId": "sword_quickdraw",
+      "schoolId": "sword_cultivator",
+      "gradeId": "mortal",
+      "requiredTier": 1
+    },
+    {
+      "id": "book_sword_flash",
+      "name": "Phá Không Kiếm",
+      "description": "Hoàng phẩm · Kiếm khí phá không, có tỉ lệ chí mạng.",
+      "cost": 280,
+      "type": "skillBook",
+      "skillId": "sword_flash",
+      "schoolId": "sword_cultivator",
+      "gradeId": "yellow",
+      "requiredTier": 4
+    },
+    {
+      "id": "book_sword_flow",
+      "name": "Lưu Quang Kiếm Ảnh",
+      "description": "Hoàng phẩm · Kiếm ảnh tăng tốc độ ra đòn.",
+      "cost": 300,
+      "type": "skillBook",
+      "skillId": "sword_flow",
+      "schoolId": "sword_cultivator",
+      "gradeId": "yellow",
+      "requiredTier": 4
+    },
+    {
+      "id": "book_sword_domain",
+      "name": "Vạn Kiếm Quy Tông",
+      "description": "Huyền phẩm · Kiếm vực dồn lực vào một đòn.",
+      "cost": 650,
+      "type": "skillBook",
+      "skillId": "sword_domain",
+      "schoolId": "sword_cultivator",
+      "gradeId": "mysterious",
+      "requiredTier": 7
+    },
+    {
+      "id": "book_sword_storm",
+      "name": "Kiếm Vũ Lưu Tinh",
+      "description": "Huyền phẩm · Kiếm vũ liên hoàn, tăng chính xác và chí mạng.",
+      "cost": 700,
+      "type": "skillBook",
+      "skillId": "sword_storm",
+      "schoolId": "sword_cultivator",
+      "gradeId": "mysterious",
+      "requiredTier": 7
+    },
+    {
+      "id": "book_beginner_blade_art",
+      "name": "Truy Phong Đao Quyết",
+      "description": "Phàm phẩm · Đao thế nặng, sát thương cao.",
+      "cost": 120,
+      "type": "skillBook",
+      "skillId": "beginner_blade_art",
+      "schoolId": "blade_cultivator",
+      "gradeId": "mortal",
+      "requiredTier": 1
+    },
+    {
+      "id": "book_blade_heavy",
+      "name": "Trọng Sơn Đao",
+      "description": "Phàm phẩm · Một đao nặng như núi.",
+      "cost": 140,
+      "type": "skillBook",
+      "skillId": "blade_heavy",
+      "schoolId": "blade_cultivator",
+      "gradeId": "mortal",
+      "requiredTier": 1
+    },
+    {
+      "id": "book_blade_blood",
+      "name": "Huyết Đao",
+      "description": "Hoàng phẩm · Đao lực bộc phát, có tỉ lệ chí mạng.",
+      "cost": 300,
+      "type": "skillBook",
+      "skillId": "blade_blood",
+      "schoolId": "blade_cultivator",
+      "gradeId": "yellow",
+      "requiredTier": 4
+    },
+    {
+      "id": "book_blade_rend",
+      "name": "Liệt Địa Trảm",
+      "description": "Hoàng phẩm · Đao lực xé giáp, sát thương rất cao.",
+      "cost": 330,
+      "type": "skillBook",
+      "skillId": "blade_rend",
+      "schoolId": "blade_cultivator",
+      "gradeId": "yellow",
+      "requiredTier": 4
+    },
+    {
+      "id": "book_blade_heaven",
+      "name": "Phách Sơn Đoạn Nhạc",
+      "description": "Huyền phẩm · Một đao phá núi.",
+      "cost": 720,
+      "type": "skillBook",
+      "skillId": "blade_heaven",
+      "schoolId": "blade_cultivator",
+      "gradeId": "mysterious",
+      "requiredTier": 7
+    },
+    {
+      "id": "book_blade_apocalypse",
+      "name": "Diệt Thế Cuồng Đao",
+      "description": "Huyền phẩm · Cuồng đao toàn lực, tiêu hao lớn.",
+      "cost": 780,
+      "type": "skillBook",
+      "skillId": "blade_apocalypse",
+      "schoolId": "blade_cultivator",
+      "gradeId": "mysterious",
+      "requiredTier": 7
+    },
+    {
+      "id": "book_beginner_body_art",
+      "name": "Kim Cương Luyện Thể Quyết",
+      "description": "Phàm phẩm · Cường hóa thân thể, tăng phòng thủ.",
+      "cost": 120,
+      "type": "skillBook",
+      "skillId": "beginner_body_art",
+      "schoolId": "martial_cultivator",
+      "gradeId": "mortal",
+      "requiredTier": 1
+    },
+    {
+      "id": "book_martial_skin",
+      "name": "Thiết Bì Hộ Thể",
+      "description": "Phàm phẩm · Luyện da thành giáp.",
+      "cost": 140,
+      "type": "skillBook",
+      "skillId": "martial_skin",
+      "schoolId": "martial_cultivator",
+      "gradeId": "mortal",
+      "requiredTier": 1
+    },
+    {
+      "id": "book_martial_fist",
+      "name": "Thiết Quyền Chấn Sơn",
+      "description": "Hoàng phẩm · Quyền lực chấn sơn, gia cố thân thể.",
+      "cost": 280,
+      "type": "skillBook",
+      "skillId": "martial_fist",
+      "schoolId": "martial_cultivator",
+      "gradeId": "yellow",
+      "requiredTier": 4
+    },
+    {
+      "id": "book_martial_guard",
+      "name": "Kim Chung Hộ Thể",
+      "description": "Hoàng phẩm · Hộ thể kim chung, giảm sát thương.",
+      "cost": 300,
+      "type": "skillBook",
+      "skillId": "martial_guard",
+      "schoolId": "martial_cultivator",
+      "gradeId": "yellow",
+      "requiredTier": 4
+    },
+    {
+      "id": "book_martial_breaker",
+      "name": "Kim Cương Phá Thiên",
+      "description": "Huyền phẩm · Đòn phá thiên kết hợp sức mạnh và phòng thủ.",
+      "cost": 650,
+      "type": "skillBook",
+      "skillId": "martial_breaker",
+      "schoolId": "martial_cultivator",
+      "gradeId": "mysterious",
+      "requiredTier": 7
+    },
+    {
+      "id": "book_martial_rebirth",
+      "name": "Bất Diệt Kim Thân",
+      "description": "Huyền phẩm · Cường hóa thân thể và hồi phục sinh lực.",
+      "cost": 700,
+      "type": "skillBook",
+      "skillId": "martial_rebirth",
+      "schoolId": "martial_cultivator",
+      "gradeId": "mysterious",
+      "requiredTier": 7
+    },
+    {
+      "id": "cultivationPill",
+      "name": "Tiểu Tu Vi Đan",
+    "description": "Dùng nhận 50 tu vi. Mỗi lần mua, giá tăng 25 linh thạch.",
+      "cost": 50,
+      "type": "cultivation",
+      "cultivation": 50,
+      "priceStep": 25
+    },
+    {
+      "id": "greaterCultivationPill",
+      "name": "Trung Tu Vi Đan",
+    "description": "Dùng nhận 150 tu vi. Mỗi lần mua, giá tăng 20 linh thạch. Yêu cầu đại cảnh giới 2.",
+      "cost": 130,
+      "type": "cultivation",
+      "cultivation": 150,
+      "requiredMajorRealmIndex": 1,
+      "priceStep": 20
+    },
+    {
+      "id": "highestCultivationPill",
+      "name": "Cao Tu Vi Đan",
+    "description": "Dùng nhận 500 tu vi. Mỗi lần mua, giá tăng 15 linh thạch. Yêu cầu Khí Động cảnh.",
+      "cost": 450,
+      "type": "cultivation",
+      "cultivation": 500,
+      "requiredMajorRealmIndex": 2,
+      "priceStep": 15
+    },
+    {
+      "id": "majorAscensionPermit",
+      "name": "Phá Cảnh Đan",
+    "description": "Dùng để đột phá đại cảnh giới. Có thể mua nhiều.",
+      "cost": 500,
+      "type": "ascension",
+      "priceMultiplier": 2
+    },
+    {
+      "id": "healthPotion",
+      "name": "Sinh Huyết Đan",
+    "description": "Hồi phục 25% HP mỗi lần dùng.",
+      "cost": 5,
+      "type": "potion",
+      "potionType": "health",
+      "recoveryPercent": 0.25,
+      "priceIncreaseEvery": 5,
+      "priceStep": 5
+    },
+    {
+      "id": "manaPotion",
+      "name": "Tụ Linh Đan",
+    "description": "Hồi phục 25% MP mỗi lần dùng.",
+      "cost": 5,
+      "type": "potion",
+      "potionType": "mana",
+      "recoveryPercent": 0.25,
+      "priceIncreaseEvery": 5,
+      "priceStep": 5
+    }
+  ]
+}

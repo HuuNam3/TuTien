@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Đạo Hữu Tu Tiên</title>
+  <link rel="icon" type="image/png" href="./assets/Art/Sprites/Characters/chibi-sword-cultivator.png">
+  <link rel="apple-touch-icon" href="./assets/Art/Sprites/Characters/chibi-sword-cultivator.png">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <section class="resource-loader" id="resourceLoader" aria-live="polite">
+    <div class="resource-loader-card">
+      <div class="resource-loader-seal" aria-hidden="true"><img src="./assets/Art/Sprites/Characters/chibi-sword-cultivator.png" alt=""></div>
+      <p class="resource-loader-kicker">Đạo Hữu Tu Tiên</p>
+      <h1>Đang tải tài nguyên</h1>
+      <p class="resource-loader-status" id="resourceLoadingStatus">Chuẩn bị linh mạch...</p>
+      <div class="resource-progress" role="progressbar" aria-label="Tiến trình tải tài nguyên" aria-valuemin="1" aria-valuemax="100" aria-valuenow="1">
+        <i id="resourceLoadingBar"></i>
+      </div>
+      <div class="resource-loading-meta">
+        <strong id="resourceLoadingPercent">1%</strong>
+        <span>Xin chờ trong giây lát</span>
+      </div>
+    </div>
+  </section>
+  <main class="battle-shell">
+    <section class="start-screen" id="startScreen">
+      <div class="start-card">
+        <h1>Bắt đầu con đường tu tiên</h1>
+        <label class="start-name-field" for="startPlayerNameInput">
+          <span>Tên gọi của đạo hữu</span>
+          <input id="startPlayerNameInput" maxlength="16" type="text" value="Vô danh" autocomplete="off">
+        </label>
+        <div class="start-section-heading">
+          <span>Hệ phái</span>
+          <small id="startSchoolHint">Chọn một phái</small>
+        </div>
+        <div class="school-choice-grid" id="schoolChoiceGrid"></div>
+        <button id="enterGameButton" class="breakthrough start-submit" type="button" disabled><i class="activity-icon icon-activity-gate" aria-hidden="true"></i>Nhập đạo</button>
+      </div>
+    </section>
+    <section class="cultivation-panel">
+      <div class="cultivation-main">
+        <div>
+          <div class="name-editor">
+            <input id="playerNameInput" maxlength="16" type="text" value="Vô danh" aria-label="Tên gọi của đạo hữu">
+            <button id="saveNameButton" class="secondary compact" type="button"><i class="activity-icon icon-activity-feather" aria-hidden="true"></i>Lưu tên</button>
+          </div>
+          <span id="playerCultivationRealm"><i class="activity-icon icon-activity-lotus" aria-hidden="true"></i>Thối Thể cảnh Nhất tầng</span>
+          <small id="playerPowerText"><i class="unique-icon icon-unique-power" aria-hidden="true"></i>Lực chiến 0</small>
+          <small id="playerSpiritStoneText"><i class="unique-icon icon-unique-spirit-stone" aria-hidden="true"></i>Linh thạch 0</small>
+        </div>
+        <button id="playerAvatarButton" class="player-avatar-button" type="button" title="Mở Trang cá nhân" aria-label="Mở Trang cá nhân">
+          <span id="playerAvatarVisual" class="player-avatar-visual game-avatar chibi-character school-sword" aria-hidden="true"></span>
+        </button>
+        <div class="cultivation-actions">
+          <button id="dungeonButton" class="secondary compact" type="button"><i class="game-icon icon-compass" aria-hidden="true"></i><span>Ngao du</span><b class="nav-badge" id="dungeonBadge" hidden aria-hidden="true"></b></button>
+          <button id="trainingButton" class="secondary compact" type="button"><i class="game-icon icon-flame" aria-hidden="true"></i><span>Tu luyện</span><b class="nav-badge" id="trainingBadge" hidden aria-hidden="true"></b></button>
+          <button id="questButton" class="secondary compact" type="button"><i class="game-icon icon-scroll" aria-hidden="true"></i><span>Nhiệm vụ</span><b class="nav-badge" id="questBadge" hidden aria-hidden="true"></b></button>
+          <button id="equipmentButton" class="secondary compact" type="button"><i class="game-icon icon-sword" aria-hidden="true"></i><span>Trang bị</span><b class="nav-badge" id="equipmentBadge" hidden aria-hidden="true"></b></button>
+          <button id="inventoryButton" class="secondary compact" type="button"><i class="item-icon icon-item-side-pouch" aria-hidden="true"></i><span>Túi đồ</span></button>
+          <button id="shopButton" class="secondary compact" type="button"><i class="game-icon icon-shop" aria-hidden="true"></i><span>Cửa hàng</span></button>
+          <button id="trialTowerButton" class="secondary compact" type="button"><i class="game-icon icon-tower" aria-hidden="true"></i><span>Tháp thí luyện</span></button>
+          <button id="resourceDungeonButton" class="secondary compact" type="button"><i class="game-icon icon-mountain" aria-hidden="true"></i><span>Phụ bản</span><b class="nav-badge" id="resourceDungeonBadge" hidden aria-hidden="true"></b></button>
+          <button id="enhancementButton" class="secondary compact" type="button"><i class="game-icon icon-hammer" aria-hidden="true"></i><span>Cường hóa</span></button>
+          <button id="changeLogButton" class="secondary compact" type="button"><i class="game-icon icon-scroll" aria-hidden="true"></i><span>Ghi chú</span></button>
+          <button id="resetDataButton" class="danger compact reset-button" type="button"><i class="game-icon icon-reset" aria-hidden="true"></i><span>Xóa dữ liệu</span></button>
+        </div>
+      </div>
+      <section class="training-panel is-hidden" id="trainingPanel">
+        <div class="training-header">
+          <h2><i class="game-icon icon-flame" aria-hidden="true"></i>Tu luyện</h2>
+          <span id="trainingRateText">Tu vi +1/giây</span>
+        </div>
+        <section class="dantian-panel" id="dantianCultivationPanel">
+          <div>
+            <strong><i class="stat-icon icon-stat-cultivation" aria-hidden="true"></i>Đan điền</strong>
+            <span id="dantianCultivationText">0 tu vi dự trữ</span>
+          </div>
+        </section>
+        <div class="training-bars">
+          <div class="training-resource-row">
+            <div class="training-resource-stack">
+              <div class="bar-row">
+                <span><i class="stat-icon icon-stat-cultivation" aria-hidden="true"></i>Tu vi</span>
+                <strong id="playerCultivationText">0/100</strong>
+              </div>
+              <div class="bar cultivation"><i id="playerCultivationBar"></i></div>
+            </div>
+            <button id="breakthroughButton" class="breakthrough compact" type="button"><i class="stat-icon icon-stat-cultivation" aria-hidden="true"></i>Đột phá</button>
+          </div>
+          <div class="training-resource-row">
+            <div class="training-resource-stack">
+              <div class="bar-row">
+                <span><i class="stat-icon icon-stat-hp" aria-hidden="true"></i>Sinh lực</span>
+                <strong id="playerReserveHpText">85/85</strong>
+              </div>
+              <div class="bar hp"><i id="playerReserveHpBar"></i></div>
+            </div>
+            <button id="useHealthPotionButton" class="secondary compact" type="button"><i class="stat-icon icon-stat-potion" aria-hidden="true"></i>Sinh Huyết Đan x1</button>
+          </div>
+          <div class="training-resource-row">
+            <div class="training-resource-stack">
+              <div class="bar-row">
+                <span><i class="stat-icon icon-stat-mana" aria-hidden="true"></i>Linh lực</span>
+                <strong id="playerReserveManaText">20/20</strong>
+              </div>
+              <div class="bar mana"><i id="playerReserveManaBar"></i></div>
+            </div>
+            <button id="useManaPotionButton" class="secondary compact" type="button"><i class="stat-icon icon-stat-mana" aria-hidden="true"></i>Tụ Linh Đan x1</button>
+          </div>
+        </div>
+        <section class="training-skill-panel" id="trainingSkillPanel">
+          <div class="training-skill-header">
+            <div>
+              <h3><i class="activity-icon icon-activity-skill" aria-hidden="true"></i>Skill</h3>
+            </div>
+            <strong><span id="skillSlotText">Ô skill: 1/1</span> · <span id="skillPowerText">LC skill: 0</span></strong>
+          </div>
+          <div class="feature-list" id="skillsList"></div>
+          <p class="shop-message" id="skillsMessage"></p>
+        </section>
+      </section>
+      <p id="rewardPreview" class="is-hidden"></p>
+      <section class="map-panel embedded-map" id="mapPanel">
+        <div class="map-header">
+          <h2><i class="game-icon icon-compass" aria-hidden="true"></i>Ngao du</h2>
+          <button id="wanderChestButton" class="icon-button wander-chest-button" type="button" title="Rương Ngao du đang trống" aria-label="Rương Ngao du đang trống" disabled>
+            <i class="activity-icon icon-activity-chest" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="dungeon-mode-grid" id="dungeonModeGrid"></div>
+        <p class="dungeon-attempt-text is-hidden" id="dungeonAttemptText"></p>
+        <div class="stage-grid" id="stageGrid"></div>
+      </section>
+      <section class="stage-detail-panel is-hidden" id="stageDetailPanel">
+        <div>
+          <span id="stageDetailStatus">Đối thủ hiện tại</span>
+          <strong id="stageDetailTitle">Tầng 1</strong>
+          <small id="stageDetailRealm">Thối Thể cảnh Nhất tầng</small>
+        </div>
+        <div class="stage-detail-grid" id="stageDetailStats"></div>
+        <p id="stageDetailRewards">Thắng nhận tu vi và linh thạch.</p>
+        <div class="stage-detail-actions">
+        <button id="challengeStageButton" class="breakthrough" type="button"><i class="item-icon icon-item-sword" aria-hidden="true"></i>Đánh</button>
+        </div>
+      </section>
+    </section>
+
+    <section class="feature-panel is-hidden" id="enhancementPanel">
+      <div class="profile-header"><div><h2><i class="game-icon icon-hammer" aria-hidden="true"></i>Cường hóa</h2><p>Dùng linh thạch để tăng cấp trang bị</p></div><strong id="enhancementStoneText">Linh thạch: 0</strong></div>
+      <article class="profile-card"><div class="feature-list" id="enhancementList"></div><p class="shop-message" id="enhancementMessage"></p></article>
+    </section>
+
+    <section class="feature-panel is-hidden" id="resourceDungeonPanel">
+      <div class="profile-header">
+        <div><h2><i class="game-icon icon-mountain" aria-hidden="true"></i>Phụ bản</h2><p>Chọn một nơi để nhận tài nguyên</p></div>
+        <strong id="resourceDungeonSummary">0 lượt hôm nay</strong>
+      </div>
+      <article class="profile-card resource-dungeon-surface">
+        <div class="resource-dungeon-grid" id="resourceDungeonList"></div>
+        <p class="shop-message" id="resourceDungeonMessage"></p>
+      </article>
+    </section>
+
+    <section class="feature-panel is-hidden" id="trialTowerPanel">
+      <div class="profile-header">
+        <div><h2><i class="game-icon icon-tower" aria-hidden="true"></i>Tháp thí luyện</h2><p id="trialTowerEntryText">Cần đạt Khai Nguyên cảnh Nhất tầng</p></div>
+        <strong id="trialTowerProgressText">Đã vượt 0/10</strong>
+      </div>
+      <article class="profile-card">
+        <div class="trial-tower-list" id="trialTowerList"></div>
+        <p class="shop-message" id="trialTowerMessage"></p>
+      </article>
+    </section>
+
+    <section class="feature-panel is-hidden" id="questPanel">
+      <div class="profile-header">
+        <div><h2 id="questTitle"><i class="game-icon icon-scroll" aria-hidden="true"></i>Nhiệm vụ</h2><p>Theo dõi mục tiêu tu luyện và nhận thưởng</p></div>
+        <strong id="questProgressText">0 nhiệm vụ sẵn sàng</strong>
+      </div>
+      <article class="profile-card">
+        <div class="shop-category-filters quest-category-filters" id="questCategoryFilters" role="tablist" aria-label="Phân loại nhiệm vụ">
+          <button type="button" class="secondary compact is-active" data-quest-category="main" role="tab" aria-selected="true"><i class="item-icon icon-item-quest-target" aria-hidden="true"></i>Chính tuyến</button>
+          <button type="button" class="secondary compact" data-quest-category="daily" role="tab" aria-selected="false"><i class="item-icon icon-item-daily-calendar" aria-hidden="true"></i>Hàng ngày</button>
+          <button type="button" class="secondary compact quest-category-locked" data-quest-category="side" role="tab" aria-selected="false" aria-disabled="true" disabled><i class="item-icon icon-item-side-pouch" aria-hidden="true"></i>Nhiệm vụ phụ</button>
+        </div>
+        <div class="quest-list" id="questList"></div>
+        <p class="shop-message" id="questMessage"></p>
+      </article>
+    </section>
+
+    <section class="feature-panel is-hidden" id="changeLogPanel">
+      <div class="profile-header">
+        <div><h2 id="changeLogTitle"><i class="activity-icon icon-activity-history" aria-hidden="true"></i>Lịch sử cập nhật</h2><p>Xem các thay đổi đã thêm vào game</p></div>
+      </div>
+      <div class="change-log-category-filters shop-category-filters" id="changeLogCategoryFilters" role="tablist" aria-label="Phân loại ghi chú"></div>
+      <article class="profile-card">
+        <div class="change-log-list" id="changeLogList"></div>
+      </article>
+    </section>
+
+    <section class="feature-panel is-hidden" id="devPanel">
+      <div class="profile-header">
+        <div><h2><i class="game-icon icon-hammer" aria-hidden="true"></i>Chế độ Dev</h2><p>Cộng tài nguyên để kiểm thử nhanh.</p></div>
+        <strong id="devModeStatus">Chưa kích hoạt</strong>
+      </div>
+      <article class="profile-card dev-mode-card">
+        <div class="dev-mode-grid">
+          <span><i class="item-icon icon-item-spirit-stone" aria-hidden="true"></i>Linh thạch <b id="devSpiritStonesText">0</b></span>
+          <span><i class="stat-icon icon-stat-gem" aria-hidden="true"></i>Căn cơ <b id="devFoundationText">0</b></span>
+          <span><i class="stat-icon icon-stat-comprehension" aria-hidden="true"></i>Ngộ tính <b id="devComprehensionText">0</b></span>
+        </div>
+        <p class="shop-message" id="devModeMessage">Bấm tab Dev để kích hoạt.</p>
+      </article>
+    </section>
+
+    <section class="profile-panel is-hidden" id="profilePanel">
+      <div class="profile-header profile-page-header">
+        <div>
+          <h2><i class="game-icon icon-profile" aria-hidden="true"></i>Trang cá nhân</h2>
+        </div>
+      </div>
+
+      <section class="profile-hero">
+        <div class="profile-top-row">
+          <div class="profile-hero-art">
+            <span class="profile-hero-sigil" aria-hidden="true"></span>
+            <div class="profile-avatar-column">
+              <div class="profile-avatar game-avatar" id="profileAvatarText" aria-hidden="true"></div>
+              <div class="profile-hero-identity">
+                <h3 id="profileNameText">Vô danh</h3>
+                <span class="profile-eyebrow" id="profileSchoolTag">KIẾM TU</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-top-features">
+            <article class="profile-card profile-loadout-card">
+              <div class="profile-card-heading">
+                <div><span class="profile-eyebrow">Trang bị đang mặc</span></div>
+                <span id="profileLoadoutPowerText">Lực chiến 0</span>
+              </div>
+              <div class="profile-equipment-list" id="profileEquipmentList"></div>
+            </article>
+
+            <article class="profile-card profile-skill-card">
+              <div class="profile-card-heading">
+                <div><span class="profile-eyebrow">Kĩ năng đang dùng</span></div>
+                <span id="profileSkillPowerText">Lực chiến 0</span>
+              </div>
+              <div class="profile-skill-list" id="profileSkillList"></div>
+            </article>
+          </div>
+        </div>
+        <div class="profile-hero-main">
+          <div class="profile-stat-grid profile-hero-stat-grid" id="profileStats"></div>
+        </div>
+      </section>
+    </section>
+
+    <section class="equipment-panel is-hidden" id="equipmentPanel">
+      <div class="profile-header">
+        <div>
+          <h2><i class="game-icon icon-sword" aria-hidden="true"></i>Trang bị</h2>
+          <p id="equipmentPowerText">Lực chiến: 0</p>
+        </div>
+        <div class="equipment-header-actions">
+          <button id="quickEquipButton" class="breakthrough compact" type="button"><i class="item-icon icon-item-sword" aria-hidden="true"></i>Mặc nhanh</button>
+        </div>
+      </div>
+      <div class="equipment-stats-summary" id="equipmentStatsSummary"></div>
+
+      <article class="profile-card">
+        <h3>Đang mặc</h3>
+        <div class="equipment-slot-grid" id="equipmentSlots"></div>
+      </article>
+      <article class="profile-card">
+        <div class="inventory-toolbar">
+          <strong><i class="game-icon icon-sword" aria-hidden="true"></i>Trang bị trong túi</strong>
+          <span id="equipmentInventorySummary">0 vật phẩm</span>
+        </div>
+        <div class="inventory-toolbar">
+          <select id="equipmentFilter" aria-label="Lọc trang bị">
+            <option value="all">Tất cả phẩm cấp</option>
+            <option value="common">Phàm phẩm</option>
+            <option value="uncommon">Linh phẩm</option>
+            <option value="rare">Địa phẩm</option>
+          </select>
+          <select id="equipmentSort" aria-label="Sắp xếp trang bị">
+            <option value="power">Mạnh nhất</option>
+            <option value="newest">Mới nhận</option>
+            <option value="level">Cấp cao nhất</option>
+          </select>
+        </div>
+        <div class="equipment-bulk-sell">
+          <select id="equipmentBulkSellRarity" aria-label="Phẩm cấp cần bán">
+            <option value="all">Tất cả phẩm cấp</option>
+            <option value="common">Phàm phẩm</option>
+            <option value="uncommon">Linh phẩm</option>
+            <option value="rare">Địa phẩm</option>
+            <option value="epic">Huyền phẩm</option>
+            <option value="legendary">Thiên phẩm</option>
+            <option value="immortal">Tiên phẩm</option>
+            <option value="sacred">Thánh phẩm</option>
+            <option value="divine">Thần phẩm</option>
+            <option value="emperor">Đế phẩm</option>
+            <option value="chaos">Hỗn Độn phẩm</option>
+          </select>
+          <button id="equipmentBulkSellButton" type="button" class="secondary">
+            <i class="item-icon icon-item-spirit-stone" aria-hidden="true"></i>Bán nhiều
+          </button>
+        </div>
+        <div class="inventory-list" id="equipmentInventoryList"></div>
+        <p class="shop-message" id="equipmentMessage"></p>
+      </article>
+    </section>
+
+    <section class="equipment-panel inventory-panel is-hidden" id="inventoryPanel">
+      <div class="profile-header">
+        <div>
+          <h2><i class="item-icon icon-item-side-pouch" aria-hidden="true"></i>Túi đồ</h2>
+          <p id="inventorySummary">0 vật phẩm</p>
+        </div>
+      </div>
+      <article class="profile-card">
+        <div class="inventory-toolbar">
+          <strong><i class="item-icon icon-item-spirit-stone" aria-hidden="true"></i>Vật phẩm</strong>
+        </div>
+        <div class="inventory-list" id="inventoryList"></div>
+        <p class="shop-message" id="inventoryMessage"></p>
+      </article>
+    </section>
+
+    <section class="shop-panel is-hidden" id="shopPanel">
+      <div class="profile-header">
+        <div>
+          <h2><i class="game-icon icon-shop" aria-hidden="true"></i>Cửa hàng</h2>
+          <p id="shopStoneText">Linh thạch: 0</p>
+        </div>
+      </div>
+
+      <article class="profile-card">
+        <h3>Vật phẩm</h3>
+        <div class="shop-category-filters" id="shopCategoryFilters" role="tablist" aria-label="Phân loại cửa hàng">
+          <button type="button" class="secondary compact is-active" data-shop-category="all" role="tab" aria-selected="true"><i class="item-icon icon-item-spirit-stone" aria-hidden="true"></i>Tất cả</button>
+          <button type="button" class="secondary compact" data-shop-category="equipment" role="tab" aria-selected="false"><i class="unique-icon icon-unique-equipment" aria-hidden="true"></i>Trang bị</button>
+          <button type="button" class="secondary compact" data-shop-category="skill" role="tab" aria-selected="false"><i class="item-icon icon-item-skill-book" aria-hidden="true"></i>Skill</button>
+          <button type="button" class="secondary compact" data-shop-category="cultivation" role="tab" aria-selected="false"><i class="stat-icon icon-stat-cultivation" aria-hidden="true"></i>Tu vi</button>
+          <button type="button" class="secondary compact" data-shop-category="consumable" role="tab" aria-selected="false"><i class="item-icon icon-item-health-pill" aria-hidden="true"></i>Tiêu hao</button>
+          <button type="button" class="secondary compact" data-shop-category="material" role="tab" aria-selected="false"><i class="item-icon icon-item-enhancement-stone" aria-hidden="true"></i>Nguyên liệu</button>
+        </div>
+        <div class="shop-list" id="shopList"></div>
+        <p class="shop-message" id="shopMessage"></p>
+      </article>
+    </section>
+
+    <section class="battle-panel is-hidden" id="battlePanel">
+      <header class="battle-hud" aria-label="Thông tin trận đấu">
+        <div class="battle-hud-side player">
+          <strong id="playerHudName">Vô danh</strong>
+          <span id="playerHudRealm">Thối Thể cảnh Nhị tầng</span>
+        </div>
+        <div class="battle-hud-turn"><span>Lượt</span><strong id="battleTurnText">1</strong></div>
+        <div class="battle-hud-side enemy">
+          <strong id="enemyHudName">Tán tu</strong>
+          <span id="enemyHudRealm">Thối Thể cảnh Nhị tầng</span>
+        </div>
+      </header>
+      <section class="arena">
+        <article class="fighter player" id="playerCard">
+          <div class="realm" id="playerRealmText">Thối Thể cảnh Nhị tầng</div>
+          <div class="avatar">Người<br>chơi</div>
+          <h2 id="playerNameText">Vô danh</h2>
+          <div class="bars">
+            <div class="bar-row">
+              <span>Sinh lực</span>
+              <strong id="playerHpText">98/98</strong>
+            </div>
+            <div class="bar hp"><i id="playerHpBar"></i></div>
+            <div class="bar-row">
+              <span>Linh lực</span>
+              <strong id="playerManaText">24/24</strong>
+            </div>
+            <div class="bar mana"><i id="playerManaBar"></i></div>
+            <div class="skill-status" id="playerSkillStatus"></div>
+          </div>
+          <div class="stats" id="playerStats"></div>
+          <div class="float-layer" id="playerFloat"></div>
+        </article>
+
+        <div class="versus">VS</div>
+
+        <article class="fighter enemy" id="enemyCard">
+          <div class="realm" id="enemyRealmText">Thối Thể cảnh Nhị tầng</div>
+          <div class="avatar">Tán<br>tu</div>
+          <h2 id="enemyNameText">Tán tu</h2>
+          <div class="bars">
+            <div class="bar-row">
+              <span>Sinh lực</span>
+              <strong id="enemyHpText">98/98</strong>
+            </div>
+            <div class="bar hp"><i id="enemyHpBar"></i></div>
+            <div class="bar-row">
+              <span>Linh lực</span>
+              <strong id="enemyManaText">24/24</strong>
+            </div>
+            <div class="bar mana"><i id="enemyManaBar"></i></div>
+            <div class="skill-status" id="enemySkillStatus"></div>
+          </div>
+          <div class="stats" id="enemyStats"></div>
+          <div class="float-layer" id="enemyFloat"></div>
+        </article>
+      </section>
+
+      <section class="controls">
+        <button id="startButton" type="button"><i class="item-icon icon-item-sword" aria-hidden="true"></i>Đang đấu</button>
+      </section>
+
+      <section class="battle-result is-hidden" id="battleResult"></section>
+      <ol id="battleLog" class="is-hidden"></ol>
+    </section>
+    <p id="featureAccessNotice" class="toast feature-access-notice is-hidden" role="status" aria-live="polite"></p>
+  </main>
+
+  <div class="reset-modal is-hidden" id="resetConfirmModal" role="dialog" aria-modal="true" aria-labelledby="resetConfirmTitle">
+    <div class="reset-modal-card">
+      <div class="reset-modal-header">
+        <div>
+          <span class="reset-modal-kicker">Dữ liệu game</span>
+          <h2 id="resetConfirmTitle">Xóa dữ liệu?</h2>
+        </div>
+        <button id="closeResetModalButton" class="icon-button" type="button" title="Đóng" aria-label="Đóng"><i class="unique-icon icon-unique-close" aria-hidden="true"></i></button>
+      </div>
+      <p>Tu vi, hệ phái, skill, trang bị và vật phẩm sẽ trở về ban đầu.</p>
+      <div class="reset-modal-actions">
+        <button id="cancelResetButton" class="secondary compact" type="button">Hủy</button>
+        <button id="confirmResetButton" class="danger compact" type="button">Xóa dữ liệu</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./main.js"></script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "importance": "high",
+  "purpose": "Nguon tham khao dat ten cho trang bi, vat pham va skill trong game Tu Tien.",
+  "approvedSources": [
+    {
+      "title": "Vo Luyen Dinh Phong",
+      "useFor": ["trang bi", "vat pham", "skill"],
+      "style": "Vo dao, luyen the, chien dau, vu khi va bi canh tang tien."
+    },
+    {
+      "title": "Pham Nhan Tu Tien",
+      "useFor": ["trang bi", "vat pham", "skill"],
+      "style": "Tu tien than trong, phap khi, dan duoc, cong phap va canh gioi."
+    },
+    {
+      "title": "Tien Nghi",
+      "useFor": ["trang bi", "vat pham", "skill"],
+      "style": "Co phong, nghich thien, than thong, bao vat va khi the manh me."
+    }
+  ],
+  "namingRules": [
+    "Uu tien ten tieng Viet phong cach tien hiep, de doc va de nho.",
+    "Co the lay cam hung tu cac nguon da duoc phe duyet khi tao ten moi.",
+    "Khong dung ten lam nguoi choi nham la noi dung chinh thuc cua truyen.",
+    "Ten moi phai phu hop voi he phai, pham cap, cong nang va cap do vat pham.",
+    "Khong doi ten gameplay hien tai neu chua duoc yeu cau ro rang."
+  ],
+  "nameScopes": {
+    "equipment": "Vu khi, ao giap, giay, nhan, ngoc boi, phap bao.",
+    "items": "Dan duoc, nguyen lieu, sach skill, vat pham nang cap.",
+    "skills": "Cong phap, bi thuat, than thong va ky nang theo he phai."
+  }
+}

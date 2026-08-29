@@ -1,0 +1,237 @@
+{
+  "version": 9,
+  "minorRealms": [
+    "Nhất tầng",
+    "Nhị tầng",
+    "Tam tầng",
+    "Tứ tầng",
+    "Ngũ tầng",
+    "Lục tầng",
+    "Thất tầng",
+    "Bát tầng",
+    "Cửu tầng"
+  ],
+  "majorRealms": [
+    "Thối Thể",
+    "Khai Nguyên",
+    "Khí Động",
+    "Ly Hợp",
+    "Chân Nguyên",
+    "Trúc Cơ"
+  ],
+  "maps": [
+    {
+      "id": "novice",
+      "name": "Thôn Tân thủ",
+      "tierRange": [
+        1,
+        10
+      ],
+      "equipmentChestTier": 1,
+      "equipmentLevelRange": [
+        1,
+        5
+      ],
+      "description": "Khu vực nhập môn, chủ yếu gặp tán tu, yêu thú nhỏ và tà khí yếu.",
+      "enemyPoolIds": [
+        "wild_dog_demon",
+        "rogue_cultivator",
+        "stone_skin_bandit",
+        "young_sword_servant",
+        "mist_ghost",
+        "thorn_rat_demon",
+        "mud_corpse",
+        "wandering_miner",
+        "forest_spider"
+      ],
+      "rewardSettings": {
+        "cultivationMultiplier": 0.65,
+        "spiritStoneMultiplier": 0.65,
+        "equipmentRarityBonus": -0.05,
+        "equipmentDropChance": 0.25,
+        "equipmentQualityMax": 3,
+        "equipmentQualityWeights": [
+          85,
+          15,
+          0
+        ],
+        "ambushChance": 0.12
+      }
+    },
+    {
+      "id": "demonForest",
+      "name": "Rừng Yêu",
+      "tierRange": [
+        10,
+        19
+      ],
+      "equipmentChestTier": 2,
+      "equipmentLevelRange": [
+        5,
+        10
+      ],
+      "description": "Rừng rậm có yêu khí, kẻ địch nhanh hơn và hay có đòn chí mạng.",
+      "enemyPoolIds": [
+        "blood_claw_wolf",
+        "poison_vine_spirit",
+        "dark_saber_cultivator",
+        "bone_charm_ghost",
+        "iron_back_bear_demon",
+        "fallen_inner_disciple",
+        "red_mane_boar",
+        "black_mist_scholar",
+        "poison_blade_rogue"
+      ],
+      "rewardSettings": {
+        "cultivationMultiplier": 0.85,
+        "spiritStoneMultiplier": 0.85,
+        "equipmentRarityBonus": 0,
+        "equipmentDropChance": 0.25,
+        "equipmentQualityMax": 3,
+        "equipmentQualityWeights": [
+          82,
+          18,
+          0
+        ],
+        "ambushChance": 0.17
+      }
+    },
+    {
+      "id": "spiritCave",
+      "name": "Hang Linh Thạch",
+      "tierRange": [
+        19,
+        28
+      ],
+      "equipmentChestTier": 3,
+      "equipmentLevelRange": [
+        10,
+        15
+      ],
+      "description": "Hang sâu nhiều linh khí, kẻ thù mạnh hơn và có trang bị tốt hơn.",
+      "enemyPoolIds": [
+        "crystal_cave_guard",
+        "yin_flame_spirit",
+        "stone_armor_demon",
+        "ghost_faced_swordsman",
+        "spirit_mine_keeper",
+        "ancient_grudge_wraith",
+        "crystal_shell_beast",
+        "void_miner",
+        "grave_lord"
+      ],
+      "rewardSettings": {
+        "cultivationMultiplier": 1.05,
+        "spiritStoneMultiplier": 1.05,
+        "equipmentRarityBonus": 0.04,
+        "equipmentDropChance": 0.25,
+        "equipmentQualityMax": 3,
+        "equipmentQualityWeights": [
+          79,
+          21,
+          0
+        ],
+        "ambushChance": 0.22
+      }
+    },
+    {
+      "id": "hollowRealm",
+      "name": "Huyền Không Cổ Cảnh",
+      "tierRange": [
+        28,
+        36
+      ],
+      "equipmentChestTier": 4,
+      "equipmentLevelRange": [
+        15,
+        20
+      ],
+      "description": "Cổ cảnh Ly Hợp chồng lên hư không, nơi truyền thừa cổ xưa và sát cơ cùng tồn tại.",
+      "enemyPoolIds": [
+        "void_gate_guardian",
+        "fractured_soul",
+        "ancient_sky_beast"
+      ],
+      "rewardSettings": {
+        "cultivationMultiplier": 1.25,
+        "spiritStoneMultiplier": 1.25,
+        "equipmentRarityBonus": 0.05,
+        "equipmentDropChance": 0.25,
+        "equipmentQualityMax": 3,
+        "equipmentQualityWeights": [
+          73,
+          24,
+          3
+        ],
+        "ambushChance": 0.25
+      }
+    },
+    {
+      "id": "thunderPeak",
+      "name": "Lôi Minh Sơn",
+      "tierRange": [
+        37,
+        45
+      ],
+      "equipmentChestTier": 5,
+      "equipmentLevelRange": [
+        20,
+        25
+      ],
+      "description": "Núi cao quanh năm vang sấm, nơi tu sĩ Chân Nguyên tranh đoạt linh mạch giữa lôi quang.",
+      "enemyPoolIds": [
+        "thunderhorn_beast",
+        "stormblade_scholar",
+        "lightning_vein_guardian"
+      ],
+      "rewardSettings": {
+        "cultivationMultiplier": 1.45,
+        "spiritStoneMultiplier": 1.45,
+        "equipmentRarityBonus": 0.06,
+        "equipmentDropChance": 0.25,
+        "equipmentQualityMax": 4,
+        "equipmentQualityWeights": [
+          70,
+          25,
+          5,
+          0
+        ],
+        "ambushChance": 0.28
+      }
+    },
+    {
+      "id": "primordialWastes",
+      "name": "Hoang Nguyên Thái Cổ",
+      "tierRange": [
+        46,
+        54
+      ],
+      "equipmentChestTier": 6,
+      "equipmentLevelRange": [
+        25,
+        30
+      ],
+      "description": "Hoang nguyên cổ xưa ngập tràn đạo vận, mỗi bước chân đều có thể đánh thức di thú viễn cổ.",
+      "enemyPoolIds": [
+        "primordial_bone_dragon",
+        "voidflame_lord",
+        "ancient_wasteland_emperor"
+      ],
+      "rewardSettings": {
+        "cultivationMultiplier": 1.65,
+        "spiritStoneMultiplier": 1.65,
+        "equipmentRarityBonus": 0.08,
+        "equipmentDropChance": 0.25,
+        "equipmentQualityMax": 5,
+        "equipmentQualityWeights": [
+          65,
+          25,
+          8,
+          2,
+          0
+        ],
+        "ambushChance": 0.31
+      }
+    }
+  ]
+}

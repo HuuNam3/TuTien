@@ -1,0 +1,19 @@
+{
+  "starterInventory": [],
+  "initialPlayer": {
+    "name": "Vô danh",
+    "majorRealmIndex": 0,
+    "level": 1,
+    "cultivation": 0,
+    "spiritStones": 50,
+    "foundation": 1,
+    "healthPotions": 1,
+    "manaPotions": 1,
+    "enhancementStones": 0
+  },
+  "initialState": {
+    "dungeonId": "main",
+    "wanderMapId": "novice",
+    "skillId": "shadowSword"
+  }
+}
