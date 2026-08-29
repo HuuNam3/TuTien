@@ -9048,6 +9048,33 @@ body {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+/* Battles stay in the current view as a centered mobile overlay. */
+body.battle-active {
+  overflow: hidden;
+}
+
+body.battle-active::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(5, 9, 15, 0.7);
+  pointer-events: none;
+}
+
+body.battle-active .battle-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 90;
+  width: min(393px, calc(100vw - 20px));
+  max-width: 393px;
+  max-height: calc(100dvh - 20px);
+  margin: 0;
+  overflow-y: auto;
+  transform: translate(-50%, -50%);
+}
+
 .map-header {
   flex-direction: row;
   align-items: center;

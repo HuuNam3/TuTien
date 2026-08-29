@@ -3405,13 +3405,6 @@ function startStageBattle(stage) {
   resetBattle();
   render();
   renderCultivation();
-  mapPanel.classList.add('is-hidden');
-  trainingPanel.classList.add('is-hidden');
-  stageDetailPanel.classList.add('is-hidden');
-  profilePanel.classList.add('is-hidden');
-  equipmentPanel.classList.add('is-hidden');
-  shopPanel.classList.add('is-hidden');
-  hideFeaturePanels();
   battlePanel.classList.remove('is-hidden');
   document.body.classList.add('battle-active');
   hideBattleResultOverlay();

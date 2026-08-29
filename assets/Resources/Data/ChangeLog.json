@@ -3,6 +3,17 @@
   "title": "Lịch sử cập nhật",
   "entries": [
     {
+      "id": "centered-battle-overlay-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Đưa chiến đấu vào màn hình hiện tại",
+      "summary": "Màn hình chiến đấu hiển thị ở giữa dưới dạng lớp phủ thay vì chuyển sang trang riêng.",
+      "details": [
+        "Giữ màn hình đang xem phía sau và phủ nền tối khi trận đấu bắt đầu.",
+        "Khung chiến đấu được căn giữa theo chiều dọc và ngang trong bố cục mobile; sau trận đấu giao diện hiện tại được khôi phục."
+      ],
+      "category": "Giao diện"
+    },
+    {
       "id": "merge-change-log-categories-2026-08-29",
       "date": "2026-08-29",
       "title": "Gọn phân loại ghi chú",
