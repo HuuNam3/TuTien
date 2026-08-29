@@ -71,6 +71,10 @@ h1 {
   display: none !important;
 }
 
+button[hidden] {
+  display: none !important;
+}
+
 .resource-loader {
   position: fixed;
   inset: 0;

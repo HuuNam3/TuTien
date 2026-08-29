@@ -3,6 +3,17 @@
   "title": "Lịch sử cập nhật",
   "entries": [
     {
+      "id": "fix-production-dev-hidden-style-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Sửa ẩn Dev trên bản phát hành",
+      "summary": "Khắc phục CSS khiến tab Dev vẫn hiện dù bản deploy đã được nhận diện đúng domain.",
+      "details": [
+        "Nút Dev trên dao-huu-tu-tien.vercel.app được ẩn bằng quy tắc ưu tiên cho thuộc tính hidden.",
+        "Local và các domain khác vẫn hiển thị Dev như quy tắc đã đặt."
+      ],
+      "category": "Sửa lỗi"
+    },
+    {
       "id": "hide-dev-on-production-domain-2026-08-29",
       "date": "2026-08-29",
       "title": "Ẩn Dev theo domain phát hành",
