@@ -3,6 +3,41 @@
   "title": "Lịch sử cập nhật",
   "entries": [
     {
+      "id": "hide-dev-on-production-domain-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Ẩn Dev theo domain phát hành",
+      "summary": "Chỉ ẩn tab Dev trên dao-huu-tu-tien.vercel.app; các domain khác vẫn hiển thị để kiểm thử.",
+      "details": [
+        "Game nhận diện hostname dao-huu-tu-tien.vercel.app để xác định bản phát hành công khai.",
+        "Localhost, bản preview và các domain khác không cần chỉnh thủ công trước khi push."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "local-dev-tab-only-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Hiển thị Dev trên bản local",
+      "summary": "Tab Dev chỉ hiện khi chạy game tại localhost; bản deploy vẫn được ẩn.",
+      "details": [
+        "Môi trường localhost, 127.0.0.1 và ::1 được phép hiển thị tab Dev để kiểm thử.",
+        "Các hostname deploy như Vercel luôn giữ tab Dev ở trạng thái ẩn.",
+        "Nút mặc định ẩn ngay từ HTML để bản deploy không bị hiện chớp trước khi JavaScript tải xong."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "new-character-onboarding-and-novice-equipment-2026-08-29",
+      "date": "2026-08-29",
+      "title": "Thêm hướng dẫn nhập môn",
+      "summary": "Nhân vật mới được hướng dẫn nhanh cách Tu luyện và Ngao du; quái map 1 không mang trang bị.",
+      "details": [
+        "Hướng dẫn 3 bước xuất hiện sau khi tạo nhân vật mới, có thể xem từng chức năng hoặc bỏ qua.",
+        "Bước Tu luyện giải thích tích lũy tu vi và hồi phục; bước Ngao du giải thích chọn map và sự kiện sau 10 giây.",
+        "Quái tại Thôn Tân thủ luôn có danh sách trang bị rỗng, kể cả trạng thái gặp quái cũ được nạp lại."
+      ],
+      "category": "Tính năng"
+    },
+    {
       "id": "wander-enemy-equipment-dialog-2026-08-29",
       "date": "2026-08-29",
       "title": "Hiển thị trang bị trong thông tin gặp quái",

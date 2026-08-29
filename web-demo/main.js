@@ -119,6 +119,7 @@ const temporarilyDisabledQuestCategories = new Set(['side']);
 let changeLogCategory = 'all';
 let starterInventory = [];
 let initialState = {};
+let newCharacterPendingGuide = false;
 
 let player;
 let enemy;
@@ -274,6 +275,12 @@ const questPanel = $('questPanel');
 const resetDataButton = $('resetDataButton');
 const featureAccessNotice = $('featureAccessNotice');
 const resetConfirmModal = $('resetConfirmModal');
+
+const isPublicDeployment = window.location.hostname.toLowerCase() === 'dao-huu-tu-tien.vercel.app';
+if (devButton) {
+  devButton.hidden = isPublicDeployment;
+  devButton.setAttribute('aria-hidden', String(isPublicDeployment));
+}
 const closeResetModalButton = $('closeResetModalButton');
 const cancelResetButton = $('cancelResetButton');
 const confirmResetButton = $('confirmResetButton');
@@ -329,12 +336,80 @@ document.body.appendChild(shopDetailOverlay);
 const inventoryDetailOverlay = document.createElement('div');
 inventoryDetailOverlay.className = 'wander-event-overlay is-hidden';
 document.body.appendChild(inventoryDetailOverlay);
+const onboardingOverlay = document.createElement('div');
+onboardingOverlay.className = 'onboarding-overlay is-hidden';
+document.body.appendChild(onboardingOverlay);
+let onboardingStep = 0;
+
+const onboardingSteps = [
+  {
+    iconType: 'game-icon',
+    icon: 'icon-flame',
+    title: 'Tu luyện',
+    text: 'Tu luyện giúp đạo hữu tích lũy tu vi và hồi phục sinh lực, linh lực. Hãy để tu vi đầy trước khi đột phá.',
+    action: 'Xem Tu luyện',
+    tab: 'training',
+  },
+  {
+    iconType: 'game-icon',
+    icon: 'icon-compass',
+    title: 'Ngao du',
+    text: 'Chọn một map đã mở. Sau mỗi 10 giây, đạo hữu sẽ gặp cơ duyên hoặc kẻ địch để nhận thưởng hoặc chiến đấu.',
+    action: 'Xem Ngao du',
+    tab: 'map',
+  },
+  {
+    iconType: 'activity-icon',
+    icon: 'icon-activity-path',
+    title: 'Bắt đầu hành trình',
+    text: 'Tu luyện để mạnh lên, sau đó Ngao du để kiếm tài nguyên và mở những map mới theo tu vi.',
+    action: 'Bắt đầu chơi',
+    tab: 'map',
+  },
+];
 
 function hideBattleResultOverlay() {
   window.clearTimeout(battleResultTimer);
   battleResultTimer = 0;
   battleResultOverlay.classList.add('is-hidden');
   battleResultOverlay.innerHTML = '';
+}
+
+function hideOnboardingGuide() {
+  onboardingOverlay.classList.add('is-hidden');
+  onboardingOverlay.innerHTML = '';
+}
+
+function renderOnboardingGuide() {
+  const step = onboardingSteps[onboardingStep] || onboardingSteps[0];
+  onboardingOverlay.innerHTML = `
+    <div class="onboarding-card" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
+      <span class="onboarding-kicker"><i class="${step.iconType} ${step.icon}" aria-hidden="true"></i>Hướng dẫn nhập môn · ${onboardingStep + 1}/${onboardingSteps.length}</span>
+      <h2 id="onboardingTitle">${step.title}</h2>
+      <p>${step.text}</p>
+      <div class="onboarding-actions">
+        <button type="button" class="secondary compact onboarding-skip">Bỏ qua</button>
+        <button type="button" class="breakthrough compact onboarding-next"><i class="${step.iconType} ${step.icon}" aria-hidden="true"></i>${step.action}</button>
+      </div>
+    </div>
+  `;
+  onboardingOverlay.querySelector('.onboarding-skip').addEventListener('click', hideOnboardingGuide);
+  onboardingOverlay.querySelector('.onboarding-next').addEventListener('click', () => {
+    if (step.tab === 'training') showTraining();
+    if (step.tab === 'map') showMap();
+    if (onboardingStep >= onboardingSteps.length - 1) {
+      hideOnboardingGuide();
+      return;
+    }
+    onboardingStep += 1;
+    renderOnboardingGuide();
+  });
+}
+
+function showOnboardingGuide() {
+  onboardingStep = 0;
+  onboardingOverlay.classList.remove('is-hidden');
+  renderOnboardingGuide();
 }
 
 backButton?.addEventListener('click', showMap);
@@ -2037,6 +2112,7 @@ function normalizeTierRange(range, fallback) {
 function startGame() {
   clearLegacySaves();
   const loaded = loadSavedGame();
+  newCharacterPendingGuide = !loaded;
   if (!loaded) {
     equippedItems = Object.fromEntries(equipmentSlots.map((slot) => [slot.id, null]));
     inventory = starterInventory.map((item) => createEquipmentItem(item.slotId, item.level, item.rarityKey, {
@@ -2053,6 +2129,8 @@ function startGame() {
 
 function finishGameStart() {
   if (gameStarted) return;
+  const shouldShowOnboarding = newCharacterPendingGuide;
+  newCharacterPendingGuide = false;
   gameStarted = true;
   startScreen?.classList.add('is-hidden');
   enforceEquipmentInventoryLimit();
@@ -2064,6 +2142,7 @@ function finishGameStart() {
   showMap();
   autoWanderAfterRecovery = false;
   saveGame();
+  if (shouldShowOnboarding) showOnboardingGuide();
   const refreshResources = () => {
     if (!gameStarted) {
       resourceRegenTimer = 0;
@@ -3824,6 +3903,10 @@ function getEnemyEquipmentChestTier(stage) {
 }
 
 function getEnemyEquipment(stage) {
+  if (stage.mapId === 'novice') {
+    stage.enemyEquipment = [];
+    return [];
+  }
   if (!stage.enemyEquipment) {
     const isFixedEquipmentStage = stage.isTrialTower || stage.isResourceDungeon;
     const equipmentCount = isFixedEquipmentStage
