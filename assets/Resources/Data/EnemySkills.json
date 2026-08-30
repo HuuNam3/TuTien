@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "defaultSkill": {
+    "id": "enemy_basic",
+    "multiplier": 1.4,
+    "cost": 16,
+    "cooldown": 1,
+    "description": "Không có hiệu ứng thêm.",
+    "effects": []
+  },
+  "skills": [
+    {
+      "id": "enemy_frenzied_combo",
+      "name": "Liên Kích Cuồng Bạo",
+      "multiplier": 1.15,
+      "cost": 20,
+      "cooldown": 2,
+      "description": "30% cơ hội thi triển lần 2, không tiêu hao thêm linh lực và không lặp trong cùng lượt.",
+      "effects": [{ "type": "extraCast", "chance": 0.3 }]
+    },
+    {
+      "id": "enemy_rock_armor",
+      "name": "Hộ Thể Nham Giáp",
+      "multiplier": 1.05,
+      "cost": 15,
+      "cooldown": 2,
+      "description": "Giảm 10% sát thương nhận trong 2 lượt, không cộng dồn.",
+      "effects": [{ "type": "selfBuff", "stat": "damageReduction", "value": 0.1, "duration": 2, "chance": 1, "nonStacking": true }]
+    },
+    {
+      "id": "enemy_blood_rage",
+      "name": "Huyết Nộ",
+      "multiplier": 1.25,
+      "cost": 18,
+      "cooldown": 2,
+      "description": "Tăng 8% Công trong 2 lượt, không cộng dồn.",
+      "effects": [{ "type": "percentBuff", "stat": "attack", "value": 0.08, "duration": 2, "chance": 1, "nonStacking": true }]
+    },
+    {
+      "id": "enemy_armor_break",
+      "name": "Phá Khí Trảm",
+      "multiplier": 1.3,
+      "cost": 20,
+      "cooldown": 2,
+      "description": "Tăng 10% xuyên trong 2 lượt, không cộng dồn.",
+      "effects": [{ "type": "selfBuff", "stat": "armorPierce", "value": 0.1, "duration": 2, "chance": 1, "nonStacking": true }]
+    },
+    {
+      "id": "enemy_ghost_step",
+      "name": "Quỷ Ảnh Đoạt Hồn",
+      "multiplier": 1.2,
+      "cost": 16,
+      "cooldown": 1,
+      "description": "Tăng 5% Né trong 2 lượt, không cộng dồn.",
+      "effects": [{ "type": "selfBuff", "stat": "dodgeRate", "value": 0.05, "duration": 2, "chance": 1, "nonStacking": true }]
+    },
+    {
+      "id": "enemy_beastquake",
+      "name": "Cổ Thú Chấn Thiên",
+      "multiplier": 1.5,
+      "cost": 25,
+      "cooldown": 3,
+      "description": "Không có hiệu ứng thêm.",
+      "effects": []
+    },
+    {
+      "id": "enemy_recovering_soul",
+      "name": "Hồi Nguyên Thuật",
+      "multiplier": 0.9,
+      "cost": 22,
+      "cooldown": 3,
+      "description": "Hồi 15% sinh lực tối đa.",
+      "effects": [{ "type": "healPercent", "value": 0.15, "chance": 1 }]
+    },
+    {
+      "id": "enemy_thunder_crit",
+      "name": "Lôi Đình Bạo Kích",
+      "multiplier": 1.4,
+      "cost": 24,
+      "cooldown": 3,
+      "description": "Tăng 5% Chí mạng trong 2 lượt, không cộng dồn.",
+      "effects": [{ "type": "selfBuff", "stat": "critRate", "value": 0.05, "duration": 2, "chance": 1, "nonStacking": true }]
+    }
+  ],
+  "assignments": {
+    "wild_dog_demon": "enemy_frenzied_combo",
+    "stone_skin_bandit": "enemy_rock_armor",
+    "blood_claw_wolf": "enemy_blood_rage",
+    "dark_saber_cultivator": "enemy_armor_break",
+    "bone_charm_ghost": "enemy_ghost_step",
+    "ancient_sky_beast": "enemy_beastquake",
+    "ancient_grudge_wraith": "enemy_recovering_soul",
+    "voidflame_lord": "enemy_thunder_crit"
+  }
+}

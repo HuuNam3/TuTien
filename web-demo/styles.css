@@ -1972,7 +1972,9 @@ li {
 }
 
 .wander-event-modal {
-  width: min(402px, calc(100vw - 28px));
+  width: min(393px, calc(100vw - 20px));
+  max-width: 393px;
+  box-sizing: border-box;
   display: grid;
   gap: 10px;
   padding: 14px;
@@ -1997,6 +1999,72 @@ li {
   color: var(--muted);
   font-style: normal;
   line-height: 1.4;
+}
+
+.enemy-encounter-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.enemy-encounter-meta > span,
+.enemy-encounter-summary > span {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.enemy-encounter-meta > span {
+  padding: 7px 8px;
+  border: 1px solid rgba(124, 224, 255, 0.2);
+  background: rgba(13, 16, 22, 0.38);
+}
+
+.enemy-encounter-meta b,
+.enemy-encounter-summary b {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
+.enemy-encounter-meta strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: #f7f8fb;
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.enemy-encounter-meta > span:first-child strong {
+  color: var(--gold);
+}
+
+.enemy-encounter-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 7px 8px;
+  border-top: 1px solid rgba(225, 230, 238, 0.14);
+  border-bottom: 1px solid rgba(225, 230, 238, 0.14);
+}
+
+.enemy-encounter-summary > span {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.enemy-encounter-summary strong {
+  color: #7ce0ff;
+  font-size: 13px;
+}
+
+.enemy-equipment-preview b {
+  color: #f2d58a;
+  font-weight: 900;
 }
 
 .onboarding-overlay {
@@ -2167,6 +2235,36 @@ li {
 .stage-grid.main-dungeon-grid .dungeon-entry-card small {
   font-size: 13px;
   line-height: 1.4;
+}
+
+.stage-grid.main-dungeon-grid .enemy-encounter-meta > span {
+  display: grid;
+  padding: 7px 8px;
+  border: 1px solid rgba(124, 224, 255, 0.2);
+  background: rgba(13, 16, 22, 0.38);
+}
+
+.stage-grid.main-dungeon-grid .enemy-encounter-meta > span strong {
+  display: block;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.stage-grid.main-dungeon-grid .enemy-encounter-summary > span {
+  display: flex;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.stage-grid.main-dungeon-grid .enemy-equipment-preview b {
+  width: auto;
+  margin: 0;
+  text-align: left;
 }
 
 .stage-grid.main-dungeon-grid .dungeon-entry-card b {
@@ -3864,6 +3962,10 @@ li {
 }
 
 .battle-panel .skill-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   min-height: 35px;
   margin-top: 6px;
   padding: 6px 8px;
@@ -3873,20 +3975,77 @@ li {
   font-size: 10px;
 }
 
-.battle-panel .skill-status span {
-  color: #f2c75c;
+.battle-panel .skill-status-icons {
+  display: grid;
+  grid-template-columns: repeat(3, 28px);
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
 }
 
-.battle-panel .skill-status strong {
-  color: #9eb2c7;
-  font-size: 10px;
+.battle-panel .skill-status-icon-wrap {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(112, 129, 151, 0.58);
+  border-radius: 5px;
+  background: rgba(8, 13, 19, 0.68);
 }
 
-.battle-panel .skill-status small {
-  display: block;
-  margin-top: 2px;
-  color: #f2c35a;
-  font-size: 10px;
+.battle-panel .skill-status-icon-wrap.waiting {
+  opacity: 0.72;
+}
+
+.battle-panel .skill-status-icon {
+  width: 24px;
+  height: 24px;
+  opacity: 0.5;
+  filter: grayscale(0.85) brightness(0.72);
+  transition: opacity 160ms ease, filter 160ms ease, transform 160ms ease;
+}
+
+.battle-panel .skill-status-icon-wrap.ready .skill-status-icon {
+  opacity: 1;
+  filter: none;
+  transform: scale(1.08);
+}
+
+.battle-panel .skill-status-cooldown {
+  position: absolute;
+  right: -4px;
+  bottom: -5px;
+  display: grid;
+  place-items: center;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 2px;
+  border: 1px solid #0b1118;
+  border-radius: 8px;
+  background: #5c6f84;
+  color: #f4f7fb;
+  font-size: 9px;
+  line-height: 1;
+}
+
+.battle-panel .skill-status-mana.missing {
+  position: absolute;
+  right: -4px;
+  bottom: -5px;
+  width: 17px;
+  height: 17px;
+  border: 1px solid #0b1118;
+  border-radius: 50%;
+  background-color: #5a2930;
+  opacity: 1;
+  filter: none;
+}
+
+.battle-panel .skill-status-icon-wrap.ready {
+  border-color: #63cfe8;
+  box-shadow: 0 0 10px rgba(99, 207, 232, 0.28);
 }
 
 .battle-panel .skill-status.ready {
@@ -6607,8 +6766,7 @@ button.breakthrough:not(:disabled) {
 
 .battle-panel .fighter > .realm,
 .battle-panel .fighter > h2,
-.battle-panel .fighter > .stats,
-.battle-panel .fighter > .bars > .skill-status {
+.battle-panel .fighter > .stats {
   display: none;
 }
 
@@ -9396,4 +9554,29 @@ body.battle-active .battle-panel {
 .stage-grid.main-dungeon-grid .wander-map-card strong {
   font-size: 12px;
   line-height: 1.15;
+}
+
+/* Keep the mobile layout compact with a consistent 4px rhythm. */
+.topbar,
+.cultivation-panel,
+.map-header {
+  margin-bottom: 4px;
+}
+
+.training-panel,
+.embedded-map,
+.stage-detail-panel {
+  margin-top: 4px;
+}
+
+.stage-grid,
+.stage-grid.main-dungeon-grid,
+.stage-grid.main-dungeon-grid .wander-map-list {
+  gap: 4px !important;
+}
+
+.stage-grid.main-dungeon-grid .wander-card,
+.stage-grid.main-dungeon-grid .dungeon-entry-card,
+.stage-grid.main-dungeon-grid .wander-actions {
+  gap: 4px !important;
 }

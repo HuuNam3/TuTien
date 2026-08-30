@@ -3,6 +3,143 @@
   "title": "Lịch sử cập nhật",
   "entries": [
     {
+      "id": "compact-mobile-panel-margins-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Thu gọn khoảng cách panel mobile",
+      "summary": "Điều chỉnh các margin và khoảng cách chính về nhịp 4px để giao diện gọn và dễ nhìn hơn.",
+      "details": [
+        "Thu gọn khoảng cách giữa thanh điều hướng, panel và tiêu đề map.",
+        "Các nhóm map và stage dùng khoảng cách 4px đồng nhất."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "match-panel-width-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Đồng bộ chiều rộng panel mobile",
+      "summary": "Modal gặp đối thủ dùng cùng chiều rộng chuẩn 393px với khung game gốc.",
+      "details": [
+        "Giới hạn chiều rộng modal theo khung mobile chuẩn.",
+        "Giữ nguyên khoảng cách và kích thước nội dung, không làm panel tràn ngang."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "clarify-enemy-encounter-info-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Làm rõ thông tin đối thủ",
+      "summary": "Tách phẩm chất, tu vi, lối đánh, skill, lực chiến và tỉ lệ chạy thoát thành các mục riêng trong giao diện gặp đối thủ.",
+      "details": [
+        "Phẩm chất hiển thị rõ theo nhãn, ví dụ: Phẩm chất: Bình thường.",
+        "Thông tin được chia thành các ô nhỏ để dễ đọc trên màn hình mobile.",
+        "Áp dụng đồng nhất cho modal gặp đối thủ và thẻ sự kiện trong ngao du."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "save-and-assign-enemy-skills-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Cập nhật skill kẻ thù",
+      "summary": "Lưu bộ skill kẻ thù vào dữ liệu riêng và áp dụng thông số mana, sát thương, hồi chiêu mới.",
+      "details": [
+        "Skill cũ của kẻ thù mặc định gây 140% Công, tốn 16 Linh lực và hồi 1 lượt.",
+        "Thêm 8 skill mới có hiệu ứng liên kích, phòng thủ, tăng công, xuyên, né, hồi máu và chí mạng.",
+        "Các skill mới được gán cho những kẻ thù phù hợp theo lối chiến đấu."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "three-battle-skill-icons-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Hiển thị tối đa 3 icon skill",
+      "summary": "Ô skill trong chiến đấu có kích thước cố định cho tối đa 3 skill đang trang bị.",
+      "details": [
+        "Mỗi icon skill tự sáng khi có thể sử dụng và tối khi chưa sẵn sàng.",
+        "Mỗi skill có huy hiệu hồi chiêu riêng; khi hết hồi nhưng thiếu mana, huy hiệu được thay bằng icon mana."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "prioritize-skill-cooldown-badge-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Ưu tiên hiển thị lượt hồi skill",
+      "summary": "Huy hiệu số lượt hồi được giữ ưu tiên; icon mana chỉ xuất hiện khi skill đã hết hồi nhưng chưa đủ linh lực.",
+      "details": [
+        "Skill còn lượt hồi luôn hiển thị số lượt còn lại.",
+        "Icon mana chỉ thay huy hiệu khi hồi chiêu đã về 0 và mana chưa đủ để sử dụng."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "fix-skill-mana-icon-sprite-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Sửa lỗi icon mana trong chiến đấu",
+      "summary": "Khôi phục ảnh icon mana khi icon này thay huy hiệu hồi chiêu của skill.",
+      "details": [
+        "Giữ lại ảnh sprite icon-stat-mana bằng cách chỉ đổi màu nền của huy hiệu.",
+        "Icon mana không còn bị hiển thị thành vòng tròn trống."
+      ],
+      "category": "Sửa lỗi"
+    },
+    {
+      "id": "skill-mana-badge-replaces-cooldown-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Hiển thị icon mana tại ô skill",
+      "summary": "Khi skill thiếu linh lực, icon mana thay cho huy hiệu số lượt hồi ở góc icon skill.",
+      "details": [
+        "Skill đang hồi vẫn hiển thị số lượt hồi còn lại.",
+        "Khi không đủ linh lực, số lượt hồi được thay bằng icon mana để báo trạng thái thiếu tài nguyên.",
+        "Thông tin lượng linh lực hiện có và cần dùng vẫn xem được qua tooltip."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "compact-battle-skill-icons-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Tinh gọn icon skill trong chiến đấu",
+      "summary": "Skill trong trận chỉ hiển thị icon, sáng khi dùng được và tối khi chưa sẵn sàng.",
+      "details": [
+        "Huy hiệu nhỏ trên icon cho biết số lượt hồi chiêu còn lại.",
+        "Khi thiếu linh lực, icon mana sẽ xuất hiện cạnh icon skill.",
+        "Tên skill và thông số vẫn có thể xem qua tooltip của icon."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "show-battle-skill-status-on-mobile-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Sửa lỗi ẩn skill trong chiến đấu mobile",
+      "summary": "Hiển thị lại ô skill trong cả hai khung chiến đấu trên giao diện mobile.",
+      "details": [
+        "Bỏ rule CSS làm ẩn trạng thái skill ở breakpoint mobile.",
+        "Tên skill, sát thương, hồi chiêu và trạng thái linh lực hiện có thể nhìn thấy khi giao chiến."
+      ],
+      "category": "Sửa lỗi"
+    },
+    {
+      "id": "change-log-category-scope-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Gọn bộ phân loại Ghi chú",
+      "summary": "Khôi phục bộ lọc Tất cả và chỉ hiển thị các ghi chú thuộc Tính năng, Cân bằng hoặc Sửa lỗi.",
+      "details": [
+        "Bộ lọc gồm Tất cả, Tính năng, Cân bằng và Sửa lỗi.",
+        "Các ghi chú ngoài ba nhóm chính không còn xuất hiện trong danh sách cập nhật."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "enemy-skill-status-and-cooldown-icons-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Hiển thị thông số skill trong chiến đấu",
+      "summary": "Ô skill của người chơi và kẻ địch hiển thị sát thương, hồi chiêu và trạng thái linh lực rõ ràng hơn.",
+      "details": [
+        "Skill kẻ địch hiện dùng mặc định gây 140% Công, tốn 20 Linh lực và hồi 2 lượt; trận phục kích có thể dùng 150% Công.",
+        "Icon skill sáng lên khi đủ điều kiện thi triển và giảm sáng khi đang hồi chiêu hoặc chưa sẵn sàng.",
+        "Khi thiếu mana, hiển thị icon Linh lực cùng lượng hiện có và lượng cần dùng."
+      ],
+      "category": "Tính năng"
+    },
+    {
       "id": "show-public-change-log-and-clean-filters-2026-08-30",
       "date": "2026-08-30",
       "title": "Hiển thị Ghi chú trên bản deploy",

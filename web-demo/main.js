@@ -17,6 +17,7 @@ const cultivationSkillsPath = '/assets/Resources/Data/CultivationSkills.json';
 const combatStatsPath = '/assets/Resources/Data/CombatStats.json';
 const combatStylesPath = '/assets/Resources/Data/CombatStyles.json';
 const enemyStatsPath = '/assets/Resources/Data/EnemyStats.json';
+const enemySkillsPath = '/assets/Resources/Data/EnemySkills.json';
 const trialTowerPath = '/assets/Resources/Data/TrialTower.json';
 const changeLogPath = '/assets/Resources/Data/ChangeLog.json';
 const questDataPath = '/assets/Resources/Data/Quests.json';
@@ -155,6 +156,7 @@ let cultivationSkills = [];
 let combatStatDefinitions = [];
 let combatStyles = {};
 let trialTowerData = { entryRequiredTier: 10, entryText: '', floors: [] };
+let enemySkillData = { defaultSkill: {}, skills: [], assignments: {} };
 let changeLogData = { title: 'Lịch sử cập nhật', entries: [] };
 let questData = { title: 'Nhiệm vụ', quests: [] };
 
@@ -484,7 +486,7 @@ changeLogCategoryFilters?.addEventListener('click', (event) => {
   const button = event.target.closest('[data-change-log-category]');
   if (!button) return;
   const selectedCategory = button.dataset.changeLogCategory || 'all';
-  changeLogCategory = changeLogCategory === selectedCategory ? 'all' : selectedCategory;
+  changeLogCategory = selectedCategory;
   renderChangeLog();
 });
 devButton?.addEventListener('click', showDevMode);
@@ -1025,9 +1027,17 @@ function renderWanderEnemyOverlay(container, event) {
   container.innerHTML = `
     <span><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i>Gặp đối thủ</span>
     <strong>${stage.enemyData.name}</strong>
-    <em>${getEnemyRankLabel(stage.enemyData, stage.enemyRankLevel)} | ${stage.realmText} | ${getCombatStyleLabel(stage.enemyData)} | ${stage.enemyData.skillName}</em>
-    <small>Lực chiến ${formatGameNumber(getCombatPower(preview))} | Chạy thoát ${toPercent(fleeChance)}</small>
-    <small class="enemy-equipment-preview">Trang bị: ${getEnemyEquipmentText(stage)}</small>
+    <div class="enemy-encounter-meta">
+      <span><b>Phẩm chất</b><strong>${getEnemyRankLabel(stage.enemyData, stage.enemyRankLevel)}</strong></span>
+      <span><b>Tu vi</b><strong>${stage.realmText}</strong></span>
+      <span><b>Lối đánh</b><strong>${getCombatStyleLabel(stage.enemyData)}</strong></span>
+      <span><b>Skill</b><strong>${stage.enemyData.skillName}</strong></span>
+    </div>
+    <div class="enemy-encounter-summary">
+      <span><b>Lực chiến</b><strong>${formatGameNumber(getCombatPower(preview))}</strong></span>
+      <span><b>Chạy thoát</b><strong>${toPercent(fleeChance)}</strong></span>
+    </div>
+    <small class="enemy-equipment-preview"><b>Trang bị</b> ${getEnemyEquipmentText(stage)}</small>
     <div class="wander-actions">
       <button type="button" class="breakthrough compact"><i class="item-icon icon-item-sword" aria-hidden="true"></i>Chiến đấu</button>
       <button type="button" class="secondary compact"><i class="unique-icon icon-unique-flee" aria-hidden="true"></i>Chạy</button>
@@ -1057,8 +1067,17 @@ function renderWanderAmbushOverlay(container, event) {
     <span><i class="activity-icon icon-activity-ambush" aria-hidden="true"></i>Bị phục kích</span>
     <strong>${stage.enemyData.name}</strong>
     <em>${event.lootResult?.message || 'Cơ duyên vừa lấy phát ra dị động.'}</em>
-    <small>${getEnemyRankLabel(stage.enemyData, stage.enemyRankLevel)} | ${stage.realmText} | ${getCombatStyleLabel(stage.enemyData)} | Lực chiến ${formatGameNumber(getCombatPower(preview))} | Chạy thoát ${toPercent(fleeChance)}</small>
-    <small class="enemy-equipment-preview">Trang bị: ${getEnemyEquipmentText(stage)}</small>
+    <div class="enemy-encounter-meta">
+      <span><b>Phẩm chất</b><strong>${getEnemyRankLabel(stage.enemyData, stage.enemyRankLevel)}</strong></span>
+      <span><b>Tu vi</b><strong>${stage.realmText}</strong></span>
+      <span><b>Lối đánh</b><strong>${getCombatStyleLabel(stage.enemyData)}</strong></span>
+      <span><b>Skill</b><strong>${stage.enemyData.skillName}</strong></span>
+    </div>
+    <div class="enemy-encounter-summary">
+      <span><b>Lực chiến</b><strong>${formatGameNumber(getCombatPower(preview))}</strong></span>
+      <span><b>Chạy thoát</b><strong>${toPercent(fleeChance)}</strong></span>
+    </div>
+    <small class="enemy-equipment-preview"><b>Trang bị</b> ${getEnemyEquipmentText(stage)}</small>
     <div class="wander-actions">
       <button type="button" class="breakthrough compact"><i class="item-icon icon-item-sword" aria-hidden="true"></i>Chiến đấu</button>
       <button type="button" class="secondary compact"><i class="unique-icon icon-unique-flee" aria-hidden="true"></i>Chạy</button>
@@ -1461,14 +1480,19 @@ function claimQuest(questId) {
 
 function renderChangeLog() {
   $('changeLogTitle').innerHTML = `<i class="activity-icon icon-activity-history" aria-hidden="true"></i>${changeLogData.title || 'Lịch sử cập nhật'}`;
-  const entries = changeLogData.entries.map((entry, index) => ({ ...entry, sortIndex: index })).sort((left, right) => {
+  const visibleCategories = ['Tính năng', 'Cân bằng', 'Sửa lỗi'];
+  const entries = changeLogData.entries
+    .filter((entry) => visibleCategories.includes(entry.category || ''))
+    .map((entry, index) => ({ ...entry, sortIndex: index }))
+    .sort((left, right) => {
     const dateOrder = String(right.date || '').localeCompare(String(left.date || ''));
     return dateOrder || left.sortIndex - right.sortIndex;
   });
-  const categories = ['Tính năng', 'Cân bằng', 'Sửa lỗi'];
+  const categories = ['all', ...visibleCategories];
   if (!categories.includes(changeLogCategory)) changeLogCategory = 'all';
   if (changeLogCategoryFilters) {
     const iconByCategory = {
+      all: 'icon-activity-history',
       'Cân bằng': 'icon-activity-fortune',
       'Sửa lỗi': 'icon-activity-locked',
       'Tính năng': 'icon-activity-skill',
@@ -1482,7 +1506,8 @@ function renderChangeLog() {
       const isActive = category === changeLogCategory;
       const iconClass = iconByCategory[category] || 'icon-activity-history';
       const iconType = iconClass === 'icon-unique-equipment' ? 'unique-icon' : 'activity-icon';
-      return `<button type="button" class="secondary compact${isActive ? ' is-active' : ''}" data-change-log-category="${category}" role="tab" aria-selected="${isActive}"><i class="${iconType} ${iconClass}" aria-hidden="true"></i>${category}</button>`;
+      const label = category === 'all' ? 'Tất cả' : category;
+      return `<button type="button" class="secondary compact${isActive ? ' is-active' : ''}" data-change-log-category="${category}" role="tab" aria-selected="${isActive}"><i class="${iconType} ${iconClass}" aria-hidden="true"></i>${label}</button>`;
     }).join('');
   }
   const visibleEntries = changeLogCategory === 'all'
@@ -1849,6 +1874,7 @@ async function loadAllResources() {
     ['skill', loadCultivationSkills],
     ['chỉ số chiến đấu', loadCombatStats],
     ['thông số kẻ thù', loadEnemyStats],
+    ['skill kẻ thù', loadEnemySkills],
     ['lối đánh', loadCombatStyles],
     ['Tháp thí luyện', loadTrialTowerData],
     ['ghi chú', loadChangeLogData],
@@ -1863,6 +1889,7 @@ async function loadAllResources() {
       `Đang tải ${name}... ${completedTasks}/${resourceTasks.length}`,
     );
   }));
+  applyEnemySkillAssignments();
 
   updateResourceLoading(86, 'Đang tải hình ảnh giao diện...');
   await preloadVisualAssets();
@@ -1978,6 +2005,16 @@ async function loadEnemyStats() {
   baseStats = data.baseStats;
   perLevel = data.defaultMinorGrowth;
   majorRealmMinorGrowths = data.minorGrowthByRealm;
+}
+
+async function loadEnemySkills() {
+  const response = await fetch(enemySkillsPath);
+  if (!response.ok) throw new Error(`Cannot load enemy skills: ${response.status}`);
+  const data = await response.json();
+  if (!data.defaultSkill || !Array.isArray(data.skills) || !data.assignments) {
+    throw new Error('Enemy skill data is incomplete.');
+  }
+  enemySkillData = data;
 }
 
 async function loadCombatStyles() {
@@ -2157,6 +2194,8 @@ function normalizeEnemyData(enemy) {
     type: enemy.type || 'Tu sĩ',
     rank: enemy.rank || 'normal',
     skillName: enemy.skillName,
+    skillId: enemy.skillId || '',
+    skillDescription: enemy.skillDescription || '',
     description: enemy.description || '',
     canEquip: true,
     equipment: Array.isArray(enemy.equipment) ? enemy.equipment : [],
@@ -2164,6 +2203,57 @@ function normalizeEnemyData(enemy) {
     combatStyle: enemy.combatStyle || inferEnemyCombatStyle(enemy),
     weight: Math.max(1, Number(enemy.weight) || 1),
   };
+}
+
+function applyEnemySkillAssignments() {
+  const assignments = enemySkillData.assignments || {};
+  const definitions = new Map((enemySkillData.skills || []).map((skill) => [skill.id, skill]));
+  stageEnemyData.forEach((enemyData) => {
+    const skillId = assignments[enemyData.id] || enemyData.skillId || '';
+    const definition = definitions.get(skillId);
+    enemyData.skillId = definition?.id || '';
+    if (definition) {
+      enemyData.skillName = definition.name;
+      enemyData.skillDescription = definition.description || 'Không có hiệu ứng thêm';
+    }
+  });
+}
+
+function getEnemySkillDefinition(enemyData = {}) {
+  const definition = (enemySkillData.skills || []).find((skill) => skill.id === enemyData.skillId);
+  return {
+    ...(enemySkillData.defaultSkill || {}),
+    ...(definition || {}),
+    name: enemyData.skillName || definition?.name || 'Skill kẻ địch',
+    description: enemyData.skillDescription || definition?.description || 'Không có hiệu ứng thêm',
+  };
+}
+
+function createEnemySkillRuntime(enemyData, initialCooldown = null) {
+  const definition = getEnemySkillDefinition(enemyData);
+  const cooldown = Math.max(1, Number(definition.cooldown) || 1);
+  return {
+    id: definition.id || `enemy-skill-${enemyData.id}`,
+    name: definition.name,
+    description: definition.description,
+    cost: Math.max(0, Number(definition.cost) || 0),
+    multiplier: Math.max(0, Number(definition.multiplier) || 0),
+    cooldown,
+    cooldownRemaining: initialCooldown === null ? cooldown : Math.max(0, Number(initialCooldown) || 0),
+    effects: Array.isArray(definition.effects) ? definition.effects.map((effect) => ({ ...effect })) : [],
+  };
+}
+
+function applyEnemySkillRuntime(fighter, enemyData, initialCooldown = null) {
+  const skill = createEnemySkillRuntime(enemyData, initialCooldown);
+  fighter.skillId = skill.id;
+  fighter.skillName = skill.name;
+  fighter.skillDescription = skill.description;
+  fighter.skillCost = skill.cost;
+  fighter.skillMultiplier = skill.multiplier;
+  fighter.skillCooldown = skill.cooldown;
+  fighter.skillCooldownRemaining = skill.cooldownRemaining;
+  fighter.skills = [skill];
 }
 
 function inferEnemyCombatStyle(enemy = {}) {
@@ -3421,8 +3511,17 @@ function renderWanderEnemyEvent(event) {
   card.innerHTML = `
     <span><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i>Gặp đối thủ</span>
     <strong>${stage.enemyData.name}</strong>
-    <em>${getEnemyRankLabel(stage.enemyData, stage.enemyRankLevel)} | ${stage.realmText} | ${stage.enemyData.skillName}</em>
-    <small>Lực chiến ${formatGameNumber(getCombatPower(preview))} | Chạy thoát ${toPercent(fleeChance)} | Đánh thắng để mở đường ngao du tiếp.</small>
+    <div class="enemy-encounter-meta">
+      <span><b>Phẩm chất</b><strong>${getEnemyRankLabel(stage.enemyData, stage.enemyRankLevel)}</strong></span>
+      <span><b>Tu vi</b><strong>${stage.realmText}</strong></span>
+      <span><b>Skill</b><strong>${stage.enemyData.skillName}</strong></span>
+    </div>
+    <div class="enemy-encounter-summary">
+      <span><b>Lực chiến</b><strong>${formatGameNumber(getCombatPower(preview))}</strong></span>
+      <span><b>Chạy thoát</b><strong>${toPercent(fleeChance)}</strong></span>
+    </div>
+    <small>Đánh thắng để mở đường ngao du tiếp.</small>
+    <small class="enemy-equipment-preview"><b>Trang bị</b> ${getEnemyEquipmentText(stage)}</small>
     <div class="wander-actions">
       <button type="button" class="breakthrough compact"><i class="item-icon icon-item-sword" aria-hidden="true"></i>Chiến đấu</button>
       <button type="button" class="secondary compact"><i class="unique-icon icon-unique-flee" aria-hidden="true"></i>Chạy</button>
@@ -3450,7 +3549,17 @@ function renderWanderAmbushEvent(event) {
     <span><i class="activity-icon icon-activity-ambush" aria-hidden="true"></i>Bị phục kích</span>
     <strong>${stage.enemyData.name}</strong>
     <em>${event.lootResult?.message || 'Cơ duyên vừa lấy phát ra dị động.'}</em>
-    <small>${stage.realmText} | Lực chiến ${formatGameNumber(getCombatPower(preview))} | Chạy thoát ${toPercent(fleeChance)}</small>
+    <div class="enemy-encounter-meta">
+      <span><b>Phẩm chất</b><strong>${getEnemyRankLabel(stage.enemyData, stage.enemyRankLevel)}</strong></span>
+      <span><b>Tu vi</b><strong>${stage.realmText}</strong></span>
+      <span><b>Lối đánh</b><strong>${getCombatStyleLabel(stage.enemyData)}</strong></span>
+      <span><b>Skill</b><strong>${stage.enemyData.skillName}</strong></span>
+    </div>
+    <div class="enemy-encounter-summary">
+      <span><b>Lực chiến</b><strong>${formatGameNumber(getCombatPower(preview))}</strong></span>
+      <span><b>Chạy thoát</b><strong>${toPercent(fleeChance)}</strong></span>
+    </div>
+    <small class="enemy-equipment-preview"><b>Trang bị</b> ${getEnemyEquipmentText(stage)}</small>
     <div class="wander-actions">
       <button type="button" class="breakthrough compact"><i class="item-icon icon-item-sword" aria-hidden="true"></i>Chiến đấu</button>
       <button type="button" class="secondary compact"><i class="unique-icon icon-unique-flee" aria-hidden="true"></i>Chạy</button>
@@ -3879,11 +3988,9 @@ function createStageEnemy(stage) {
       accuracy: stats.accuracy,
       dodgeRate: stats.dodgeRate,
       blockRate: stats.blockRate,
-      skillName: stage.enemyData.skillName,
-      skillMultiplier: 1.5,
-      skillCooldownRemaining: 1,
       skills: [],
     };
+    applyEnemySkillRuntime(enemyFighter, stage.enemyData, 1);
     applyEnemyRankMultiplier(enemyFighter, stage.enemyRankLevel);
     applyEnemyCombatStyle(enemyFighter, stage.enemyData);
     applyItemStats(enemyFighter, getEnemyEquipment(stage));
@@ -3902,8 +4009,7 @@ function createStageEnemy(stage) {
   );
   applyEnemyStatMultipliers(enemyFighter, stage.enemyData.statMultiplier);
   applyEnemyRankMultiplier(enemyFighter, stage.enemyRankLevel);
-  enemyFighter.skillName = stage.enemyData.skillName;
-  enemyFighter.skillMultiplier = 1.4;
+  applyEnemySkillRuntime(enemyFighter, stage.enemyData);
   applyEnemyCombatStyle(enemyFighter, stage.enemyData);
   applyItemStats(enemyFighter, getEnemyEquipment(stage));
   enemyFighter.dodgeRate = 0;
@@ -4245,6 +4351,24 @@ function applySkillEffects(attacker, target, skill) {
       receiver[effect.stat] = (receiver[effect.stat] || 0) + value;
       receiver.battleBuffs.push({ key: buffKey, stat: effect.stat, value, remaining: duration });
       effectTexts.push(`${getStatLabel(effect.stat)} +${isPercentStat(effect.stat) ? toPercent(value) : value}`);
+    }
+    if (effect.type === 'percentBuff') {
+      const rate = clamp(Number(effect.value) || 0, 0, 1);
+      const duration = Math.max(1, Number(effect.duration) || 1);
+      if (!(effect.stat in receiver)) return;
+      const value = Math.max(1, Math.round((receiver[effect.stat] || 0) * rate));
+      const buffKey = `${skill.id}:${effect.stat}`;
+      receiver.battleBuffs = receiver.battleBuffs || [];
+      if (effect.nonStacking) {
+        receiver.battleBuffs = receiver.battleBuffs.filter((buff) => {
+          if (buff.key !== buffKey) return true;
+          receiver[buff.stat] = (receiver[buff.stat] || 0) - buff.value;
+          return false;
+        });
+      }
+      receiver[effect.stat] = (receiver[effect.stat] || 0) + value;
+      receiver.battleBuffs.push({ key: buffKey, stat: effect.stat, value, remaining: duration });
+      effectTexts.push(`${getStatLabel(effect.stat)} +${toPercent(rate)}`);
     }
     if (effect.type === 'healPercent') {
       const heal = Math.min(receiver.maxHp - receiver.hp, Math.floor(receiver.maxHp * (Number(effect.value) || 0)));
@@ -7103,20 +7227,52 @@ function renderFighter(prefix, fighter) {
 
 function renderSkillStatus(prefix, fighter) {
   const el = $(`${prefix}SkillStatus`);
-  const enoughMana = fighter.mana >= fighter.skillCost;
-  const ready = fighter.skillCooldownRemaining <= 0 && enoughMana;
-  const cooldownText = fighter.skillCooldownRemaining > 0
-    ? `Hồi chiêu: còn ${fighter.skillCooldownRemaining} lượt`
-    : enoughMana
-      ? 'Hồi chiêu: sẵn sàng'
-      : `Thiếu linh lực: cần ${fighter.skillCost}`;
-
+  if (!el || !fighter) return;
+  const skills = fighter.skills?.length
+    ? fighter.skills.slice(0, 3)
+    : [{
+      id: 'legacy_skill',
+      name: fighter.skillName || 'Skill',
+      cost: fighter.skillCost,
+      multiplier: fighter.skillMultiplier,
+      cooldown: fighter.skillCooldown,
+      cooldownRemaining: fighter.skillCooldownRemaining,
+    }];
+  const skillLabels = skills.map((skill) => {
+    const skillCost = Math.max(0, Number(skill.cost) || 0);
+    const skillMultiplier = Math.max(0, Number(skill.multiplier) || 0);
+    const skillCooldown = Math.max(1, Number(skill.cooldown) || 1);
+    const cooldownRemaining = Math.max(0, Number(skill.cooldownRemaining) || 0);
+    const enoughMana = fighter.mana >= skillCost;
+    const ready = cooldownRemaining <= 0 && enoughMana;
+    const skillIcon = skill.id === 'legacy_skill' ? 'icon-item-skill-book' : getSkillItemIconClass(skill.id);
+    const skillIconType = skillIcon.startsWith('icon-skill-item-') ? 'skill-item-icon' : 'item-icon';
+    const cooldownText = cooldownRemaining > 0
+      ? `Còn ${cooldownRemaining}/${skillCooldown} lượt`
+      : 'Sẵn sàng';
+    const skillLabel = `${skill.name} · Gây ${Math.round(skillMultiplier * 100)}% Công · ${cooldownText}`;
+    const statusBadge = cooldownRemaining > 0
+      ? `<b class="skill-status-cooldown">${cooldownRemaining}</b>`
+      : !enoughMana
+      ? `<i class="stat-icon icon-stat-mana skill-status-mana missing" title="Thiếu linh lực ${Math.floor(fighter.mana)}/${skillCost}" aria-label="Thiếu linh lực ${Math.floor(fighter.mana)}/${skillCost}"></i>`
+      : '';
+    return {
+      ready,
+      label: skillLabel + (enoughMana ? '' : ` · Thiếu linh lực ${Math.floor(fighter.mana)}/${skillCost}`),
+      markup: `
+        <span class="skill-status-icon-wrap ${ready ? 'ready' : 'waiting'}" title="${skillLabel}">
+          <i class="${skillIconType} skill-status-icon ${skillIcon}" aria-hidden="true"></i>
+          ${statusBadge}
+        </span>
+      `,
+    };
+  });
+  const ready = skillLabels.some((skill) => skill.ready);
   el.classList.toggle('ready', ready);
   el.classList.toggle('waiting', !ready);
+  el.setAttribute('aria-label', skillLabels.map((skill) => skill.label).join(' · '));
   el.innerHTML = `
-    <span>${fighter.skillName}</span>
-    <strong>${cooldownText}</strong>
-    ${fighter.combatStyleLabel ? `<small>Lối đánh: ${fighter.combatStyleLabel}</small>` : ''}
+    <span class="skill-status-icons">${skillLabels.map((skill) => skill.markup).join('')}</span>
   `;
 }
 
