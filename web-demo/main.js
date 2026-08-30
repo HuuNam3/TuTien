@@ -185,6 +185,7 @@ let playerSpiritStones = 0;
 let playerFoundation = 0;
 let playerComprehension = 1;
 let devMode = false;
+let redeemedCodes = {};
 let foundationFindCounts = {};
 let foundationPillPurchases = {};
 let cultivationPillPurchases = {};
@@ -307,6 +308,8 @@ const trialTowerButton = $('trialTowerButton');
 const changeLogButton = $('changeLogButton');
 const changeLogCategoryFilters = $('changeLogCategoryFilters');
 const devButton = $('devButton');
+const codeInput = $('codeInput');
+const redeemCodeButton = $('redeemCodeButton');
 const questButton = $('questButton');
 const questCategoryFilters = $('questCategoryFilters');
 const dungeonBadge = $('dungeonBadge');
@@ -324,11 +327,6 @@ const resetDataButton = $('resetDataButton');
 const featureAccessNotice = $('featureAccessNotice');
 const resetConfirmModal = $('resetConfirmModal');
 
-const isPublicDeployment = window.location.hostname.toLowerCase() === 'dao-huu-tu-tien.vercel.app';
-if (devButton) {
-  devButton.hidden = isPublicDeployment;
-  devButton.setAttribute('aria-hidden', String(isPublicDeployment));
-}
 const closeResetModalButton = $('closeResetModalButton');
 const cancelResetButton = $('cancelResetButton');
 const confirmResetButton = $('confirmResetButton');
@@ -365,7 +363,7 @@ const tabButtons = {
   resourceDungeon: resourceDungeonButton,
   trialTower: trialTowerButton,
   changeLog: changeLogButton,
-  dev: devButton,
+  code: devButton,
   quests: questButton,
 };
 const logList = $('battleLog');
@@ -489,7 +487,11 @@ changeLogCategoryFilters?.addEventListener('click', (event) => {
   changeLogCategory = selectedCategory;
   renderChangeLog();
 });
-devButton?.addEventListener('click', showDevMode);
+devButton?.addEventListener('click', showCodePanel);
+redeemCodeButton?.addEventListener('click', redeemCode);
+codeInput?.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') redeemCode();
+});
 questButton?.addEventListener('click', showQuests);
 questCategoryFilters?.addEventListener('click', (event) => {
   const button = event.target.closest('[data-quest-category]');
@@ -581,12 +583,31 @@ function hideFeatureAccessNotice() {
   if (featureAccessNotice) featureAccessNotice.textContent = '';
 }
 
-function showGameToast(message, variant = 'success') {
+function showGameToast(message, variant = 'success', rewardItems = []) {
   if (!featureAccessNotice) return;
   window.clearTimeout(featureAccessNoticeTimer);
   featureAccessNotice.classList.remove('toast-success', 'toast-error', 'toast-locked');
   featureAccessNotice.classList.add(`toast-${variant}`);
-  featureAccessNotice.textContent = message;
+  featureAccessNotice.replaceChildren();
+  const messageNode = document.createElement('span');
+  messageNode.textContent = message;
+  featureAccessNotice.append(messageNode);
+  if (Array.isArray(rewardItems) && rewardItems.length) {
+    const rewardList = document.createElement('span');
+    rewardList.className = 'toast-reward-list';
+    rewardItems.forEach((item) => {
+      const reward = document.createElement('span');
+      reward.className = 'toast-reward-item';
+      const icon = document.createElement('i');
+      icon.className = item.iconClass;
+      icon.setAttribute('aria-hidden', 'true');
+      const label = document.createElement('b');
+      label.textContent = item.label;
+      reward.append(icon, label);
+      rewardList.append(reward);
+    });
+    featureAccessNotice.append(rewardList);
+  }
   featureAccessNotice.classList.remove('is-hidden');
   featureAccessNoticeTimer = window.setTimeout(hideFeatureAccessNotice, 3600);
 }
@@ -1161,30 +1182,94 @@ function showChangeLog() {
   prepareFeatureView(changeLogPanel, 'changeLog', renderChangeLog);
 }
 
-function showDevMode() {
+function showCodePanel() {
   if (busy) return;
-  devMode = true;
-  playerSpiritStones = 10000000;
-  playerFoundation = 1000000;
-  playerComprehension = 10000;
-  syncPlayerResourceCaps();
-  updateNotificationBadges();
-  showGameToast('Đã kích hoạt chế độ Dev.', 'success');
-  prepareFeatureView(devPanel, 'dev', renderDevMode);
+  prepareFeatureView(devPanel, 'code', renderCodePanel);
 }
 
 function showQuests() {
   prepareFeatureView(questPanel, 'quests', renderQuests);
 }
 
-function renderDevMode() {
-  $('devModeStatus').textContent = devMode ? 'Đã kích hoạt' : 'Chưa kích hoạt';
-  $('devSpiritStonesText').textContent = formatGameNumber(playerSpiritStones);
-  $('devFoundationText').textContent = formatGameNumber(playerFoundation);
-  $('devComprehensionText').textContent = formatGameNumber(playerComprehension);
-  $('devModeMessage').textContent = devMode
-    ? 'Đã cộng tài nguyên Dev; các điều kiện mở khóa vẫn giữ nguyên.'
-    : 'Bấm tab Dev để kích hoạt.';
+function renderCodePanel() {
+  codeInput?.focus();
+}
+
+function getRedeemCodeConfig(code) {
+  const codes = gameConfig.redeemCodes && typeof gameConfig.redeemCodes === 'object'
+    ? gameConfig.redeemCodes
+    : {};
+  return codes[code] || null;
+}
+
+function getRedeemRewardToastItems(code, grant = {}) {
+  if (code === 'devgame') {
+    return [
+      { iconClass: 'item-icon icon-item-spirit-stone', label: `Linh thạch +${formatGameNumber(grant.spiritStones)}` },
+      { iconClass: 'stat-icon icon-stat-gem', label: `Căn cơ +${formatGameNumber(grant.foundation)}` },
+      { iconClass: 'unique-icon icon-unique-comprehension', label: `Ngộ tính +${formatGameNumber(grant.comprehension)}` },
+    ];
+  }
+  if (code === 'newbie') {
+    return [
+      { iconClass: 'item-icon icon-item-spirit-stone', label: `Linh thạch +${formatGameNumber(grant.spiritStones)}` },
+      { iconClass: 'activity-icon icon-activity-chest', label: `Rương cấp 1 x${formatGameNumber(grant.equipmentChestTier1)}` },
+      { iconClass: 'item-icon icon-item-enhancement-stone', label: `Đá cường hóa x${formatGameNumber(grant.enhancementStones)}` },
+      { iconClass: 'activity-icon icon-activity-gate', label: `Phá Cảnh Đan x${formatGameNumber(grant.ascensionPermits)}` },
+      { iconClass: 'item-icon icon-item-health-pill', label: `Sinh Huyết Đan x${formatGameNumber(grant.healthPotions)}` },
+      { iconClass: 'item-icon icon-item-mana-flame', label: `Tụ Linh Đan x${formatGameNumber(grant.manaPotions)}` },
+    ];
+  }
+  return [];
+}
+
+function redeemCode() {
+  if (busy) return;
+  const code = String(codeInput?.value || '').trim().toLowerCase();
+  if (!code) {
+    showGameToast('Hãy nhập mã quà tặng.', 'error');
+    return;
+  }
+
+  const config = getRedeemCodeConfig(code);
+  if (!config) {
+    showGameToast('Mã quà tặng không hợp lệ.', 'error');
+    return;
+  }
+  if (config.once !== false && redeemedCodes[code]) {
+    showGameToast('Mã này đã được sử dụng.', 'error');
+    return;
+  }
+
+  const grant = config.grant || {};
+  playerSpiritStones += Math.max(0, Number(grant.spiritStones) || 0);
+  playerFoundation += Math.max(0, Number(grant.foundation) || 0);
+  playerComprehension += Math.max(0, Number(grant.comprehension) || 0);
+  enhancementStones += Math.max(0, Number(grant.enhancementStones) || 0);
+  healthPotionCount += Math.max(0, Number(grant.healthPotions) || 0);
+  manaPotionCount += Math.max(0, Number(grant.manaPotions) || 0);
+  addShopInventoryItem(ascensionPermitItemId, grant.ascensionPermits);
+  for (let index = 0; index < Math.max(0, Number(grant.equipmentChestTier1) || 0); index += 1) {
+    addEquipmentChest({ majorRealmIndex: playerMajorRealmIndex }, { chestTier: 1 });
+  }
+
+  if (code === 'devgame') devMode = true;
+  redeemedCodes[code] = true;
+  syncPlayerResourceCaps();
+  updateNotificationBadges();
+  renderCodePanel();
+  renderCultivation();
+  renderInventory();
+  renderShop();
+  renderEquipment();
+  renderProfile();
+  saveGame();
+  if (codeInput) codeInput.value = '';
+  showGameToast(
+    code === 'devgame' ? 'Đã nhận quà Dev:' : 'Đã nhận quà tân thủ:',
+    'success',
+    getRedeemRewardToastItems(code, grant),
+  );
 }
 
 function getCombinedQuestMilestones(quest) {
@@ -2363,6 +2448,9 @@ function loadSavedGame() {
     playerFoundation = Math.max(1, Number(data.playerFoundation) || 1);
     playerComprehension = Math.max(1, Math.floor(Number(data.playerComprehension) || 1));
     devMode = Boolean(data.devMode);
+    redeemedCodes = data.redeemedCodes && typeof data.redeemedCodes === 'object'
+      ? Object.fromEntries(Object.entries(data.redeemedCodes).map(([code, used]) => [String(code), Boolean(used)]))
+      : {};
     foundationFindCounts = normalizeFoundationFindCounts(data.foundationFindCounts);
     wanderChestRewards = normalizeWanderChestRewards(data.wanderChestRewards);
     wanderWinCount = Math.max(0, Math.floor(Number(data.wanderWinCount) || 0));
@@ -2539,6 +2627,7 @@ function saveGame() {
     playerFoundation,
     playerComprehension,
     devMode,
+    redeemedCodes,
     foundationFindCounts,
     wanderChestRewards,
     wanderWinCount,

@@ -1192,6 +1192,51 @@
         "Tiến trình đang có cũng được chuẩn hóa lại nếu trận chờ cũ đang giữ phẩm chất ngoài cấu hình mới."
       ],
       "category": "Tính năng"
+    },
+    {
+      "id": "redeem-codes-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Thêm tab Code và mã quà tặng",
+      "summary": "Đổi tab Dev thành Code, thêm mã devgame và newbie; tab Code hiển thị cả trên deploy.",
+      "details": [
+        "Mã devgame cộng thêm 100 vạn căn cơ, 1 vạn ngộ tính và 10.000 vạn linh thạch.",
+        "Mã newbie tặng 3.000 linh thạch, 10 rương trang bị cấp 1, 10 đá cường hóa, 1 Phá Cảnh Đan, 10 Sinh Huyết Đan và 10 Tụ Linh Đan.",
+        "Mỗi mã chỉ nhận một lần trên một dữ liệu lưu local và trạng thái đã nhận được lưu trong save.",
+        "Bỏ cơ chế ẩn tab theo domain production."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "redeem-code-reward-toast-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Hiển thị phần thưởng mã bằng toast",
+      "summary": "Toast nhận mã thành công hiển thị đầy đủ từng vật phẩm kèm icon; mã sai hoặc đã dùng vẫn báo toast lỗi.",
+      "details": [
+        "Thêm icon cho linh thạch, căn cơ, ngộ tính, rương, đá cường hóa, Phá Cảnh Đan và đan hồi phục.",
+        "Giữ thời gian hiển thị toast và không thay đổi giới hạn mỗi mã chỉ nhận một lần."
+      ],
+      "category": "Giao diện"
+    },
+    {
+      "id": "simplify-code-panel-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Gọn giao diện tab Code",
+      "summary": "Bỏ các ô hiển thị tài nguyên và dòng trạng thái trong tab Code, chỉ giữ khu vực nhập mã.",
+      "details": [
+        "Tab Code không còn hiển thị ba ô Linh thạch, Căn cơ và Ngộ tính.",
+        "Kết quả nhận mã vẫn được thông báo bằng toast ở giữa màn hình, kèm icon phần thưởng."
+      ],
+      "category": "Giao diện"
+    },
+    {
+      "id": "newbie-code-reward-balance-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Điều chỉnh quà mã newbie",
+      "summary": "Giảm phần thưởng linh thạch của mã newbie từ 3.000 xuống 1.000.",
+      "details": [
+        "Các phần thưởng còn lại của mã newbie được giữ nguyên."
+      ],
+      "category": "Cân bằng"
     }
   ]
 }

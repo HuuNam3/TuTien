@@ -27,6 +27,27 @@
     "wanderChestCapacity": 30,
     "offlineCapSeconds": 28800
   },
+  "redeemCodes": {
+    "devgame": {
+      "once": true,
+      "grant": {
+        "spiritStones": 100000000,
+        "foundation": 1000000,
+        "comprehension": 10000
+      }
+    },
+    "newbie": {
+      "once": true,
+      "grant": {
+        "spiritStones": 1000,
+        "equipmentChestTier1": 10,
+        "enhancementStones": 10,
+        "ascensionPermits": 1,
+        "healthPotions": 10,
+        "manaPotions": 10
+      }
+    }
+  },
   "persistence": {
     "saveKey": "tuTienBattleSave:v9",
     "legacySaveKeys": [

@@ -65,7 +65,7 @@
           <button id="resourceDungeonButton" class="secondary compact" type="button"><i class="game-icon icon-mountain" aria-hidden="true"></i><span>Phụ bản</span><b class="nav-badge" id="resourceDungeonBadge" hidden aria-hidden="true"></b></button>
           <button id="enhancementButton" class="secondary compact" type="button"><i class="game-icon icon-hammer" aria-hidden="true"></i><span>Cường hóa</span></button>
           <button id="changeLogButton" class="secondary compact" type="button"><i class="game-icon icon-scroll" aria-hidden="true"></i><span>Ghi chú</span></button>
-          <button id="devButton" class="secondary compact" type="button" hidden aria-hidden="true"><i class="game-icon icon-hammer" aria-hidden="true"></i><span>Dev</span></button>
+          <button id="devButton" class="secondary compact" type="button"><i class="game-icon icon-hammer" aria-hidden="true"></i><span>Code</span></button>
           <button id="resetDataButton" class="danger compact reset-button" type="button"><i class="game-icon icon-reset" aria-hidden="true"></i><span>Xóa dữ liệu</span></button>
         </div>
       </div>
@@ -205,16 +205,16 @@
 
     <section class="feature-panel is-hidden" id="devPanel">
       <div class="profile-header">
-        <div><h2><i class="game-icon icon-hammer" aria-hidden="true"></i>Chế độ Dev</h2><p>Cộng tài nguyên để kiểm thử nhanh.</p></div>
-        <strong id="devModeStatus">Chưa kích hoạt</strong>
+        <div><h2><i class="game-icon icon-hammer" aria-hidden="true"></i>Code</h2><p>Nhập mã để nhận phần thưởng.</p></div>
       </div>
-      <article class="profile-card dev-mode-card">
-        <div class="dev-mode-grid">
-          <span><i class="item-icon icon-item-spirit-stone" aria-hidden="true"></i>Linh thạch <b id="devSpiritStonesText">0</b></span>
-          <span><i class="stat-icon icon-stat-gem" aria-hidden="true"></i>Căn cơ <b id="devFoundationText">0</b></span>
-          <span><i class="stat-icon icon-stat-comprehension" aria-hidden="true"></i>Ngộ tính <b id="devComprehensionText">0</b></span>
+      <article class="profile-card">
+        <div class="code-redeem-form">
+          <label for="codeInput">Mã quà tặng</label>
+          <div>
+            <input id="codeInput" type="text" maxlength="32" autocomplete="off" spellcheck="false" placeholder="Nhập mã">
+            <button id="redeemCodeButton" class="breakthrough compact" type="button"><i class="game-icon icon-gift" aria-hidden="true"></i>Nhận</button>
+          </div>
         </div>
-        <p class="shop-message" id="devModeMessage">Bấm tab Dev để kích hoạt.</p>
       </article>
     </section>
 

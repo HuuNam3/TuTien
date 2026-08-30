@@ -6400,37 +6400,37 @@ button.breakthrough:not(:disabled) {
   box-shadow: 0 0 18px rgba(124, 224, 255, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
-.dev-mode-card {
-  border-color: #76d9f2;
-  background: linear-gradient(135deg, rgba(28, 57, 73, 0.95), rgba(20, 30, 43, 0.96));
+.code-redeem-form {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
 }
 
-.dev-mode-grid {
+.code-redeem-form label {
+  color: #a9d9e7;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.code-redeem-form > div {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 8px;
 }
 
-.dev-mode-grid span {
-  display: grid;
-  gap: 4px;
+.code-redeem-form input {
   min-width: 0;
-  padding: 10px 8px;
-  border: 1px solid #3c6376;
-  border-radius: 6px;
-  color: #a9d9e7;
-  font-size: 12px;
+  border: 1px solid #4c7186;
+  border-radius: 5px;
+  background: #101923;
+  color: #f4f7fb;
+  padding: 9px 10px;
+  font: inherit;
 }
 
-.dev-mode-grid b {
-  color: #fff0a8;
-  font-size: 18px;
-}
-
-@media (max-width: 380px) {
-  .dev-mode-grid {
-    grid-template-columns: 1fr;
-  }
+.code-redeem-form input:focus {
+  outline: 2px solid #76d9f2;
+  outline-offset: 1px;
 }
 
 /* Item frames: each rarity gets a distinct frame color and subtle matching surface. */
@@ -7350,6 +7350,30 @@ body {
   border-color: rgba(239, 190, 92, 0.82);
   background: rgba(38, 30, 20, 0.96);
   color: #ffe5a4;
+}
+
+.toast-reward-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 10px;
+  margin-top: 7px;
+}
+
+.toast-reward-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #fff0a8;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.toast-reward-item > i {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  margin: 0;
 }
 
 @keyframes feature-toast-in {
