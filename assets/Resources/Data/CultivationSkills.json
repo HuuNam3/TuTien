@@ -3,7 +3,7 @@
   "equipSlots": [
     { "slot": 1, "requiredTier": 1 },
     { "slot": 2, "requiredTier": 10 },
-    { "slot": 3, "requiredTier": 19 }
+    { "slot": 3, "requiredTier": 20 }
   ],
   "grades": [
     { "id": "mortal", "name": "Phàm phẩm" },
@@ -20,7 +20,7 @@
     "heaven": 37
   },
   "upgrade": {
-    "maxLevel": 12,
+    "maxLevel": 15,
     "multiplierPerLevel": 0.03,
     "multiplierPerLevelByGrade": {
       "mortal": 0.03,
@@ -29,10 +29,12 @@
       "earth": 0.06,
       "heaven": 0.07
     },
-    "skillBookRequiredLevels": [3, 6, 9],
+    "skillBookRequiredLevels": [3, 6, 9, 12, 15],
     "manaRegenPerTurn": 3,
-    "combatPowerPerLevel": 10,
-    "combatPowerPerMilestone": 5
+    "combatPowerPerLevel": 20,
+    "combatPowerPerMilestone": 10,
+    "initialCooldown": 2,
+    "initialCooldownPerMajorRealm": 1
   },
   "practice": {
     "baseRequired": 100,

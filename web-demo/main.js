@@ -221,6 +221,8 @@ let autoWanderRecoveryTimer = 0;
 let autoWanderAfterRecovery = false;
 let wanderChestRewards = [];
 let wanderChestCapacity = 0;
+let highEnemyEncounterChance = false;
+let wanderEventRollCount = 0;
 let dantianCultivation = 0;
 let dantianCultivationSeconds = 0;
 let offlineCapSeconds = 0;
@@ -232,6 +234,8 @@ let trialTowerHighestCleared = 0;
 let claimedQuestIds = new Set();
 let wanderWinCount = 0;
 let wanderRewardCount = 0;
+let wanderDefeatedByMap = {};
+let wanderBossDefeatedByMap = {};
 let trialTowerWinCount = 0;
 let equipmentEquipCounts = {};
 let dailyQuestProgress = { date: getDailyKey(), wanderWins: 0, wanderRewards: 0, trialTowerWins: 0 };
@@ -248,6 +252,13 @@ let loadingShownProgress = 1;
 let loadingAnimationFrame = 0;
 let loadingComplete = false;
 let loadingHideScheduled = false;
+const audioPreferenceKey = 'tuTienAudioEnabled';
+let audioEnabled = true;
+let audioContext = null;
+let audioMasterGain = null;
+let audioResumePromise = null;
+let audioFallbackEnabled = false;
+const audioFallbackCache = new Map();
 const criticalAssetPaths = [
   '/assets/Art/Textures/game-background-mobile.png',
   '/assets/Art/Textures/game-background-chibi-mobile.png',
@@ -308,6 +319,7 @@ const trialTowerButton = $('trialTowerButton');
 const changeLogButton = $('changeLogButton');
 const changeLogCategoryFilters = $('changeLogCategoryFilters');
 const devButton = $('devButton');
+const audioToggleButton = $('audioToggleButton');
 const codeInput = $('codeInput');
 const redeemCodeButton = $('redeemCodeButton');
 const questButton = $('questButton');
@@ -386,33 +398,238 @@ const onboardingOverlay = document.createElement('div');
 onboardingOverlay.className = 'onboarding-overlay is-hidden';
 document.body.appendChild(onboardingOverlay);
 let onboardingStep = 0;
+let onboardingTargetElement = null;
+let onboardingTargetClickHandler = null;
+let onboardingAdvanceQueued = false;
 
 const onboardingSteps = [
   {
     iconType: 'game-icon',
     icon: 'icon-flame',
-    title: 'Tu luyện',
-    text: 'Tu luyện giúp đạo hữu tích lũy tu vi và hồi phục sinh lực, linh lực. Hãy để tu vi đầy trước khi đột phá.',
-    action: 'Xem Tu luyện',
-    tab: 'training',
+    title: 'Chào mừng đạo hữu',
+    text: 'Ta sẽ dẫn đạo hữu làm quen với những thao tác đầu tiên. Sau mỗi lời nhắc, hãy bấm nút Tiếp theo để ta chỉ đúng nơi cần dùng.',
+    action: 'Bắt đầu hướng dẫn',
   },
   {
     iconType: 'game-icon',
     icon: 'icon-compass',
-    title: 'Ngao du',
-    text: 'Chọn một map đã mở. Sau mỗi 10 giây, đạo hữu sẽ gặp cơ duyên hoặc kẻ địch để nhận thưởng hoặc chiến đấu.',
-    action: 'Xem Ngao du',
-    tab: 'map',
+    title: 'Bước 1: Mở Tu luyện',
+    text: 'Tu luyện tự động tạo tu vi theo thời gian và giúp hồi phục tài nguyên. Hãy bấm vào nút Tu luyện đang phát sáng.',
+    targetSelector: '#trainingButton',
+    targetLabel: 'nút Tu luyện',
   },
   {
     iconType: 'activity-icon',
     icon: 'icon-activity-path',
-    title: 'Bắt đầu hành trình',
-    text: 'Tu luyện để mạnh lên, sau đó Ngao du để kiếm tài nguyên và mở những map mới theo tu vi.',
-    action: 'Bắt đầu chơi',
-    tab: 'map',
+    title: 'Bước 2: Mở Ngao du',
+    text: 'Ngao du giúp đạo hữu gặp cơ duyên hoặc kẻ địch sau mỗi khoảng thời gian. Hãy bấm vào nút Ngao du để mở bản đồ.',
+    targetSelector: '#dungeonButton',
+    targetLabel: 'nút Ngao du',
+  },
+  {
+    iconType: 'game-icon',
+    icon: 'icon-compass',
+    title: 'Bước 3: Xem thông tin map',
+    text: 'Map đang sáng là nơi đạo hữu có thể đi ngay. Hãy xem khoảng tu vi, phần thưởng và dòng kẻ địch trước khi lên đường.',
+    action: 'Chỉ mình nút bắt đầu',
+  },
+  {
+    iconType: 'activity-icon',
+    icon: 'icon-activity-path',
+    title: 'Bước 4: Bắt đầu ngao du',
+    text: 'Đọc nhanh khoảng tu vi, phần thưởng và kẻ địch trong map. Khi đã sẵn sàng, hãy bấm nút bắt đầu đang phát sáng.',
+    targetSelector: '.wander-info-panel > button:not(:disabled)',
+    targetLabel: 'nút Bắt đầu ngao du',
+  },
+  {
+    iconType: 'activity-icon',
+    icon: 'icon-activity-fortune',
+    title: 'Đạo hữu đã sẵn sàng',
+    text: 'Rất tốt! Hãy tu luyện để mạnh lên, ngao du để nhận tài nguyên và quay lại khi cần xem hướng dẫn trong game.',
+    action: 'Tiếp tục chơi',
   },
 ];
+
+function readAudioPreference() {
+  try {
+    return window.localStorage.getItem(audioPreferenceKey) !== 'off';
+  } catch (error) {
+    return true;
+  }
+}
+
+function saveAudioPreference() {
+  try {
+    window.localStorage.setItem(audioPreferenceKey, audioEnabled ? 'on' : 'off');
+  } catch (error) {
+    // Audio preference is optional when browser storage is unavailable.
+  }
+}
+
+function updateAudioToggleButton() {
+  if (!audioToggleButton) return;
+  audioToggleButton.classList.toggle('is-muted', !audioEnabled);
+  audioToggleButton.setAttribute('aria-pressed', String(audioEnabled));
+  audioToggleButton.title = audioEnabled ? 'Tắt âm thanh' : 'Bật âm thanh';
+  const label = audioToggleButton.querySelector('span');
+  if (label) label.textContent = audioEnabled ? 'Âm thanh' : 'Âm thanh tắt';
+}
+
+function ensureAudioStarted() {
+  if (!audioEnabled) return false;
+  if (audioContext) {
+    if (audioContext.state === 'suspended') {
+      audioResumePromise = audioContext.resume().catch(() => {});
+    }
+    return true;
+  }
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) {
+    audioFallbackEnabled = typeof window.Audio === 'function';
+    if (!audioFallbackEnabled) {
+      console.warn('Trình duyệt không hỗ trợ phát âm thanh.');
+    }
+    return audioFallbackEnabled;
+  }
+  try {
+    audioContext = new AudioContextClass();
+    audioMasterGain = audioContext.createGain();
+    audioMasterGain.gain.value = 0.28;
+    audioMasterGain.connect(audioContext.destination);
+    if (audioContext.state === 'suspended') {
+      audioResumePromise = audioContext.resume().catch(() => {});
+    }
+    return true;
+  } catch (error) {
+    audioContext = null;
+    audioMasterGain = null;
+    audioFallbackEnabled = typeof window.Audio === 'function';
+    return audioFallbackEnabled;
+  }
+}
+
+function createFallbackToneDataUri(frequency, duration, volume, endFrequency) {
+  const sampleRate = 22050;
+  const sampleCount = Math.max(1, Math.floor(sampleRate * duration));
+  const cacheKey = [frequency, duration, volume, endFrequency || ''].join(':');
+  if (audioFallbackCache.has(cacheKey)) return audioFallbackCache.get(cacheKey);
+  const buffer = new ArrayBuffer(44 + sampleCount * 2);
+  const view = new DataView(buffer);
+  const writeText = (offset, value) => [...value].forEach((char, index) => view.setUint8(offset + index, char.charCodeAt(0)));
+  writeText(0, 'RIFF');
+  view.setUint32(4, 36 + sampleCount * 2, true);
+  writeText(8, 'WAVE');
+  writeText(12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * 2, true);
+  view.setUint16(32, 2, true);
+  view.setUint16(34, 16, true);
+  writeText(36, 'data');
+  view.setUint32(40, sampleCount * 2, true);
+  for (let index = 0; index < sampleCount; index += 1) {
+    const progress = index / sampleCount;
+    const currentFrequency = endFrequency
+      ? frequency + (endFrequency - frequency) * progress
+      : frequency;
+    const envelope = Math.min(1, index / (sampleRate * 0.015), (sampleCount - index) / (sampleRate * 0.05));
+    const sample = Math.sin((2 * Math.PI * currentFrequency * index) / sampleRate) * volume * envelope;
+    view.setInt16(44 + index * 2, Math.max(-1, Math.min(1, sample)) * 32767, true);
+  }
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let index = 0; index < bytes.length; index += 1) binary += String.fromCharCode(bytes[index]);
+  const dataUri = `data:audio/wav;base64,${window.btoa(binary)}`;
+  audioFallbackCache.set(cacheKey, dataUri);
+  return dataUri;
+}
+
+function playFallbackTone(frequency, duration, options = {}) {
+  if (!audioEnabled || !audioFallbackEnabled || typeof window.Audio !== 'function') return;
+  const delay = Math.max(0, Number(options.delay) || 0);
+  const source = new window.Audio(createFallbackToneDataUri(
+    Math.max(40, Number(frequency) || 440),
+    duration,
+    Math.min(1, Math.max(0.08, (Number(options.volume) || 0.04) * 8)),
+    options.endFrequency,
+  ));
+  source.volume = 0.8;
+  source.preload = 'auto';
+  const play = () => source.play().catch(() => {});
+  if (delay) window.setTimeout(play, delay * 1000);
+  else play();
+}
+
+function playAudioTone(frequency, duration = 0.12, options = {}) {
+  if (!audioEnabled) return;
+  if (!audioContext || !audioMasterGain) {
+    playFallbackTone(frequency, duration, options);
+    return;
+  }
+  const start = audioContext.currentTime + Math.max(0, Number(options.delay) || 0);
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  const volume = Math.max(0.0001, Number(options.volume) || 0.04);
+  const attack = Math.min(0.04, duration * 0.35);
+  const release = Math.min(0.1, duration * 0.45);
+  oscillator.type = options.type || 'sine';
+  oscillator.frequency.setValueAtTime(Math.max(40, Number(frequency) || 440), start);
+  if (options.endFrequency) {
+    oscillator.frequency.exponentialRampToValueAtTime(Math.max(40, Number(options.endFrequency)), start + duration);
+  }
+  gain.gain.setValueAtTime(0.0001, start);
+  gain.gain.linearRampToValueAtTime(volume, start + attack);
+  gain.gain.setValueAtTime(volume, start + Math.max(attack, duration - release));
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+  oscillator.connect(gain);
+  gain.connect(audioMasterGain);
+  oscillator.start(start);
+  oscillator.stop(start + duration + 0.02);
+}
+
+async function playAudioCue(cue) {
+  if (!ensureAudioStarted()) return;
+  if (audioResumePromise) await audioResumePromise;
+  if (audioContext && audioContext.state !== 'running') {
+    audioFallbackEnabled = typeof window.Audio === 'function';
+    if (audioFallbackEnabled) {
+      audioContext.close().catch(() => {});
+      audioContext = null;
+      audioMasterGain = null;
+    }
+  }
+  const patterns = {
+    click: [[440, 0.055, 'square', 0.025]],
+    confirm: [[523.25, 0.1, 'triangle', 0.045], [659.25, 0.14, 'triangle', 0.045, 0.07]],
+    success: [[523.25, 0.1, 'triangle', 0.05], [659.25, 0.1, 'triangle', 0.05, 0.08], [783.99, 0.16, 'triangle', 0.05, 0.16]],
+    error: [[220, 0.14, 'sawtooth', 0.035], [165, 0.2, 'sawtooth', 0.03, 0.1]],
+    reward: [[659.25, 0.08, 'triangle', 0.05], [783.99, 0.08, 'triangle', 0.05, 0.07], [1046.5, 0.2, 'triangle', 0.06, 0.14]],
+    breakthrough: [[392, 0.12, 'triangle', 0.045], [523.25, 0.12, 'triangle', 0.05, 0.1], [783.99, 0.3, 'triangle', 0.06, 0.2]],
+    hit: [[150, 0.08, 'square', 0.035, 0, 90]],
+    skill: [[330, 0.09, 'sine', 0.04], [660, 0.14, 'triangle', 0.045, 0.06]],
+    critical: [[220, 0.08, 'square', 0.04], [440, 0.16, 'sawtooth', 0.045, 0.06]],
+    dodge: [[500, 0.12, 'sine', 0.035, 0, 180]],
+    victory: [[523.25, 0.12, 'triangle', 0.055], [659.25, 0.12, 'triangle', 0.055, 0.1], [1046.5, 0.3, 'triangle', 0.06, 0.2]],
+    defeat: [[247, 0.18, 'sine', 0.04], [196, 0.28, 'sine', 0.035, 0.14]],
+  };
+  (patterns[cue] || patterns.click).forEach(([frequency, duration, type, volume, delay = 0, endFrequency]) => {
+    playAudioTone(frequency, duration, { type, volume, delay, endFrequency });
+  });
+}
+
+function toggleAudio() {
+  audioEnabled = !audioEnabled;
+  saveAudioPreference();
+  updateAudioToggleButton();
+  if (audioEnabled) {
+    ensureAudioStarted();
+    playAudioCue('confirm');
+  } else {
+    if (audioContext?.state === 'running') audioContext.suspend().catch(() => {});
+  }
+}
 
 function hideBattleResultOverlay() {
   window.clearTimeout(battleResultTimer);
@@ -422,34 +639,106 @@ function hideBattleResultOverlay() {
 }
 
 function hideOnboardingGuide() {
+  clearOnboardingTarget();
+  onboardingOverlay.classList.remove('has-target');
   onboardingOverlay.classList.add('is-hidden');
   onboardingOverlay.innerHTML = '';
 }
 
+function clearOnboardingTarget() {
+  if (onboardingTargetElement && onboardingTargetClickHandler) {
+    document.removeEventListener('click', onboardingTargetClickHandler, true);
+    onboardingTargetElement.removeEventListener('click', onboardingTargetClickHandler, true);
+  }
+  onboardingTargetElement?.classList.remove('onboarding-target');
+  onboardingTargetElement = null;
+  onboardingTargetClickHandler = null;
+  onboardingAdvanceQueued = false;
+}
+
+function positionOnboardingCard(target) {
+  const card = onboardingOverlay.querySelector('.onboarding-card');
+  if (!card || !target) return;
+  const targetRect = target.getBoundingClientRect();
+  const margin = 14;
+  const cardRect = card.getBoundingClientRect();
+  const maxLeft = Math.max(margin, window.innerWidth - cardRect.width - margin);
+  const left = Math.min(Math.max(margin, targetRect.left), maxLeft);
+  const belowTop = targetRect.bottom + margin;
+  const aboveTop = targetRect.top - cardRect.height - margin;
+  const top = belowTop + cardRect.height <= window.innerHeight - margin || aboveTop < margin
+    ? Math.min(belowTop, window.innerHeight - cardRect.height - margin)
+    : aboveTop;
+  card.style.left = `${left}px`;
+  card.style.top = `${Math.max(margin, top)}px`;
+}
+
+function queueOnboardingTargetAdvance() {
+  if (onboardingAdvanceQueued) return;
+  onboardingAdvanceQueued = true;
+  window.setTimeout(() => {
+    clearOnboardingTarget();
+    onboardingStep += 1;
+    if (onboardingStep >= onboardingSteps.length) {
+      hideOnboardingGuide();
+      return;
+    }
+    renderOnboardingGuide();
+  }, 0);
+}
+
+function bindOnboardingTarget(step) {
+  if (!step.targetSelector) return;
+  const target = document.querySelector(step.targetSelector);
+  if (!target) return;
+  onboardingTargetElement = target;
+  onboardingAdvanceQueued = false;
+  target.classList.add('onboarding-target');
+  onboardingTargetClickHandler = (event) => {
+    const clickedTarget = event.currentTarget === target
+      ? target
+      : event.target instanceof Element
+      ? event.target.closest(step.targetSelector)
+      : null;
+    if (clickedTarget !== target) return;
+    queueOnboardingTargetAdvance();
+  };
+  document.addEventListener('click', onboardingTargetClickHandler, true);
+  target.addEventListener('click', onboardingTargetClickHandler, true);
+  target.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'auto' });
+  window.requestAnimationFrame(() => positionOnboardingCard(target));
+}
+
 function renderOnboardingGuide() {
+  clearOnboardingTarget();
   const step = onboardingSteps[onboardingStep] || onboardingSteps[0];
+  const hasTarget = Boolean(step.targetSelector);
+  onboardingOverlay.classList.toggle('has-target', hasTarget);
   onboardingOverlay.innerHTML = `
-    <div class="onboarding-card" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
+    <div class="onboarding-card ${hasTarget ? 'has-target' : ''}" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
+      <div class="onboarding-guide-visual"><img src="/assets/Art/Characters/onboarding-guide.png" alt="Nữ hướng dẫn viên chibi" /></div>
       <span class="onboarding-kicker"><i class="${step.iconType} ${step.icon}" aria-hidden="true"></i>Hướng dẫn nhập môn · ${onboardingStep + 1}/${onboardingSteps.length}</span>
       <h2 id="onboardingTitle">${step.title}</h2>
       <p>${step.text}</p>
+      ${hasTarget ? `<p class="onboarding-target-hint"><i class="activity-icon icon-activity-guide" aria-hidden="true"></i>Hãy bấm vào ${step.targetLabel} đang phát sáng để tiếp tục.</p>` : ''}
       <div class="onboarding-actions">
         <button type="button" class="secondary compact onboarding-skip">Bỏ qua</button>
-        <button type="button" class="breakthrough compact onboarding-next"><i class="${step.iconType} ${step.icon}" aria-hidden="true"></i>${step.action}</button>
+        <button type="button" class="${hasTarget ? 'secondary' : 'breakthrough'} compact onboarding-next" ${hasTarget ? 'disabled' : ''}><i class="${step.iconType} ${step.icon}" aria-hidden="true"></i>${hasTarget ? 'Đang chờ thao tác' : step.action}</button>
       </div>
     </div>
   `;
   onboardingOverlay.querySelector('.onboarding-skip').addEventListener('click', hideOnboardingGuide);
-  onboardingOverlay.querySelector('.onboarding-next').addEventListener('click', () => {
-    if (step.tab === 'training') showTraining();
-    if (step.tab === 'map') showMap();
-    if (onboardingStep >= onboardingSteps.length - 1) {
-      hideOnboardingGuide();
-      return;
-    }
-    onboardingStep += 1;
-    renderOnboardingGuide();
-  });
+  if (!hasTarget) {
+    onboardingOverlay.querySelector('.onboarding-next').addEventListener('click', () => {
+      onboardingStep += 1;
+      if (onboardingStep >= onboardingSteps.length) {
+        hideOnboardingGuide();
+        return;
+      }
+      renderOnboardingGuide();
+    });
+  }
+  bindOnboardingTarget(step);
 }
 
 function showOnboardingGuide() {
@@ -457,6 +746,17 @@ function showOnboardingGuide() {
   onboardingOverlay.classList.remove('is-hidden');
   renderOnboardingGuide();
 }
+
+audioEnabled = readAudioPreference();
+updateAudioToggleButton();
+audioToggleButton?.addEventListener('click', toggleAudio);
+document.addEventListener('pointerdown', () => {
+  if (audioEnabled) ensureAudioStarted();
+}, { passive: true });
+document.addEventListener('click', (event) => {
+  const target = event.target instanceof Element ? event.target.closest('button') : null;
+  if (target && target !== audioToggleButton && !target.disabled) playAudioCue('click');
+}, true);
 
 backButton?.addEventListener('click', showMap);
 closeProfileButton?.addEventListener('click', showMap);
@@ -585,6 +885,7 @@ function hideFeatureAccessNotice() {
 
 function showGameToast(message, variant = 'success', rewardItems = []) {
   if (!featureAccessNotice) return;
+  playAudioCue(variant === 'error' || variant === 'locked' ? 'error' : variant === 'info' ? 'click' : rewardItems.length ? 'reward' : 'success');
   window.clearTimeout(featureAccessNoticeTimer);
   featureAccessNotice.classList.remove('toast-success', 'toast-error', 'toast-locked');
   featureAccessNotice.classList.add(`toast-${variant}`);
@@ -650,7 +951,14 @@ function getPlayerSkills() {
 }
 
 function getSkillMaxLevel() {
-  return Math.max(1, Number(cultivationSkillData.upgrade?.maxLevel) || 10);
+  return Math.max(1, Number(cultivationSkillData.upgrade?.maxLevel) || 15);
+}
+
+function getSkillInitialCooldown(majorRealmIndex = playerMajorRealmIndex) {
+  const upgrade = cultivationSkillData.upgrade || {};
+  const base = Math.max(0, Math.floor(Number(upgrade.initialCooldown) || 0));
+  const perMajorRealm = Math.max(0, Math.floor(Number(upgrade.initialCooldownPerMajorRealm) || 0));
+  return base + Math.max(0, Math.floor(Number(majorRealmIndex) || 0)) * perMajorRealm;
 }
 
 function getSkillLevel(skillId) {
@@ -690,7 +998,8 @@ function getSkillItemIconClass(skillId) {
 
 function getSkillBookRequired(targetLevel) {
   const levels = cultivationSkillData.upgrade?.skillBookRequiredLevels || [3, 6, 9];
-  return levels.map(Number).includes(Number(targetLevel)) ? 1 : 0;
+  const milestoneIndex = levels.map(Number).indexOf(Number(targetLevel));
+  return milestoneIndex >= 0 ? milestoneIndex + 1 : 0;
 }
 
 function getTotalSkillBooks() {
@@ -795,8 +1104,9 @@ function getEquippedSkills() {
   return equippedSkillIds.map((skillId) => skillMap.get(skillId)).filter(Boolean);
 }
 
-function createSkillRuntime(skill) {
+function createSkillRuntime(skill, majorRealmIndex = playerMajorRealmIndex) {
   const level = getSkillLevel(skill.id);
+  const initialCooldown = getSkillInitialCooldown(majorRealmIndex);
   return {
     id: skill.id,
     name: skill.name,
@@ -804,7 +1114,7 @@ function createSkillRuntime(skill) {
     cost: Math.max(0, Number(skill.cost) || 0),
     multiplier: getSkillMultiplier(skill, level),
     cooldown: Math.max(1, Number(skill.cooldown) || 1),
-    cooldownRemaining: Math.max(1, Number(skill.cooldown) || 1),
+    cooldownRemaining: initialCooldown,
     combatPowerValue: getSkillCombatPower(skill, level),
     effects: getSkillEffects(skill, level),
   };
@@ -2314,7 +2624,7 @@ function getEnemySkillDefinition(enemyData = {}) {
   };
 }
 
-function createEnemySkillRuntime(enemyData, initialCooldown = null) {
+function createEnemySkillRuntime(enemyData, initialCooldown = null, majorRealmIndex = playerMajorRealmIndex) {
   const definition = getEnemySkillDefinition(enemyData);
   const cooldown = Math.max(1, Number(definition.cooldown) || 1);
   return {
@@ -2324,13 +2634,15 @@ function createEnemySkillRuntime(enemyData, initialCooldown = null) {
     cost: Math.max(0, Number(definition.cost) || 0),
     multiplier: Math.max(0, Number(definition.multiplier) || 0),
     cooldown,
-    cooldownRemaining: initialCooldown === null ? cooldown : Math.max(0, Number(initialCooldown) || 0),
+    cooldownRemaining: initialCooldown === null
+      ? getSkillInitialCooldown(majorRealmIndex)
+      : Math.max(0, Number(initialCooldown) || 0),
     effects: Array.isArray(definition.effects) ? definition.effects.map((effect) => ({ ...effect })) : [],
   };
 }
 
 function applyEnemySkillRuntime(fighter, enemyData, initialCooldown = null) {
-  const skill = createEnemySkillRuntime(enemyData, initialCooldown);
+  const skill = createEnemySkillRuntime(enemyData, initialCooldown, fighter.majorRealmIndex);
   fighter.skillId = skill.id;
   fighter.skillName = skill.name;
   fighter.skillDescription = skill.description;
@@ -2423,7 +2735,44 @@ function resetGameData() {
   autoWanderAfterRecovery = false;
   window.clearTimeout(timer);
   window.clearTimeout(resourceRegenTimer);
-  window.localStorage.removeItem(saveKey);
+  let savedData = null;
+  try {
+    const raw = window.localStorage.getItem(saveKey);
+    savedData = raw ? JSON.parse(raw) : null;
+  } catch (error) {
+    savedData = null;
+  }
+  if (savedData && typeof savedData === 'object') {
+    const resetData = {
+      ...savedData,
+      devMode: false,
+      redeemedCodes: {},
+      foundationFindCounts: {},
+      highEnemyEncounterChance: false,
+      wanderEventRollCount: 0,
+      wanderWinCount: 0,
+      wanderRewardCount: 0,
+      wanderDefeatedByMap: {},
+      wanderBossDefeatedByMap: {},
+      equipmentEquipCounts: {},
+      foundationPillPurchases: {},
+      cultivationPillPurchases: {},
+      potionPurchaseCounts: {},
+      ascensionPillPurchases: {},
+      cultivationSpeedBonus: 0,
+      completedStages: [],
+      currentStageId: stages[0]?.id || 1,
+      currentDungeonId: initialState.dungeonId,
+      currentWanderMapId: initialState.wanderMapId,
+      autoWanderAfterRecovery: false,
+      hasMajorAscensionPermit: false,
+      lastActiveAt: Date.now(),
+      trainingWasActive: true,
+    };
+    window.localStorage.setItem(saveKey, JSON.stringify(resetData));
+  } else {
+    window.localStorage.removeItem(saveKey);
+  }
   clearLegacySaves();
   window.location.reload();
 }
@@ -2453,8 +2802,12 @@ function loadSavedGame() {
       : {};
     foundationFindCounts = normalizeFoundationFindCounts(data.foundationFindCounts);
     wanderChestRewards = normalizeWanderChestRewards(data.wanderChestRewards);
+    highEnemyEncounterChance = Boolean(data.highEnemyEncounterChance);
+    wanderEventRollCount = Math.max(0, Math.floor(Number(data.wanderEventRollCount) || 0));
     wanderWinCount = Math.max(0, Math.floor(Number(data.wanderWinCount) || 0));
     wanderRewardCount = Math.max(0, Math.floor(Number(data.wanderRewardCount) || 0));
+    wanderDefeatedByMap = normalizeWanderMapCounts(data.wanderDefeatedByMap);
+    wanderBossDefeatedByMap = normalizeWanderMapFlags(data.wanderBossDefeatedByMap);
     trialTowerWinCount = Math.max(0, Math.floor(Number(data.trialTowerWinCount) || 0));
     equipmentEquipCounts = data.equipmentEquipCounts && typeof data.equipmentEquipCounts === 'object'
       ? Object.fromEntries(Object.entries(data.equipmentEquipCounts).map(([key, value]) => [key, Math.max(0, Math.floor(Number(value) || 0))]))
@@ -2630,8 +2983,12 @@ function saveGame() {
     redeemedCodes,
     foundationFindCounts,
     wanderChestRewards,
+    highEnemyEncounterChance,
+    wanderEventRollCount,
     wanderWinCount,
     wanderRewardCount,
+    wanderDefeatedByMap,
+    wanderBossDefeatedByMap,
     trialTowerWinCount,
     equipmentEquipCounts,
     dailyQuestProgress: normalizeDailyQuestProgress(dailyQuestProgress),
@@ -2833,12 +3190,15 @@ function createFighter(name, minorLevel, includeEquipment = false, majorRealmInd
   const maxHp = getGrowthStat('maxHp');
   const maxMana = getGrowthStat('maxMana');
 
-  const equippedSkills = includeEquipment ? getEquippedSkills().map(createSkillRuntime) : [];
+  const equippedSkills = includeEquipment
+    ? getEquippedSkills().map((skill) => createSkillRuntime(skill, majorIndex))
+    : [];
   const selectedSkill = equippedSkills.find((skill) => skill.id === activeSkillId) || equippedSkills[0] || null;
   const fighter = {
     name,
     isPlayerFighter: includeEquipment && name === playerName,
     realm: majorRealmNames[majorIndex],
+    majorRealmIndex: majorIndex,
     level,
     minorRealm: getMinorRealmName(level, majorIndex),
     hp: maxHp,
@@ -2868,7 +3228,7 @@ function createFighter(name, minorLevel, includeEquipment = false, majorRealmInd
     skillCost: selectedSkill?.cost || 20,
     skillMultiplier: selectedSkill?.multiplier || 1.4,
     skillCooldown: selectedSkill?.cooldown || 2,
-    skillCooldownRemaining: 2,
+    skillCooldownRemaining: getSkillInitialCooldown(majorIndex),
     skills: equippedSkills,
     battleBuffs: [],
   };
@@ -3150,7 +3510,7 @@ function setWanderMap(mapId) {
   const map = wanderMaps[mapId];
   if (!map) return;
   if (!isWanderMapUnlocked(map)) {
-    showLockedFeatureNotice(map.name, `Cần đạt tu vi ${getWanderMapUnlockText(map).replace(/^Cần\s+/i, '')} để mở`);
+    showLockedFeatureNotice(map.name, `${getWanderMapUnlockText(map)} để mở`);
     return;
   }
 
@@ -3163,20 +3523,17 @@ function setWanderMap(mapId) {
 
 function isWanderMapUnlocked(map) {
   if (!map) return false;
-  const requiredTier = Number(map.requiredTier);
-  if (Number.isFinite(requiredTier) && requiredTier > 0) {
-    return getPlayerCultivationTier() >= requiredTier;
-  }
-  if (!Number.isInteger(map.requiredMajorRealmIndex)) return true;
-  return playerMajorRealmIndex >= map.requiredMajorRealmIndex;
+  const mapIndex = wanderMapList.findIndex((entry) => entry.id === map.id);
+  if (mapIndex <= 0) return mapIndex === 0;
+  const previousMap = wanderMapList[mapIndex - 1];
+  return Boolean(previousMap && wanderBossDefeatedByMap[previousMap.id]);
 }
 
 function getWanderMapUnlockText(map) {
-  const requiredTier = Number(map?.requiredTier);
-  if (Number.isFinite(requiredTier) && requiredTier > 0) return `Cần ${getTierRealmText(requiredTier)}`;
-  if (!Number.isInteger(map?.requiredMajorRealmIndex)) return 'Đã mở';
-  const realmName = majorRealmNames[map.requiredMajorRealmIndex] || 'đại cảnh giới tiếp theo';
-  return `Cần ${realmName} cảnh trở lên`;
+  const mapIndex = wanderMapList.findIndex((entry) => entry.id === map?.id);
+  if (mapIndex <= 0) return 'Đã mở';
+  const previousMap = wanderMapList[mapIndex - 1];
+  return previousMap ? `Cần đánh bại Boss ${previousMap.name}` : 'Cần đánh bại Boss map trước';
 }
 
 function getBestUnlockedWanderMap() {
@@ -3191,6 +3548,9 @@ function renderWanderStart(enoughHealth) {
   const maxTier = Math.max(minTier, Number(map.maxEnemyTier) || minTier);
   const chestTier = getEquipmentChestTier(map);
   const enemyRealmRange = `${getTierRealmText(minTier)} - ${getTierRealmText(maxTier)}`;
+  const defeatedCount = getWanderMapDefeatedCount(map.id);
+  const bossDefeated = Boolean(wanderBossDefeatedByMap[map.id]);
+  const bossUnlocked = defeatedCount >= 30 && !bossDefeated;
   const panel = document.createElement('section');
   panel.className = 'wander-info-panel';
   panel.innerHTML = `
@@ -3209,14 +3569,43 @@ function renderWanderStart(enoughHealth) {
         <span><i class="item-icon icon-item-enhancement-stone" aria-hidden="true"></i>Đá cường hóa</span>
       </div>
     </div>
+    <div class="wander-encounter-toggle">
+      <div>
+        <strong><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i>Tăng tỉ lệ gặp kẻ địch</strong>
+      </div>
+      <button type="button" class="secondary compact ${highEnemyEncounterChance ? 'is-active' : ''}" data-wander-high-enemy aria-pressed="${String(highEnemyEncounterChance)}">
+        <i class="activity-icon icon-activity-encounter" aria-hidden="true"></i>${highEnemyEncounterChance ? 'Đang bật' : 'Bật'}
+      </button>
+    </div>
+    <div class="wander-boss-panel ${bossDefeated ? 'is-defeated' : ''}">
+      <div>
+        <strong><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i>Boss map</strong>
+        <small>${bossDefeated ? 'Đã chinh phục' : `Đã đánh bại ${defeatedCount}/30 kẻ địch`}</small>
+      </div>
+      <button type="button" class="secondary compact" data-wander-boss ${bossUnlocked ? '' : 'disabled'}>
+        <i class="item-icon icon-item-sword" aria-hidden="true"></i>${bossDefeated ? 'Đã thắng' : 'Khiêu chiến'}
+      </button>
+    </div>
     <small>Sau ${Math.ceil(wanderEventDelay / 1000)} giây sẽ gặp cơ duyên hoặc kẻ địch.</small>
-    <button class="${enoughHealth ? 'breakthrough' : 'secondary'}" type="button">
+    <button class="${enoughHealth ? 'breakthrough' : 'secondary'}" type="button" data-wander-start>
       <i class="activity-icon icon-activity-path" aria-hidden="true"></i>${enoughHealth ? 'Bắt đầu ngao du' : 'Đang trọng thương'}
     </button>
   `;
-  const button = panel.querySelector('button');
+  const button = panel.querySelector('[data-wander-start]');
+  const encounterToggle = panel.querySelector('[data-wander-high-enemy]');
   button.disabled = !enoughHealth;
   button.addEventListener('click', () => beginWander(false));
+  encounterToggle.addEventListener('click', () => {
+    highEnemyEncounterChance = !highEnemyEncounterChance;
+    saveGame();
+    renderStageMap();
+  });
+  const bossButton = panel.querySelector('[data-wander-boss]');
+  bossButton.addEventListener('click', () => {
+    if (!bossUnlocked || bossDefeated) return;
+    const bossStage = createWanderBossStage(map);
+    if (bossStage) startStageBattle(bossStage);
+  });
   stageGrid.appendChild(panel);
 }
 
@@ -3227,6 +3616,10 @@ function beginWander() {
     showTrainingMessage('Đang bị trọng thương, không thể ngao du tiếp.');
     showGameToast('Đang bị trọng thương, không thể ngao du tiếp.', 'error');
     return;
+  }
+
+  if (onboardingSteps[onboardingStep]?.targetSelector === '.wander-info-panel > button:not(:disabled)') {
+    queueOnboardingTargetAdvance();
   }
 
   clearWanderTimer();
@@ -3285,7 +3678,13 @@ function resolveWanderEvent() {
 function rollWanderEvent() {
   const map = getCurrentWanderMap();
   const stage = getRandomWanderEnemyStage(map);
-  const enemyChance = completedStages.size === 0 ? map.firstEnemyChance : map.enemyChance;
+  const isFirstWanderEvent = wanderEventRollCount === 0;
+  const enemyChance = isFirstWanderEvent
+    ? map.firstEnemyChance
+    : highEnemyEncounterChance
+    ? 0.7
+    : map.enemyChance;
+  wanderEventRollCount += 1;
   const encounterRoll = Math.random();
   if (stage && encounterRoll < enemyChance) {
     return {
@@ -3401,6 +3800,41 @@ function createWanderEnemyStage(enemyTier, map = getCurrentWanderMap()) {
     title: map.name,
     realmText: getTierRealmText(tier),
     enemyData,
+  };
+}
+
+function getWanderMapDefeatedCount(mapId) {
+  return Math.max(0, Math.floor(Number(wanderDefeatedByMap[mapId]) || 0));
+}
+
+function normalizeWanderMapCounts(counts = {}) {
+  return Object.fromEntries(Object.keys(wanderMaps).map((mapId) => [
+    mapId,
+    Math.max(0, Math.floor(Number(counts?.[mapId]) || 0)),
+  ]));
+}
+
+function normalizeWanderMapFlags(flags = {}) {
+  return Object.fromEntries(Object.keys(wanderMaps).map((mapId) => [
+    mapId,
+    Boolean(flags?.[mapId]),
+  ]));
+}
+
+function createWanderBossStage(map = getCurrentWanderMap()) {
+  const bossTier = Math.max(1, Math.floor(Number(map.maxEnemyTier) || map.minEnemyTier || 1));
+  const stage = createWanderEnemyStage(bossTier, map);
+  if (!stage) return null;
+  return {
+    ...stage,
+    id: `wander-boss-${map.id}`,
+    title: `Boss ${map.name}`,
+    isWanderBoss: true,
+    enemyRankLevel: 5,
+    enemyData: {
+      ...stage.enemyData,
+      name: `Boss ${map.name}`,
+    },
   };
 }
 
@@ -4052,7 +4486,9 @@ function getNextBattleStage() {
 
 function createStageEnemy(stage) {
   const rankMap = stage?.mapId ? wanderMaps[stage.mapId] : null;
-  stage.enemyRankLevel = stage.enemyRankLevel
+  stage.enemyRankLevel = stage.isWanderBoss
+    ? 5
+    : stage.enemyRankLevel
     && (!rankMap?.enemyRankWeights || Object.prototype.hasOwnProperty.call(rankMap.enemyRankWeights, String(stage.enemyRankLevel)))
     ? stage.enemyRankLevel
     : rollEnemyRank(rankMap);
@@ -4079,7 +4515,7 @@ function createStageEnemy(stage) {
       blockRate: stats.blockRate,
       skills: [],
     };
-    applyEnemySkillRuntime(enemyFighter, stage.enemyData, 1);
+    applyEnemySkillRuntime(enemyFighter, stage.enemyData);
     applyEnemyRankMultiplier(enemyFighter, stage.enemyRankLevel);
     applyEnemyCombatStyle(enemyFighter, stage.enemyData);
     applyItemStats(enemyFighter, getEnemyEquipment(stage));
@@ -4531,6 +4967,11 @@ function attack(attacker, target) {
   }
 
   const primaryHit = resolveAttackHit(attacker, target, skill ? selectedSkill.multiplier : 1);
+  if (skill) {
+    primaryHit.skill = true;
+    primaryHit.skillName = selectedSkill.name;
+  }
+  playAudioCue(primaryHit.dodged ? 'dodge' : primaryHit.critical ? 'critical' : skill ? 'skill' : 'hit');
   const effectTexts = skill && !primaryHit.dodged ? applySkillEffects(attacker, target, selectedSkill) : [];
   let bonusHit = null;
   const extraCastEffect = selectedSkill?.effects?.find((effect) => effect.type === 'extraCast');
@@ -4587,9 +5028,11 @@ function finishBattle(message, outcome = 'lose') {
   busy = false;
   battleOver = true;
   lastBattleOutcome = outcome;
+  playAudioCue(outcome === 'win' ? 'victory' : outcome === 'draw' ? 'click' : 'defeat');
   savePlayerResourcesFromBattle(outcome);
   const isTrialTower = Boolean(currentStage?.isTrialTower);
   const isResourceDungeon = Boolean(currentStage?.isResourceDungeon);
+  const isWanderBattle = !isTrialTower && !isResourceDungeon && Boolean(currentStage?.isWanderGenerated);
   const resourceAttemptRefunded = isResourceDungeon && outcome === 'lose'
     ? refundResourceAttempt()
     : false;
@@ -4602,6 +5045,11 @@ function finishBattle(message, outcome = 'lose') {
   if (outcome === 'win' && !isTrialTower && !isResourceDungeon) {
     wanderWinCount += 1;
     wanderRewardCount += 1;
+    if (isWanderBattle && currentStage.isWanderBoss) {
+      wanderBossDefeatedByMap[currentStage.mapId] = true;
+    } else if (isWanderBattle && currentStage.mapId) {
+      wanderDefeatedByMap[currentStage.mapId] = getWanderMapDefeatedCount(currentStage.mapId) + 1;
+    }
   }
   dailyQuestProgress = normalizeDailyQuestProgress(dailyQuestProgress);
   if (outcome === 'win' && isTrialTower) dailyQuestProgress.trialTowerWins += 1;
@@ -4649,6 +5097,13 @@ function finishBattle(message, outcome = 'lose') {
   if (recovered) pushLog(`Dưỡng khí hồi ${recovered.hp} sinh lực và ${recovered.mana} linh lực.`);
   if (spiritStoneReward > 0) pushLog(`Rớt ${formatGameNumber(spiritStoneReward)} linh thạch.`);
   if (droppedItem) pushLog(`Nhặt được ${getDroppedRewardText(droppedItem)}.`);
+  if (outcome === 'win' && isWanderBattle && !currentStage.isWanderBoss) {
+    const rewardBonus = getEnemyRewardBonusPercent(currentStage);
+    if (rewardBonus > 0) pushLog(`Phẩm chất kẻ địch tăng thưởng +${rewardBonus}%.`);
+  }
+  if (outcome === 'win' && isWanderBattle && currentStage.isWanderBoss) {
+    pushLog(`Đã chinh phục Boss ${getCurrentWanderMap().name}.`);
+  }
   if (bonusRewardText) pushLog(`Nhận ${bonusRewardText}. Căn cơ hiện tại: ${playerFoundation}.`);
   if (playerCultivation >= getCultivationRequiredForNextLevel()) {
     if (playerLevel >= getMinorRealmLevelCap() && hasNextMajorRealm() && getShopInventoryCount('majorAscensionPermit') <= 0) {
@@ -4919,9 +5374,18 @@ function calculateCultivationReward(stage, outcome) {
 
   const enemyLevel = getStageDifficulty(stage);
   const levelGap = Math.max(0, enemyLevel - getPlayerCultivationTier());
-  const multiplier = getRewardSettings(stage).cultivationMultiplier;
+  const multiplier = getRewardSettings(stage).cultivationMultiplier * getEnemyRewardMultiplier(stage);
 
   return Math.round((15 + enemyLevel * 7 + levelGap * 5) * multiplier);
+}
+
+function getEnemyRewardMultiplier(stage = currentStage) {
+  const rankLevel = clamp(Math.floor(Number(stage?.enemyRankLevel) || 1), 1, 5);
+  return 1 + ((rankLevel - 1) * 0.05);
+}
+
+function getEnemyRewardBonusPercent(stage = currentStage) {
+  return Math.round((getEnemyRewardMultiplier(stage) - 1) * 100);
 }
 
 function getSpiritStoneDropRange(stage = currentStage) {
@@ -5136,7 +5600,7 @@ function rollEquipmentDrop(outcome) {
   if (outcome !== 'win') return null;
 
   const settings = getRewardSettings(currentStage);
-  const chance = settings.equipmentDropChance;
+  const chance = Math.min(1, settings.equipmentDropChance * getEnemyRewardMultiplier(currentStage));
   if (Math.random() > chance) return null;
 
   const map = getRewardMap(currentStage);
@@ -5863,7 +6327,13 @@ function animateAttack(sourceId, targetId, floatId, result, attacker) {
 function spawnFloat(parent, text, className) {
   const el = document.createElement('div');
   el.className = `float-text ${className}`;
-  el.textContent = text;
+  if (className === 'skill-name') {
+    const label = document.createElement('span');
+    label.textContent = text;
+    el.appendChild(label);
+  } else {
+    el.textContent = text;
+  }
   parent.appendChild(el);
   window.setTimeout(() => el.remove(), 1250);
 }

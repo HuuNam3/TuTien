@@ -93,8 +93,6 @@
       }
     },
     "demonForest": {
-      "requiredMajorRealmIndex": 1,
-      "requiredTier": 6,
       "lootTypes": [
         "cultivation",
         "cultivation",
@@ -114,8 +112,6 @@
       }
     },
     "spiritCave": {
-      "requiredMajorRealmIndex": 2,
-      "requiredTier": 10,
       "lootTypes": [
         "spiritStone",
         "spiritStone",
@@ -135,8 +131,6 @@
       }
     },
     "hollowRealm": {
-      "requiredMajorRealmIndex": 3,
-      "requiredTier": 15,
       "lootTypes": [
         "spiritStone",
         "spiritStone",
@@ -156,8 +150,6 @@
       }
     },
     "thunderPeak": {
-      "requiredMajorRealmIndex": 4,
-      "requiredTier": 19,
       "lootTypes": [
         "spiritStone",
         "spiritStone",
@@ -178,8 +170,6 @@
       }
     },
     "primordialWastes": {
-      "requiredMajorRealmIndex": 5,
-      "requiredTier": 24,
       "lootTypes": [
         "spiritStone",
         "spiritStone",

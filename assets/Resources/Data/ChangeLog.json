@@ -3,6 +3,70 @@
   "title": "Lịch sử cập nhật",
   "entries": [
     {
+      "id": "selective-data-reset-2026-08-31",
+      "date": "2026-08-31",
+      "title": "Xóa dữ liệu có chọn lọc",
+      "summary": "Nút Xóa dữ liệu giữ lại tu vi, linh thạch, trang bị, toàn bộ vật phẩm trong túi, nhiệm vụ, skill, tháp và phụ bản.",
+      "details": [
+        "Giữ nguyên tu vi hiện tại, tu vi trong đan điền và các chỉ số tài nguyên của nhân vật.",
+        "Giữ nguyên trang bị đang mặc, trang bị trong túi, rương và các vật phẩm đã mua.",
+        "Chỉ làm sạch tiến trình map, Boss, tháp, mã quà và các trạng thái chức năng tạm thời.",
+        "Giữ nguyên nhiệm vụ, tiến độ nhiệm vụ, skill đã học, cấp skill và skill đang trang bị.",
+        "Giữ nguyên tầng đã vượt của Tháp thí luyện, lượt thắng, lượt đánh Phụ bản và tiến độ Phụ bản.",
+        "Hộp xác nhận đã ghi rõ các dữ liệu được giữ lại."
+      ],
+      "category": "Sửa lỗi"
+    },
+    {
+      "id": "wander-map-boss-unlock-2026-08-31",
+      "date": "2026-08-31",
+      "title": "Mở map theo Boss và giới hạn Boss một lần",
+      "summary": "Map chỉ mở sau khi đánh bại Boss của map liền trước; bỏ điều kiện tu vi cũ.",
+      "details": [
+        "Map đầu tiên luôn mở.",
+        "Mỗi map tiếp theo yêu cầu đánh thắng Boss của map trước đó.",
+        "Boss đã bị đánh bại chỉ hiển thị trạng thái Đã thắng và không thể khiêu chiến lại.",
+        "Đã xóa requiredTier và requiredMajorRealmIndex khỏi cấu hình điều kiện mở map."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "wander-map-boss-and-rank-reward-2026-08-31",
+      "date": "2026-08-31",
+      "title": "Thêm Boss map và thưởng theo phẩm chất quái",
+      "summary": "Mỗi map mở Boss sau khi đánh bại 30 kẻ địch; thưởng chiến thắng tăng 5% theo từng bậc phẩm chất.",
+      "details": [
+        "Bình thường +0%, Tinh anh +5%, Thủ lĩnh +10%, Vương giả +15%, Chúa tể +20%.",
+        "Số kẻ địch đã đánh bại được lưu riêng theo từng map; Boss chỉ mở sau đủ 30 trận thắng thường trên map đó.",
+        "Boss dùng tier cao nhất của map, phẩm chất Chúa tể và có thể mang đủ trang bị.",
+        "Sau khi thắng Boss, map được đánh dấu đã chinh phục và nút Boss không mở lại."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "simplify-wander-encounter-toggle-label-2026-08-31",
+      "date": "2026-08-31",
+      "title": "Thu gọn nhãn công tắc Ngao du",
+      "summary": "Bỏ dòng mô tả tỉ lệ lần đầu và bỏ phần trăm khỏi chữ trên nút bật tỉ lệ gặp kẻ địch.",
+      "details": [
+        "Nút tắt hiển thị Bật và nút đang bật hiển thị Đang bật.",
+        "Cơ chế tỉ lệ gặp kẻ địch không thay đổi."
+      ],
+      "category": "Giao diện"
+    },
+    {
+      "id": "wander-high-encounter-toggle-2026-08-31",
+      "date": "2026-08-31",
+      "title": "Tùy chọn tăng tỉ lệ gặp kẻ địch",
+      "summary": "Thêm công tắc trong giao diện Ngao du để tăng tỉ lệ gặp kẻ địch các lần sau lên 70%.",
+      "details": [
+        "Lần roll đầu vẫn giữ tỉ lệ gặp địch mặc định của map.",
+        "Khi bật, các lần roll sau dùng tỉ lệ 70%; khi tắt sẽ trở về tỉ lệ của map.",
+        "Trạng thái công tắc được lưu cùng dữ liệu game."
+      ],
+      "category": "Tính năng"
+    },
+    {
       "id": "compact-mobile-panel-margins-2026-08-30",
       "date": "2026-08-30",
       "title": "Thu gọn khoảng cách panel mobile",
@@ -1237,6 +1301,122 @@
         "Các phần thưởng còn lại của mã newbie được giữ nguyên."
       ],
       "category": "Cân bằng"
+    },
+    {
+      "id": "skill-progression-cap-and-cooldown-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Mở rộng cấp skill và điều chỉnh hồi đầu trận",
+      "summary": "Skill có thể nâng tối đa đến cấp 15; sách skill tại các mốc 3, 6, 9, 12 và 15 lần lượt cần 1 đến 5 quyển.",
+      "details": [
+        "Ô skill thứ ba mở ở tier 20.",
+        "Lực chiến skill tăng 20 mỗi cấp và cộng thêm 10 tại mỗi mốc 3 cấp.",
+        "Hồi đầu trận bắt đầu từ 2 lượt và tăng thêm 1 lượt cho mỗi đại cảnh giới, áp dụng cho cả người chơi và kẻ địch."
+      ],
+      "category": "Cân bằng"
+    },
+    {
+      "id": "roboto-font-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Đổi font giao diện sang Roboto",
+      "summary": "Toàn bộ giao diện web dùng Roboto làm font mặc định, với Arial làm font dự phòng.",
+      "details": [
+        "Giữ nguyên bố cục, cỡ chữ và các kiểu định dạng hiện tại."
+      ],
+      "category": "Giao diện"
+    },
+    {
+      "id": "audio-system-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Thêm nhạc nền và âm thanh hiệu ứng",
+      "summary": "Game có nhạc nền vui vẻ chạy lặp và âm thanh phản hồi cho các thao tác, chiến đấu, skill và kết quả.",
+      "details": [
+        "Âm thanh được tạo bằng Web Audio API nên không cần tải thêm file âm thanh.",
+        "Âm thanh chỉ khởi động sau thao tác đầu tiên để tương thích với chính sách autoplay của trình duyệt.",
+        "Thêm nút bật/tắt âm thanh và lưu lựa chọn của người chơi trên thiết bị."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "remove-background-music-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Tắt nhạc nền",
+      "summary": "Bỏ nhạc nền tự phát và giữ lại các âm thanh hiệu ứng tương tác trong game.",
+      "details": [
+        "Giữ âm thanh bấm nút, chiến đấu, skill, nhận thưởng, đột phá và kết quả trận đấu.",
+        "Nút âm thanh tiếp tục bật/tắt các hiệu ứng còn lại."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "mobile-audio-fallback-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Cải thiện âm thanh trên mobile",
+      "summary": "Chờ AudioContext khởi động hoàn tất trước khi phát hiệu ứng và thêm đường dự phòng cho trình duyệt mobile.",
+      "details": [
+        "Âm thanh hiệu ứng chờ resume hoàn tất để tránh bị trình duyệt di động bỏ qua sau thao tác chạm đầu tiên.",
+        "Nếu Web Audio không khả dụng nhưng HTML Audio có sẵn, hiệu ứng dùng âm thanh WAV tạo tại chỗ thay thế.",
+        "Nếu môi trường không hỗ trợ cả hai API, console sẽ ghi rõ nguyên nhân thay vì âm thầm bỏ qua."
+      ],
+      "category": "Sửa lỗi"
+    },
+    {
+      "id": "skill-cast-banner-animation-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Thêm hoạt ảnh thi triển skill",
+      "summary": "Khi thi triển skill, tên skill xuất hiện trên banner nền chibi với hiệu ứng bật vào và mờ dần.",
+      "details": [
+        "Thêm banner nền chibi thấp, có vùng giữa ít chi tiết để đọc tên skill trên mobile.",
+        "Áp dụng cho Ngự Kiếm Quyết và các skill khác dùng chung luồng chiến đấu.",
+        "Tên skill được tạo bằng textContent để không chèn HTML từ dữ liệu skill."
+      ],
+      "category": "Giao diện"
+    },
+    {
+      "id": "skill-cast-banner-trigger-fix-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Sửa kích hoạt banner thi triển skill",
+      "summary": "Đánh chính bằng skill giờ truyền đúng tên skill sang hoạt ảnh banner.",
+      "details": [
+        "Đánh dấu đòn đánh chính là skill và truyền tên Ngự Kiếm Quyết khi skill được chọn.",
+        "Giữ nguyên hiệu ứng sát thương, chí mạng, né và các đòn đánh phụ."
+      ],
+      "category": "Sửa lỗi"
+    },
+    {
+      "id": "onboarding-chibi-guide-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Thêm nhân vật nữ chibi hướng dẫn",
+      "summary": "Hướng dẫn nhập môn lúc mới bắt đầu có thêm nhân vật nữ chibi thân thiện đồng hành cùng người chơi.",
+      "details": [
+        "Thêm nhân vật nữ tu tiên chibi cầm quyển ngọc, dùng làm hình đại diện hướng dẫn.",
+        "Nhân vật xuất hiện trong cả ba bước hướng dẫn Tu luyện, Ngao du và Bắt đầu hành trình.",
+        "Hình ảnh được thu gọn theo chiều cao để phù hợp màn hình mobile."
+      ],
+      "category": "Giao diện"
+    },
+    {
+      "id": "onboarding-interactive-guide-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Thêm hướng dẫn click tương tác",
+      "summary": "Nhân vật chibi lần lượt làm nổi bật đúng nút cần bấm để người chơi mới làm quen với các thao tác chính.",
+      "details": [
+        "Hướng dẫn theo thứ tự Tu luyện, Ngao du, chọn map đang mở và bắt đầu ngao du.",
+        "Mỗi bước chỉ chuyển tiếp sau khi người chơi bấm đúng mục tiêu đang phát sáng.",
+        "Khung hướng dẫn tự tránh vị trí nút cần bấm và hiển thị phù hợp trên mobile.",
+        "Thêm bước hoàn tất để người chơi tiếp tục chơi sau khi làm quen xong."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "hide-audio-tab-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Ẩn tab Âm thanh",
+      "summary": "Ẩn nút điều khiển Âm thanh khỏi thanh chức năng nhưng giữ nguyên các hiệu ứng âm thanh trong game.",
+      "details": [
+        "Xóa nút Âm thanh khỏi giao diện điều hướng.",
+        "Giữ nguyên luồng phát hiệu ứng âm thanh và cơ chế tương thích trình duyệt."
+      ],
+      "category": "Giao diện"
     }
   ]
 }
