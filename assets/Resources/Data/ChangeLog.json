@@ -3,6 +3,17 @@
   "title": "Lịch sử cập nhật",
   "entries": [
     {
+      "id": "fix-start-screen-json-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Sửa lỗi kẹt màn hình nhập đạo",
+      "summary": "Khắc phục lỗi dữ liệu nhiệm vụ khiến game không tải xong và không hiển thị lựa chọn hệ phái.",
+      "details": [
+        "Xóa dấu phẩy thừa trong Quests.json để dữ liệu có thể được phân tích hợp lệ.",
+        "Màn hình bắt đầu có thể dựng lại danh sách hệ phái và bật nút Nhập đạo sau khi tải dữ liệu thành công."
+      ],
+      "category": "Sửa lỗi"
+    },
+    {
       "id": "update-map-3-to-6-enemy-ranges-2026-08-30",
       "date": "2026-08-30",
       "title": "Điều chỉnh khoảng quái map 3-6",
