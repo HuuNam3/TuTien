@@ -14,6 +14,11 @@ native
 #//////////////////////////
 node_modules/
 
+# Local secrets
+.env
+.env.*
+!.env.example
+
 # Markdown notes and documentation
 *.md
 

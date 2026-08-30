@@ -24,6 +24,23 @@
       </div>
     </div>
   </section>
+  <section class="auth-overlay is-hidden" id="authOverlay" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <div class="auth-card">
+      <div class="auth-brand"><i class="activity-icon icon-activity-lotus" aria-hidden="true"></i><span>Đạo Hữu Tu Tiên</span></div>
+      <h1 id="authTitle">Đăng nhập</h1>
+      <div class="auth-mode-tabs" role="tablist" aria-label="Tài khoản">
+        <button id="loginModeButton" class="secondary compact is-active" type="button" role="tab" aria-selected="true">Đăng nhập</button>
+        <button id="registerModeButton" class="secondary compact" type="button" role="tab" aria-selected="false">Đăng ký</button>
+      </div>
+      <form id="authForm" class="auth-form">
+        <label for="authUsername">Tên đăng nhập<input id="authUsername" name="username" type="text" maxlength="24" autocomplete="username" required></label>
+        <label for="authPassword">Mật khẩu<input id="authPassword" name="password" type="password" minlength="6" maxlength="128" autocomplete="current-password" required></label>
+        <label id="authPasswordConfirmationWrap" class="is-hidden" for="authPasswordConfirmation">Xác nhận mật khẩu<input id="authPasswordConfirmation" name="passwordConfirmation" type="password" minlength="6" maxlength="128" autocomplete="new-password"></label>
+        <p id="authMessage" class="auth-message" role="status" aria-live="polite"></p>
+        <button id="authSubmitButton" class="breakthrough" type="submit">Đăng nhập</button>
+      </form>
+    </div>
+  </section>
   <main class="battle-shell">
     <section class="start-screen" id="startScreen">
       <div class="start-card">
@@ -66,7 +83,7 @@
           <button id="enhancementButton" class="secondary compact" type="button"><i class="game-icon icon-hammer" aria-hidden="true"></i><span>Cường hóa</span></button>
           <button id="changeLogButton" class="secondary compact" type="button"><i class="game-icon icon-scroll" aria-hidden="true"></i><span>Ghi chú</span></button>
           <button id="devButton" class="secondary compact" type="button"><i class="game-icon icon-hammer" aria-hidden="true"></i><span>Code</span></button>
-          <button id="resetDataButton" class="danger compact reset-button" type="button"><i class="game-icon icon-reset" aria-hidden="true"></i><span>Xóa dữ liệu</span></button>
+          <button id="resetDataButton" class="danger compact reset-button" type="button"><i class="game-icon icon-reset" aria-hidden="true"></i><span>Đăng xuất</span></button>
         </div>
       </div>
       <section class="training-panel is-hidden" id="trainingPanel">
@@ -435,10 +452,27 @@
         </div>
         <button id="closeResetModalButton" class="icon-button" type="button" title="Đóng" aria-label="Đóng"><i class="unique-icon icon-unique-close" aria-hidden="true"></i></button>
       </div>
-      <p>Chỉ xóa tiến trình hoạt động. Tu vi, linh thạch, trang bị, túi đồ, nhiệm vụ, skill, tháp và phụ bản sẽ được giữ nguyên.</p>
+      <p>Chỉ xóa tiến trình hoạt động. Tu vi, linh thạch, trang bị, túi đồ, nhiệm vụ, skill, tháp, phụ bản và mã đã dùng sẽ được giữ nguyên.</p>
       <div class="reset-modal-actions">
         <button id="cancelResetButton" class="secondary compact" type="button">Hủy</button>
         <button id="confirmResetButton" class="danger compact" type="button">Xóa dữ liệu</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="reset-modal is-hidden" id="logoutConfirmModal" role="dialog" aria-modal="true" aria-labelledby="logoutConfirmTitle">
+    <div class="reset-modal-card">
+      <div class="reset-modal-header">
+        <div>
+          <span class="reset-modal-kicker">Tài khoản</span>
+          <h2 id="logoutConfirmTitle">Đăng xuất?</h2>
+        </div>
+        <button id="closeLogoutModalButton" class="icon-button" type="button" title="Đóng" aria-label="Đóng"><i class="unique-icon icon-unique-close" aria-hidden="true"></i></button>
+      </div>
+      <p>Trạng thái game đã được lưu. Bạn có chắc muốn đăng xuất khỏi tài khoản này không?</p>
+      <div class="reset-modal-actions">
+        <button id="cancelLogoutButton" class="secondary compact" type="button">Hủy</button>
+        <button id="confirmLogoutButton" class="danger compact" type="button">Đăng xuất</button>
       </div>
     </div>
   </div>

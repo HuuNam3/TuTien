@@ -3,16 +3,45 @@
   "title": "Lịch sử cập nhật",
   "entries": [
     {
+      "id": "account-auth-and-mongodb-save-2026-08-31",
+      "date": "2026-08-31",
+      "title": "Đăng ký, đăng nhập và lưu game theo tài khoản",
+      "summary": "Thêm tài khoản username/mật khẩu, ghi nhớ đăng nhập và tự đồng bộ bản lưu theo userId lên MongoDB Atlas mỗi 5 giây khi đang chơi.",
+      "details": [
+        "Đăng ký yêu cầu tên đăng nhập, mật khẩu và xác nhận lại mật khẩu.",
+        "Mật khẩu được băm bằng scrypt trước khi lưu vào collection user_accounts.",
+        "Phiên đăng nhập dùng cookie HttpOnly, SameSite=Lax và tự ghi nhớ trong 30 ngày.",
+        "Bản lưu game dùng userId trong collection gameStates, không còn phụ thuộc mã sinh từ trình duyệt.",
+        "Các biến môi trường cần dùng là MONGODB_URI, MONGODB_DB=Game, MONGODB_USER_COLLECTION=user_accounts và SESSION_SECRET.",
+        "Không có phiên đăng nhập hợp lệ thì game không mở bản lưu local cũ và luôn yêu cầu đăng nhập."
+      ],
+      "category": "Tính năng"
+    },
+    {
+      "id": "mongodb-atlas-cloud-save-2026-08-31",
+      "date": "2026-08-31",
+      "title": "Hạ tầng lưu game trên MongoDB Atlas",
+      "summary": "Game có API Vercel để tải và đồng bộ bản lưu theo tài khoản lên MongoDB Atlas.",
+      "details": [
+        "Bản lưu cloud được định danh bằng userId sau khi đăng nhập.",
+        "Bản lưu cloud được tải trước khi mở game, đồng bộ sau thay đổi và gửi lại trạng thái mới nhất mỗi 5 giây khi game đang chạy.",
+        "Chuỗi kết nối chỉ dùng qua biến môi trường MONGODB_URI, không đưa vào mã nguồn.",
+        "Khi chưa có phiên đăng nhập hợp lệ, game không mở bản lưu local cũ."
+      ],
+      "category": "Tính năng"
+    },
+    {
       "id": "selective-data-reset-2026-08-31",
       "date": "2026-08-31",
       "title": "Xóa dữ liệu có chọn lọc",
-      "summary": "Nút Xóa dữ liệu giữ lại tu vi, linh thạch, trang bị, toàn bộ vật phẩm trong túi, nhiệm vụ, skill, tháp và phụ bản.",
+      "summary": "Nút Xóa dữ liệu giữ lại tu vi, linh thạch, trang bị, toàn bộ vật phẩm trong túi, nhiệm vụ, skill, tháp, phụ bản và mã đã dùng.",
       "details": [
         "Giữ nguyên tu vi hiện tại, tu vi trong đan điền và các chỉ số tài nguyên của nhân vật.",
         "Giữ nguyên trang bị đang mặc, trang bị trong túi, rương và các vật phẩm đã mua.",
         "Chỉ làm sạch tiến trình map, Boss, tháp, mã quà và các trạng thái chức năng tạm thời.",
         "Giữ nguyên nhiệm vụ, tiến độ nhiệm vụ, skill đã học, cấp skill và skill đang trang bị.",
         "Giữ nguyên tầng đã vượt của Tháp thí luyện, lượt thắng, lượt đánh Phụ bản và tiến độ Phụ bản.",
+        "Giữ nguyên trạng thái các mã quà đã sử dụng để không thể nhập lại sau khi reset.",
         "Hộp xác nhận đã ghi rõ các dữ liệu được giữ lại."
       ],
       "category": "Sửa lỗi"

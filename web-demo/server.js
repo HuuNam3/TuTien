@@ -6,6 +6,8 @@ const port = Number(process.env.PORT || 4173);
 const root = __dirname;
 const projectRoot = path.resolve(__dirname, '..');
 const assetRoot = path.join(projectRoot, 'assets');
+const gameStateHandler = require('../api/game-state');
+const authHandler = require('../api/auth');
 const types = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -15,6 +17,14 @@ const types = {
 
 const server = http.createServer((request, response) => {
   const url = new URL(request.url, `http://localhost:${port}`);
+  if (url.pathname === '/api/game-state') {
+    gameStateHandler(request, response);
+    return;
+  }
+  if (url.pathname === '/api/auth') {
+    authHandler(request, response);
+    return;
+  }
   const pathname = url.pathname === '/' ? '/index.html' : url.pathname;
   const filePath = pathname.startsWith('/assets/')
     ? path.normalize(path.join(projectRoot, pathname))

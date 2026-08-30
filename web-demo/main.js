@@ -25,10 +25,22 @@ const maxEquipmentLevel = 120;
 const equipmentLevelsPerChestTier = 5;
 const maxEquipmentInventory = 100;
 const maxShopPurchaseQuantity = 999;
+const cloudSaveEndpoint = '/api/game-state';
+const cloudAuthEndpoint = '/api/auth';
 let saveKey = '';
+let baseSaveKey = '';
 let legacySaveKeys = [];
 let defaultPlayerName = '';
 let ascensionPermitItemId = '';
+let cloudUser = null;
+let authMode = 'login';
+let authSubmitting = false;
+let cloudSaveTimer = 0;
+let cloudPendingData = null;
+let cloudPeriodicSaveTimer = 0;
+let cloudPeriodicSyncInFlight = false;
+let cloudSyncUnavailable = false;
+let authServiceAvailable = false;
 
 let baseStats = {};
 
@@ -338,6 +350,24 @@ const questPanel = $('questPanel');
 const resetDataButton = $('resetDataButton');
 const featureAccessNotice = $('featureAccessNotice');
 const resetConfirmModal = $('resetConfirmModal');
+const logoutConfirmModal = $('logoutConfirmModal');
+const authOverlay = $('authOverlay');
+const authForm = $('authForm');
+const authTitle = $('authTitle');
+const authUsername = $('authUsername');
+const authPassword = $('authPassword');
+const authPasswordConfirmationWrap = $('authPasswordConfirmationWrap');
+const authPasswordConfirmation = $('authPasswordConfirmation');
+const authMessage = $('authMessage');
+const authSubmitButton = $('authSubmitButton');
+const loginModeButton = $('loginModeButton');
+const registerModeButton = $('registerModeButton');
+const accountBar = $('accountBar');
+const accountName = $('accountName');
+const logoutButton = $('logoutButton');
+const closeLogoutModalButton = $('closeLogoutModalButton');
+const cancelLogoutButton = $('cancelLogoutButton');
+const confirmLogoutButton = $('confirmLogoutButton');
 
 const closeResetModalButton = $('closeResetModalButton');
 const cancelResetButton = $('cancelResetButton');
@@ -799,10 +829,13 @@ questCategoryFilters?.addEventListener('click', (event) => {
   questCategory = button.dataset.questCategory || 'main';
   renderQuests();
 });
-resetDataButton.addEventListener('click', openResetConfirm);
+resetDataButton.addEventListener('click', openLogoutConfirm);
 closeResetModalButton?.addEventListener('click', closeResetConfirm);
 cancelResetButton?.addEventListener('click', closeResetConfirm);
 confirmResetButton?.addEventListener('click', resetGameData);
+closeLogoutModalButton?.addEventListener('click', closeLogoutConfirm);
+cancelLogoutButton?.addEventListener('click', closeLogoutConfirm);
+confirmLogoutButton?.addEventListener('click', logout);
 document.addEventListener('click', (event) => {
   const target = event.target.closest('button');
   if (!target) {
@@ -824,9 +857,16 @@ document.addEventListener('click', (event) => {
 resetConfirmModal?.addEventListener('click', (event) => {
   if (event.target === resetConfirmModal) closeResetConfirm();
 });
+logoutConfirmModal?.addEventListener('click', (event) => {
+  if (event.target === logoutConfirmModal) closeLogoutConfirm();
+});
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && !resetConfirmModal?.classList.contains('is-hidden')) {
     closeResetConfirm();
+    return;
+  }
+  if (event.key === 'Escape' && !logoutConfirmModal?.classList.contains('is-hidden')) {
+    closeLogoutConfirm();
     return;
   }
   if (event.key === 'Escape' && !wanderChestOverlay.classList.contains('is-hidden')) {
@@ -2188,8 +2228,28 @@ startButton.addEventListener('click', () => {
   startBattle();
 });
 
+loginModeButton?.addEventListener('click', () => {
+  authMode = 'login';
+  renderAuthMode();
+  setAuthMessage('');
+  authPassword?.focus();
+});
+
+registerModeButton?.addEventListener('click', () => {
+  authMode = 'register';
+  renderAuthMode();
+  setAuthMessage('');
+  authPassword?.focus();
+});
+
+authForm?.addEventListener('submit', submitAuth);
+logoutButton?.addEventListener('click', openLogoutConfirm);
+
 loadAllResources()
-  .then(startGame)
+  .then(async () => {
+    const canStart = await prepareCloudSession();
+    if (canStart) startGame();
+  })
   .catch((error) => {
     console.error(error);
     finishResourceLoading('Không tải được tài nguyên.');
@@ -2319,7 +2379,8 @@ async function loadDemoConfig() {
   questRewardGrowthMultiplier = Math.max(1, Number(gameConfig.gameplay.questRewardGrowthMultiplier ?? 1.3));
   wanderChestCapacity = Number(gameConfig.runtime.wanderChestCapacity);
   offlineCapSeconds = Number(gameConfig.runtime.offlineCapSeconds);
-  saveKey = gameConfig.persistence.saveKey;
+  baseSaveKey = gameConfig.persistence.saveKey;
+  setAccountSaveKey();
   legacySaveKeys = gameConfig.persistence.legacySaveKeys || [];
   ascensionPermitItemId = gameConfig.runtime.ascensionPermitItemId;
   dungeonConfigs = gameConfig.dungeonConfigs;
@@ -2700,6 +2761,7 @@ function finishGameStart() {
   showMap();
   autoWanderAfterRecovery = false;
   saveGame();
+  startCloudAutoSave();
   if (shouldShowOnboarding) showOnboardingGuide();
   const refreshResources = () => {
     if (!gameStarted) {
@@ -2716,6 +2778,212 @@ function clearLegacySaves() {
   legacySaveKeys.forEach((key) => window.localStorage.removeItem(key));
 }
 
+function setAccountSaveKey(user = null) {
+  saveKey = user?.id && baseSaveKey ? `${baseSaveKey}:${user.id}` : baseSaveKey;
+}
+
+function renderAccountBar() {
+  if (!accountBar) return;
+  const signedIn = Boolean(cloudUser);
+  accountBar.classList.toggle('is-hidden', !signedIn);
+  if (signedIn && accountName) accountName.textContent = cloudUser.username;
+}
+
+function setAuthMessage(message = '', variant = '') {
+  if (!authMessage) return;
+  authMessage.textContent = message;
+  authMessage.className = `auth-message${variant ? ` auth-message-${variant}` : ''}`;
+}
+
+function renderAuthMode() {
+  const registering = authMode === 'register';
+  if (authTitle) authTitle.textContent = registering ? 'Đăng ký' : 'Đăng nhập';
+  if (authSubmitButton) authSubmitButton.textContent = registering ? 'Tạo tài khoản' : 'Đăng nhập';
+  authPasswordConfirmationWrap?.classList.toggle('is-hidden', !registering);
+  if (authPasswordConfirmation) authPasswordConfirmation.required = registering;
+  loginModeButton?.classList.toggle('is-active', !registering);
+  registerModeButton?.classList.toggle('is-active', registering);
+  loginModeButton?.setAttribute('aria-selected', String(!registering));
+  registerModeButton?.setAttribute('aria-selected', String(registering));
+  if (authPassword) authPassword.autocomplete = registering ? 'new-password' : 'current-password';
+}
+
+function showAuthOverlay(message = '') {
+  renderAuthMode();
+  setAuthMessage(message);
+  authOverlay?.classList.remove('is-hidden');
+  window.setTimeout(() => authUsername?.focus(), 0);
+}
+
+function hideAuthOverlay() {
+  authOverlay?.classList.add('is-hidden');
+  setAuthMessage('');
+}
+
+async function prepareCloudSession() {
+  try {
+    const response = await fetch(cloudAuthEndpoint, { cache: 'no-store' });
+    if (response.status === 404 || response.status === 503) {
+      cloudSyncUnavailable = true;
+      setAccountSaveKey();
+      showAuthOverlay('Cần đăng nhập để bắt đầu chơi.');
+      return false;
+    }
+    if (!response.ok) {
+      cloudSyncUnavailable = true;
+      setAccountSaveKey();
+      showAuthOverlay('Cần đăng nhập để bắt đầu chơi.');
+      return false;
+    }
+    const payload = await response.json();
+    authServiceAvailable = true;
+    if (!payload.user) {
+      showAuthOverlay();
+      return false;
+    }
+    cloudUser = payload.user;
+    setAccountSaveKey(cloudUser);
+    await loadCloudSave();
+    renderAccountBar();
+    return true;
+  } catch (error) {
+    cloudSyncUnavailable = true;
+    setAccountSaveKey();
+    showAuthOverlay('Cần đăng nhập để bắt đầu chơi.');
+    return false;
+  }
+}
+
+async function finishAuthentication(user) {
+  cloudUser = user;
+  authServiceAvailable = true;
+  cloudSyncUnavailable = false;
+  setAccountSaveKey(cloudUser);
+  await loadCloudSave();
+  renderAccountBar();
+  hideAuthOverlay();
+  startGame();
+}
+
+async function submitAuth(event) {
+  event.preventDefault();
+  if (authSubmitting) return;
+  authSubmitting = true;
+  if (authSubmitButton) authSubmitButton.disabled = true;
+  setAuthMessage('Đang xác thực...');
+  try {
+    const response = await fetch(cloudAuthEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: authMode,
+        username: authUsername?.value || '',
+        password: authPassword?.value || '',
+        passwordConfirmation: authPasswordConfirmation?.value || '',
+      }),
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || !payload.user) {
+      setAuthMessage(payload.error || 'Không thể xác thực tài khoản.', 'error');
+      return;
+    }
+    await finishAuthentication(payload.user);
+  } catch (error) {
+    setAuthMessage('Không thể kết nối dịch vụ tài khoản.', 'error');
+  } finally {
+    authSubmitting = false;
+    if (authSubmitButton) authSubmitButton.disabled = false;
+  }
+}
+
+async function logout() {
+  if (!cloudUser) return;
+  saveGame();
+  try {
+    await fetch(cloudAuthEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'logout' }),
+    });
+  } finally {
+    window.localStorage.removeItem(saveKey);
+    window.location.reload();
+  }
+}
+
+async function syncCloudState(data) {
+  if (!cloudUser || cloudSyncUnavailable || !data) return false;
+  try {
+    const response = await fetch(cloudSaveEndpoint, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ state: data }),
+    });
+    if (!response.ok) {
+      cloudSyncUnavailable = true;
+      return false;
+    }
+    return true;
+  } catch (error) {
+    cloudSyncUnavailable = true;
+    return false;
+  }
+}
+
+function queueCloudSave(data) {
+  if (!cloudUser || cloudSyncUnavailable) return;
+  cloudPendingData = data;
+  window.clearTimeout(cloudSaveTimer);
+  cloudSaveTimer = window.setTimeout(async () => {
+    const pendingData = cloudPendingData;
+    cloudPendingData = null;
+    cloudSaveTimer = 0;
+    await syncCloudState(pendingData);
+    if (cloudPendingData) queueCloudSave(cloudPendingData);
+  }, 500);
+}
+
+function startCloudAutoSave() {
+  window.clearInterval(cloudPeriodicSaveTimer);
+  cloudPeriodicSaveTimer = 0;
+  if (!cloudUser || cloudSyncUnavailable) return;
+  cloudPeriodicSaveTimer = window.setInterval(async () => {
+    if (!gameStarted || !cloudUser || cloudSyncUnavailable || cloudPeriodicSyncInFlight) return;
+    const latestData = saveGame();
+    if (!latestData) return;
+    window.clearTimeout(cloudSaveTimer);
+    cloudSaveTimer = 0;
+    cloudPendingData = null;
+    cloudPeriodicSyncInFlight = true;
+    try {
+      await syncCloudState(latestData);
+    } finally {
+      cloudPeriodicSyncInFlight = false;
+    }
+  }, 5000);
+}
+
+async function loadCloudSave() {
+  if (!cloudUser || !saveKey || cloudSyncUnavailable) return false;
+  try {
+    const response = await fetch(cloudSaveEndpoint, {
+      cache: 'no-store',
+    });
+    if (response.status === 404 || response.status === 503) {
+      cloudSyncUnavailable = true;
+      return false;
+    }
+    if (!response.ok) return false;
+    const payload = await response.json();
+    if (!payload.state || typeof payload.state !== 'object') return false;
+    window.localStorage.setItem(saveKey, JSON.stringify(payload.state));
+    return true;
+  } catch (error) {
+    cloudSyncUnavailable = true;
+    return false;
+  }
+}
+
 function openResetConfirm() {
   if (resettingGameData) return;
   resetConfirmModal?.classList.remove('is-hidden');
@@ -2726,7 +2994,17 @@ function closeResetConfirm() {
   resetConfirmModal?.classList.add('is-hidden');
 }
 
-function resetGameData() {
+function openLogoutConfirm() {
+  if (!cloudUser || authSubmitting) return;
+  logoutConfirmModal?.classList.remove('is-hidden');
+  confirmLogoutButton?.focus();
+}
+
+function closeLogoutConfirm() {
+  logoutConfirmModal?.classList.add('is-hidden');
+}
+
+async function resetGameData() {
   resettingGameData = true;
   closeResetConfirm();
   clearWanderTimer();
@@ -2746,7 +3024,6 @@ function resetGameData() {
     const resetData = {
       ...savedData,
       devMode: false,
-      redeemedCodes: {},
       foundationFindCounts: {},
       highEnemyEncounterChance: false,
       wanderEventRollCount: 0,
@@ -2770,6 +3047,7 @@ function resetGameData() {
       trainingWasActive: true,
     };
     window.localStorage.setItem(saveKey, JSON.stringify(resetData));
+    await syncCloudState(resetData);
   } else {
     window.localStorage.removeItem(saveKey);
   }
@@ -3032,6 +3310,8 @@ function saveGame() {
     equipmentChestInventory,
   };
   window.localStorage.setItem(saveKey, JSON.stringify(data));
+  queueCloudSave(data);
+  return data;
 }
 
 function applyOfflineProgress(data) {

@@ -3,5 +3,8 @@
   "uuid": "c8019b35-0df4-4456-9739-55cbbc9e2086",
   "creator": {
     "version": "3.8.7"
+  },
+  "dependencies": {
+    "mongodb": "^7.6.0"
   }
 }
