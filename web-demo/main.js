@@ -327,10 +327,6 @@ if (devButton) {
   devButton.hidden = isPublicDeployment;
   devButton.setAttribute('aria-hidden', String(isPublicDeployment));
 }
-if (changeLogButton) {
-  changeLogButton.hidden = isPublicDeployment;
-  changeLogButton.setAttribute('aria-hidden', String(isPublicDeployment));
-}
 const closeResetModalButton = $('closeResetModalButton');
 const cancelResetButton = $('cancelResetButton');
 const confirmResetButton = $('confirmResetButton');
@@ -487,7 +483,8 @@ changeLogButton?.addEventListener('click', showChangeLog);
 changeLogCategoryFilters?.addEventListener('click', (event) => {
   const button = event.target.closest('[data-change-log-category]');
   if (!button) return;
-  changeLogCategory = button.dataset.changeLogCategory || 'all';
+  const selectedCategory = button.dataset.changeLogCategory || 'all';
+  changeLogCategory = changeLogCategory === selectedCategory ? 'all' : selectedCategory;
   renderChangeLog();
 });
 devButton?.addEventListener('click', showDevMode);
@@ -1142,7 +1139,6 @@ function showTrialTower() {
 }
 
 function showChangeLog() {
-  if (isPublicDeployment) return;
   prepareFeatureView(changeLogPanel, 'changeLog', renderChangeLog);
 }
 
@@ -1469,12 +1465,11 @@ function renderChangeLog() {
     const dateOrder = String(right.date || '').localeCompare(String(left.date || ''));
     return dateOrder || left.sortIndex - right.sortIndex;
   });
-  const categories = ['all', 'Tính năng', 'Sửa lỗi', 'Giao diện'];
+  const categories = ['Tính năng', 'Cân bằng', 'Sửa lỗi'];
   if (!categories.includes(changeLogCategory)) changeLogCategory = 'all';
   if (changeLogCategoryFilters) {
     const iconByCategory = {
-      all: 'icon-activity-history',
-      'Giao diện': 'icon-activity-guide',
+      'Cân bằng': 'icon-activity-fortune',
       'Sửa lỗi': 'icon-activity-locked',
       'Tính năng': 'icon-activity-skill',
       'Tu luyện': 'icon-activity-lotus',
@@ -1485,10 +1480,9 @@ function renderChangeLog() {
     };
     changeLogCategoryFilters.innerHTML = categories.map((category) => {
       const isActive = category === changeLogCategory;
-      const label = category === 'all' ? 'Tất cả' : category;
       const iconClass = iconByCategory[category] || 'icon-activity-history';
       const iconType = iconClass === 'icon-unique-equipment' ? 'unique-icon' : 'activity-icon';
-      return `<button type="button" class="secondary compact${isActive ? ' is-active' : ''}" data-change-log-category="${category}" role="tab" aria-selected="${isActive}"><i class="${iconType} ${iconClass}" aria-hidden="true"></i>${label}</button>`;
+      return `<button type="button" class="secondary compact${isActive ? ' is-active' : ''}" data-change-log-category="${category}" role="tab" aria-selected="${isActive}"><i class="${iconType} ${iconClass}" aria-hidden="true"></i>${category}</button>`;
     }).join('');
   }
   const visibleEntries = changeLogCategory === 'all'

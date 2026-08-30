@@ -3,6 +3,18 @@
   "title": "Lịch sử cập nhật",
   "entries": [
     {
+      "id": "show-public-change-log-and-clean-filters-2026-08-30",
+      "date": "2026-08-30",
+      "title": "Hiển thị Ghi chú trên bản deploy",
+      "summary": "Tab Ghi chú hoạt động trên domain public; bộ lọc bỏ lựa chọn Tất cả và Giao diện.",
+      "details": [
+        "Domain deploy vẫn có thể mở và xem lịch sử cập nhật.",
+        "Bộ lọc chỉ còn Tính năng, Cân bằng và Sửa lỗi; trạng thái mặc định vẫn hiển thị toàn bộ ghi chú.",
+        "Bấm lại bộ lọc đang chọn để quay về danh sách toàn bộ ghi chú."
+      ],
+      "category": "Tính năng"
+    },
+    {
       "id": "fix-start-screen-json-2026-08-30",
       "date": "2026-08-30",
       "title": "Sửa lỗi kẹt màn hình nhập đạo",
