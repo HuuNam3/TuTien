@@ -4040,16 +4040,7 @@ function getWanderMapIconClass(mapId) {
 function getRandomWanderEnemyStage(map = getCurrentWanderMap()) {
   const mapMinTier = Math.max(1, Math.floor(map.minEnemyTier || 1));
   const mapMaxTier = Math.max(mapMinTier, Math.floor(map.maxEnemyTier || stages.length));
-  const playerMajorRealmIndex = clamp(
-    getTierMajorIndex(getPlayerCultivationTier()),
-    0,
-    majorRealmNames.length - 1,
-  );
-  const minimumPlayerRelativeTier = Math.max(
-    1,
-    getRealmTierStart(Math.max(0, playerMajorRealmIndex - 1)),
-  );
-  const minAllowedTier = Math.max(mapMinTier, minimumPlayerRelativeTier);
+  const minAllowedTier = mapMinTier;
 
   if (minAllowedTier > mapMaxTier) return null;
 

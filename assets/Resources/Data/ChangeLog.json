@@ -1437,6 +1437,17 @@
       "category": "Tính năng"
     },
     {
+      "id": "wander-enemy-lower-realm-fix-2026-08-31",
+      "date": "2026-08-31",
+      "title": "Bỏ giới hạn cảnh giới khi gặp kẻ địch",
+      "summary": "Ngao du không còn loại kẻ địch chỉ vì thấp hơn người chơi một đại cảnh giới.",
+      "details": [
+        "Danh sách kẻ địch được chọn theo khoảng tu vi của map hiện tại.",
+        "Các điều kiện mở map, khoảng tu vi map và giới hạn kẻ địch cao hơn vẫn giữ nguyên."
+      ],
+      "category": "Sửa lỗi"
+    },
+    {
       "id": "hide-audio-tab-2026-08-30",
       "date": "2026-08-30",
       "title": "Ẩn tab Âm thanh",
