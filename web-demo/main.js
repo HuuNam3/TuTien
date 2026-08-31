@@ -23,7 +23,6 @@ const maxEquipmentLevel = 120;
 const equipmentLevelsPerChestTier = 5;
 const maxEquipmentInventory = 100;
 const maxShopPurchaseQuantity = 999;
-const shopTemporarilyLocked = true;
 const cloudSaveEndpoint = '/api/game-state';
 const cloudAuthEndpoint = '/api/auth';
 let saveKey = '';
@@ -208,6 +207,7 @@ let healthPotionCount = 0;
 let manaPotionCount = 0;
 let enhancementStones = 0;
 let skillBooks = {};
+let skillFragments = {};
 let shopInventoryCounts = {};
 let skillLevels = {};
 let skillPractice = {};
@@ -221,6 +221,8 @@ let equipmentChestInventory = [];
 let busy = false;
 let battleOver = false;
 let lastBattleOutcome = null;
+let battleReturnTab = 'map';
+let battleReturnToWander = false;
 let turn = 0;
 let timer = 0;
 let battleResultTimer = 0;
@@ -782,7 +784,13 @@ document.addEventListener('click', (event) => {
   if (target && target !== audioToggleButton && !target.disabled) playAudioCue('click');
 }, true);
 
-backButton?.addEventListener('click', showMap);
+backButton?.addEventListener('click', () => {
+  if (battlePanel?.classList.contains('is-hidden')) {
+    showMap();
+    return;
+  }
+  returnFromBattleScreen();
+});
 closeProfileButton?.addEventListener('click', showMap);
 closeEquipmentButton?.addEventListener('click', showMap);
 closeShopButton?.addEventListener('click', showMap);
@@ -1013,6 +1021,35 @@ function getSkillBookCount(skillId) {
   return Math.max(0, Math.floor(Number(skillBooks[skillId]) || 0));
 }
 
+function getSkillFragmentCount(skillId) {
+  return Math.max(0, Math.floor(Number(skillFragments[skillId]) || 0));
+}
+
+function addSkillFragments(skillId, amount = 1) {
+  const incoming = Math.max(0, Math.floor(Number(amount) || 0));
+  const total = getSkillFragmentCount(skillId) + incoming;
+  const completedBooks = Math.floor(total / 5);
+  skillFragments[skillId] = total % 5;
+  if (completedBooks > 0) skillBooks[skillId] = getSkillBookCount(skillId) + completedBooks;
+  return { fragments: incoming, completedBooks };
+}
+
+function getSkillChestSkills(shopItem) {
+  return getPlayerSkills().filter((skill) => skill.gradeId === shopItem?.gradeId);
+}
+
+function openSkillChest(shopItem) {
+  const candidates = getSkillChestSkills(shopItem);
+  if (!candidates.length) return null;
+  const skill = candidates[Math.floor(Math.random() * candidates.length)];
+  const bookChance = Math.max(0, Math.min(1, Number(shopItem.bookChance) || 0.1));
+  if (Math.random() < bookChance) {
+    skillBooks[skill.id] = getSkillBookCount(skill.id) + 1;
+    return { skill, kind: 'book', completedBooks: 0 };
+  }
+  return { skill, kind: 'fragment', ...addSkillFragments(skill.id, 1) };
+}
+
 function grantSkillLearningComprehension() {
   const maxSkillLearningComprehension = 3;
   if (skillLearningComprehension >= maxSkillLearningComprehension) return 0;
@@ -1189,6 +1226,9 @@ function ensureActiveSkill() {
   skillBooks = Object.fromEntries(Object.entries(skillBooks || {})
     .filter(([skillId]) => ids.has(skillId))
     .map(([skillId, count]) => [skillId, Math.max(0, Math.floor(Number(count) || 0))]));
+  skillFragments = Object.fromEntries(Object.entries(skillFragments || {})
+    .filter(([skillId]) => ids.has(skillId))
+    .map(([skillId, count]) => [skillId, Math.max(0, Math.floor(Number(count) || 0) % 5)]));
   if (skills[0] && !isSkillLearned(skills[0].id)) learnedSkillIds.push(skills[0].id);
   equippedSkillIds = equippedSkillIds.filter((skillId) => ids.has(skillId) && isSkillLearned(skillId));
   if (!equippedSkillIds.length && skills[0]) equippedSkillIds = [skills[0].id];
@@ -1354,6 +1394,75 @@ function setActiveTab(tabId) {
   });
   playerAvatarButton?.classList.toggle('is-active', tabId === 'profile');
   document.body.classList.toggle('profile-active', tabId === 'profile');
+}
+
+function getActiveTabId() {
+  if (playerAvatarButton?.classList.contains('is-active')) return 'profile';
+  return Object.entries(tabButtons)
+    .find(([, button]) => button?.classList.contains('is-active'))?.[0] || 'map';
+}
+
+function rememberBattleReturnTab(stage = currentStage) {
+  const activeTab = getActiveTabId();
+  battleReturnTab = activeTab;
+  battleReturnToWander = Boolean(stage?.isWanderGenerated);
+}
+
+function showBattleReturnTab() {
+  const returnTab = battleReturnTab || 'map';
+  if (returnTab === 'training') {
+    showTraining();
+    return;
+  }
+  if (returnTab === 'profile') {
+    showProfile();
+    return;
+  }
+  if (returnTab === 'equipment') {
+    showEquipment();
+    return;
+  }
+  if (returnTab === 'inventory') {
+    showInventory();
+    return;
+  }
+  if (returnTab === 'shop') {
+    showShop();
+    return;
+  }
+  if (returnTab === 'enhancement') {
+    showEnhancement();
+    return;
+  }
+  if (returnTab === 'resourceDungeon') {
+    showResourceDungeons();
+    return;
+  }
+  if (returnTab === 'trialTower') {
+    showTrialTower();
+    return;
+  }
+  if (returnTab === 'code') {
+    showCodePanel();
+    return;
+  }
+  if (returnTab === 'quests') {
+    showQuests();
+    return;
+  }
+  showMap();
+}
+
+function returnFromBattleScreen() {
+  const shouldResumeWander = battleReturnToWander;
+  battleReturnToWander = false;
+  if (lastBattleOutcome === 'lose') {
+    showTrainingMessage('Đã thua, hãy về tu luyện để hồi phục.');
+    return;
+  }
+
+  showBattleReturnTab();
+  if (shouldResumeWander && canEnterDungeon()) beginWander();
 }
 
 function animatePanelIn(panel) {
@@ -2215,10 +2324,6 @@ function showInventory() {
 }
 
 function showShop() {
-  if (shopTemporarilyLocked) {
-    showLockedFeatureNotice('Cửa hàng', 'Tính năng đang tạm khóa');
-    return;
-  }
   if (busy) return;
   document.body.classList.remove('battle-active');
   hideBattleResultOverlay();
@@ -3123,6 +3228,7 @@ function loadSavedGame() {
     manaPotionCount = Math.max(0, Number(data.manaPotionCount) || 0);
     enhancementStones = Math.max(0, Number(data.enhancementStones) || Number(data.enhancementMaterials) || 0);
     skillBooks = data.skillBooks && typeof data.skillBooks === 'object' ? data.skillBooks : {};
+    skillFragments = data.skillFragments && typeof data.skillFragments === 'object' ? data.skillFragments : {};
     shopInventoryCounts = normalizeShopInventoryCounts(data.shopInventoryCounts);
     skillLevels = data.skillLevels && typeof data.skillLevels === 'object' ? data.skillLevels : {};
     skillPractice = data.skillPractice && typeof data.skillPractice === 'object' ? data.skillPractice : {};
@@ -3310,6 +3416,7 @@ function saveGame() {
     manaPotionCount,
     enhancementStones,
     skillBooks,
+    skillFragments,
     shopInventoryCounts,
     skillLevels,
     skillPractice,
@@ -4752,6 +4859,7 @@ function startStageBattle(stage) {
     consumeDungeonAttempt(config.id);
   }
 
+  rememberBattleReturnTab(stage);
   clearWanderTimer();
   hideWanderEventOverlay();
   currentStage = stage;
@@ -5639,12 +5747,12 @@ function renderBattleResult(message, outcome, reward, spiritStoneReward, dropped
 
   battleResult.querySelector('button').addEventListener('click', () => {
     battleResult.classList.add('is-hidden');
-    continueBattle();
+    returnFromBattleScreen();
   });
   battleResultTimer = window.setTimeout(() => {
     if (!battleOver || battleResult.classList.contains('is-hidden')) return;
     battleResult.classList.add('is-hidden');
-    continueBattle();
+    returnFromBattleScreen();
   }, 5000);
 }
 
@@ -5657,12 +5765,7 @@ function getDroppedRewardText(reward) {
 }
 
 function getPostBattleButtonText(outcome) {
-  if (currentStage?.isResourceDungeon) return outcome === 'win' ? 'Về Phụ bản' : 'Về tu luyện';
-  if (currentStage?.isTrialTower) return outcome === 'win' ? 'Về tháp' : 'Về tu luyện';
-  const config = getDungeonConfig();
-  if (outcome !== 'win') return 'Về tu luyện';
-  if (!config.unlimited && !canRunDungeon(config.id)) return 'Tiếp tục';
-  return getNextBattleStage() ? 'Tiếp tục ngao du' : 'Tiếp tục';
+  return 'Thoát';
 }
 
 function finishByTurnLimit() {
@@ -6274,7 +6377,7 @@ function buyShopItem(itemId, amount = 1) {
       enhancementStones += Math.max(1, Number(shopItem.amount) || 1);
     }
 
-    if (shopItem.type === 'cultivation' || shopItem.type === 'foundation' || shopItem.type === 'ascension') {
+    if (['cultivation', 'foundation', 'ascension', 'skillChest'].includes(shopItem.type)) {
       addShopInventoryItem(shopItem.id);
     }
 
@@ -6342,6 +6445,9 @@ function canBuyShopItem(shopItem) {
     || getPlayerCultivationTier() < getShopSkillRequiredTier(shopItem)
     || getSkillLevel(shopItem.skillId) >= getSkillMaxLevel()
   )) return false;
+  if (shopItem.type === 'skillChest' && !getSkillChestSkills(shopItem).length) return false;
+  if (shopItem.type === 'skillChest'
+    && getPlayerCultivationTier() < Math.max(1, Number(shopItem.requiredTier) || 1)) return false;
   if (Number.isInteger(shopItem.requiredMajorRealmIndex)
     && playerMajorRealmIndex < shopItem.requiredMajorRealmIndex) return false;
   if (shopItem.requiredMapId && !isWanderMapUnlocked(wanderMaps[shopItem.requiredMapId])) return false;
@@ -7506,7 +7612,7 @@ function runResourceDungeon(dungeonId) {
 
 function getShopItemCategory(item) {
   if (item.type === 'equipment' || item.type === 'equipmentRandom' || item.type === 'equipmentChest') return 'equipment';
-  if (item.type === 'skillBook') return 'skill';
+  if (item.type === 'skillBook' || item.type === 'skillChest') return 'skill';
   if (item.type === 'cultivation' || item.type === 'foundation' || item.type === 'ascension') return 'cultivation';
   if (item.type === 'potion') return 'consumable';
   return 'material';
@@ -7514,6 +7620,7 @@ function getShopItemCategory(item) {
 
 function getShopItemIconClass(item) {
   if (item.type === 'skillBook') return getSkillItemIconClass(item.skillId);
+  if (item.type === 'skillChest') return 'icon-activity-chest';
   if (item.type === 'equipment' || item.type === 'equipmentRandom') return 'icon-unique-equipment';
   if (item.type === 'equipmentChest') return 'icon-activity-chest';
   if (item.type === 'potion') return 'icon-item-health-pill';
@@ -7551,7 +7658,7 @@ function getShopItemLockText(item) {
   const skillRequiredTier = item.type === 'skillBook'
     ? getShopSkillRequiredTier(item)
     : Math.max(1, Number(item.requiredTier) || 1);
-  const lockedByTier = item.type === 'skillBook'
+  const lockedByTier = ['skillBook', 'skillChest'].includes(item.type)
     && getPlayerCultivationTier() < skillRequiredTier;
   if (lockedByMap) return `Cần mở ${wanderMaps[item.requiredMapId]?.name || 'map yêu cầu'}`;
   if (lockedByTier) return `Yêu cầu ${getTierRealmText(skillRequiredTier)}`;
@@ -7569,6 +7676,7 @@ function getShopItemPriceDetail(item) {
   }
   if (item.type === 'ascension') return 'Mỗi lần mua tiếp theo tăng gấp 2 lần giá; có thể mua nhiều.';
   if (item.type === 'skillBook') return 'Giá bán bằng 1/4 giá gốc, làm tròn đến linh thạch gần nhất.';
+  if (item.type === 'skillChest') return 'Giá cố định; mỗi rương mở ra mảnh skill hoặc sách skill.';
   return 'Giá cố định cho mỗi lần mua.';
 }
 
@@ -7584,6 +7692,18 @@ function getShopItemDetailLines(item) {
       lines.push(`Linh lực cần ${formatGameNumber(skill.cost)}.`);
       lines.push(formatSkillDisplayNote(skill, 0));
     }
+  }
+  if (item.type === 'skillChest') {
+    const candidates = getSkillChestSkills(item);
+    const skillNames = candidates.length
+      ? candidates.map((skill) => skill.name).join(', ')
+      : 'skill của phái hiện tại';
+    const fragmentChance = Math.round((Number(item.fragmentChance) || 0.9) * 100);
+    const bookChance = Math.round((Number(item.bookChance) || 0.1) * 100);
+    lines.push(`Phẩm chất: ${getSkillGradeName({ gradeId: item.gradeId })}.`);
+    lines.push(`Mỗi lần mở: ${fragmentChance}% nhận 1 mảnh skill, ${bookChance}% nhận 1 sách skill.`);
+    lines.push(`Skill có thể nhận: ${skillNames}.`);
+    lines.push('Đủ 5 mảnh của cùng một skill sẽ tự ghép thành 1 sách trong Túi đồ.');
   }
   if (item.type === 'equipmentChest') {
     const majorRealmIndex = clamp(Number(playerMajorRealmIndex) || 0, 0, majorRealmNames.length - 1);
@@ -7676,7 +7796,7 @@ function renderShop() {
     const skillRequiredTier = item.type === 'skillBook'
       ? getShopSkillRequiredTier(item)
       : Math.max(1, Number(item.requiredTier) || 1);
-    const lockedByTier = item.type === 'skillBook'
+    const lockedByTier = ['skillBook', 'skillChest'].includes(item.type)
       && getPlayerCultivationTier() < skillRequiredTier;
     const locked = lockedByLevel || lockedByRealm || lockedByTier || lockedByMap;
     const foundationBought = item.type === 'foundation' && !canBuyFoundationPill(item);
@@ -7902,11 +8022,17 @@ function getBagItems() {
   ];
 
   shopItems
-    .filter((shopItem) => ['cultivation', 'foundation', 'ascension'].includes(shopItem.type))
+    .filter((shopItem) => ['cultivation', 'foundation', 'ascension', 'skillChest'].includes(shopItem.type))
     .forEach((shopItem) => {
       const count = getShopInventoryCount(shopItem.id);
       if (count <= 0) return;
-      const category = shopItem.type === 'ascension' ? 'Đột phá' : shopItem.type === 'foundation' ? 'Tu luyện' : 'Tu vi';
+      const category = shopItem.type === 'skillChest'
+        ? 'Rương skill'
+        : shopItem.type === 'ascension'
+        ? 'Đột phá'
+        : shopItem.type === 'foundation'
+        ? 'Tu luyện'
+        : 'Tu vi';
       items.push({
         id: `shop-item-${shopItem.id}`,
         shopItemId: shopItem.id,
@@ -7916,7 +8042,7 @@ function getBagItems() {
         iconClass: getShopItemBagIconClass(shopItem),
         description: shopItem.description || getShopItemDetailLines(shopItem).join(' '),
         usable: shopItem.type !== 'ascension',
-        useLabel: shopItem.type === 'ascension' ? '' : 'Dùng',
+        useLabel: shopItem.type === 'skillChest' ? 'Mở' : shopItem.type === 'ascension' ? '' : 'Dùng',
       });
     });
 
@@ -7933,6 +8059,21 @@ function getBagItems() {
       description: `Dùng để nâng cấp ${skill.name}.`,
       usable: !isSkillLearned(skill.id) && getPlayerCultivationTier() >= getSkillRequiredTier(skill),
       useLabel: 'Học skill',
+    });
+  });
+
+  Object.entries(skillFragments).forEach(([skillId, count]) => {
+    const skill = cultivationSkills.find((entry) => entry.id === skillId);
+    const safeCount = getSkillFragmentCount(skillId);
+    if (!skill || safeCount <= 0) return;
+    items.push({
+      id: `skill-fragment-${skillId}`,
+      name: `Mảnh skill: ${skill.name}`,
+      category: 'Mảnh skill',
+      count: safeCount,
+      iconClass: `item-icon ${getSkillItemIconClass(skillId)}`,
+      description: `Mảnh dùng để ghép sách skill ${skill.name}.`,
+      usable: false,
     });
   });
 
@@ -7984,13 +8125,20 @@ function getInventoryItemDetails(item) {
     const skill = cultivationSkills.find((entry) => entry.id === skillId);
     if (skill) details.push(`Dùng để học hoặc nâng cấp ${skill.name}.`);
   }
+  if (item.category === 'Mảnh skill') {
+    const skillId = String(item.id).replace(/^skill-fragment-/, '');
+    const skill = cultivationSkills.find((entry) => entry.id === skillId);
+    if (skill) details.push(`Đủ 5 mảnh sẽ tự ghép thành 1 sách skill ${skill.name}.`);
+  }
   if (item.shopItemId) {
     const shopItem = shopItems.find((entry) => entry.id === item.shopItemId);
     if (shopItem?.type === 'cultivation') details.push(`Nhận ${formatGameNumber(shopItem.cultivation)} tu vi khi dùng.`);
     if (shopItem?.type === 'foundation') details.push(`Nhận ${formatGameNumber(getFoundationPillAmount(shopItem))} căn cơ khi dùng.`);
     if (shopItem?.type === 'ascension') details.push('Chỉ dùng tại nút thăng đại cảnh giới tiếp theo.');
+    if (shopItem?.type === 'skillChest') details.push('Mở rương để nhận 1 mảnh skill hoặc 1 sách skill theo tỉ lệ của rương.');
   }
   if (item.category === 'Rương') details.push(`Có thể mở nhiều rương cùng lúc; mỗi lần mở tạo một trang bị.`);
+  if (item.category === 'Rương skill') details.push(`Có thể mở nhiều rương cùng lúc; đủ 5 mảnh của cùng skill sẽ tự ghép thành 1 sách.`);
   return details;
 }
 
@@ -7999,6 +8147,7 @@ function usePurchasedShopItem(item, amount = 1) {
   if (!shopItem) return 0;
   const requested = Math.max(1, Math.floor(Number(amount) || 1));
   let used = 0;
+  const skillChestRewards = [];
 
   for (let index = 0; index < requested; index += 1) {
     if (getShopInventoryCount(shopItem.id) <= 0) break;
@@ -8009,6 +8158,10 @@ function usePurchasedShopItem(item, amount = 1) {
       playerFoundation += getFoundationPillAmount(shopItem);
     } else if (shopItem.type === 'ascension') {
       canUse = false;
+    } else if (shopItem.type === 'skillChest') {
+      const reward = openSkillChest(shopItem);
+      canUse = Boolean(reward);
+      if (reward) skillChestRewards.push(reward);
     }
     if (!canUse) break;
     shopInventoryCounts[shopItem.id] = getShopInventoryCount(shopItem.id) - 1;
@@ -8016,7 +8169,18 @@ function usePurchasedShopItem(item, amount = 1) {
   }
 
   if (!used) return 0;
-  showGameToast(`Đã dùng ${shopItem.name}${used > 1 ? ` x${used}` : ''}.`, 'success');
+  if (shopItem.type === 'skillChest') {
+    const bookRewards = skillChestRewards.filter((reward) => reward.kind === 'book').length;
+    const fragmentRewards = skillChestRewards.filter((reward) => reward.kind === 'fragment').length;
+    const completedBooks = skillChestRewards.reduce((total, reward) => total + reward.completedBooks, 0);
+    const rewardParts = [];
+    if (fragmentRewards) rewardParts.push(`${fragmentRewards} mảnh skill`);
+    if (bookRewards) rewardParts.push(`${bookRewards} sách skill`);
+    if (completedBooks) rewardParts.push(`ghép ${completedBooks} sách skill`);
+    showGameToast(`Đã mở ${shopItem.name}${used > 1 ? ` x${used}` : ''}: ${rewardParts.join(', ')}.`, 'success');
+  } else {
+    showGameToast(`Đã dùng ${shopItem.name}${used > 1 ? ` x${used}` : ''}.`, 'success');
+  }
   renderCultivation();
   renderInventory();
   renderShop();
