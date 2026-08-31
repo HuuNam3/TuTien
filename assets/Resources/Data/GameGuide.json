@@ -49,7 +49,7 @@
       "steps": [
         "Skill có 5 phẩm cấp: Phàm phẩm, Hoàng phẩm, Huyền phẩm, Địa phẩm và Thiên phẩm.",
         "Tu vi mở phẩm cấp skill theo mốc: Phàm từ tầng 1, Hoàng từ tầng 10, Huyền từ tầng 19, Địa từ tầng 28, Thiên từ tầng 37.",
-        "Mỗi skill có sát thương riêng, phí Linh lực, hồi chiêu, tỉ lệ chí mạng skill và hiệu ứng ghi trong phần Ghi chú.",
+        "Mỗi skill có sát thương riêng, phí Linh lực, hồi chiêu, tỉ lệ chí mạng skill và hiệu ứng được hiển thị trực tiếp trong phần Tu luyện.",
         "Skill cấp 0 là cấp ban đầu. Cấp tối đa là +12; cần điểm Tu luyện skill để nâng từng cấp.",
         "Điểm cần tăng theo phẩm cấp: Phàm x1, Hoàng x1.5, Huyền x2, Địa x2.5, Thiên x3.",
         "Mốc +3, +6 và +9 cần thêm 1 sách skill tương ứng; các mốc này làm hiệu quả skill tăng mạnh hơn.",

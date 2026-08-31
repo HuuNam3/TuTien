@@ -2,8 +2,7 @@ let maxTurns = 0;
 let turnInterval = 0;
 let playerMaxMinorLevel = 0;
 let wanderEventDelay = 0;
-let rewardMultiplier = 0;
-let spiritStoneToCultivationRatio = 0.5;
+let cultivationRewardMultiplier = 0;
 let questRewardGrowthMultiplier = 1.3;
 let gameConfig = {};
 const cultivationRealmsPath = '/assets/Resources/Data/CultivationRealms.json';
@@ -19,12 +18,12 @@ const combatStylesPath = '/assets/Resources/Data/CombatStyles.json';
 const enemyStatsPath = '/assets/Resources/Data/EnemyStats.json';
 const enemySkillsPath = '/assets/Resources/Data/EnemySkills.json';
 const trialTowerPath = '/assets/Resources/Data/TrialTower.json';
-const changeLogPath = '/assets/Resources/Data/ChangeLog.json';
 const questDataPath = '/assets/Resources/Data/Quests.json';
 const maxEquipmentLevel = 120;
 const equipmentLevelsPerChestTier = 5;
 const maxEquipmentInventory = 100;
 const maxShopPurchaseQuantity = 999;
+const shopTemporarilyLocked = true;
 const cloudSaveEndpoint = '/api/game-state';
 const cloudAuthEndpoint = '/api/auth';
 let saveKey = '';
@@ -169,14 +168,12 @@ let combatStatDefinitions = [];
 let combatStyles = {};
 let trialTowerData = { entryRequiredTier: 10, entryText: '', floors: [] };
 let enemySkillData = { defaultSkill: {}, skills: [], assignments: {} };
-let changeLogData = { title: 'Lịch sử cập nhật', entries: [] };
 let questData = { title: 'Nhiệm vụ', quests: [] };
 
 let shopItems = [];
 let shopCategory = 'all';
 let questCategory = 'main';
 const temporarilyDisabledQuestCategories = new Set(['side']);
-let changeLogCategory = 'all';
 let starterInventory = [];
 let initialState = {};
 let newCharacterPendingGuide = false;
@@ -196,6 +193,7 @@ let playerCultivation = 0;
 let playerSpiritStones = 0;
 let playerFoundation = 0;
 let playerComprehension = 1;
+let skillLearningComprehension = 0;
 let devMode = false;
 let redeemedCodes = {};
 let foundationFindCounts = {};
@@ -234,6 +232,7 @@ let autoWanderAfterRecovery = false;
 let wanderChestRewards = [];
 let wanderChestCapacity = 0;
 let highEnemyEncounterChance = false;
+let skipEnemyEncounters = false;
 let wanderEventRollCount = 0;
 let dantianCultivation = 0;
 let dantianCultivationSeconds = 0;
@@ -242,6 +241,7 @@ let resourceRegenTimer = 0;
 let selectedStage = null;
 let currentDungeonId = '';
 let currentWanderMapId = '';
+let wanderCarouselCleanup = null;
 let trialTowerHighestCleared = 0;
 let claimedQuestIds = new Set();
 let wanderWinCount = 0;
@@ -250,7 +250,7 @@ let wanderDefeatedByMap = {};
 let wanderBossDefeatedByMap = {};
 let trialTowerWinCount = 0;
 let equipmentEquipCounts = {};
-let dailyQuestProgress = { date: getDailyKey(), wanderWins: 0, wanderRewards: 0, trialTowerWins: 0 };
+let dailyQuestProgress = { date: getDailyKey(), wanderWins: 0, wanderRewards: 0, trialTowerWins: 0, resourceDungeonWins: 0 };
 let currentWanderEvent = null;
 let dailyDungeonAttempts = { date: getDailyKey() };
 let dailyResourceAttempts = { date: getDailyKey() };
@@ -284,10 +284,8 @@ const criticalAssetPaths = [
   '/assets/Art/Sprites/Characters/chibi-sword-cultivator.png',
   '/assets/Art/Sprites/Characters/chibi-blade-cultivator.png',
   '/assets/Art/Sprites/Characters/chibi-martial-cultivator.png',
-  '/assets/Art/Sprites/Enemies/chibi-enemy-dog.png',
-  '/assets/Art/Sprites/Enemies/chibi-enemy-bandit.png',
-  '/assets/Art/Sprites/Enemies/chibi-enemy-ghost.png',
-  '/assets/Art/Sprites/Enemies/chibi-enemy-spider.png',
+  '/assets/Art/Sprites/pet/chibi-enemy-ghost.png',
+  '/assets/Art/Sprites/pet/chibi-enemy-spider.png',
   '/assets/Art/Sprites/Enemies/chibi-enemy-beasts-sheet.png',
   '/assets/Art/Sprites/Enemies/chibi-enemy-cultivators-sheet.png',
   '/assets/Art/Sprites/Enemies/chibi-enemy-spirits-sheet.png',
@@ -328,8 +326,6 @@ const shopButton = $('shopButton');
 const enhancementButton = $('enhancementButton');
 const resourceDungeonButton = $('resourceDungeonButton');
 const trialTowerButton = $('trialTowerButton');
-const changeLogButton = $('changeLogButton');
-const changeLogCategoryFilters = $('changeLogCategoryFilters');
 const devButton = $('devButton');
 const audioToggleButton = $('audioToggleButton');
 const codeInput = $('codeInput');
@@ -344,7 +340,6 @@ const equipmentBadge = $('equipmentBadge');
 const enhancementPanel = $('enhancementPanel');
 const resourceDungeonPanel = $('resourceDungeonPanel');
 const trialTowerPanel = $('trialTowerPanel');
-const changeLogPanel = $('changeLogPanel');
 const devPanel = $('devPanel');
 const questPanel = $('questPanel');
 const resetDataButton = $('resetDataButton');
@@ -404,7 +399,6 @@ const tabButtons = {
   enhancement: enhancementButton,
   resourceDungeon: resourceDungeonButton,
   trialTower: trialTowerButton,
-  changeLog: changeLogButton,
   code: devButton,
   quests: questButton,
 };
@@ -524,7 +518,7 @@ function ensureAudioStarted() {
   try {
     audioContext = new AudioContextClass();
     audioMasterGain = audioContext.createGain();
-    audioMasterGain.gain.value = 0.28;
+    audioMasterGain.gain.value = 0.7;
     audioMasterGain.connect(audioContext.destination);
     if (audioContext.state === 'suspended') {
       audioResumePromise = audioContext.resume().catch(() => {});
@@ -585,7 +579,7 @@ function playFallbackTone(frequency, duration, options = {}) {
     Math.min(1, Math.max(0.08, (Number(options.volume) || 0.04) * 8)),
     options.endFrequency,
   ));
-  source.volume = 0.8;
+  source.volume = 0.7;
   source.preload = 'auto';
   const play = () => source.play().catch(() => {});
   if (delay) window.setTimeout(play, delay * 1000);
@@ -746,7 +740,7 @@ function renderOnboardingGuide() {
   onboardingOverlay.classList.toggle('has-target', hasTarget);
   onboardingOverlay.innerHTML = `
     <div class="onboarding-card ${hasTarget ? 'has-target' : ''}" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
-      <div class="onboarding-guide-visual"><img src="/assets/Art/Characters/onboarding-guide.png" alt="Nữ hướng dẫn viên chibi" /></div>
+      <div class="onboarding-guide-visual"><img src="/assets/Art/Sprites/Characters/onboarding-guide.png" alt="Nữ hướng dẫn viên chibi" /></div>
       <span class="onboarding-kicker"><i class="${step.iconType} ${step.icon}" aria-hidden="true"></i>Hướng dẫn nhập môn · ${onboardingStep + 1}/${onboardingSteps.length}</span>
       <h2 id="onboardingTitle">${step.title}</h2>
       <p>${step.text}</p>
@@ -809,14 +803,6 @@ shopCategoryFilters?.addEventListener('click', (event) => {
 enhancementButton.addEventListener('click', showEnhancement);
 resourceDungeonButton.addEventListener('click', showResourceDungeons);
 trialTowerButton?.addEventListener('click', showTrialTower);
-changeLogButton?.addEventListener('click', showChangeLog);
-changeLogCategoryFilters?.addEventListener('click', (event) => {
-  const button = event.target.closest('[data-change-log-category]');
-  if (!button) return;
-  const selectedCategory = button.dataset.changeLogCategory || 'all';
-  changeLogCategory = selectedCategory;
-  renderChangeLog();
-});
 devButton?.addEventListener('click', showCodePanel);
 redeemCodeButton?.addEventListener('click', redeemCode);
 codeInput?.addEventListener('keydown', (event) => {
@@ -1027,6 +1013,14 @@ function getSkillBookCount(skillId) {
   return Math.max(0, Math.floor(Number(skillBooks[skillId]) || 0));
 }
 
+function grantSkillLearningComprehension() {
+  const maxSkillLearningComprehension = 3;
+  if (skillLearningComprehension >= maxSkillLearningComprehension) return 0;
+  skillLearningComprehension += 1;
+  playerComprehension += 1;
+  return 1;
+}
+
 const skillItemIconIds = new Set([
   'beginner_sword_art', 'sword_quickdraw', 'sword_flash', 'sword_flow', 'sword_domain', 'sword_storm',
   'beginner_blade_art', 'blade_heavy', 'blade_blood', 'blade_rend', 'blade_heaven', 'blade_apocalypse',
@@ -1036,10 +1030,28 @@ function getSkillItemIconClass(skillId) {
   return skillItemIconIds.has(skillId) ? `icon-skill-item-${skillId}` : 'icon-item-skill-book';
 }
 
-function getSkillBookRequired(targetLevel) {
-  const levels = cultivationSkillData.upgrade?.skillBookRequiredLevels || [3, 6, 9];
-  const milestoneIndex = levels.map(Number).indexOf(Number(targetLevel));
-  return milestoneIndex >= 0 ? milestoneIndex + 1 : 0;
+function getSkillBookRequirement(skill, targetLevel) {
+  const config = cultivationSkillData.upgrade?.skillBookRequirement || {};
+  const milestoneEveryLevels = Math.max(1, Math.floor(Number(config.milestoneEveryLevels) || 3));
+  const levelBooksPerMilestone = Math.max(0, Math.floor(Number(config.levelBooksPerMilestone) || 1));
+  const level = Math.max(0, Math.floor(Number(targetLevel) || 0));
+  const milestoneCount = level > 0 && level % milestoneEveryLevels === 0
+    ? Math.floor(level / milestoneEveryLevels)
+    : 0;
+  const levelBooks = milestoneCount * levelBooksPerMilestone;
+  const configuredGradeBooks = config.gradeBooksByGrade?.[skill?.gradeId];
+  const gradeBooks = milestoneCount
+    ? Math.max(0, Math.floor(Number(configuredGradeBooks ?? 1)))
+    : 0;
+  return {
+    levelBooks,
+    gradeBooks,
+    total: levelBooks + gradeBooks,
+  };
+}
+
+function getSkillBookRequired(skill, targetLevel) {
+  return getSkillBookRequirement(skill, targetLevel).total;
 }
 
 function getTotalSkillBooks() {
@@ -1258,10 +1270,18 @@ function getEnemyVisualClass(enemyData = {}) {
   const enemyName = String(enemyData.name || '').toLowerCase();
   const visualId = enemyVisualIds.has(enemyData.id) ? enemyData.id : enemyNameVisualIds.get(enemyName);
   if (visualId) return `enemy-${visualId}`;
-  if (enemyName.includes('lang') || enemyName.includes('cẩu') || enemyName.includes('hổ')) return 'enemy-dog';
   if (enemyName.includes('ma') || enemyName.includes('hồn') || enemyName.includes('quỷ')) return 'enemy-ghost';
   if (enemyName.includes('chu') || enemyName.includes('nhện') || enemyName.includes('xà')) return 'enemy-spider';
-  return 'enemy-bandit';
+  return 'enemy-ghost';
+}
+
+function getEnemyVisualStyle(enemyData = {}) {
+  const visual = enemyData.visual || {};
+  return {
+    image: typeof visual.image === 'string' ? visual.image : '',
+    position: typeof visual.position === 'string' ? visual.position : 'center',
+    size: typeof visual.size === 'string' ? visual.size : 'contain',
+  };
 }
 
 function renderStartScreen() {
@@ -1470,7 +1490,6 @@ function hideFeaturePanels() {
   enhancementPanel?.classList.add('is-hidden');
   resourceDungeonPanel?.classList.add('is-hidden');
   trialTowerPanel?.classList.add('is-hidden');
-  changeLogPanel?.classList.add('is-hidden');
   devPanel?.classList.add('is-hidden');
   questPanel?.classList.add('is-hidden');
 }
@@ -1526,10 +1545,6 @@ function showTrialTower() {
     return;
   }
   prepareFeatureView(trialTowerPanel, 'trialTower', renderTrialTower);
-}
-
-function showChangeLog() {
-  prepareFeatureView(changeLogPanel, 'changeLog', renderChangeLog);
 }
 
 function showCodePanel() {
@@ -1645,6 +1660,58 @@ function getCombinedQuestMetric(milestone) {
   return milestone?.kind === 'major' ? playerMajorRealmIndex : getPlayerCultivationTier();
 }
 
+function getQuestMilestoneIndex(quest, milestone) {
+  return getCombinedQuestMilestones(quest).findIndex((entry) => entry === milestone);
+}
+
+function getCultivationRequirementForQuestMilestone(milestone) {
+  if (!milestone) return 0;
+  if (milestone.kind === 'major') {
+    const previousRealm = cultivationProgression[Math.max(0, Number(milestone.target) - 1)];
+    return Math.max(0, Number(previousRealm?.majorBreakthroughRequirement) || 0);
+  }
+  let remainingTier = Math.max(1, Math.floor(Number(milestone.target) || 1));
+  for (let majorIndex = 0; majorIndex < cultivationProgression.length; majorIndex += 1) {
+    const minorCap = getMinorRealmLevelCap(majorIndex);
+    if (remainingTier <= minorCap) {
+      const progression = cultivationProgression[majorIndex] || {};
+      const level = Math.max(1, remainingTier);
+      return Math.max(0,
+        (Number(progression.minorBaseRequirement) || 0)
+        + Math.max(0, level - 2) * (Number(progression.minorStepRequirement) || 0),
+      );
+    }
+    remainingTier -= minorCap;
+  }
+  return 0;
+}
+
+function roundQuestCultivationReward(value, rounding = 'nearestTen') {
+  const amount = Math.max(0, Number(value) || 0);
+  if (rounding === 'nearestTen') return Math.max(0, Math.round(amount / 10) * 10);
+  return Math.max(0, Math.round(amount));
+}
+
+function getFormulaQuestReward(quest, milestone) {
+  const formula = quest?.objective?.rewardFormula;
+  if (!formula || !milestone) return null;
+  const milestoneIndex = getQuestMilestoneIndex(quest, milestone);
+  if (milestoneIndex < 0) return null;
+  const requirement = getCultivationRequirementForQuestMilestone(milestone);
+  const divisor = Math.max(1, Number(formula.cultivationDivisor) || 1);
+  const reward = {
+    cultivation: roundQuestCultivationReward(requirement / divisor, formula.cultivationRounding),
+    spiritStones: Math.max(0,
+      Math.round((Number(formula.spiritStonesBase) || 0)
+        + milestoneIndex * (Number(formula.spiritStonesPerMilestone) || 0)),
+    ),
+  };
+  if (milestone.kind === 'major' && Number(formula.comprehensionPerMajorRealm) > 0) {
+    reward.comprehension = Math.max(0, Math.floor(Number(formula.comprehensionPerMajorRealm)));
+  }
+  return reward;
+}
+
 function getCombinedQuestProgress(quest) {
   const milestone = getNextCombinedQuestMilestone(quest);
   if (!milestone) return { current: 0, target: null, instanceId: null, finished: true, milestone: null };
@@ -1690,6 +1757,7 @@ function getQuestMetric(quest) {
   if (objective.type === 'dailyWanderWins') return dailyQuestProgress.wanderWins;
   if (objective.type === 'dailyWanderRewards') return dailyQuestProgress.wanderRewards;
   if (objective.type === 'dailyTrialTowerWins') return dailyQuestProgress.trialTowerWins;
+  if (objective.type === 'dailyResourceDungeonWins') return dailyQuestProgress.resourceDungeonWins;
   return 0;
 }
 
@@ -1772,7 +1840,11 @@ function getQuestClaimCount(quest) {
 
 function getQuestReward(quest) {
   if (quest?.objective?.type === 'combinedMilestones') {
-    return { ...(getCombinedQuestProgress(quest).milestone?.reward || {}) };
+    const milestone = getCombinedQuestProgress(quest).milestone;
+    const formulaReward = getFormulaQuestReward(quest, milestone);
+    return formulaReward
+      ? { ...(milestone?.reward || {}), ...formulaReward }
+      : { ...(milestone?.reward || {}) };
   }
   const reward = { ...(quest?.reward || {}) };
   if (!['main', 'realm'].includes(quest?.category)) return reward;
@@ -1913,76 +1985,16 @@ function claimQuest(questId) {
   saveGame();
 }
 
-function renderChangeLog() {
-  $('changeLogTitle').innerHTML = `<i class="activity-icon icon-activity-history" aria-hidden="true"></i>${changeLogData.title || 'Lịch sử cập nhật'}`;
-  const visibleCategories = ['Tính năng', 'Cân bằng', 'Sửa lỗi'];
-  const entries = changeLogData.entries
-    .filter((entry) => visibleCategories.includes(entry.category || ''))
-    .map((entry, index) => ({ ...entry, sortIndex: index }))
-    .sort((left, right) => {
-    const dateOrder = String(right.date || '').localeCompare(String(left.date || ''));
-    return dateOrder || left.sortIndex - right.sortIndex;
-  });
-  const categories = ['all', ...visibleCategories];
-  if (!categories.includes(changeLogCategory)) changeLogCategory = 'all';
-  if (changeLogCategoryFilters) {
-    const iconByCategory = {
-      all: 'icon-activity-history',
-      'Cân bằng': 'icon-activity-fortune',
-      'Sửa lỗi': 'icon-activity-locked',
-      'Tính năng': 'icon-activity-skill',
-      'Tu luyện': 'icon-activity-lotus',
-      'Trang bị': 'icon-unique-equipment',
-      'Trải nghiệm': 'icon-activity-fortune',
-      'Hướng dẫn': 'icon-activity-guide',
-      'Kiểm thử': 'icon-activity-encounter',
-    };
-    changeLogCategoryFilters.innerHTML = categories.map((category) => {
-      const isActive = category === changeLogCategory;
-      const iconClass = iconByCategory[category] || 'icon-activity-history';
-      const iconType = iconClass === 'icon-unique-equipment' ? 'unique-icon' : 'activity-icon';
-      const label = category === 'all' ? 'Tất cả' : category;
-      return `<button type="button" class="secondary compact${isActive ? ' is-active' : ''}" data-change-log-category="${category}" role="tab" aria-selected="${isActive}"><i class="${iconType} ${iconClass}" aria-hidden="true"></i>${label}</button>`;
-    }).join('');
-  }
-  const visibleEntries = changeLogCategory === 'all'
-    ? entries
-    : entries.filter((entry) => (entry.category || 'Cập nhật') === changeLogCategory);
-  $('changeLogList').innerHTML = visibleEntries.map((entry) => `
-    <article class="change-log-entry">
-      <div class="change-log-heading">
-        <div><strong><i class="activity-icon icon-activity-history" aria-hidden="true"></i>${entry.title}</strong><span>${entry.category || 'Cập nhật'}</span></div>
-        <time>${entry.date || ''}</time>
-      </div>
-      <p>${entry.summary || ''}</p>
-      ${Array.isArray(entry.details) && entry.details.length ? `
-        <div class="change-log-actions">
-          <button type="button" class="secondary compact change-log-toggle" data-change-log-toggle aria-expanded="false">
-            <i class="game-icon icon-scroll" aria-hidden="true"></i><span>Xem chi tiết</span>
-          </button>
-        </div>
-        <div class="change-log-details" hidden>
-          <ul>${entry.details.map((detail) => `<li>${detail}</li>`).join('')}</ul>
-        </div>
-      ` : ''}
-    </article>
-  `).join('');
-  $('changeLogList').querySelectorAll('[data-change-log-toggle]').forEach((button) => {
-    button.addEventListener('click', () => {
-      const entry = button.closest('.change-log-entry');
-      const details = entry?.querySelector('.change-log-details');
-      if (!details) return;
-      const expanded = details.hidden;
-      details.hidden = !expanded;
-      button.setAttribute('aria-expanded', String(expanded));
-      button.querySelector('span').textContent = expanded ? 'Ẩn chi tiết' : 'Xem chi tiết';
-      entry.classList.toggle('is-expanded', expanded);
-    });
-  });
-}
-
 function getTrialTowerFloor(floorNumber) {
   return trialTowerData.floors.find((floor) => Number(floor.floor) === Number(floorNumber)) || null;
+}
+
+function getTrialTowerPowerMultiplier(floorNumber) {
+  const normalizedFloor = Math.max(1, Math.floor(Number(floorNumber) || 1));
+  const floorInBlock = ((normalizedFloor - 1) % 10) + 1;
+  const completedThreeFloorMilestones = Math.floor((floorInBlock - 1) / 3);
+  const completedTenFloorMilestones = Math.floor((normalizedFloor - 1) / 10);
+  return 1.5 + completedThreeFloorMilestones * 0.1 + completedTenFloorMilestones * 0.5;
 }
 
 function createTrialTowerStage(floorNumber) {
@@ -1992,18 +2004,17 @@ function createTrialTowerStage(floorNumber) {
   const rankLevel = Math.max(1, Number(floor.rankLevel) || 1);
   const majorIndex = Number(floor.realmMajorIndex) || 0;
   const realmLevel = Number(floor.realmLevel) || 1;
-  const towerTier = getRealmTierStart(majorIndex) + realmLevel - 1;
-  const towerRarityByRank = ['common', 'common', 'uncommon', 'rare', 'epic', 'legendary'];
-  const equipment = equipmentSlots.map((slot) => [
-    slot.id,
-    towerRarityByRank[Math.min(rankLevel, towerRarityByRank.length - 1)],
-  ]);
+  const towerTier = Math.max(1, Number(floor.equipmentLevel) || Number(floor.floor) + 9);
   return {
     id: `trial-tower-${floor.floor}`,
     title: floor.title || `Tầng ${floor.floor}`,
     enemyLevel: realmLevel,
     enemyTier: towerTier,
+    trialCombatPower: Math.max(0, Math.round(Number(floor.combatPower) || 0)),
     enemyMajorRealmIndex: majorIndex,
+    towerPowerMultiplier: Number.isFinite(Number(floor.towerPowerMultiplier))
+      ? Number(floor.towerPowerMultiplier)
+      : getTrialTowerPowerMultiplier(floor.floor),
     realmText: floor.realmText || getTierRealmText(towerTier),
     enemyRankLevel: rankLevel,
     enemyData: {
@@ -2014,9 +2025,7 @@ function createTrialTowerStage(floorNumber) {
       skillName: guardian.skillName || 'Võ kỹ thủ hộ',
       description: guardian.description || '',
       canEquip: true,
-      equipment,
-      statMultiplier: guardian.statMultiplier || {},
-      combatStyle: guardian.combatStyle || inferEnemyCombatStyle(guardian),
+      combatStyle: guardian.combatStyle || 'counter',
     },
     isTrialTower: true,
     trialFloor: Number(floor.floor),
@@ -2037,12 +2046,26 @@ function formatTrialTowerReward(reward = {}) {
   return parts.join(' | ') || 'Phần thưởng đang cập nhật';
 }
 
+function getTrialTowerVisibleFloors() {
+  const windowSize = 10;
+  const totalFloors = trialTowerData.floors.length;
+  const firstVisibleFloor = clamp(
+    (Number(trialTowerHighestCleared) || 0) + 1,
+    1,
+    Math.max(1, totalFloors - windowSize + 1),
+  );
+  return trialTowerData.floors.filter((floor) => {
+    const floorNumber = Number(floor.floor);
+    return floorNumber >= firstVisibleFloor && floorNumber < firstVisibleFloor + windowSize;
+  });
+}
+
 function renderTrialTower() {
   const entered = canEnterTrialTower();
   const totalFloors = trialTowerData.floors.length;
   trialTowerHighestCleared = clamp(Number(trialTowerHighestCleared) || 0, 0, totalFloors);
   $('trialTowerProgressText').textContent = `Đã vượt ${trialTowerHighestCleared}/${totalFloors}`;
-  $('trialTowerList').innerHTML = trialTowerData.floors.map((floor) => {
+  $('trialTowerList').innerHTML = getTrialTowerVisibleFloors().map((floor) => {
     const floorNumber = Number(floor.floor);
     const cleared = floorNumber <= trialTowerHighestCleared;
     const unlocked = entered && floorNumber === trialTowerHighestCleared + 1;
@@ -2061,7 +2084,7 @@ function renderTrialTower() {
           <span><i class="${floorIcon.startsWith('icon-stat') ? 'stat-icon' : 'item-icon'} ${floorIcon}" aria-hidden="true"></i>${floor.title || `Tầng ${floorNumber}`}</span>
           <strong>${floor.guardian?.name || 'Thủ vệ'}</strong>
         </div>
-        <em>${rankText} | ${floor.realmText} | ${getCombatStyleLabel(stage?.enemyData)} | Lực chiến ${formatGameNumber(preview ? getCombatPower(preview) : 0)}</em>
+        <em>${rankText} | ${floor.realmText} | ${getCombatStyleLabel(stage?.enemyData)} | Lực chiến ${formatGameNumber(stage?.trialCombatPower || (preview ? getCombatPower(preview) : 0))}</em>
         <small>${formatTrialTowerReward(floor.reward)}</small>
         <button type="button" class="${unlocked ? 'breakthrough' : 'secondary'} compact" ${unlocked ? '' : 'disabled'} data-trial-floor="${floorNumber}">
           ${cleared ? 'Đã vượt' : !entered ? 'Chưa mở' : locked ? 'Chưa mở' : 'Khiêu chiến'}
@@ -2192,6 +2215,10 @@ function showInventory() {
 }
 
 function showShop() {
+  if (shopTemporarilyLocked) {
+    showLockedFeatureNotice('Cửa hàng', 'Tính năng đang tạm khóa');
+    return;
+  }
   if (busy) return;
   document.body.classList.remove('battle-active');
   hideBattleResultOverlay();
@@ -2332,7 +2359,6 @@ async function loadAllResources() {
     ['skill kẻ thù', loadEnemySkills],
     ['lối đánh', loadCombatStyles],
     ['Tháp thí luyện', loadTrialTowerData],
-    ['ghi chú', loadChangeLogData],
     ['nhiệm vụ', loadQuestData],
   ];
   let completedTasks = 0;
@@ -2374,8 +2400,7 @@ async function loadDemoConfig() {
   turnInterval = Number(gameConfig.gameplay.turnInterval);
   playerMaxMinorLevel = Number(gameConfig.gameplay.playerMaxMinorLevel);
   wanderEventDelay = Number(gameConfig.gameplay.wanderEventDelay);
-  rewardMultiplier = Math.max(0, Number(gameConfig.gameplay.rewardMultiplier ?? 1));
-  spiritStoneToCultivationRatio = Math.max(0, Number(gameConfig.gameplay.spiritStoneToCultivationRatio ?? 0.5));
+  cultivationRewardMultiplier = Math.max(0, Number(gameConfig.gameplay.cultivationRewardMultiplier ?? 1));
   questRewardGrowthMultiplier = Math.max(1, Number(gameConfig.gameplay.questRewardGrowthMultiplier ?? 1.3));
   wanderChestCapacity = Number(gameConfig.runtime.wanderChestCapacity);
   offlineCapSeconds = Number(gameConfig.runtime.offlineCapSeconds);
@@ -2397,6 +2422,7 @@ async function loadDemoConfig() {
   playerSpiritStones = Math.max(0, Number(starterConfig.initialPlayer.spiritStones));
   playerFoundation = Math.max(1, Number(starterConfig.initialPlayer.foundation));
   playerComprehension = 1;
+  skillLearningComprehension = 0;
   healthPotionCount = Math.max(0, Number(starterConfig.initialPlayer.healthPotions));
   manaPotionCount = Math.max(0, Number(starterConfig.initialPlayer.manaPotions));
   enhancementStones = Math.max(0, Number(starterConfig.initialPlayer.enhancementStones));
@@ -2487,18 +2513,10 @@ async function loadTrialTowerData() {
   const response = await fetch(trialTowerPath);
   if (!response.ok) throw new Error(`Cannot load trial tower data: ${response.status}`);
   const data = await response.json();
-  if (!Array.isArray(data.floors) || data.floors.length !== 10 || !Number.isFinite(Number(data.entryRequiredTier))) {
+  if (!Array.isArray(data.floors) || data.floors.length !== 50 || !Number.isFinite(Number(data.entryRequiredTier))) {
     throw new Error('Trial tower data is incomplete.');
   }
   trialTowerData = data;
-}
-
-async function loadChangeLogData() {
-  const response = await fetch(changeLogPath, { cache: 'no-store' });
-  if (!response.ok) throw new Error(`Cannot load change log data: ${response.status}`);
-  const data = await response.json();
-  if (!Array.isArray(data.entries)) throw new Error('Change log data is incomplete.');
-  changeLogData = data;
 }
 
 async function loadQuestData() {
@@ -2593,8 +2611,6 @@ async function loadEnemyData() {
       1,
       Math.floor(Number(map.equipmentChestTier ?? defaults.equipmentChestTier) || 1),
     );
-    const defaultEquipmentMin = ((equipmentChestTier - 1) * 5) + 1;
-    const defaultEquipmentMax = equipmentChestTier * 5;
     return [map.id, {
       ...defaults,
       id: map.id,
@@ -2606,12 +2622,7 @@ async function loadEnemyData() {
       lootTypes: defaults.lootTypes || ['cultivation', 'spiritStone', 'chest'],
       rewardSettings: map.rewardSettings || defaults.rewardSettings || {},
       equipmentChestTier,
-      equipmentLevelRange: normalizeEquipmentLevelRange(
-        map.equipmentLevelRange || defaults.equipmentLevelRange,
-        [defaultEquipmentMin, defaultEquipmentMax],
-      ),
-      enemyChance: defaults.enemyChance ?? 0.45,
-      firstEnemyChance: defaults.firstEnemyChance ?? defaults.enemyChance ?? 0.45,
+      enemyChance: defaults.enemyChance ?? (Number(gameConfig.gameplay?.wanderEnemyChance) || 0.4),
     }];
   }));
   wanderMapList = Object.values(wanderMaps);
@@ -2633,8 +2644,21 @@ async function loadEnemyData() {
 function validateEnemyData(data) {
   if (!Array.isArray(data.maps) || data.maps.length === 0) throw new Error('Enemy data missing maps.');
   if (!Array.isArray(data.enemyPools) || data.enemyPools.length === 0) throw new Error('Enemy data missing enemyPools.');
+  const enemyTypesById = new Map(data.enemyPools.map((enemy) => [enemy.id, enemy.type || 'Tu sĩ']));
   data.maps.forEach((map) => {
     if (!map.id || !map.name || !Array.isArray(map.tierRange)) throw new Error(`Invalid enemy map: ${map.id || 'unknown'}`);
+    if (!Array.isArray(map.enemyPoolIds) || map.enemyPoolIds.length !== 6) {
+      throw new Error(`Map ${map.id} must contain exactly 6 enemies.`);
+    }
+    const typeCounts = map.enemyPoolIds.reduce((counts, enemyId) => {
+      if (!enemyTypesById.has(enemyId)) throw new Error(`Map ${map.id} references unknown enemy: ${enemyId}`);
+      const type = enemyTypesById.get(enemyId);
+      counts[type] = (counts[type] || 0) + 1;
+      return counts;
+    }, {});
+    if (Object.values(typeCounts).some((count) => count > 2)) {
+      throw new Error(`Map ${map.id} cannot contain more than 2 enemies of the same type.`);
+    }
   });
   data.enemyPools.forEach((enemy) => {
     if (!enemy.id || !enemy.name || !enemy.skillName) {
@@ -2653,10 +2677,13 @@ function normalizeEnemyData(enemy) {
     skillId: enemy.skillId || '',
     skillDescription: enemy.skillDescription || '',
     description: enemy.description || '',
+    visual: {
+      image: typeof enemy.visual?.image === 'string' ? enemy.visual.image : '',
+      position: typeof enemy.visual?.position === 'string' ? enemy.visual.position : 'center',
+      size: typeof enemy.visual?.size === 'string' ? enemy.visual.size : 'contain',
+    },
     canEquip: true,
-    equipment: Array.isArray(enemy.equipment) ? enemy.equipment : [],
-    statMultiplier: enemy.statMultiplier || {},
-    combatStyle: enemy.combatStyle || inferEnemyCombatStyle(enemy),
+    combatStyle: enemy.combatStyle || 'counter',
     weight: Math.max(1, Number(enemy.weight) || 1),
   };
 }
@@ -2712,14 +2739,6 @@ function applyEnemySkillRuntime(fighter, enemyData, initialCooldown = null) {
   fighter.skillCooldown = skill.cooldown;
   fighter.skillCooldownRemaining = skill.cooldownRemaining;
   fighter.skills = [skill];
-}
-
-function inferEnemyCombatStyle(enemy = {}) {
-  const multipliers = enemy.statMultiplier || {};
-  if (Number(multipliers.blockRate) >= 1.15 || Number(multipliers.defense) >= 1.2) return 'defense';
-  if (Number(multipliers.critRate) >= 1.2) return 'crit';
-  if (Number(multipliers.maxHp) >= 1.2) return 'heal';
-  return 'counter';
 }
 
 function normalizeTierRange(range, fallback) {
@@ -3026,6 +3045,7 @@ async function resetGameData() {
       devMode: false,
       foundationFindCounts: {},
       highEnemyEncounterChance: false,
+      skipEnemyEncounters: false,
       wanderEventRollCount: 0,
       wanderWinCount: 0,
       wanderRewardCount: 0,
@@ -3081,6 +3101,7 @@ function loadSavedGame() {
     foundationFindCounts = normalizeFoundationFindCounts(data.foundationFindCounts);
     wanderChestRewards = normalizeWanderChestRewards(data.wanderChestRewards);
     highEnemyEncounterChance = Boolean(data.highEnemyEncounterChance);
+    skipEnemyEncounters = Boolean(data.skipEnemyEncounters);
     wanderEventRollCount = Math.max(0, Math.floor(Number(data.wanderEventRollCount) || 0));
     wanderWinCount = Math.max(0, Math.floor(Number(data.wanderWinCount) || 0));
     wanderRewardCount = Math.max(0, Math.floor(Number(data.wanderRewardCount) || 0));
@@ -3106,6 +3127,13 @@ function loadSavedGame() {
     skillLevels = data.skillLevels && typeof data.skillLevels === 'object' ? data.skillLevels : {};
     skillPractice = data.skillPractice && typeof data.skillPractice === 'object' ? data.skillPractice : {};
     learnedSkillIds = Array.isArray(data.learnedSkillIds) ? data.learnedSkillIds : [];
+    skillLearningComprehension = clamp(
+      Number.isFinite(Number(data.skillLearningComprehension))
+        ? Number(data.skillLearningComprehension)
+        : Math.max(0, learnedSkillIds.length - 1),
+      0,
+      3,
+    );
     equippedSkillIds = Array.isArray(data.equippedSkillIds)
       ? data.equippedSkillIds
       : data.activeSkillId ? [data.activeSkillId] : [];
@@ -3146,7 +3174,6 @@ function loadSavedGame() {
     equipmentIdSeed = Math.max(1, Number(data.equipmentIdSeed) || 1, ...allItemIds.map((id) => id + 1));
     if (!isWanderMapUnlocked(getCurrentWanderMap())) currentWanderMapId = getBestUnlockedWanderMap().id;
     currentStage = stages.find((stage) => stage.id === data.currentStageId) || getCurrentDungeonStage() || stages[0];
-    capCultivationAtMajorGate();
     syncPlayerResourceCaps();
     applyOfflineProgress(data);
     return true;
@@ -3257,11 +3284,13 @@ function saveGame() {
     playerSpiritStones,
     playerFoundation,
     playerComprehension,
+    skillLearningComprehension,
     devMode,
     redeemedCodes,
     foundationFindCounts,
     wanderChestRewards,
     highEnemyEncounterChance,
+    skipEnemyEncounters,
     wanderEventRollCount,
     wanderWinCount,
     wanderRewardCount,
@@ -3342,13 +3371,14 @@ function getDailyKey() {
 function normalizeDailyQuestProgress(progress = {}) {
   const today = getDailyKey();
   if (progress.date !== today) {
-    return { date: today, wanderWins: 0, wanderRewards: 0, trialTowerWins: 0 };
+    return { date: today, wanderWins: 0, wanderRewards: 0, trialTowerWins: 0, resourceDungeonWins: 0 };
   }
   return {
     date: today,
     wanderWins: Math.max(0, Math.floor(Number(progress.wanderWins) || 0)),
     wanderRewards: Math.max(0, Math.floor(Number(progress.wanderRewards) || 0)),
     trialTowerWins: Math.max(0, Math.floor(Number(progress.trialTowerWins) || 0)),
+    resourceDungeonWins: Math.max(0, Math.floor(Number(progress.resourceDungeonWins) || 0)),
   };
 }
 
@@ -3371,13 +3401,6 @@ function normalizeResourceDungeonProgress(progress = {}) {
       Math.max(1, Number(dungeon.totalFloors) || 30),
     ),
   ]));
-}
-
-function capCultivationAtMajorGate() {
-  normalizeCultivationStorage();
-  if (isMajorAscensionGate()) {
-    playerCultivation = getCultivationRequiredForNextLevel();
-  }
 }
 
 function ensureDailyAttempts() {
@@ -3530,14 +3553,15 @@ function getProgressionStats(majorIndex, level, schoolId = '') {
   const getCommonMinorGrowth = (realmIndex) => majorRealmMinorGrowths[realmIndex] || perLevel;
   const getMinorGrowth = (realmIndex) => school?.minorGrowthByRealm?.[realmIndex] || getCommonMinorGrowth(realmIndex);
   const getMajorGrowth = (realmIndex) => majorRealmBreakthroughs[realmIndex + 1]
-    || enemyStats.majorBreakthroughByRealm?.[String(realmIndex + 1)]
-    || enemyStats.defaultMajorBreakthrough
+    || {};
+  const getSchoolMajorGrowth = (realmIndex) => school?.majorBreakthroughGrowthByRealm?.[realmIndex]
+    || school?.majorBreakthroughGrowth
     || {};
 
   for (let realmIndex = 0; realmIndex < majorIndex; realmIndex += 1) {
     addGrowth(getMinorGrowth(realmIndex), getMinorRealmLevelCap(realmIndex));
     addGrowth(getMajorGrowth(realmIndex), 1);
-    addGrowth(school?.majorBreakthroughGrowth, 1);
+    addGrowth(getSchoolMajorGrowth(realmIndex), 1);
   }
   addGrowth(getMinorGrowth(majorIndex), Math.max(0, level - 1));
   return stats;
@@ -3597,10 +3621,13 @@ function setDungeonMode(dungeonId) {
   saveGame();
 }
 
-function renderStageMap() {
+function renderStageMap(options = {}) {
   updateNotificationBadges();
   updateWanderEventOverlay();
   const config = getDungeonConfig();
+  const previousWanderScrollLeft = options.resetWanderCarouselPosition
+    ? 0
+    : Number(stageGrid.querySelector('.wander-map-viewport')?.scrollLeft) || 0;
   stageGrid.innerHTML = '';
   renderDungeonModes();
   const enoughHealth = canEnterDungeon();
@@ -3622,7 +3649,7 @@ function renderStageMap() {
   if (!currentStage?.isTrialTower && !currentStage?.isResourceDungeon) {
     currentStage = getRandomWanderEnemyStage(getCurrentWanderMap()) || currentStage || stages[0];
   }
-  renderWanderMapSelector();
+  renderWanderMapSelector(previousWanderScrollLeft);
   if (!currentWanderEvent) {
     renderWanderStart(enoughHealth);
     return;
@@ -3674,14 +3701,25 @@ function renderFarmStageMap(config, enoughHealth) {
   });
 }
 
-function renderWanderMapSelector() {
+function renderWanderMapSelector(initialScrollLeft = 0) {
+  wanderCarouselCleanup?.();
+  wanderCarouselCleanup = null;
   const lockedByEvent = Boolean(currentWanderEvent && currentWanderEvent.type !== 'result');
   const selector = document.createElement('div');
-  selector.className = 'wander-map-list';
-  selector.setAttribute('role', 'tablist');
+  selector.className = 'wander-map-carousel';
   selector.setAttribute('aria-label', 'Chọn bản đồ ngao du');
 
-  wanderMapList.forEach((map, index) => {
+  const viewport = document.createElement('div');
+  viewport.className = 'wander-map-viewport';
+  viewport.setAttribute('tabindex', '0');
+  viewport.setAttribute('aria-label', 'Cuộn ngang để xem các map khác');
+
+  const mapList = document.createElement('div');
+  mapList.className = 'wander-map-list';
+  mapList.setAttribute('role', 'tablist');
+  mapList.setAttribute('aria-label', 'Danh sách map ngao du');
+
+  wanderMapList.forEach((map) => {
     const unlocked = isWanderMapUnlocked(map);
     const active = map.id === currentWanderMapId;
     const mapTitle = map.name.replace(/^Map \d+:\s*/, '');
@@ -3691,7 +3729,7 @@ function renderWanderMapSelector() {
     button.className = `wander-map-card ${active ? 'active' : ''} ${unlocked ? '' : 'locked'}`;
     button.disabled = lockedByEvent;
     button.classList.toggle('locked-tab', !unlocked);
-    button.setAttribute('aria-disabled', String(!unlocked || lockedByEvent));
+    button.setAttribute('aria-disabled', String(lockedByEvent));
     button.setAttribute('role', 'tab');
     button.setAttribute('aria-selected', String(active));
     button.innerHTML = `
@@ -3699,10 +3737,71 @@ function renderWanderMapSelector() {
     `;
     button.title = unlocked ? map.name : `${map.name} - ${getWanderMapUnlockText(map)}`;
     button.addEventListener('click', () => setWanderMap(map.id));
-    selector.appendChild(button);
+    mapList.appendChild(button);
   });
 
+  const scrollHint = document.createElement('div');
+  scrollHint.className = 'wander-map-scroll-hint';
+  scrollHint.innerHTML = `
+    <span>PC: Cuộn chuột · Mobile: Kéo ngang để xem thêm map</span>
+    <strong data-wander-map-position></strong>
+  `;
+
+  viewport.appendChild(mapList);
+  selector.append(viewport, scrollHint);
   stageGrid.appendChild(selector);
+
+  const cards = [...mapList.querySelectorAll('.wander-map-card')];
+  const updateScrollState = () => {
+    const maxScroll = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+    const hasPrevious = viewport.scrollLeft > 2;
+    const hasNext = viewport.scrollLeft < maxScroll - 2;
+    selector.classList.toggle('has-previous', hasPrevious);
+    selector.classList.toggle('has-next', hasNext);
+
+    const openedMapCount = wanderMapList.filter((map) => isWanderMapUnlocked(map)).length;
+    const position = selector.querySelector('[data-wander-map-position]');
+    if (position) position.textContent = `${openedMapCount}/${cards.length}`;
+  };
+
+  const updateCardWidth = () => {
+    const cardWidth = Math.max(0, (viewport.clientWidth - 8) / 3);
+    mapList.style.setProperty('--wander-map-card-width', `${cardWidth}px`);
+  };
+
+  const dragController = new AbortController();
+  viewport.addEventListener('wheel', (event) => {
+    const maxScroll = viewport.scrollWidth - viewport.clientWidth;
+    if (maxScroll <= 0) return;
+    const distance = Math.abs(event.deltaX) >= Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+    if (!distance) return;
+    event.preventDefault();
+    viewport.scrollLeft += distance;
+  }, { passive: false, signal: dragController.signal });
+
+  viewport.addEventListener('scroll', updateScrollState, { passive: true, signal: dragController.signal });
+  const handleResize = () => {
+    updateCardWidth();
+    updateScrollState();
+  };
+  window.addEventListener('resize', handleResize, { passive: true, signal: dragController.signal });
+  wanderCarouselCleanup = () => dragController.abort();
+  window.requestAnimationFrame(() => {
+    updateCardWidth();
+    const maxScroll = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+    const activeCard = cards.find((card) => card.classList.contains('active'));
+    const activeIndex = cards.indexOf(activeCard);
+    const focusedScrollLeft = activeIndex <= 0
+      ? 0
+      : activeIndex === cards.length - 1
+      ? maxScroll
+      : activeCard.offsetLeft - (viewport.clientWidth - activeCard.offsetWidth) / 2;
+    viewport.scrollLeft = Math.min(Math.max(0, initialScrollLeft), maxScroll);
+    if (initialScrollLeft === 0 && activeCard) {
+      viewport.scrollLeft = Math.min(Math.max(0, focusedScrollLeft), maxScroll);
+    }
+    updateScrollState();
+  });
 }
 
 function renderWanderChestButton() {
@@ -3793,12 +3892,14 @@ function setWanderMap(mapId) {
     showLockedFeatureNotice(map.name, `${getWanderMapUnlockText(map)} để mở`);
     return;
   }
+  if (map.id === currentWanderMapId) return;
 
   hideWanderEventOverlay();
   currentWanderMapId = map.id;
   currentWanderEvent = null;
-  renderStageMap();
+  renderStageMap({ resetWanderCarouselPosition: true });
   saveGame();
+  showGameToast(`Đã chọn ${map.name.replace(/^Map \d+:\s*/, '')}.`, 'info');
 }
 
 function isWanderMapUnlocked(map) {
@@ -3824,13 +3925,17 @@ function getBestUnlockedWanderMap() {
 
 function renderWanderStart(enoughHealth) {
   const map = getCurrentWanderMap();
+  syncWanderEncounterToggles(map);
   const minTier = Math.max(1, Number(map.minEnemyTier) || 1);
   const maxTier = Math.max(minTier, Number(map.maxEnemyTier) || minTier);
   const chestTier = getEquipmentChestTier(map);
-  const enemyRealmRange = `${getTierRealmText(minTier)} - ${getTierRealmText(maxTier)}`;
   const defeatedCount = getWanderMapDefeatedCount(map.id);
   const bossDefeated = Boolean(wanderBossDefeatedByMap[map.id]);
-  const bossUnlocked = defeatedCount >= 30 && !bossDefeated;
+  const bossRequiredWins = getWanderBossRequiredWins();
+  const bossUnlocked = defeatedCount >= bossRequiredWins && !bossDefeated;
+  const highEnemyUnlocked = canUseHighEnemyEncounter(map);
+  const skipEnemyUnlocked = canUseSkipEnemyEncounters(map);
+  const highEnemyRequiredWins = Math.max(0, Math.floor(Number(gameConfig.gameplay?.wanderHighEnemyRequiredWins) || 10));
   const panel = document.createElement('section');
   panel.className = 'wander-info-panel';
   panel.innerHTML = `
@@ -3838,7 +3943,6 @@ function renderWanderStart(enoughHealth) {
       <strong><i class="activity-icon ${getWanderMapIconClass(map.id)}" aria-hidden="true"></i>${map.name}</strong>
     </div>
     <div class="wander-map-rules">
-      <p><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i>Kẻ thù trong ${map.name} có tu vi từ ${enemyRealmRange}.</p>
       <div class="wander-reward-list">
         <strong><i class="activity-icon icon-activity-fortune" aria-hidden="true"></i>Phần thưởng cơ duyên</strong>
         <span><i class="stat-icon icon-stat-cultivation" aria-hidden="true"></i>Tu vi</span>
@@ -3851,18 +3955,26 @@ function renderWanderStart(enoughHealth) {
     </div>
     <div class="wander-encounter-toggle">
       <div>
-        <strong><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i>Tăng tỉ lệ gặp kẻ địch</strong>
+        <strong><i class="activity-icon icon-wander-increase-enemy" aria-hidden="true"></i>Tăng tỉ lệ gặp kẻ địch</strong>
       </div>
-      <button type="button" class="secondary compact ${highEnemyEncounterChance ? 'is-active' : ''}" data-wander-high-enemy aria-pressed="${String(highEnemyEncounterChance)}">
-        <i class="activity-icon icon-activity-encounter" aria-hidden="true"></i>${highEnemyEncounterChance ? 'Đang bật' : 'Bật'}
+      <button type="button" class="secondary compact ${highEnemyEncounterChance ? 'is-active' : ''} ${highEnemyUnlocked ? '' : 'is-locked'}" data-wander-high-enemy aria-pressed="${String(highEnemyEncounterChance)}" aria-disabled="false" title="${highEnemyUnlocked ? 'Tăng tỉ lệ gặp kẻ địch lên 70%' : `Cần đánh bại ${highEnemyRequiredWins} kẻ địch trong map`}">
+        <i class="activity-icon icon-wander-increase-enemy" aria-hidden="true"></i>${highEnemyEncounterChance ? 'Đang bật' : 'Bật'}
+      </button>
+    </div>
+    <div class="wander-encounter-toggle">
+      <div>
+        <strong><i class="unique-icon icon-wander-skip-enemy" aria-hidden="true"></i>Bỏ qua kẻ địch</strong>
+      </div>
+      <button type="button" class="secondary compact ${skipEnemyEncounters ? 'is-active' : ''} ${skipEnemyUnlocked ? '' : 'is-locked'}" data-wander-skip-enemy aria-pressed="${String(skipEnemyEncounters)}" aria-disabled="false" title="${skipEnemyUnlocked ? 'Bỏ qua kẻ địch trong map này' : 'Cần đánh bại Boss trong map'}">
+        <i class="unique-icon icon-wander-skip-enemy" aria-hidden="true"></i>${skipEnemyEncounters ? 'Đang bật' : 'Bật'}
       </button>
     </div>
     <div class="wander-boss-panel ${bossDefeated ? 'is-defeated' : ''}">
       <div>
         <strong><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i>Boss map</strong>
-        <small>${bossDefeated ? 'Đã chinh phục' : `Đã đánh bại ${defeatedCount}/30 kẻ địch`}</small>
+        <small>${bossDefeated ? 'Đã chinh phục' : `Đã đánh bại ${defeatedCount}/${bossRequiredWins} kẻ địch`}</small>
       </div>
-      <button type="button" class="secondary compact" data-wander-boss ${bossUnlocked ? '' : 'disabled'}>
+      <button type="button" class="secondary compact ${bossUnlocked ? '' : bossDefeated ? 'is-defeated' : 'is-locked'}" data-wander-boss aria-disabled="${String(bossDefeated)}" ${bossDefeated ? 'disabled' : ''}>
         <i class="item-icon icon-item-sword" aria-hidden="true"></i>${bossDefeated ? 'Đã thắng' : 'Khiêu chiến'}
       </button>
     </div>
@@ -3876,15 +3988,43 @@ function renderWanderStart(enoughHealth) {
   button.disabled = !enoughHealth;
   button.addEventListener('click', () => beginWander(false));
   encounterToggle.addEventListener('click', () => {
+    if (!canUseHighEnemyEncounter(map)) {
+      showLockedFeatureNotice('Tăng tỉ lệ gặp kẻ địch', `Cần đánh bại ${highEnemyRequiredWins} kẻ địch trong map`);
+      return;
+    }
     highEnemyEncounterChance = !highEnemyEncounterChance;
+    if (highEnemyEncounterChance) skipEnemyEncounters = false;
     saveGame();
+    showGameToast(highEnemyEncounterChance ? 'Đã bật tăng tỉ lệ gặp kẻ địch.' : 'Đã tắt tăng tỉ lệ gặp kẻ địch.', 'success');
+    renderStageMap();
+  });
+  const skipEnemyToggle = panel.querySelector('[data-wander-skip-enemy]');
+  skipEnemyToggle.addEventListener('click', () => {
+    if (!canUseSkipEnemyEncounters(map)) {
+      showLockedFeatureNotice('Bỏ qua kẻ địch', 'Cần đánh bại Boss trong map');
+      return;
+    }
+    skipEnemyEncounters = !skipEnemyEncounters;
+    if (skipEnemyEncounters) highEnemyEncounterChance = false;
+    saveGame();
+    showGameToast(skipEnemyEncounters ? 'Đã bật bỏ qua kẻ địch.' : 'Đã tắt bỏ qua kẻ địch.', 'success');
     renderStageMap();
   });
   const bossButton = panel.querySelector('[data-wander-boss]');
   bossButton.addEventListener('click', () => {
-    if (!bossUnlocked || bossDefeated) return;
+    if (bossDefeated) {
+      showGameToast('Boss map này đã được đánh bại.', 'info');
+      return;
+    }
+    if (!bossUnlocked) {
+      showLockedFeatureNotice('Boss map', `Cần đánh bại ${bossRequiredWins} kẻ địch trong map`);
+      return;
+    }
     const bossStage = createWanderBossStage(map);
-    if (bossStage) startStageBattle(bossStage);
+    if (bossStage) {
+      showGameToast(`Bắt đầu khiêu chiến Boss ${map.name}.`, 'info');
+      startStageBattle(bossStage);
+    }
   });
   stageGrid.appendChild(panel);
 }
@@ -3957,13 +4097,13 @@ function resolveWanderEvent() {
 
 function rollWanderEvent() {
   const map = getCurrentWanderMap();
+  syncWanderEncounterToggles(map);
   const stage = getRandomWanderEnemyStage(map);
-  const isFirstWanderEvent = wanderEventRollCount === 0;
-  const enemyChance = isFirstWanderEvent
-    ? map.firstEnemyChance
+  const enemyChance = skipEnemyEncounters
+    ? 0
     : highEnemyEncounterChance
-    ? 0.7
-    : map.enemyChance;
+    ? Number(gameConfig.gameplay?.wanderHighEnemyChance) || 0.7
+    : Number(map.enemyChance) || Number(gameConfig.gameplay?.wanderEnemyChance) || 0.4;
   wanderEventRollCount += 1;
   const encounterRoll = Math.random();
   if (stage && encounterRoll < enemyChance) {
@@ -3991,7 +4131,7 @@ function createWanderReward(map = getCurrentWanderMap()) {
   const type = pickWanderRewardType();
   if (type === 'cultivation') return createWanderCultivationChoice(map);
   if (type === 'spiritStone') return createWanderSpiritStoneChoice(map);
-  if (['healthPotion', 'manaPotion', 'enhancementStone'].includes(type)) return createWanderConsumableChoice(type);
+  if (['healthPotion', 'manaPotion', 'enhancementStone'].includes(type)) return createWanderConsumableChoice(type, map);
   return createWanderChestChoice(map);
 }
 
@@ -4033,6 +4173,16 @@ function getWanderMapIconClass(mapId) {
     demonForest: 'icon-activity-forest',
     spiritCave: 'icon-activity-cave',
     hollowRealm: 'icon-activity-path',
+    thunderPeak: 'icon-wander-map-5',
+    primordialWastes: 'icon-wander-map-6',
+    ashenAbyss: 'icon-wander-map-7',
+    skyThunderPass: 'icon-wander-map-8',
+    frostMysticLand: 'icon-wander-map-9',
+    nineHeavenCloudSea: 'icon-wander-map-10',
+    celestialGateRoad: 'icon-wander-map-11',
+    thunderHeavenDomain: 'icon-wander-map-12',
+    starRiverVoid: 'icon-wander-map-13',
+    endlessHolyRealm: 'icon-wander-map-14',
   };
   return iconByMap[mapId] || 'icon-activity-path';
 }
@@ -4078,11 +4228,38 @@ function getWanderMapDefeatedCount(mapId) {
   return Math.max(0, Math.floor(Number(wanderDefeatedByMap[mapId]) || 0));
 }
 
+function canUseHighEnemyEncounter(map = getCurrentWanderMap()) {
+  const requiredWins = Math.max(0, Math.floor(Number(gameConfig.gameplay?.wanderHighEnemyRequiredWins) || 10));
+  return getWanderMapDefeatedCount(map?.id) >= requiredWins;
+}
+
+function getWanderBossRequiredWins() {
+  return Math.max(0, Math.floor(Number(gameConfig.gameplay?.wanderBossRequiredWins) || 30));
+}
+
+function canUseSkipEnemyEncounters(map = getCurrentWanderMap()) {
+  const requiresBoss = gameConfig.gameplay?.wanderSkipEnemyRequiresBoss !== false;
+  return !requiresBoss || Boolean(wanderBossDefeatedByMap[map?.id]);
+}
+
+function syncWanderEncounterToggles(map = getCurrentWanderMap()) {
+  if (!canUseHighEnemyEncounter(map)) highEnemyEncounterChance = false;
+  if (!canUseSkipEnemyEncounters(map)) skipEnemyEncounters = false;
+}
+
 function normalizeWanderMapCounts(counts = {}) {
   return Object.fromEntries(Object.keys(wanderMaps).map((mapId) => [
     mapId,
     Math.max(0, Math.floor(Number(counts?.[mapId]) || 0)),
   ]));
+}
+
+function normalizeWanderDefeatedEnemyIds(ids = []) {
+  return new Set(
+    (Array.isArray(ids) ? ids : [])
+      .map((id) => String(id || '').trim())
+      .filter(Boolean),
+  );
 }
 
 function normalizeWanderMapFlags(flags = {}) {
@@ -4117,7 +4294,9 @@ function pickEnemyDataForMapTier(map, tier) {
 
 function getMapEnemyCandidates(map) {
   const mapEnemyIds = new Set(map.enemyPoolIds || []);
-  return stageEnemyData.filter((enemyData) => !mapEnemyIds.size || mapEnemyIds.has(enemyData.id));
+  return stageEnemyData.filter((enemyData) => (
+    !mapEnemyIds.size || mapEnemyIds.has(enemyData.id)
+  ));
 }
 
 function pickWeightedEnemy(candidates) {
@@ -4213,14 +4392,14 @@ function createWanderCultivationChoice(map = getCurrentWanderMap()) {
 function createWanderSpiritStoneChoice(map = getCurrentWanderMap()) {
   const stage = createWanderRewardStage(map);
   const settings = getRewardSettings(stage);
-  const cultivationAmount = getWanderCultivationAmount(stage, settings);
+  const amount = getWanderSpiritStoneAmount(stage, settings);
   const bonus = createFighter(playerName, playerLevel, true).spiritStoneBonus || 0;
-  const amount = Math.max(1, Math.round(cultivationAmount * spiritStoneToCultivationRatio * (1 + bonus)));
+  const finalAmount = Math.max(1, Math.round(amount * (1 + bonus)));
   return {
     type: 'spiritStone',
     title: 'Mạch linh thạch nhỏ',
-    detail: `Nhận ${formatGameNumber(amount)} linh thạch.`,
-    amount,
+    detail: `Nhận ${formatGameNumber(finalAmount)} linh thạch.`,
+    amount: finalAmount,
   };
 }
 
@@ -4241,27 +4420,25 @@ function createWanderRewardStage(map = getCurrentWanderMap()) {
   };
 }
 
-function createWanderConsumableChoice(type) {
+function createWanderConsumableChoice(type, map = getCurrentWanderMap()) {
+  const amount = Math.max(1, Math.floor(rollWanderRewardBase(type) * getRewardSettings(map).cultivationMultiplier));
   const rewardData = {
     healthPotion: {
       title: 'Sinh Huyết Đan',
-      detail: 'Nhận 1 Sinh Huyết Đan vào Rương Ngao du.',
     },
     manaPotion: {
       title: 'Tụ Linh Đan',
-      detail: 'Nhận 1 Tụ Linh Đan vào Rương Ngao du.',
     },
     enhancementStone: {
       title: 'Đá cường hóa',
-      detail: 'Nhận 1 Đá cường hóa vào Rương Ngao du.',
     },
   }[type];
   if (!rewardData) return null;
   return {
     type,
     title: rewardData.title,
-    detail: rewardData.detail,
-    amount: 1,
+    detail: `Nhận ${amount} ${rewardData.title} vào Rương Ngao du.`,
+    amount,
   };
 }
 
@@ -4483,10 +4660,7 @@ function rollbackAmbushLoot(stage) {
 }
 
 function rollLootAmbush() {
-  const map = getCurrentWanderMap();
-  const chance = map.rewardSettings?.ambushChance ?? 0.12;
-  if (Math.random() > chance) return null;
-  return createAmbushStage(map);
+  return null;
 }
 
 function createAmbushStage(map = getCurrentWanderMap()) {
@@ -4510,13 +4684,16 @@ function fleeWanderEnemy(stage) {
     return;
   }
 
+  player.mana = Math.max(0, Math.round(player.mana * 0.9));
   currentWanderEvent = {
     type: 'result',
     title: 'Đã rút lui',
     message: `Chạy thoát khỏi ${stage.enemyData.name}.`,
-    detail: `Tỉ lệ chạy thoát: ${toPercent(chance)}. Không nhận thưởng từ đối thủ này.`,
+    detail: `Tỉ lệ chạy thoát: ${toPercent(chance)}. Mất 10% linh lực hiện tại, không nhận thưởng từ đối thủ này.`,
   };
   renderStageMap();
+  renderCultivation();
+  saveGame();
 }
 
 function getFleeChance(stage) {
@@ -4791,9 +4968,7 @@ function createStageEnemy(stage) {
     applyEnemyCombatStyle(enemyFighter, stage.enemyData);
     applyItemStats(enemyFighter, getEnemyEquipment(stage));
     enemyFighter.dodgeRate = 0;
-    enemyFighter.hp = enemyFighter.maxHp;
-    enemyFighter.mana = enemyFighter.maxMana;
-    return enemyFighter;
+    return finalizeEnemyFighter(enemyFighter);
   }
 
   const enemyFighter = createFighter(
@@ -4803,15 +4978,16 @@ function createStageEnemy(stage) {
     stage.enemyMajorRealmIndex || 0,
     true,
   );
-  applyEnemyStatMultipliers(enemyFighter, stage.enemyData.statMultiplier);
+  applyTrialTowerPowerScaling(enemyFighter, stage);
   applyEnemyRankMultiplier(enemyFighter, stage.enemyRankLevel);
   applyEnemySkillRuntime(enemyFighter, stage.enemyData);
   applyEnemyCombatStyle(enemyFighter, stage.enemyData);
   applyItemStats(enemyFighter, getEnemyEquipment(stage));
   enemyFighter.dodgeRate = 0;
-  enemyFighter.hp = enemyFighter.maxHp;
-  enemyFighter.mana = enemyFighter.maxMana;
-  return enemyFighter;
+  if (stage.isTrialTower && Number.isFinite(Number(stage.trialCombatPower))) {
+    enemyFighter.displayCombatPower = stage.trialCombatPower;
+  }
+  return finalizeEnemyFighter(enemyFighter);
 }
 
 function rollEnemyRank(map = null) {
@@ -4847,6 +5023,21 @@ function applyEnemyRankMultiplier(fighter, rank = 1) {
   applyEnemyStatMultipliers(fighter, multipliers);
 }
 
+function finalizeEnemyFighter(fighter) {
+  ['maxHp', 'maxMana', 'attack', 'defense', 'speed'].forEach((stat) => {
+    fighter[stat] = Math.max(1, Math.round(Number(fighter[stat]) || 0));
+  });
+  fighter.accuracy = clamp(Number(fighter.accuracy) || 0, 0.1, 0.98);
+  fighter.dodgeRate = clamp(Number(fighter.dodgeRate) || 0, 0, 0.45);
+  fighter.blockRate = clamp(Number(fighter.blockRate) || 0, 0, 0.55);
+  fighter.critRate = clamp(Number(fighter.critRate) || 0, 0, 0.75);
+  fighter.critDamage = Math.max(1.5, Number(fighter.critDamage) || 1.5);
+  fighter.hp = fighter.maxHp;
+  fighter.mana = fighter.maxMana;
+  fighter.combatPower = getCombatPower(fighter);
+  return fighter;
+}
+
 function applyEnemyStatMultipliers(fighter, multipliers = {}) {
   Object.entries(multipliers).forEach(([stat, multiplier]) => {
     if (!(stat in fighter)) return;
@@ -4866,8 +5057,18 @@ function applyEnemyStatMultipliers(fighter, multipliers = {}) {
   fighter.critDamage = clamp(fighter.critDamage, 1, 3.5);
 }
 
+function applyTrialTowerPowerScaling(fighter, stage) {
+  if (!stage?.isTrialTower) return;
+  const multiplier = Number(stage.towerPowerMultiplier);
+  if (!Number.isFinite(multiplier) || multiplier <= 1) return;
+  ['maxHp', 'maxMana', 'attack', 'defense', 'speed'].forEach((stat) => {
+    fighter[stat] *= multiplier;
+  });
+  applyEnemyStatMultipliers(fighter);
+}
+
 function applyEnemyCombatStyle(fighter, enemyData = {}) {
-  const styleId = enemyData.combatStyle || inferEnemyCombatStyle(enemyData);
+  const styleId = enemyData.combatStyle || 'counter';
   const style = combatStyles[styleId] || combatStyles.counter || {};
   fighter.combatStyle = styleId;
   fighter.combatStyleLabel = style.label || 'Phản đòn';
@@ -4929,7 +5130,9 @@ function getEnemyEquipment(stage) {
     for (let index = 0; index < equipmentCount && availableSlots.length; index += 1) {
       const slotIndex = Math.floor(Math.random() * availableSlots.length);
       const slot = availableSlots.splice(slotIndex, 1)[0];
-      const rarityKey = isFixedEquipmentStage
+      const rarityKey = stage.isTrialTower
+        ? 'uncommon'
+        : isFixedEquipmentStage
         ? stage.enemyRankLevel >= 5
           ? 'legendary'
           : stage.enemyRankLevel >= 4
@@ -5324,11 +5527,13 @@ function finishBattle(message, outcome = 'lose') {
   }
   dailyQuestProgress = normalizeDailyQuestProgress(dailyQuestProgress);
   if (outcome === 'win' && isTrialTower) dailyQuestProgress.trialTowerWins += 1;
+  if (outcome === 'win' && isResourceDungeon) dailyQuestProgress.resourceDungeonWins += 1;
   if (outcome === 'win' && !isTrialTower && !isResourceDungeon) {
     dailyQuestProgress.wanderWins += 1;
     dailyQuestProgress.wanderRewards += 1;
   }
   let reward = 0;
+  let cultivationAward = 0;
   let spiritStoneReward = 0;
   let droppedItem = null;
   let bonusRewardText = '';
@@ -5336,6 +5541,7 @@ function finishBattle(message, outcome = 'lose') {
   if (isTrialTower && outcome === 'win') {
     const towerReward = applyTrialTowerReward(currentStage);
     reward = towerReward.cultivation;
+    cultivationAward = reward;
     spiritStoneReward = towerReward.spiritStones;
     const towerBonusParts = [];
     if (towerReward.enhancementStones > 0) towerBonusParts.push(`Đá cường hóa +${formatGameNumber(towerReward.enhancementStones)}`);
@@ -5346,24 +5552,26 @@ function finishBattle(message, outcome = 'lose') {
     const resourceReward = grantResourceDungeonReward(currentStage.resourceDungeonId, currentStage.resourceDungeonFloor);
     const resourceDungeon = getResourceDungeon(currentStage.resourceDungeonId);
     reward = resourceReward.cultivation;
+    cultivationAward = reward;
     spiritStoneReward = resourceReward.spiritStones;
     bonusRewardText = resourceDungeon?.rewardType === 'enhancementStone'
       ? formatResourceReward(resourceDungeon, resourceReward.amount)
       : '';
     message = `${message} Vượt qua ${currentStage.title}.`;
   } else if (!isTrialTower && !isResourceDungeon) {
-    reward = addCultivationReward(outcome);
+    cultivationAward = getCultivationReward(outcome);
+    reward = addPlayerCultivation(cultivationAward);
     spiritStoneReward = addSpiritStoneReward(outcome);
     droppedItem = rollEquipmentDrop(outcome);
   }
   startButton.disabled = false;
   startButton.textContent = getPostBattleButtonText(outcome);
   startButton.classList.add('is-hidden');
-  renderBattleResult(message, outcome, reward, spiritStoneReward, droppedItem, bonusRewardText);
+  renderBattleResult(message, outcome, reward, spiritStoneReward, droppedItem, bonusRewardText, cultivationAward);
   renderStageMap();
   pushLog(`${message} Trận đấu kết thúc.`);
-  pushLog(reward > 0
-    ? `Nhận ${formatGameNumber(reward)} tu vi. Hiện tại: ${formatGameNumber(playerCultivation)}/${formatGameNumber(getCultivationRequiredForNextLevel())}.`
+  pushLog((cultivationAward > 0 || reward > 0)
+    ? `Nhận ${formatGameNumber(cultivationAward || reward)} tu vi${cultivationAward > reward ? `, đã lưu ${formatGameNumber(reward)} vào Đan điền/thanh tu vi.` : ''} Hiện tại: ${formatGameNumber(playerCultivation)}/${formatGameNumber(getCultivationRequiredForNextLevel())}.`
     : 'Không nhận tu vi.');
   if (recovered) pushLog(`Dưỡng khí hồi ${recovered.hp} sinh lực và ${recovered.mana} linh lực.`);
   if (spiritStoneReward > 0) pushLog(`Rớt ${formatGameNumber(spiritStoneReward)} linh thạch.`);
@@ -5389,7 +5597,7 @@ function finishBattle(message, outcome = 'lose') {
   saveGame();
 }
 
-function renderBattleResult(message, outcome, reward, spiritStoneReward, droppedItem, bonusRewardText = '') {
+function renderBattleResult(message, outcome, reward, spiritStoneReward, droppedItem, bonusRewardText = '', cultivationAward = reward) {
   const nextStage = getNextBattleStage();
   const config = getDungeonConfig();
   const resultTitle = outcome === 'win' ? 'Thắng lợi' : outcome === 'draw' ? 'Hòa' : 'Thất bại';
@@ -5397,6 +5605,10 @@ function renderBattleResult(message, outcome, reward, spiritStoneReward, dropped
   const itemText = droppedItem
     ? getDroppedRewardText(droppedItem)
     : 'Không rơi trang bị';
+  const displayedCultivation = Number(cultivationAward) || 0;
+  const storedCultivationNote = displayedCultivation > Number(reward || 0)
+    ? ` (đã lưu +${formatGameNumber(reward)} vào Đan điền/thanh tu vi)`
+    : '';
   const nextText = currentStage?.isResourceDungeon
     ? outcome !== 'win'
       ? 'Về Phụ bản để thử lại tầng này'
@@ -5420,7 +5632,7 @@ function renderBattleResult(message, outcome, reward, spiritStoneReward, dropped
   battleResult.innerHTML = `
     <strong><i class="${resultIcon.startsWith('icon-unique-') ? 'unique-icon' : resultIcon.startsWith('icon-stat') ? 'stat-icon' : 'item-icon'} ${resultIcon}" aria-hidden="true"></i>${resultTitle}</strong>
     <span>${message}</span>
-    <em>Tu vi +${formatGameNumber(reward)} | Rớt linh thạch +${formatGameNumber(spiritStoneReward)} | ${bonusRewardText || itemText}</em>
+    <em>Tu vi nhận +${formatGameNumber(displayedCultivation)}${storedCultivationNote} | Rớt linh thạch +${formatGameNumber(spiritStoneReward)} | ${bonusRewardText || itemText}</em>
     <small>Tiếp theo: ${nextText}</small>
     <button type="button" class="breakthrough compact">${getPostBattleButtonText(outcome)}</button>
   `;
@@ -5472,12 +5684,14 @@ function addPlayerCultivation(amount) {
   const required = getCultivationRequiredForNextLevel();
   normalizeCultivationStorage();
   transferDantianCultivationToBar();
+  if (playerCultivation >= required && dantianCultivation >= getDantianCultivationCap()) return 0;
+  const beforeTotal = playerCultivation + dantianCultivation;
   const progressGain = Math.min(gain, Math.max(0, required - playerCultivation));
   playerCultivation += progressGain;
   dantianCultivation += gain - progressGain;
   clampDantianCultivation();
   transferDantianCultivationToBar();
-  return gain;
+  return Math.max(0, playerCultivation + dantianCultivation - beforeTotal);
 }
 
 function normalizeCultivationStorage() {
@@ -5527,8 +5741,10 @@ function getRewardSettings(stage = currentStage) {
   const map = getRewardMap(stage);
   const config = getDungeonConfig();
   return {
-    cultivationMultiplier: (map.rewardSettings?.cultivationMultiplier ?? config.cultivationMultiplier ?? 1) * rewardMultiplier,
-    spiritStoneMultiplier: (map.rewardSettings?.spiritStoneMultiplier ?? config.spiritStoneMultiplier ?? 1) * rewardMultiplier,
+    cultivationMultiplier: (map.rewardSettings?.cultivationMultiplier
+      ?? config.cultivationMultiplier
+      ?? 1) * cultivationRewardMultiplier,
+    spiritStoneBonus: Math.max(0, Number(map.rewardSettings?.spiritStoneBonus) || 0),
     equipmentDropChance: map.rewardSettings?.equipmentDropChance ?? config.equipmentDropChance ?? 0,
     equipmentRarityBonus: map.rewardSettings?.equipmentRarityBonus ?? config.equipmentRarityBonus ?? 0,
     equipmentQualityMax: map.rewardSettings?.equipmentQualityMax ?? 1,
@@ -5540,7 +5756,27 @@ function getRewardSettings(stage = currentStage) {
 }
 
 function getWanderCultivationAmount(stage, settings = getRewardSettings(stage)) {
-  return Math.round((5 + getStageDifficulty(stage) * 3 + Math.random() * 6) * settings.cultivationMultiplier);
+  return Math.max(1, Math.round(rollWanderRewardBase('cultivation') * settings.cultivationMultiplier));
+}
+
+function getWanderSpiritStoneAmount(stage, settings = getRewardSettings(stage)) {
+  return Math.max(1, Math.round(rollWanderRewardBase('spiritStone') + settings.spiritStoneBonus));
+}
+
+function rollWanderRewardBase(type) {
+  const [min, max] = getWanderRewardBaseRange(type);
+  return randomBetween(min, max);
+}
+
+function getWanderRewardBaseRange(type) {
+  const configured = gameConfig.gameplay?.wanderRewardBase?.[type];
+  if (Array.isArray(configured)) {
+    const min = Math.max(1, Math.floor(Number(configured[0]) || 1));
+    const max = Math.max(min, Math.floor(Number(configured[1]) || min));
+    return [min, max];
+  }
+  const amount = Math.max(1, Math.floor(Number(configured) || 1));
+  return [amount, amount];
 }
 
 function normalizeFoundationFindCounts(counts = {}) {
@@ -5643,16 +5879,16 @@ function rollEquipmentRarity(profile) {
 function calculateCultivationReward(stage, outcome) {
   if (outcome !== 'win') return 0;
 
-  const enemyLevel = getStageDifficulty(stage);
-  const levelGap = Math.max(0, enemyLevel - getPlayerCultivationTier());
+  const enemyCultivation = getStageDifficulty(stage);
+  const baseCultivation = rollWanderRewardBase('cultivation');
   const multiplier = getRewardSettings(stage).cultivationMultiplier * getEnemyRewardMultiplier(stage);
 
-  return Math.round((15 + enemyLevel * 7 + levelGap * 5) * multiplier);
+  return Math.round((baseCultivation + enemyCultivation / 2) * multiplier);
 }
 
 function getEnemyRewardMultiplier(stage = currentStage) {
   const rankLevel = clamp(Math.floor(Number(stage?.enemyRankLevel) || 1), 1, 5);
-  return 1 + ((rankLevel - 1) * 0.05);
+  return 1 + ((rankLevel - 1) * 0.1);
 }
 
 function getEnemyRewardBonusPercent(stage = currentStage) {
@@ -5660,11 +5896,12 @@ function getEnemyRewardBonusPercent(stage = currentStage) {
 }
 
 function getSpiritStoneDropRange(stage = currentStage) {
-  const cultivationReward = calculateCultivationReward(stage, 'win');
-  const amount = Math.max(0, Math.round(cultivationReward * spiritStoneToCultivationRatio));
+  const enemyCultivation = getStageDifficulty(stage);
+  const [minBase, maxBase] = getWanderRewardBaseRange('spiritStone');
+  const multiplier = getRewardSettings(stage).cultivationMultiplier * getEnemyRewardMultiplier(stage);
   return {
-    min: amount,
-    max: amount,
+    min: Math.max(1, Math.round((minBase + enemyCultivation / 4) * multiplier)),
+    max: Math.max(1, Math.round((maxBase + enemyCultivation / 4) * multiplier)),
   };
 }
 
@@ -5679,10 +5916,12 @@ function getSpiritStonePreviewRange(stage = currentStage) {
 
 function rollSpiritStoneDrop(outcome) {
   if (outcome !== 'win') return 0;
-  const range = getSpiritStoneDropRange(currentStage);
-  const baseDrop = range.min + Math.floor(Math.random() * (range.max - range.min + 1));
+  const enemyCultivation = getStageDifficulty(currentStage);
+  const baseDrop = rollWanderRewardBase('spiritStone');
+  const multiplier = getRewardSettings(currentStage).cultivationMultiplier * getEnemyRewardMultiplier(currentStage);
+  const reward = Math.max(1, Math.round((baseDrop + enemyCultivation / 4) * multiplier));
   const bonus = player?.spiritStoneBonus || 0;
-  return Math.round(baseDrop * (1 + bonus));
+  return Math.round(reward * (1 + bonus));
 }
 
 function breakthrough() {
@@ -5740,14 +5979,6 @@ function getCultivationRequiredForNextLevel() {
 
 function hasNextMajorRealm() {
   return playerMajorRealmIndex < majorRealmNames.length - 1;
-}
-
-function isApproachingMajorAscension() {
-  return playerLevel >= getMinorRealmLevelCap() && hasNextMajorRealm();
-}
-
-function isMajorAscensionGate() {
-  return isApproachingMajorAscension() && playerCultivation >= getCultivationRequiredForNextLevel();
 }
 
 function getNextMajorRealmName() {
@@ -5978,6 +6209,10 @@ function getShopPurchaseTotal(shopItem, quantity = 1) {
       const purchaseCount = Math.max(0, Number(ascensionPillPurchases[shopItem.id]) || 0);
       const multiplier = Math.max(1, Number(shopItem.priceMultiplier) || 2);
       total += baseCost * Math.pow(multiplier, purchaseCount + index);
+    } else if (shopItem.type === 'skillBook') {
+      const baseCost = Math.max(1, Number(shopItem.cost) || 1);
+      const multiplier = Math.max(0.01, Number(shopItem.priceMultiplier) || 1);
+      total += Math.max(1, Math.round(baseCost * multiplier));
     } else {
       total += Math.max(1, Number(shopItem.cost) || 1);
     }
@@ -6151,7 +6386,11 @@ function getShopItemCost(shopItem) {
     const increaseEvery = Math.max(1, Number(shopItem.priceIncreaseEvery) || 5);
     return baseCost + Math.floor(purchaseCount / increaseEvery) * priceStep;
   }
-  return Math.max(1, Number(shopItem.cost) || 1);
+  const baseCost = Math.max(1, Number(shopItem.cost) || 1);
+  const multiplier = shopItem.type === 'skillBook'
+    ? Math.max(0.01, Number(shopItem.priceMultiplier) || 1)
+    : 1;
+  return Math.max(1, Math.round(baseCost * multiplier));
 }
 
 function canBuyFoundationPill(shopItem) {
@@ -6257,7 +6496,8 @@ function getPassiveCultivationGain() {
 }
 
 function getTrainingCultivationRate() {
-  if (isMajorAscensionGate()) return 0;
+  if (playerCultivation >= getCultivationRequiredForNextLevel()
+    && dantianCultivation >= getDantianCultivationCap()) return 0;
   return Math.max(0, playerFoundation + cultivationSpeedBonus);
 }
 
@@ -6628,7 +6868,12 @@ function renderBattleVisuals() {
     [...enemyAvatar.classList]
       .filter((className) => className.startsWith('enemy-'))
       .forEach((className) => enemyAvatar.classList.remove(className));
-    enemyAvatar.classList.add('chibi-enemy', getEnemyVisualClass(currentStage?.enemyData));
+    const enemyData = currentStage?.enemyData || {};
+    const visual = getEnemyVisualStyle(enemyData);
+    enemyAvatar.classList.add('chibi-enemy', getEnemyVisualClass(enemyData));
+    enemyAvatar.style.backgroundImage = visual.image ? `url("${visual.image}")` : 'none';
+    enemyAvatar.style.backgroundPosition = visual.position;
+    enemyAvatar.style.backgroundSize = visual.size;
   }
 }
 
@@ -6728,10 +6973,12 @@ function formatSkillEffects(skill, level = getSkillLevel(skill.id)) {
     if (effect.type === 'manaRefund') {
       return `${toPercent(chance)} cơ hội hoàn lại linh lực vừa sử dụng`;
     }
-    if (effect.type === 'selfBuff') {
+    if (effect.type === 'selfBuff' || effect.type === 'percentBuff') {
       const value = Number(effect.value) || 0;
-      const amount = isPercentStat(effect.stat) ? toPercent(value) : value;
-      return `${chanceText}tăng ${getStatLabel(effect.stat)} +${isPercentStat(effect.stat) ? amount : formatGameNumber(amount)} trong ${effect.duration || 1} lượt, không cộng dồn`;
+      const isPercentBuff = effect.type === 'percentBuff';
+      const amount = isPercentBuff || isPercentStat(effect.stat) ? toPercent(value) : formatGameNumber(value);
+      const nonStackingText = effect.nonStacking ? ', không cộng dồn' : '';
+      return `${chanceText}tăng ${getStatLabel(effect.stat)} +${amount} trong ${effect.duration || 1} lượt${nonStackingText}`;
     }
     if (effect.type === 'healPercent') return `${chanceText}Hồi ${toPercent(effect.value)} sinh lực`;
     return `${chanceText}${effect.type}`;
@@ -6748,7 +6995,16 @@ function formatSkillDisplayNote(skill, level = getSkillLevel(skill.id)) {
 }
 
 function renderSkills() {
-  const skills = getPlayerSkills().filter((skill) => isSkillLearned(skill.id));
+  const skills = getPlayerSkills()
+    .filter((skill) => isSkillLearned(skill.id))
+    .sort((left, right) => {
+      const leftIndex = equippedSkillIds.indexOf(left.id);
+      const rightIndex = equippedSkillIds.indexOf(right.id);
+      if (leftIndex >= 0 && rightIndex < 0) return -1;
+      if (leftIndex < 0 && rightIndex >= 0) return 1;
+      if (leftIndex >= 0 && rightIndex >= 0) return leftIndex - rightIndex;
+      return 0;
+    });
   const maxEquipped = getMaxEquippedSkills();
   $('skillSlotText').textContent = `Ô skill: ${equippedSkillIds.length}/${maxEquipped}`;
   $('skillPowerText').textContent = `LC skill: ${formatGameNumber(getEquippedSkillCombatPower(skills.filter((skill) => equippedSkillIds.includes(skill.id))))}`;
@@ -6758,7 +7014,8 @@ function renderSkills() {
     const maxLevel = getSkillMaxLevel();
     const nextLevel = level + 1;
     const bookCount = getSkillBookCount(skill.id);
-    const bookRequired = getSkillBookRequired(nextLevel);
+    const bookRequirement = getSkillBookRequirement(skill, nextLevel);
+    const bookRequired = bookRequirement.total;
     const skillPower = getSkillCombatPower(skill, level);
     const practice = getSkillPractice(skill.id);
     const practiceRequired = getSkillPracticeRequired(skill, nextLevel);
@@ -6767,7 +7024,7 @@ function renderSkills() {
     const bookReady = !bookRequired || bookCount >= bookRequired;
     const canUpgrade = level < maxLevel && practiceReady && bookReady;
     const upgradeText = bookRequired
-      ? `Nâng cấp · cần ${bookRequired} sách skill`
+      ? `Nâng cấp · ${bookRequirement.levelBooks} cấp + ${bookRequirement.gradeBooks} phẩm chất = ${bookRequired} sách`
       : 'Nâng cấp';
     const active = skill.id === skillTrainingId && !practiceReady && level < maxLevel;
     const equipText = equipped
@@ -6830,7 +7087,7 @@ function learnSkill(skillId) {
     return;
   }
   learnedSkillIds.push(skill.id);
-  playerComprehension += 1;
+  grantSkillLearningComprehension();
   skillLevels[skill.id] = 0;
   skillPractice[skill.id] = 0;
   skillTrainingId = '';
@@ -6852,14 +7109,15 @@ function upgradeSkill(skillId) {
   if (currentLevel >= maxLevel) return;
   const targetLevel = currentLevel + 1;
   const practiceRequired = getSkillPracticeRequired(skill, targetLevel);
-  const bookRequired = getSkillBookRequired(targetLevel);
+  const bookRequirement = getSkillBookRequirement(skill, targetLevel);
+  const bookRequired = bookRequirement.total;
   if (getSkillPractice(skill.id) < practiceRequired) {
     $('skillsMessage').textContent = `Cần tu luyện ${skill.name} đạt ${practiceRequired} trước.`;
     showGameToast(`Chưa đủ tiến độ để nâng ${skill.name}.`, 'error');
     return;
   }
   if (getSkillBookCount(skill.id) < bookRequired) {
-    $('skillsMessage').textContent = `Cần ${bookRequired} quyển skill ${skill.name} để mở cấp ${targetLevel}.`;
+    $('skillsMessage').textContent = `Cần ${bookRequirement.levelBooks} sách cấp độ + ${bookRequirement.gradeBooks} sách phẩm chất = ${bookRequired} sách ${skill.name} để mở cấp ${targetLevel}.`;
     showGameToast(`Chưa đủ sách skill để nâng ${skill.name}.`, 'error');
     return;
   }
@@ -7310,6 +7568,7 @@ function getShopItemPriceDetail(item) {
     return `Cứ ${Math.max(1, Number(item.priceIncreaseEvery) || 5)} lần mua, giá tăng ${formatGameNumber(Number(item.priceStep) || 5)} linh thạch.`;
   }
   if (item.type === 'ascension') return 'Mỗi lần mua tiếp theo tăng gấp 2 lần giá; có thể mua nhiều.';
+  if (item.type === 'skillBook') return 'Giá bán bằng 1/4 giá gốc, làm tròn đến linh thạch gần nhất.';
   return 'Giá cố định cho mỗi lần mua.';
 }
 
@@ -7621,8 +7880,7 @@ function getBagItems() {
       count: healthPotionCount,
       iconClass: 'item-icon icon-item-health-pill',
       description: 'Hồi phục 25% HP mỗi lần dùng.',
-      usable: true,
-      useLabel: 'Dùng',
+      usable: false,
     },
     {
       id: 'mana-potion',
@@ -7631,8 +7889,7 @@ function getBagItems() {
       count: manaPotionCount,
       iconClass: 'item-icon icon-item-mana-flame',
       description: 'Hồi phục 25% MP mỗi lần dùng.',
-      usable: true,
-      useLabel: 'Dùng',
+      usable: false,
     },
     {
       id: 'enhancement-stones',
@@ -7702,7 +7959,7 @@ function learnSkillFromBag(skillId) {
   if (getPlayerCultivationTier() < getSkillRequiredTier(skill)) return;
   skillBooks[skill.id] = getSkillBookCount(skill.id) - 1;
   learnedSkillIds.push(skill.id);
-  playerComprehension += 1;
+  grantSkillLearningComprehension();
   skillLevels[skill.id] = 0;
   skillPractice[skill.id] = 0;
   skillTrainingId = '';
@@ -7747,7 +8004,7 @@ function usePurchasedShopItem(item, amount = 1) {
     if (getShopInventoryCount(shopItem.id) <= 0) break;
     let canUse = true;
     if (shopItem.type === 'cultivation') {
-      canUse = !isMajorAscensionGate() && addPlayerCultivation(shopItem.cultivation) > 0;
+      canUse = addPlayerCultivation(shopItem.cultivation) > 0;
     } else if (shopItem.type === 'foundation') {
       playerFoundation += getFoundationPillAmount(shopItem);
     } else if (shopItem.type === 'ascension') {
@@ -7985,7 +8242,7 @@ function renderEquipmentSummary(item, options = {}) {
     <em>Cấp trang bị ${formatGameNumber(item.level)} | Cường hóa +${enhancementLevel}/${enhancementMax}</em>
     <em>Lực chiến +${formatGameNumber(getItemPower(item))} | Yêu cầu ${getTierRealmText(item.requiredTier || getEquipmentRequiredTier(item.rarityKey, item.level))}</em>
     ${formatItemStats(item.stats) ? `<small class="item-stat-list">${formatItemStats(item.stats)}</small>` : ''}
-    ${item.specialLines?.length ? `<small class="special-lines item-stat-list">${formatSpecialLines(item.specialLines)}</small>` : ''}
+    ${renderEquipmentSpecials(item.specialLines)}
   `;
 }
 
@@ -7994,7 +8251,7 @@ function renderEquippedEquipmentSummary(item, slotName, options = {}) {
   const enhancementMax = getEquipmentEnhancementQualityMax(item);
   const iconClass = getEquipmentIconClass(item.slotId);
   const iconType = iconClass.startsWith('icon-unique-') ? 'unique-icon' : 'item-icon';
-  const specialText = formatSpecialLinesWithoutIcons(item.specialLines || []);
+  const specialMarkup = renderEquipmentSpecials(item.specialLines || []);
   return `
     <div class="equipped-equipment-summary">
       <div class="equipped-equipment-heading"><span>${slotName}</span><b>LC +${formatGameNumber(getItemPower(item))}</b></div>
@@ -8003,7 +8260,7 @@ function renderEquippedEquipmentSummary(item, slotName, options = {}) {
         <span class="equipped-equipment-name-copy"><strong>${item.name}</strong><b>+${formatGameNumber(enhancementLevel)}/${formatGameNumber(enhancementMax)}</b></span>
       </div>
       ${options.showStats !== false && formatItemStats(item.stats) ? `<div class="equipped-equipment-stats">${formatItemStats(item.stats)}</div>` : ''}
-      ${options.showSpecials !== false && specialText ? `<div class="equipped-equipment-specials">${specialText}</div>` : ''}
+      ${options.showSpecials !== false ? specialMarkup : ''}
     </div>
   `;
 }
@@ -8045,7 +8302,7 @@ function renderFighter(prefix, fighter) {
   $(`${prefix}ManaBar`).style.width = `${(fighter.mana / fighter.maxMana) * 100}%`;
   renderSkillStatus(prefix, fighter);
   $(`${prefix}Stats`).innerHTML = `
-    <strong class="combat-power">Lực chiến ${formatGameNumber(getCombatPower(fighter))}</strong>
+    <strong class="combat-power">Lực chiến ${formatGameNumber(Number.isFinite(Number(fighter.displayCombatPower)) ? fighter.displayCombatPower : (Number.isFinite(Number(fighter.combatPower)) ? fighter.combatPower : getCombatPower(fighter)))}</strong>
     <span><i class="stat-icon icon-stat-attack" aria-hidden="true"></i>Công <b>${fighter.attack}</b></span>
     <span><i class="unique-icon icon-unique-defense" aria-hidden="true"></i>Thủ <b>${fighter.defense}</b></span>
     <span><i class="stat-icon icon-stat-speed" aria-hidden="true"></i>Tốc <b>${Math.round(fighter.speed)}</b></span>
@@ -8151,6 +8408,11 @@ function formatSpecialLinesWithoutIcons(lines) {
       return `<span class="equipped-special-line"><strong>${line.name}:</strong> ${valueText}</span>`;
     })
     .join('');
+}
+
+function renderEquipmentSpecials(lines = []) {
+  const specialText = formatSpecialLinesWithoutIcons(lines);
+  return specialText ? `<div class="equipped-equipment-specials">${specialText}</div>` : '';
 }
 
 function renderItemStatLine(stat, value, extraClass = '') {

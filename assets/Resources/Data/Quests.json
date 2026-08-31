@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 8,
   "title": "Nhiệm vụ",
   "quests": [
     {
@@ -10,30 +10,63 @@
       "objective": {
         "type": "combinedMilestones",
         "label": "Tiến độ tu luyện",
+        "rewardFormula": {
+          "cultivationDivisor": 5,
+          "cultivationRounding": "nearestTen",
+          "spiritStonesBase": 30,
+          "spiritStonesPerMilestone": 30,
+          "comprehensionPerMajorRealm": 1
+        },
         "milestones": [
           { "id": "minor-1", "kind": "minor", "target": 3, "label": "Thối Thể cảnh Tam tầng", "reward": { "cultivation": 60, "spiritStones": 30 } },
           { "id": "minor-2", "kind": "minor", "target": 6, "label": "Thối Thể cảnh Lục tầng", "reward": { "cultivation": 80, "spiritStones": 40 } },
           { "id": "minor-3", "kind": "minor", "target": 9, "label": "Thối Thể cảnh Cửu tầng", "reward": { "cultivation": 130, "spiritStones": 70 } },
-          { "id": "major-1", "kind": "major", "target": 1, "label": "Thối Thể lên Khai Nguyên", "reward": { "cultivation": 200, "spiritStones": 100, "foundation": 1, "comprehension": 1 } },
+          { "id": "major-1", "kind": "major", "target": 1, "label": "Thối Thể lên Khai Nguyên", "reward": { "cultivation": 200, "spiritStones": 100, "foundation": 1 } },
           { "id": "minor-4", "kind": "minor", "target": 12, "label": "Khai Nguyên cảnh Tam tầng", "reward": { "cultivation": 170, "spiritStones": 90 } },
           { "id": "minor-5", "kind": "minor", "target": 15, "label": "Khai Nguyên cảnh Lục tầng", "reward": { "cultivation": 290, "spiritStones": 150 } },
           { "id": "minor-6", "kind": "minor", "target": 18, "label": "Khai Nguyên cảnh Cửu tầng", "reward": { "cultivation": 380, "spiritStones": 190 } },
-          { "id": "major-2", "kind": "major", "target": 2, "label": "Khai Nguyên lên Khí Động", "reward": { "cultivation": 430, "spiritStones": 220, "foundation": 2, "comprehension": 2 } },
+          { "id": "major-2", "kind": "major", "target": 2, "label": "Khai Nguyên lên Khí Động", "reward": { "cultivation": 430, "spiritStones": 220, "foundation": 1 } },
           { "id": "minor-7", "kind": "minor", "target": 21, "label": "Khí Động cảnh Tam tầng", "reward": { "cultivation": 830, "spiritStones": 410 } },
           { "id": "minor-8", "kind": "minor", "target": 24, "label": "Khí Động cảnh Lục tầng", "reward": { "cultivation": 1080, "spiritStones": 540 } },
           { "id": "minor-9", "kind": "minor", "target": 27, "label": "Khí Động cảnh Cửu tầng", "reward": { "cultivation": 1820, "spiritStones": 910 } },
-          { "id": "major-3", "kind": "major", "target": 3, "label": "Khí Động lên Ly Hợp", "reward": { "cultivation": 950, "spiritStones": 480, "foundation": 3, "comprehension": 3 } },
+          { "id": "major-3", "kind": "major", "target": 3, "label": "Khí Động lên Ly Hợp", "reward": { "cultivation": 950, "spiritStones": 480, "foundation": 1 } },
           { "id": "minor-10", "kind": "minor", "target": 30, "label": "Ly Hợp cảnh Tam tầng", "reward": { "cultivation": 2360, "spiritStones": 1180 } },
           { "id": "minor-11", "kind": "minor", "target": 33, "label": "Ly Hợp cảnh Lục tầng", "reward": { "cultivation": 3990, "spiritStones": 2000 } },
           { "id": "minor-12", "kind": "minor", "target": 36, "label": "Ly Hợp cảnh Cửu tầng", "reward": { "cultivation": 5190, "spiritStones": 2600 } },
-          { "id": "major-4", "kind": "major", "target": 4, "label": "Ly Hợp lên Chân Nguyên", "reward": { "cultivation": 1240, "spiritStones": 620, "foundation": 4, "comprehension": 4 } },
+          { "id": "major-4", "kind": "major", "target": 4, "label": "Ly Hợp lên Chân Nguyên", "reward": { "cultivation": 1240, "spiritStones": 620, "foundation": 1 } },
           { "id": "minor-13", "kind": "minor", "target": 39, "label": "Chân Nguyên cảnh Tam tầng", "reward": { "cultivation": 2730, "spiritStones": 1360 } },
           { "id": "minor-14", "kind": "minor", "target": 42, "label": "Chân Nguyên cảnh Lục tầng", "reward": { "cultivation": 5990, "spiritStones": 2990 } },
           { "id": "minor-15", "kind": "minor", "target": 45, "label": "Chân Nguyên cảnh Cửu tầng", "reward": { "cultivation": 13160, "spiritStones": 6580 } },
-          { "id": "major-5", "kind": "major", "target": 5, "label": "Chân Nguyên lên Trúc Cơ", "reward": { "cultivation": 17100, "spiritStones": 8550, "foundation": 5, "comprehension": 5 } }
+          { "id": "major-5", "kind": "major", "target": 5, "label": "Chân Nguyên lên Trúc Cơ", "reward": { "cultivation": 17100, "spiritStones": 8550, "foundation": 1 } },
+          { "id": "minor-16", "kind": "minor", "target": 48, "label": "Trúc Cơ cảnh Tam tầng", "reward": { "cultivation": 6800, "spiritStones": 3400 } },
+          { "id": "minor-17", "kind": "minor", "target": 51, "label": "Trúc Cơ cảnh Lục tầng", "reward": { "cultivation": 11200, "spiritStones": 5600 } },
+          { "id": "minor-18", "kind": "minor", "target": 54, "label": "Trúc Cơ cảnh Cửu tầng", "reward": { "cultivation": 18400, "spiritStones": 9200 } },
+          { "id": "major-6", "kind": "major", "target": 6, "label": "Trúc Cơ lên Thần Du", "reward": { "cultivation": 23500, "spiritStones": 11750, "foundation": 1 } },
+          { "id": "minor-19", "kind": "minor", "target": 57, "label": "Thần Du cảnh Tam tầng", "reward": { "cultivation": 14200, "spiritStones": 7100 } },
+          { "id": "minor-20", "kind": "minor", "target": 60, "label": "Thần Du cảnh Lục tầng", "reward": { "cultivation": 23600, "spiritStones": 11800 } },
+          { "id": "minor-21", "kind": "minor", "target": 63, "label": "Thần Du cảnh Cửu tầng", "reward": { "cultivation": 38700, "spiritStones": 19350 } },
+          { "id": "major-7", "kind": "major", "target": 7, "label": "Thần Du lên Kết Đan", "reward": { "cultivation": 49200, "spiritStones": 24600, "foundation": 1 } },
+          { "id": "minor-22", "kind": "minor", "target": 66, "label": "Kết Đan cảnh Tam tầng", "reward": { "cultivation": 26000, "spiritStones": 13000 } },
+          { "id": "minor-23", "kind": "minor", "target": 69, "label": "Kết Đan cảnh Lục tầng", "reward": { "cultivation": 43200, "spiritStones": 21600 } },
+          { "id": "minor-24", "kind": "minor", "target": 72, "label": "Kết Đan cảnh Cửu tầng", "reward": { "cultivation": 70800, "spiritStones": 35400 } },
+          { "id": "major-8", "kind": "major", "target": 8, "label": "Kết Đan lên Nguyên Anh", "reward": { "cultivation": 90000, "spiritStones": 45000, "foundation": 1 } },
+          { "id": "minor-25", "kind": "minor", "target": 75, "label": "Nguyên Anh cảnh Tam tầng", "reward": { "cultivation": 45000, "spiritStones": 22500 } },
+          { "id": "minor-26", "kind": "minor", "target": 78, "label": "Nguyên Anh cảnh Lục tầng", "reward": { "cultivation": 75000, "spiritStones": 37500 } },
+          { "id": "minor-27", "kind": "minor", "target": 81, "label": "Nguyên Anh cảnh Cửu tầng", "reward": { "cultivation": 123000, "spiritStones": 61500 } },
+          { "id": "major-9", "kind": "major", "target": 9, "label": "Nguyên Anh lên Siêu Phàm", "reward": { "cultivation": 156000, "spiritStones": 78000, "foundation": 1 } },
+          { "id": "minor-28", "kind": "minor", "target": 84, "label": "Siêu Phàm cảnh Tam Trọng Thiên", "reward": { "cultivation": 17400, "spiritStones": 1110 } },
+          { "id": "minor-29", "kind": "minor", "target": 87, "label": "Siêu Phàm cảnh Lục Trọng Thiên", "reward": { "cultivation": 31800, "spiritStones": 1140 } },
+          { "id": "minor-30", "kind": "minor", "target": 90, "label": "Siêu Phàm cảnh Cửu Trọng Thiên", "reward": { "cultivation": 46200, "spiritStones": 1170 } },
+          { "id": "major-10", "kind": "major", "target": 10, "label": "Siêu Phàm lên Nhập Thánh", "reward": { "cultivation": 204000, "spiritStones": 1200, "foundation": 1 } },
+          { "id": "minor-31", "kind": "minor", "target": 93, "label": "Nhập Thánh cảnh Tam Trọng Thiên", "reward": { "cultivation": 26400, "spiritStones": 1230 } },
+          { "id": "minor-32", "kind": "minor", "target": 96, "label": "Nhập Thánh cảnh Lục Trọng Thiên", "reward": { "cultivation": 43200, "spiritStones": 1260 } },
+          { "id": "minor-33", "kind": "minor", "target": 99, "label": "Nhập Thánh cảnh Cửu Trọng Thiên", "reward": { "cultivation": 60000, "spiritStones": 1290 } },
+          { "id": "major-11", "kind": "major", "target": 11, "label": "Nhập Thánh lên Thánh Vương", "reward": { "cultivation": 375000, "spiritStones": 1320, "foundation": 1 } },
+          { "id": "minor-34", "kind": "minor", "target": 102, "label": "Thánh Vương cảnh Tam Trọng Thiên", "reward": { "cultivation": 49800, "spiritStones": 1350 } },
+          { "id": "minor-35", "kind": "minor", "target": 105, "label": "Thánh Vương cảnh Lục Trọng Thiên", "reward": { "cultivation": 77400, "spiritStones": 1380 } },
+          { "id": "minor-36", "kind": "minor", "target": 108, "label": "Thánh Vương cảnh Cửu Trọng Thiên", "reward": { "cultivation": 105000, "spiritStones": 1410 } }
         ]
-      },
-      "reward": { "cultivation": 60, "spiritStones": 30 }
+      }
     },
     {
       "id": "daily-wander-wins",
@@ -50,6 +83,14 @@
       "description": "Nhận phần thưởng Ngao du 5 lần hôm nay.",
       "objective": { "type": "dailyWanderRewards", "target": 5, "label": "Nhận thưởng hôm nay" },
       "reward": { "cultivation": 30, "spiritStones": 55 }
+    },
+    {
+      "id": "daily-resource-dungeon-wins",
+      "category": "daily",
+      "title": "Chinh phục phụ bản",
+      "description": "Đánh thắng phụ bản 3 lần hôm nay.",
+      "objective": { "type": "dailyResourceDungeonWins", "target": 3, "label": "Thắng phụ bản hôm nay" },
+      "reward": { "cultivation": 60, "spiritStones": 80, "enhancementStones": 1 }
     },
     {
       "id": "wander-reward-milestones",

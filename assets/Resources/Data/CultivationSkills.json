@@ -29,7 +29,17 @@
       "earth": 0.06,
       "heaven": 0.07
     },
-    "skillBookRequiredLevels": [3, 6, 9, 12, 15],
+    "skillBookRequirement": {
+      "milestoneEveryLevels": 3,
+      "levelBooksPerMilestone": 1,
+      "gradeBooksByGrade": {
+        "mortal": 0,
+        "yellow": 1,
+        "mysterious": 2,
+        "earth": 3,
+        "heaven": 4
+      }
+    },
     "manaRegenPerTurn": 3,
     "combatPowerPerLevel": 20,
     "combatPowerPerMilestone": 10,
@@ -87,7 +97,7 @@
       "multiplier": 1.25,
       "cost": 16,
       "cooldown": 2,
-      "effects": [{ "type": "selfBuff", "stat": "attack", "value": 0.02, "levelIncrease": 0.002, "duration": 2, "chance": 0.5, "nonStacking": true }]
+      "effects": [{ "type": "percentBuff", "stat": "attack", "value": 0.02, "levelIncrease": 0.002, "duration": 2, "chance": 0.5, "nonStacking": true }]
     },
     {
       "id": "sword_flash",
@@ -130,7 +140,7 @@
       "cost": 28,
       "cooldown": 3,
       "effects": [
-        { "type": "selfBuff", "stat": "attack", "value": 0.02, "levelIncrease": 0.002, "duration": 3, "chance": 1, "nonStacking": true },
+        { "type": "percentBuff", "stat": "attack", "value": 0.02, "levelIncrease": 0.002, "duration": 3, "chance": 1, "nonStacking": true },
         { "type": "selfBuff", "stat": "critRate", "value": 0.02, "levelIncrease": 0.002, "duration": 3, "chance": 1, "nonStacking": true }
       ]
     },

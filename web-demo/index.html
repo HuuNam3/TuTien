@@ -77,11 +77,10 @@
           <button id="questButton" class="secondary compact" type="button"><i class="game-icon icon-scroll" aria-hidden="true"></i><span>Nhiệm vụ</span><b class="nav-badge" id="questBadge" hidden aria-hidden="true"></b></button>
           <button id="equipmentButton" class="secondary compact" type="button"><i class="game-icon icon-sword" aria-hidden="true"></i><span>Trang bị</span><b class="nav-badge" id="equipmentBadge" hidden aria-hidden="true"></b></button>
           <button id="inventoryButton" class="secondary compact" type="button"><i class="item-icon icon-item-side-pouch" aria-hidden="true"></i><span>Túi đồ</span></button>
-          <button id="shopButton" class="secondary compact" type="button"><i class="game-icon icon-shop" aria-hidden="true"></i><span>Cửa hàng</span></button>
+          <button id="shopButton" class="secondary compact locked-tab" type="button" disabled aria-disabled="true" title="Cửa hàng tạm khóa"><i class="game-icon icon-shop" aria-hidden="true"></i><span>Cửa hàng</span></button>
           <button id="trialTowerButton" class="secondary compact" type="button"><i class="game-icon icon-tower" aria-hidden="true"></i><span>Tháp thí luyện</span></button>
           <button id="resourceDungeonButton" class="secondary compact" type="button"><i class="game-icon icon-mountain" aria-hidden="true"></i><span>Phụ bản</span><b class="nav-badge" id="resourceDungeonBadge" hidden aria-hidden="true"></b></button>
           <button id="enhancementButton" class="secondary compact" type="button"><i class="game-icon icon-hammer" aria-hidden="true"></i><span>Cường hóa</span></button>
-          <button id="changeLogButton" class="secondary compact" type="button"><i class="game-icon icon-scroll" aria-hidden="true"></i><span>Ghi chú</span></button>
           <button id="devButton" class="secondary compact" type="button"><i class="game-icon icon-hammer" aria-hidden="true"></i><span>Code</span></button>
           <button id="resetDataButton" class="danger compact reset-button" type="button"><i class="game-icon icon-reset" aria-hidden="true"></i><span>Đăng xuất</span></button>
         </div>
@@ -186,7 +185,7 @@
     <section class="feature-panel is-hidden" id="trialTowerPanel">
       <div class="profile-header">
         <div><h2><i class="game-icon icon-tower" aria-hidden="true"></i>Tháp thí luyện</h2></div>
-        <strong id="trialTowerProgressText">Đã vượt 0/10</strong>
+        <strong id="trialTowerProgressText">Đã vượt 0/30</strong>
       </div>
       <article class="profile-card">
         <div class="trial-tower-list" id="trialTowerList"></div>
@@ -207,16 +206,6 @@
         </div>
         <div class="quest-list" id="questList"></div>
         <p class="shop-message" id="questMessage"></p>
-      </article>
-    </section>
-
-    <section class="feature-panel is-hidden" id="changeLogPanel">
-      <div class="profile-header">
-        <div><h2 id="changeLogTitle"><i class="activity-icon icon-activity-history" aria-hidden="true"></i>Lịch sử cập nhật</h2><p>Xem các thay đổi đã thêm vào game</p></div>
-      </div>
-      <div class="change-log-category-filters shop-category-filters" id="changeLogCategoryFilters" role="tablist" aria-label="Phân loại ghi chú"></div>
-      <article class="profile-card">
-        <div class="change-log-list" id="changeLogList"></div>
       </article>
     </section>
 

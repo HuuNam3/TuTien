@@ -4953,6 +4953,11 @@ li {
   color: #f3bd91;
 }
 
+.equipped-special-line {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .equipment-summary-empty {
   color: #9eb2c7;
 }
@@ -5497,66 +5502,6 @@ li {
   margin-top: 3px;
 }
 
-.change-log-list {
-  display: grid;
-  gap: 12px;
-}
-
-.change-log-entry {
-  display: grid;
-  gap: 8px;
-  padding: 14px;
-  border: 1px solid #48596b;
-  border-left: 4px solid #6ed0e7;
-  background: rgba(12, 18, 28, 0.72);
-}
-
-.change-log-heading {
-  display: flex;
-  align-items: start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.change-log-heading > div {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.change-log-heading strong {
-  color: #f4c45b;
-  font-size: 1rem;
-}
-
-.change-log-heading span,
-.change-log-heading time {
-  color: #92a9c0;
-  font-size: 12px;
-}
-
-.change-log-heading span {
-  padding: 2px 6px;
-  border: 1px solid #52697e;
-}
-
-.change-log-entry p {
-  margin: 0;
-  color: #d1dbe7;
-  line-height: 1.45;
-}
-
-.change-log-entry ul {
-  display: grid;
-  gap: 4px;
-  margin: 0;
-  padding-left: 18px;
-  color: #aebed0;
-  font-size: 12px;
-  line-height: 1.45;
-}
-
 .shop-category-filters {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -5579,7 +5524,6 @@ li {
   .training-skill-header { align-items: start; flex-direction: column; }
   .training-skill-header > strong { text-align: left; }
   .skill-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .change-log-heading { flex-direction: column; gap: 4px; }
   .shop-category-filters {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -5613,8 +5557,7 @@ button:not(:disabled),
 .shop-item,
 .equipment-slot,
 .inventory-item,
-.trial-floor,
-.change-log-entry {
+.trial-floor {
   transition: border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease, transform 100ms ease;
 }
 
@@ -5678,8 +5621,7 @@ button:disabled {
 .equipment-slot:hover,
 .inventory-item:hover,
 .shop-item:hover,
-.trial-floor:hover,
-.change-log-entry:hover {
+.trial-floor:hover {
   border-color: rgba(124, 224, 255, 0.78);
   box-shadow: 0 7px 18px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(124, 224, 255, 0.1);
   transform: translateY(-1px);
@@ -5824,8 +5766,7 @@ button:disabled {
   .shop-item,
   .equipment-slot,
   .inventory-item,
-  .trial-floor,
-  .change-log-entry {
+  .trial-floor {
     transition: none;
   }
 }
@@ -6206,8 +6147,6 @@ button:disabled {
   background-size: contain;
 }
 
-.avatar.chibi-enemy.enemy-dog { background-position: left center; }
-.avatar.chibi-enemy.enemy-bandit { background-position: 33.333% center; }
 .avatar.chibi-enemy.enemy-ghost { background-position: 66.666% center; }
 .avatar.chibi-enemy.enemy-spider { background-position: right center; }
 
@@ -6425,6 +6364,35 @@ strong > .activity-icon,
 .icon-activity-history { background-position: 33.333% 100%; }
 .icon-activity-skill { background-position: 66.666% 100%; }
 .icon-activity-locked { background-position: 100% 100%; }
+
+.icon-wander-map-5,
+.icon-wander-map-6,
+.icon-wander-map-7,
+.icon-wander-map-8,
+.icon-wander-map-9,
+.icon-wander-map-10,
+.icon-wander-map-11,
+.icon-wander-map-12,
+.icon-wander-map-13,
+.icon-wander-map-14,
+.icon-wander-increase-enemy,
+.icon-wander-skip-enemy {
+  background-image: url('/assets/Art/Sprites/UI/chibi-wander-map-icon-sheet.png');
+  background-size: 400% 300%;
+}
+
+.icon-wander-map-5 { background-position: 0% 0%; }
+.icon-wander-map-6 { background-position: 33.333% 0%; }
+.icon-wander-map-7 { background-position: 66.666% 0%; }
+.icon-wander-map-8 { background-position: 100% 0%; }
+.icon-wander-map-9 { background-position: 0% 50%; }
+.icon-wander-map-10 { background-position: 33.333% 50%; }
+.icon-wander-map-11 { background-position: 66.666% 50%; }
+.icon-wander-map-12 { background-position: 100% 50%; }
+.icon-wander-map-13 { background-position: 0% 100%; }
+.icon-wander-map-14 { background-position: 33.333% 100%; }
+.icon-wander-increase-enemy { background-position: 66.666% 100%; }
+.icon-wander-skip-enemy { background-position: 100% 100%; }
 
 .stat-icon {
   display: inline-block;
@@ -6868,47 +6836,6 @@ button.breakthrough:not(:disabled) {
   text-shadow: none;
 }
 
-.change-log-actions {
-  display: flex;
-  justify-content: flex-start;
-}
-
-.change-log-toggle {
-  width: auto;
-  min-width: 126px;
-  min-height: 34px;
-  padding-inline: 9px;
-}
-
-.change-log-toggle .game-icon {
-  flex-basis: 17px;
-  width: 17px;
-  height: 17px;
-}
-
-.change-log-details {
-  display: grid;
-  gap: 4px;
-  padding: 9px 10px;
-  border-left: 2px solid rgba(110, 208, 231, 0.48);
-  background: rgba(20, 33, 46, 0.62);
-  animation: change-log-details-in 180ms ease both;
-}
-
-.change-log-details[hidden] {
-  display: none;
-}
-
-.change-log-entry.is-expanded {
-  border-left-color: #f2bb4b;
-  box-shadow: 0 0 0 1px rgba(242, 187, 75, 0.16);
-}
-
-@keyframes change-log-details-in {
-  from { opacity: 0; transform: translateY(-3px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
 /* Compact landscape battle HUD for mobile: only identity, realm, turn and live bars remain. */
 .battle-panel {
   padding: 7px;
@@ -7039,8 +6966,6 @@ button.breakthrough:not(:disabled) {
   display: none;
 }
 
-.avatar.chibi-enemy.enemy-dog,
-.avatar.chibi-enemy.enemy-bandit,
 .avatar.chibi-enemy.enemy-ghost,
 .avatar.chibi-enemy.enemy-spider {
   background-repeat: no-repeat;
@@ -7049,10 +6974,8 @@ button.breakthrough:not(:disabled) {
   background-color: #121922;
 }
 
-.avatar.chibi-enemy.enemy-dog { background-image: url('/assets/Art/Sprites/Enemies/chibi-enemy-dog.png'); }
-.avatar.chibi-enemy.enemy-bandit { background-image: url('/assets/Art/Sprites/Enemies/chibi-enemy-bandit.png'); }
-.avatar.chibi-enemy.enemy-ghost { background-image: url('/assets/Art/Sprites/Enemies/chibi-enemy-ghost.png'); }
-.avatar.chibi-enemy.enemy-spider { background-image: url('/assets/Art/Sprites/Enemies/chibi-enemy-spider.png'); }
+.avatar.chibi-enemy.enemy-ghost { background-image: url('/assets/Art/Sprites/pet/chibi-enemy-ghost.png'); }
+.avatar.chibi-enemy.enemy-spider { background-image: url('/assets/Art/Sprites/pet/chibi-enemy-spider.png'); }
 
 /* Character motion layer: the same timing classes drive both the fighter card and its avatar. */
 .battle-panel .fighter > .avatar {
@@ -9950,4 +9873,98 @@ body.battle-active .battle-panel {
   .account-bar {
     justify-content: space-between;
   }
+}
+
+/* Ngao du map carousel: show three maps and expose horizontal navigation. */
+.stage-grid.main-dungeon-grid .wander-map-carousel {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  padding: 4px;
+  border: 1px solid #3b4b61;
+  border-radius: 6px;
+  background: #151c26;
+}
+
+.stage-grid.main-dungeon-grid .wander-map-viewport {
+  position: relative;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: auto;
+  scroll-snap-type: none;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  touch-action: pan-x;
+  overscroll-behavior-x: contain;
+}
+
+.stage-grid.main-dungeon-grid .wander-map-card.locked:not(:disabled),
+.wander-encounter-toggle button.is-locked,
+.wander-boss-panel button.is-locked {
+  cursor: pointer;
+  opacity: 0.58;
+}
+
+.stage-grid.main-dungeon-grid .wander-map-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.stage-grid.main-dungeon-grid .wander-map-viewport:focus-visible {
+  outline: 2px solid #78d9ff;
+  outline-offset: 1px;
+}
+
+.stage-grid.main-dungeon-grid .wander-map-list {
+  display: flex;
+  gap: 4px;
+  width: max-content;
+  min-width: 100%;
+}
+
+.stage-grid.main-dungeon-grid .wander-map-card {
+  flex: 0 0 var(--wander-map-card-width, calc((100% - 8px) / 3));
+  width: var(--wander-map-card-width, calc((100% - 8px) / 3));
+  max-width: 210px;
+  min-width: 0;
+  min-height: 58px;
+  scroll-snap-align: none;
+}
+
+.stage-grid.main-dungeon-grid .wander-map-scroll-hint {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 1px 2px 0;
+  color: #8fa6bd;
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.stage-grid.main-dungeon-grid .wander-map-scroll-hint strong {
+  color: #f2bb4b;
+  font-weight: 800;
+}
+
+.unique-icon.icon-wander-skip-enemy {
+  background-image: url('/assets/Art/Sprites/UI/chibi-wander-map-icon-sheet.png');
+  background-size: 400% 300%;
+  background-position: 100% 100%;
+}
+
+@media (max-width: 520px) {
+  .stage-grid.main-dungeon-grid .wander-map-carousel {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .stage-grid.main-dungeon-grid .wander-map-card {
+    flex-basis: var(--wander-map-card-width, calc((100% - 8px) / 3));
+    width: var(--wander-map-card-width, calc((100% - 8px) / 3));
+  }
+
 }
