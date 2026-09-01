@@ -13,8 +13,7 @@
         85,
         15,
         0
-      ],
-      "requiredMajorRealmIndex": 0
+      ]
     },
     {
       "id": "equipmentTier2Chest",
@@ -29,8 +28,7 @@
         82,
         18,
         0
-      ],
-      "requiredMajorRealmIndex": 1
+      ]
     },
     {
       "id": "equipmentTier3Chest",
@@ -45,8 +43,37 @@
         79,
         20,
         1
-      ],
-      "requiredMajorRealmIndex": 2
+      ]
+    },
+    {
+      "id": "equipmentTier4Chest",
+      "name": "Rương trang bị cấp 4",
+      "description": "Mở ra 1 trang bị cấp 15–20 theo tỉ lệ phẩm chất của đại cảnh giới tương ứng.",
+      "cost": 400,
+      "type": "equipmentChest",
+      "equipmentChestTier": 4,
+      "equipmentMajorRealmId": 4,
+      "rarityQualityMax": 3,
+      "rarityWeights": [
+        79,
+        20,
+        1
+      ]
+    },
+    {
+      "id": "equipmentTier5Chest",
+      "name": "Rương trang bị cấp 5",
+      "description": "Mở ra 1 trang bị cấp 20–25 theo tỉ lệ phẩm chất của đại cảnh giới tương ứng.",
+      "cost": 500,
+      "type": "equipmentChest",
+      "equipmentChestTier": 5,
+      "equipmentMajorRealmId": 5,
+      "rarityQualityMax": 3,
+      "rarityWeights": [
+        79,
+        20,
+        1
+      ]
     },
     {
       "id": "enhancementStone",
@@ -92,31 +119,31 @@
     {
       "id": "cultivationPill",
       "name": "Tiểu Tu Vi Đan",
-      "description": "Dùng nhận 50 tu vi. Mỗi lần mua, giá tăng 25 linh thạch.",
+      "description": "Dùng nhận 50 tu vi. Giá cố định, giới hạn 10 viên mỗi ngày.",
       "cost": 50,
       "type": "cultivation",
       "cultivation": 50,
-      "priceStep": 25
+      "priceStep": 0
     },
     {
       "id": "greaterCultivationPill",
       "name": "Trung Tu Vi Đan",
-      "description": "Dùng nhận 150 tu vi. Mỗi lần mua, giá tăng 20 linh thạch. Yêu cầu đại cảnh giới 2.",
+      "description": "Dùng nhận 150 tu vi. Giá cố định, giới hạn 10 viên mỗi ngày. Yêu cầu đại cảnh giới 2.",
       "cost": 130,
       "type": "cultivation",
       "cultivation": 150,
       "requiredMajorRealmIndex": 1,
-      "priceStep": 20
+      "priceStep": 0
     },
     {
       "id": "highestCultivationPill",
       "name": "Cao Tu Vi Đan",
-      "description": "Dùng nhận 500 tu vi. Mỗi lần mua, giá tăng 15 linh thạch. Yêu cầu Khí Động cảnh.",
+      "description": "Dùng nhận 500 tu vi. Giá cố định, giới hạn 10 viên mỗi ngày. Yêu cầu Khí Động cảnh.",
       "cost": 450,
       "type": "cultivation",
       "cultivation": 500,
       "requiredMajorRealmIndex": 2,
-      "priceStep": 15
+      "priceStep": 0
     },
     {
       "id": "majorAscensionPermit",
@@ -134,7 +161,7 @@
       "type": "potion",
       "potionType": "health",
       "recoveryPercent": 0.25,
-      "priceIncreaseEvery": 5,
+      "priceIncreaseEvery": 1,
       "priceStep": 5
     },
     {
@@ -145,7 +172,7 @@
       "type": "potion",
       "potionType": "mana",
       "recoveryPercent": 0.25,
-      "priceIncreaseEvery": 5,
+      "priceIncreaseEvery": 1,
       "priceStep": 5
     }
   ]

@@ -77,6 +77,7 @@
           <button id="questButton" class="secondary compact" type="button"><i class="game-icon icon-scroll" aria-hidden="true"></i><span>Nhiệm vụ</span><b class="nav-badge" id="questBadge" hidden aria-hidden="true"></b></button>
           <button id="equipmentButton" class="secondary compact" type="button"><i class="game-icon icon-sword" aria-hidden="true"></i><span>Trang bị</span><b class="nav-badge" id="equipmentBadge" hidden aria-hidden="true"></b></button>
           <button id="inventoryButton" class="secondary compact" type="button"><i class="item-icon icon-item-side-pouch" aria-hidden="true"></i><span>Túi đồ</span></button>
+          <button id="petButton" class="secondary compact" type="button"><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i><span>Linh thú</span></button>
           <button id="shopButton" class="secondary compact" type="button"><i class="game-icon icon-shop" aria-hidden="true"></i><span>Cửa hàng</span></button>
           <button id="trialTowerButton" class="secondary compact" type="button"><i class="game-icon icon-tower" aria-hidden="true"></i><span>Tháp thí luyện</span></button>
           <button id="resourceDungeonButton" class="secondary compact" type="button"><i class="game-icon icon-mountain" aria-hidden="true"></i><span>Phụ bản</span><b class="nav-badge" id="resourceDungeonBadge" hidden aria-hidden="true"></b></button>
@@ -295,6 +296,13 @@
             <option value="common">Phàm phẩm</option>
             <option value="uncommon">Linh phẩm</option>
             <option value="rare">Địa phẩm</option>
+            <option value="epic">Huyền phẩm</option>
+            <option value="legendary">Thiên phẩm</option>
+            <option value="immortal">Tiên phẩm</option>
+            <option value="sacred">Thánh phẩm</option>
+            <option value="divine">Thần phẩm</option>
+            <option value="emperor">Đế phẩm</option>
+            <option value="chaos">Hỗn Độn phẩm</option>
           </select>
           <select id="equipmentSort" aria-label="Sắp xếp trang bị">
             <option value="power">Mạnh nhất</option>
@@ -376,6 +384,9 @@
           <span id="enemyHudRealm">Thối Thể cảnh Nhị tầng</span>
         </div>
       </header>
+      <div class="battle-effect-layer" id="battleEffectLayer" aria-hidden="true">
+        <div class="battle-skill-effect is-hidden" id="battleSkillEffect"></div>
+      </div>
       <section class="arena">
         <article class="fighter player" id="playerCard">
           <div class="realm" id="playerRealmText">Thối Thể cảnh Nhị tầng</div>

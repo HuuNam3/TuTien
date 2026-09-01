@@ -375,7 +375,7 @@
       "id": "lifeSteal",
       "name": "Hấp huyết",
       "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
-      "valueRange": [0.01, 0.1],
+      "valueRange": [0.01, 0.05],
       "descriptionTemplate": "Hấp huyết {value} sát thương gây ra",
       "power": 1000
     },
@@ -383,7 +383,7 @@
       "id": "armorPierce",
       "name": "Phá giáp",
       "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
-      "valueRange": [0.01, 0.1],
+      "valueRange": [0.01, 0.05],
       "descriptionTemplate": "Bỏ qua {value} phòng ngự mục tiêu",
       "power": 1000
     },
@@ -391,7 +391,7 @@
       "id": "spiritStoneBonus",
       "name": "Tầm bảo",
       "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
-      "valueRange": [0.01, 0.1],
+      "valueRange": [0.01, 0.05],
       "descriptionTemplate": "Linh thạch rớt tăng {value}",
       "power": 1000
     },
@@ -399,7 +399,7 @@
       "id": "damageReduction",
       "name": "Hộ thể",
       "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
-      "valueRange": [0.01, 0.1],
+      "valueRange": [0.01, 0.05],
       "descriptionTemplate": "Giảm {value} sát thương nhận vào",
       "power": 1000
     },
@@ -407,7 +407,7 @@
       "id": "maxHpPercent",
       "name": "Cường thân",
       "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
-      "valueRange": [0.01, 0.1],
+      "valueRange": [0.01, 0.05],
       "descriptionTemplate": "Tăng {value} sinh lực tối đa",
       "power": 1000
     },
@@ -415,7 +415,7 @@
       "id": "maxManaPercent",
       "name": "Tụ linh",
       "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
-      "valueRange": [0.01, 0.1],
+      "valueRange": [0.01, 0.05],
       "descriptionTemplate": "Tăng {value} linh lực tối đa",
       "power": 1000
     },
@@ -423,7 +423,7 @@
       "id": "dodgeRate",
       "name": "Thân pháp",
       "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
-      "valueRange": [0.01, 0.1],
+      "valueRange": [0.01, 0.05],
       "descriptionTemplate": "Tăng {value} né tránh",
       "power": 1000
     },
@@ -431,7 +431,7 @@
       "id": "critDamage",
       "name": "Liệt kích",
       "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
-      "valueRange": [0.1, 0.2],
+      "valueRange": [0.05, 0.1],
       "descriptionTemplate": "Tăng {value} sát thương chí mạng",
       "power": 100
     },
@@ -439,23 +439,15 @@
       "id": "defensePercent",
       "name": "Tăng thủ",
       "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
-      "valueRange": [0.01, 0.1],
+      "valueRange": [0.01, 0.05],
       "descriptionTemplate": "Tăng {value} phòng ngự",
-      "power": 1000
-    },
-    {
-      "id": "reflectDamage",
-      "name": "Phản chấn",
-      "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
-      "valueRange": [0.01, 0.1],
-      "descriptionTemplate": "Phản lại {value} sát thương nhận vào",
       "power": 1000
     },
     {
       "id": "attackPercent",
       "name": "Tăng tấn công",
       "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
-      "valueRange": [0.01, 0.1],
+      "valueRange": [0.01, 0.05],
       "descriptionTemplate": "Tăng {value} công kích",
       "power": 1000
     }

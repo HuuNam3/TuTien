@@ -42,9 +42,7 @@
     },
     "manaRegenPerTurn": 3,
     "combatPowerPerLevel": 20,
-    "combatPowerPerMilestone": 10,
-    "initialCooldown": 2,
-    "initialCooldownPerMajorRealm": 1
+    "combatPowerPerMilestone": 10
   },
   "practice": {
     "baseRequired": 100,

@@ -14,6 +14,14 @@
     "wanderHighEnemyRequiredWins": 10,
     "wanderBossRequiredWins": 30,
     "wanderSkipEnemyRequiresBoss": true,
+    "equipmentChestDailyPurchaseLimit": 20,
+    "dailyShopPurchaseLimits": {
+      "enhancementStone": 30,
+      "skillChest": 10,
+      "cultivation": 10,
+      "healthPotion": 10,
+      "manaPotion": 10
+    },
     "cultivationRewardMultiplier": 1,
     "wanderRewardBase": {
       "cultivation": [10, 30],

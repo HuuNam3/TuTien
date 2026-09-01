@@ -1,6 +1,7 @@
 {
   "version": 9,
   "title": "Nhiệm vụ",
+  "dailyRewardFormula": { "cultivationDivisor": 100, "cultivationBonus": 30, "cultivationRounding": "nearestTen" },
   "quests": [
     {
       "id": "cultivation-milestones",
@@ -94,12 +95,34 @@
       }
     },
     {
+      "id": "trial-tower-main-milestones",
+      "category": "main",
+      "title": "Con đường thử luyện",
+      "description": "Vượt qua Tháp thí luyện tầng {target}.",
+      "objective": {
+        "type": "trialTowerWins",
+        "milestones": [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 50],
+        "label": "Tầng đã vượt",
+        "rewardFormula": {
+          "spiritStonesBase": 100,
+          "spiritStonesPerMilestone": 30,
+          "enhancementStonesBase": 1,
+          "enhancementStonesEvery": 3,
+          "enhancementStonesPerStep": 1
+        }
+      },
+      "reward": {
+        "spiritStones": 100,
+        "enhancementStones": 1
+      }
+    },
+    {
       "id": "daily-wander-wins",
       "category": "daily",
       "title": "Săn yêu trừ ma",
       "description": "Đánh bại 3 đối thủ trong Ngao du hôm nay.",
       "objective": { "type": "dailyWanderWins", "target": 3, "label": "Thắng hôm nay" },
-      "reward": { "cultivation": 35, "spiritStones": 45 }
+       "reward": { "spiritStones": 50 }
     },
     {
       "id": "daily-wander-rewards",
@@ -107,7 +130,7 @@
       "title": "Thu hoạch cơ duyên",
       "description": "Nhận phần thưởng Ngao du 5 lần hôm nay.",
       "objective": { "type": "dailyWanderRewards", "target": 5, "label": "Nhận thưởng hôm nay" },
-      "reward": { "cultivation": 30, "spiritStones": 55 }
+       "reward": { "spiritStones": 75 }
     },
     {
       "id": "daily-resource-dungeon-wins",
@@ -115,7 +138,7 @@
       "title": "Chinh phục phụ bản",
       "description": "Đánh thắng phụ bản 3 lần hôm nay.",
       "objective": { "type": "dailyResourceDungeonWins", "target": 3, "label": "Thắng phụ bản hôm nay" },
-      "reward": { "cultivation": 60, "spiritStones": 80, "enhancementStones": 1 }
+       "reward": { "spiritStones": 100, "enhancementStones": 1 }
     },
     {
       "id": "wander-reward-milestones",

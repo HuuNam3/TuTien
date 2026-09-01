@@ -4194,6 +4194,7 @@ li {
 
 .battle-panel .skill-status {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 6px;
@@ -4211,7 +4212,51 @@ li {
   grid-template-columns: repeat(3, 28px);
   justify-content: center;
   gap: 6px;
-  width: 100%;
+  width: auto;
+}
+
+.battle-panel .battle-buff-icons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3px;
+  width: auto;
+  padding-top: 2px;
+  border-top: 1px solid rgba(112, 129, 151, 0.32);
+}
+
+.battle-panel .battle-buff-icon-wrap {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(111, 213, 167, 0.65);
+  border-radius: 4px;
+  background: rgba(25, 74, 62, 0.52);
+}
+
+.battle-panel .battle-buff-icon {
+  width: 17px;
+  height: 17px;
+  filter: none;
+}
+
+.battle-panel .battle-buff-remaining {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  display: grid;
+  place-items: center;
+  min-width: 11px;
+  height: 11px;
+  padding: 0 1px;
+  border: 1px solid #0b1118;
+  border-radius: 6px;
+  background: #2f9d79;
+  color: #f4f7fb;
+  font-size: 8px;
+  line-height: 1;
 }
 
 .battle-panel .skill-status-icon-wrap {
@@ -5970,6 +6015,10 @@ button:disabled {
   border-top: 3px solid #bf8fff;
 }
 
+.resource-dungeon-card.chest {
+  border-top: 3px solid #f2a65a;
+}
+
 .resource-dungeon-card.is-locked,
 .resource-dungeon-card.is-exhausted {
   opacity: 0.62;
@@ -6015,6 +6064,7 @@ button:disabled {
 
 .spirit-stone .resource-dungeon-icon { color: #70d6e8; }
 .enhancement .resource-dungeon-icon { color: #bf8fff; }
+.chest .resource-dungeon-icon { color: #f2a65a; }
 
 .resource-dungeon-card p {
   min-height: 32px;
@@ -6042,6 +6092,7 @@ button:disabled {
 
 .spirit-stone .resource-dungeon-reward strong { color: #70d6e8; }
 .enhancement .resource-dungeon-reward strong { color: #bf8fff; }
+.chest .resource-dungeon-reward strong { color: #f2a65a; }
 
 .resource-dungeon-attempts strong {
   color: #e7edf5;
@@ -6063,6 +6114,7 @@ button:disabled {
 
 .spirit-stone .resource-dungeon-progress i { background: #70d6e8; }
 .enhancement .resource-dungeon-progress i { background: #bf8fff; }
+.chest .resource-dungeon-progress i { background: #f2a65a; }
 
 .resource-dungeon-card button {
   width: 100%;
@@ -6478,7 +6530,7 @@ strong > .activity-icon,
   font-size: 13px;
   letter-spacing: 0;
   text-shadow: 0 1px 5px #061018;
-  animation: skill-name-float 1200ms ease forwards;
+  animation: skill-name-float 800ms ease forwards;
 }
 
 .float-text.dodge {
@@ -6769,6 +6821,13 @@ button.breakthrough:not(:disabled) {
   to { opacity: 0; transform: translate(-50%, -12px) scale(1); }
 }
 
+@keyframes battle-sword-sheet-pop {
+  0% { opacity: 0; transform: scale(0.78); }
+  16% { opacity: 1; transform: scale(0.92); }
+  74% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.04); }
+}
+
 @keyframes progress-glow {
   from { background-position: 0% 0; }
   to { background-position: 200% 0; }
@@ -6838,8 +6897,38 @@ button.breakthrough:not(:disabled) {
 
 /* Compact landscape battle HUD for mobile: only identity, realm, turn and live bars remain. */
 .battle-panel {
+  position: relative;
   padding: 7px;
   overflow: hidden;
+}
+
+.battle-effect-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.battle-skill-effect {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  width: 160px;
+  height: 160px;
+  background-image: url('/assets/Art/Sprites/Effects/chibi-sword-slash-sheet.png');
+  background-repeat: no-repeat;
+  background-size: 400% 300%;
+  background-position: 0% 0%;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  filter: drop-shadow(0 0 8px rgba(72, 201, 255, 0.72));
+}
+
+.battle-skill-effect.is-playing {
+  visibility: visible;
+  animation: battle-sword-sheet-pop 800ms cubic-bezier(0.2, 0.72, 0.24, 1) both;
 }
 
 .battle-hud {
@@ -7504,6 +7593,19 @@ body {
   border-color: rgba(239, 190, 92, 0.82);
   background: rgba(38, 30, 20, 0.96);
   color: #ffe5a4;
+}
+
+.feature-access-notice .toast-power-increase,
+.feature-access-notice .toast-power-decrease {
+  font-weight: 900;
+}
+
+.feature-access-notice .toast-power-increase {
+  color: #86f0c8;
+}
+
+.feature-access-notice .toast-power-decrease {
+  color: #ff9287;
 }
 
 .toast-reward-list {
