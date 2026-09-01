@@ -76,6 +76,81 @@
       ]
     },
     {
+      "id": "equipmentTier6Chest",
+      "name": "Rương trang bị cấp 6",
+      "description": "Mở ra 1 trang bị cấp 25–30 theo tỉ lệ phẩm chất của đại cảnh giới tương ứng.",
+      "cost": 600,
+      "type": "equipmentChest",
+      "equipmentChestTier": 6,
+      "equipmentMajorRealmId": 6,
+      "rarityQualityMax": 3,
+      "rarityWeights": [
+        79,
+        20,
+        1
+      ]
+    },
+    {
+      "id": "equipmentTier7Chest",
+      "name": "Rương trang bị cấp 7",
+      "description": "Mở ra 1 trang bị cấp 30–35 theo tỉ lệ phẩm chất của đại cảnh giới tương ứng.",
+      "cost": 700,
+      "type": "equipmentChest",
+      "equipmentChestTier": 7,
+      "equipmentMajorRealmId": 7,
+      "rarityQualityMax": 3,
+      "rarityWeights": [
+        79,
+        20,
+        1
+      ]
+    },
+    {
+      "id": "equipmentTier8Chest",
+      "name": "Rương trang bị cấp 8",
+      "description": "Mở ra 1 trang bị cấp 35–40 theo tỉ lệ phẩm chất của đại cảnh giới tương ứng.",
+      "cost": 800,
+      "type": "equipmentChest",
+      "equipmentChestTier": 8,
+      "equipmentMajorRealmId": 8,
+      "rarityQualityMax": 3,
+      "rarityWeights": [
+        79,
+        20,
+        1
+      ]
+    },
+    {
+      "id": "equipmentTier9Chest",
+      "name": "Rương trang bị cấp 9",
+      "description": "Mở ra 1 trang bị cấp 40–45 theo tỉ lệ phẩm chất của đại cảnh giới tương ứng.",
+      "cost": 900,
+      "type": "equipmentChest",
+      "equipmentChestTier": 9,
+      "equipmentMajorRealmId": 9,
+      "rarityQualityMax": 3,
+      "rarityWeights": [
+        79,
+        20,
+        1
+      ]
+    },
+    {
+      "id": "equipmentTier10Chest",
+      "name": "Rương trang bị cấp 10",
+      "description": "Mở ra 1 trang bị cấp 45–50 theo tỉ lệ phẩm chất của đại cảnh giới tương ứng.",
+      "cost": 1000,
+      "type": "equipmentChest",
+      "equipmentChestTier": 10,
+      "equipmentMajorRealmId": 10,
+      "rarityQualityMax": 3,
+      "rarityWeights": [
+        79,
+        20,
+        1
+      ]
+    },
+    {
       "id": "enhancementStone",
       "name": "Đá Cường Hóa",
       "description": "Nguyên liệu dùng ở mỗi cấp cường hóa.",

@@ -459,6 +459,198 @@
           0
         ]
       }
+    },
+    {
+      "id": "celestialStarSea",
+      "name": "Thiên Tinh Cổ Hải",
+      "tierRange": [
+        71,
+        75
+      ],
+      "equipmentChestTier": 5,
+      "description": "Cổ hải trôi giữa tinh quang, nơi những dị thú thượng giới tuần tra trên từng con sóng đạo vận.",
+      "enemyPoolIds": [
+        "azure_cloud_dragon",
+        "moon_shadow_assassin",
+        "lantern_fairy",
+        "celestial_lion_guardian",
+        "frost_crystal_qilin",
+        "thunder_abyss_ape"
+      ],
+      "rewardSettings": {
+        "cultivationMultiplier": 3.8,
+        "spiritStoneBonus": 70,
+        "equipmentRarityBonus": 0.26,
+        "equipmentDropChance": 0.25,
+        "equipmentQualityMax": 5,
+        "equipmentQualityWeights": [
+          65,
+          25,
+          8,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "id": "nineNetherThunderAbyss",
+      "name": "Cửu U Lôi Uyên",
+      "tierRange": [
+        76,
+        80
+      ],
+      "equipmentChestTier": 6,
+      "description": "Lôi uyên Cửu U vang tiếng sấm không dứt, từng tia điện đều ẩn chứa sát cơ của cổ thú.",
+      "enemyPoolIds": [
+        "crimson_nine_tail",
+        "star_sword_wraith",
+        "starforge_construct",
+        "ancient_mushroom_sage",
+        "jade_scale_serpent",
+        "void_mist_fiend"
+      ],
+      "rewardSettings": {
+        "cultivationMultiplier": 4,
+        "spiritStoneBonus": 75,
+        "equipmentRarityBonus": 0.28,
+        "equipmentDropChance": 0.25,
+        "equipmentQualityMax": 5,
+        "equipmentQualityWeights": [
+          65,
+          25,
+          8,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "id": "myriadFormDivineDomain",
+      "name": "Vạn Tượng Thần Vực",
+      "tierRange": [
+        81,
+        85
+      ],
+      "equipmentChestTier": 6,
+      "description": "Thần vực Vạn Tượng biến hóa theo từng nhịp thở, nơi mọi đạo pháp đều có thể hóa thành hình thú.",
+      "enemyPoolIds": [
+        "ancient_mushroom_sage",
+        "jade_scale_serpent",
+        "void_mist_fiend",
+        "heavenlight_warden",
+        "scarlet_phoenix_demon",
+        "astral_whale_spirit"
+      ],
+      "rewardSettings": {
+        "cultivationMultiplier": 4.2,
+        "spiritStoneBonus": 80,
+        "equipmentRarityBonus": 0.3,
+        "equipmentDropChance": 0.25,
+        "equipmentQualityMax": 5,
+        "equipmentQualityWeights": [
+          65,
+          25,
+          8,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "id": "voidStarGate",
+      "name": "Thái Hư Tinh Môn",
+      "tierRange": [
+        86,
+        90
+      ],
+      "equipmentChestTier": 6,
+      "description": "Tinh môn mở giữa Thái Hư, triệu hồi những hộ vệ canh đường và kiếm hồn lang thang.",
+      "enemyPoolIds": [
+        "heavenlight_warden",
+        "scarlet_phoenix_demon",
+        "astral_whale_spirit",
+        "black_moon_void_knight",
+        "azure_thunder_dragonling",
+        "celestial_clockwork_sentinel"
+      ],
+      "rewardSettings": {
+        "cultivationMultiplier": 4.4,
+        "spiritStoneBonus": 85,
+        "equipmentRarityBonus": 0.32,
+        "equipmentDropChance": 0.25,
+        "equipmentQualityMax": 5,
+        "equipmentQualityWeights": [
+          65,
+          25,
+          8,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "id": "chaosEmperorRealm",
+      "name": "Hỗn Độn Vương Giới",
+      "tierRange": [
+        91,
+        95
+      ],
+      "equipmentChestTier": 7,
+      "description": "Vương giới hỗn độn đảo lộn phương hướng, các cổ thú và cơ vệ tranh nhau bảo vệ đạo nguyên.",
+      "enemyPoolIds": [
+        "black_moon_void_knight",
+        "azure_thunder_dragonling",
+        "celestial_clockwork_sentinel",
+        "moon_lotus_mystic",
+        "obsidian_mountain_fiend",
+        "star_eater_imp"
+      ],
+      "rewardSettings": {
+        "cultivationMultiplier": 4.6,
+        "spiritStoneBonus": 90,
+        "equipmentRarityBonus": 0.34,
+        "equipmentDropChance": 0.25,
+        "equipmentQualityMax": 5,
+        "equipmentQualityWeights": [
+          65,
+          25,
+          8,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "id": "creationHeavenRuin",
+      "name": "Sáng Thế Thiên Khư",
+      "tierRange": [
+        96,
+        100
+      ],
+      "equipmentChestTier": 7,
+      "description": "Thiên khư sót lại từ buổi sơ khai, nơi những sinh linh nuốt tinh thần giữ cánh cửa cuối cùng.",
+      "enemyPoolIds": [
+        "moon_lotus_mystic",
+        "obsidian_mountain_fiend",
+        "star_eater_imp",
+        "celestial_lion_guardian",
+        "frost_crystal_qilin",
+        "thunder_abyss_ape"
+      ],
+      "rewardSettings": {
+        "cultivationMultiplier": 4.8,
+        "spiritStoneBonus": 95,
+        "equipmentRarityBonus": 0.36,
+        "equipmentDropChance": 0.25,
+        "equipmentQualityMax": 5,
+        "equipmentQualityWeights": [
+          65,
+          25,
+          8,
+          2,
+          0
+        ]
+      }
     }
   ]
 }

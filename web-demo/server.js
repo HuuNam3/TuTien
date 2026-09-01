@@ -6,6 +6,21 @@ const port = Number(process.env.PORT || 4173);
 const root = __dirname;
 const projectRoot = path.resolve(__dirname, '..');
 const assetRoot = path.join(projectRoot, 'assets');
+
+function loadLocalEnvironment() {
+  const envPath = path.join(projectRoot, '.env.local');
+  if (!fs.existsSync(envPath)) return;
+  const content = fs.readFileSync(envPath, 'utf8');
+  content.split(/\r?\n/).forEach((line) => {
+    const match = line.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$/);
+    if (!match || process.env[match[1]]) return;
+    const value = match[2].replace(/^(['"])(.*)\1$/, '$2');
+    process.env[match[1]] = value;
+  });
+}
+
+loadLocalEnvironment();
+
 const gameStateHandler = require('../api/game-state');
 const authHandler = require('../api/auth');
 const types = {
