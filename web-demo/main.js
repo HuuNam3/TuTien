@@ -1766,6 +1766,7 @@ function getNextCombinedQuestMilestone(quest) {
 }
 
 function getCombinedQuestMetric(milestone) {
+  if (milestone?.kind === 'map') return getUnlockedWanderMapCount();
   return milestone?.kind === 'major' ? playerMajorRealmIndex : getPlayerCultivationTier();
 }
 
@@ -1919,6 +1920,7 @@ function getQuestDescription(quest, progress) {
       const toRealm = majorRealmNames[milestone.target] || 'đại cảnh giới tiếp theo';
       return `Đột phá ${fromRealm} → ${toRealm}.`;
     }
+    if (milestone?.kind === 'map') return milestone.description || `Mở khóa map ${milestone.mapName || 'mới'}.`;
     return `Đạt tu vi ${getTierRealmText(milestone?.target || 1)}.`;
   }
   if (objective.type === 'cultivationTier') {
@@ -1935,6 +1937,11 @@ function formatQuestReward(reward = {}) {
   const parts = [];
   if (Number(reward.cultivation) > 0) parts.push(`<i class="stat-icon icon-stat-cultivation" aria-hidden="true"></i>Tu vi +${formatGameNumber(reward.cultivation)}`);
   if (Number(reward.spiritStones) > 0) parts.push(`<i class="item-icon icon-item-spirit-stone" aria-hidden="true"></i>Linh thạch +${formatGameNumber(reward.spiritStones)}`);
+  if (Number(reward.equipmentChests) > 0) parts.push(`<i class="activity-icon icon-activity-chest" aria-hidden="true"></i>Rương trang bị cấp ${formatGameNumber(reward.equipmentChestTier)} x${formatGameNumber(reward.equipmentChests)}`);
+  if (Number(reward.skillChests) > 0) {
+    const skillChest = shopItems.find((item) => item.id === reward.skillChestId);
+    parts.push(`<i class="activity-icon icon-activity-chest" aria-hidden="true"></i>${skillChest?.name || 'Rương skill'} x${formatGameNumber(reward.skillChests)}`);
+  }
   if (Number(reward.enhancementStones) > 0) parts.push(`<i class="item-icon icon-item-enhancement-stone" aria-hidden="true"></i>Đá cường hóa +${formatGameNumber(reward.enhancementStones)}`);
   if (Number(reward.skillBooks) > 0) parts.push(`<i class="item-icon icon-item-skill-book" aria-hidden="true"></i>Sách skill +${formatGameNumber(reward.skillBooks)}`);
   if (Number(reward.foundation) > 0) parts.push(`<i class="stat-icon icon-stat-gem" aria-hidden="true"></i>Căn cơ +${formatGameNumber(reward.foundation)}`);
@@ -2076,6 +2083,13 @@ function claimQuest(questId) {
   claimedQuestIds.add(progress.instanceId);
   addPlayerCultivation(reward.cultivation);
   playerSpiritStones += Math.max(0, Math.floor(Number(reward.spiritStones) || 0));
+  const equipmentChestCount = Math.max(0, Math.floor(Number(reward.equipmentChests) || 0));
+  const equipmentChestTier = Math.max(1, Math.floor(Number(reward.equipmentChestTier) || 1));
+  for (let index = 0; index < equipmentChestCount; index += 1) {
+    addEquipmentChest({ majorRealmIndex: playerMajorRealmIndex }, { chestTier: equipmentChestTier });
+  }
+  const skillChestCount = Math.max(0, Math.floor(Number(reward.skillChests) || 0));
+  if (skillChestCount > 0 && reward.skillChestId) addShopInventoryItem(reward.skillChestId, skillChestCount);
   enhancementStones += Math.max(0, Math.floor(Number(reward.enhancementStones) || 0));
   const skillBookReward = Math.max(0, Math.floor(Number(reward.skillBooks) || 0));
   const skillBookTarget = skillTrainingId || learnedSkillIds[0];
@@ -4023,6 +4037,10 @@ function isWanderMapUnlocked(map) {
   return Boolean(previousMap && wanderBossDefeatedByMap[previousMap.id]);
 }
 
+function getUnlockedWanderMapCount() {
+  return wanderMapList.filter((map) => isWanderMapUnlocked(map)).length;
+}
+
 function getWanderMapUnlockText(map) {
   const mapIndex = wanderMapList.findIndex((entry) => entry.id === map?.id);
   if (mapIndex <= 0) return 'Đã mở';
@@ -4263,15 +4281,13 @@ function claimWanderChest() {
   hideWanderChestOverlay();
   const rewards = wanderChestRewards.filter((reward) => reward.type !== 'foundation');
   wanderChestRewards = [];
-  const appliedRewards = rewards.map((reward) => applyWanderChoice(reward)).filter(Boolean);
+  rewards.forEach((reward) => applyWanderChoice(reward));
   const preview = groupWanderChestRewards(rewards)
     .slice(0, 3)
     .map((reward) => formatWanderRewardPreview(reward))
     .join(' | ');
   setSubtitle(`Đã mở ${rewards.length} phần thưởng: ${preview}.`);
-  showGameToast(`Đã mở Rương Ngao du, nhận ${rewards.length} phần thưởng.`, 'success', appliedRewards
-    .map((reward) => ({ iconClass: reward.iconClass || 'activity-icon icon-activity-chest', label: reward.message }))
-    .slice(0, 6));
+  showGameToast('Đã nhận phần thưởng trong Rương Ngao du.', 'success');
   renderCultivation();
   renderEquipment();
   renderInventory();
