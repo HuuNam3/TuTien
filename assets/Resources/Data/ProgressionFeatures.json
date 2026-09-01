@@ -77,18 +77,6 @@
       "coreMultiplier": 0.1,
       "normalMultiplier": 0.002,
       "critDamage": 0.02
-    },
-    "equipmentRequiredTierByRarity": {
-      "common": 1,
-      "uncommon": 4,
-      "rare": 8,
-      "epic": 13,
-      "legendary": 18,
-      "immortal": 23,
-      "sacred": 28,
-      "divine": 33,
-      "emperor": 38,
-      "chaos": 43
     }
   },
   "resourceDungeonEntryRequiredTier": 12,

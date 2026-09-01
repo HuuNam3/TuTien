@@ -1149,6 +1149,15 @@ function getSkillMultiplier(skill, level = getSkillLevel(skill.id)) {
   return (Number(skill.multiplier) || 1) + Math.max(0, level) * perLevel;
 }
 
+function getSkillManaCost(skill, level = getSkillLevel(skill?.id)) {
+  if (!skill) return 0;
+  const baseCost = Math.max(0, Number(skill.cost) || 0);
+  const perLevelByGrade = cultivationSkillData.upgrade?.manaCostPerLevelByGrade || {};
+  const perLevel = Math.max(0, Number(perLevelByGrade[skill.gradeId]
+    ?? cultivationSkillData.upgrade?.manaCostPerLevel) || 0);
+  return Math.max(0, Math.round(baseCost + Math.max(0, Number(level) || 0) * perLevel));
+}
+
 function getSkillCombatPower(skill, level = getSkillLevel(skill.id)) {
   if (!skill) return 0;
   if (Number.isFinite(Number(skill.combatPowerValue))) return Math.max(0, Math.round(Number(skill.combatPowerValue)));
@@ -1248,7 +1257,7 @@ function createSkillRuntime(skill) {
     id: skill.id,
     name: skill.name,
     level,
-    cost: Math.max(0, Number(skill.cost) || 0),
+    cost: getSkillManaCost(skill, level),
     multiplier: getSkillMultiplier(skill, level),
     cooldown,
     cooldownRemaining: cooldown,
@@ -3418,6 +3427,7 @@ function loadSavedGame() {
 function normalizeSavedItem(item) {
   if (!item || !equipmentTemplates[item.slotId] || !rarityData[item.rarityKey]) return null;
   const itemLevel = Number(item.level) || 1;
+  const normalizedItemLevel = clamp(itemLevel, 1, maxEquipmentLevel);
   const stats = item.stats
     ? Object.fromEntries(Object.entries(item.stats).filter(([stat]) => stat !== 'blockReduction'))
     : createEquipmentStats(item.slotId, Number(item.level) || 1, item.rarityKey);
@@ -3425,11 +3435,11 @@ function normalizeSavedItem(item) {
   return {
     id: Number(item.id) || equipmentIdSeed++,
     slotId: item.slotId,
-    name: item.name || pickRandom(getEquipmentNamePool(item.slotId, itemLevel)),
+    name: item.name || pickRandom(getEquipmentNamePool(item.slotId, normalizedItemLevel)),
     rarityKey: item.rarityKey,
-    level: clamp(itemLevel, 1, maxEquipmentLevel),
+    level: normalizedItemLevel,
     requiredLevel: clamp(Number(item.requiredLevel) || itemLevel, 1, playerMaxMinorLevel),
-    requiredTier: Math.max(1, Number(item.requiredTier) || getEquipmentRequiredTier(item.rarityKey, itemLevel)),
+    requiredTier: getEquipmentRequiredTier(item.rarityKey, normalizedItemLevel),
     sourceChestTier: Math.max(0, Number(item.sourceChestTier) || 0),
     enhancementLevel: Math.min(
       getEquipmentEnhancementQualityMax(item),
@@ -5650,7 +5660,12 @@ function enemyTurn() {
 }
 
 function regenerateBattleMana(fighter) {
-  const amount = Math.max(0, Number(cultivationSkillData.upgrade?.manaRegenPerTurn) || 0);
+  const upgrade = cultivationSkillData.upgrade || {};
+  const baseAmount = Math.max(0, Number(upgrade.manaRegenPerTurn) || 0);
+  const realmInterval = Math.max(1, Math.floor(Number(upgrade.manaRegenIncreaseEveryMajorRealms) || 1));
+  const increaseAmount = Math.max(0, Number(upgrade.manaRegenIncreaseAmount) || 0);
+  const majorRealmIndex = Math.max(0, Math.floor(Number(fighter?.majorRealmIndex) || 0));
+  const amount = baseAmount + Math.floor(majorRealmIndex / realmInterval) * increaseAmount;
   if (!amount || fighter.mana >= fighter.maxMana) return 0;
   const recovered = Math.min(amount, fighter.maxMana - fighter.mana);
   fighter.mana += recovered;
@@ -6403,14 +6418,15 @@ function getCurrentRealmText() {
 
 function createEquipmentItem(slotId, level, rarityKey, options = {}) {
   const stats = options.stats || createEquipmentStats(slotId, level, rarityKey);
+  const normalizedItemLevel = clamp(Number(level) || 1, 1, maxEquipmentLevel);
   return {
     id: equipmentIdSeed++,
     slotId,
     name: options.name || pickRandom(getEquipmentNamePool(slotId, level)),
     rarityKey,
-    level,
-    requiredLevel: Math.min(level, playerMaxMinorLevel),
-    requiredTier: Math.max(1, Number(options.requiredTier) || getEquipmentRequiredTier(rarityKey, level)),
+    level: normalizedItemLevel,
+    requiredLevel: Math.min(normalizedItemLevel, playerMaxMinorLevel),
+    requiredTier: getEquipmentRequiredTier(rarityKey, normalizedItemLevel),
     enhancementLevel: 0,
     stats,
     baseStats: options.baseStats || { ...stats },
@@ -6420,14 +6436,15 @@ function createEquipmentItem(slotId, level, rarityKey, options = {}) {
 
 function createEquipmentLikeItem(slotId, level, rarityKey) {
   const stats = createEquipmentStats(slotId, level, rarityKey);
+  const normalizedItemLevel = clamp(Number(level) || 1, 1, maxEquipmentLevel);
   return {
     id: 0,
     slotId,
     name: pickRandom(getEquipmentNamePool(slotId, level)),
     rarityKey,
-    level,
-    requiredLevel: Math.min(level, playerMaxMinorLevel),
-    requiredTier: getEquipmentRequiredTier(rarityKey, level),
+    level: normalizedItemLevel,
+    requiredLevel: Math.min(normalizedItemLevel, playerMaxMinorLevel),
+    requiredTier: getEquipmentRequiredTier(rarityKey, normalizedItemLevel),
     enhancementLevel: 0,
     stats,
     baseStats: { ...stats },
@@ -7529,7 +7546,7 @@ function renderSkills() {
     return `
       <div class="feature-item grade-${skill.gradeId || 'mortal'} ${active ? 'active' : ''}">
         <strong class="skill-title"><i class="${getSkillItemIconMarkupClass(skill.id)}" aria-hidden="true"></i><span class="skill-name">${skill.name}</span><small class="skill-grade">${getSkillGradeName(skill)}</small><span class="skill-level">+${level}</span><span class="skill-power">LC ${formatGameNumber(skillPower)}</span></strong>
-        <small class="skill-mana-cost"><i class="stat-icon icon-stat-mana" aria-hidden="true"></i>Linh lực cần ${formatGameNumber(skill.cost)}</small>
+        <small class="skill-mana-cost"><i class="stat-icon icon-stat-mana" aria-hidden="true"></i>Linh lực cần ${formatGameNumber(getSkillManaCost(skill, level))}</small>
         <small class="skill-effect-line">${formatSkillDisplayNote(skill, level)}</small>
         <div class="skill-practice-label"><span>Tu luyện ${practice}/${level >= maxLevel ? 'Tối đa' : practiceRequired}</span><strong>${level >= maxLevel ? 'Đã viên mãn' : `${practicePercent}%`}</strong></div>
         <div class="skill-practice-bar"><i style="width: ${practicePercent}%"></i></div>
@@ -7670,12 +7687,13 @@ function getEquipmentEnhancementQualityMax(item) {
 }
 
 function getEquipmentRequiredTier(rarityKey, itemLevel = 1) {
-  const configured = progressionFeatures.enhancement.equipmentRequiredTierByRarity?.[rarityKey];
-  return Math.max(1, Number(configured) || Number(itemLevel) || 1);
+  const qualityIndex = Math.max(0, equipmentQualityOrder.indexOf(rarityKey));
+  const level = Math.max(1, Math.floor(Number(itemLevel) || 1));
+  return level + qualityIndex;
 }
 
 function canEquipEquipment(item) {
-  return getPlayerCultivationTier() >= (Number(item.requiredTier) || getEquipmentRequiredTier(item.rarityKey, item.level));
+  return getPlayerCultivationTier() >= getEquipmentRequiredTier(item.rarityKey, item.level);
 }
 
 function getCultivationEnhancementLimit() {
@@ -8116,7 +8134,7 @@ function getShopItemDetailLines(item) {
     const skill = cultivationSkills.find((entry) => entry.id === item.skillId);
     if (skill) {
       lines.push(`${getSkillGradeName(skill)} · Cấp 0 · LC ${formatGameNumber(getSkillCombatPower(skill, 0))}.`);
-      lines.push(`Linh lực cần ${formatGameNumber(skill.cost)}.`);
+      lines.push(`Linh lực cần ${formatGameNumber(getSkillManaCost(skill, 0))}.`);
       lines.push(formatSkillDisplayNote(skill, 0));
     }
   }
@@ -8409,7 +8427,7 @@ function renderEquipment() {
         <div class="inventory-item ${rarityData[item.rarityKey].className}">
           ${renderEquipmentSummary(item)}
            <button type="button" ${locked ? 'disabled' : ''} onclick="equipItem(${item.id})">
-             ${locked ? `Cần ${getTierRealmText(item.requiredTier)}` : 'Mặc'}
+             ${locked ? `Cần ${getTierRealmText(getEquipmentRequiredTier(item.rarityKey, item.level))}` : 'Mặc'}
            </button>
            <button type="button" class="secondary" ${equipped ? 'disabled title="Không thể bán trang bị đang mặc"' : ''} onclick="sellItem(${item.id})">
              ${equipped ? 'Đang mặc' : `Bán ${formatGameNumber(getEquipmentSellPrice(item))}`}
@@ -8872,7 +8890,7 @@ function renderEquipmentSummary(item, options = {}) {
         ${options.showSlotName === false ? '' : `<strong><i class="${iconType} ${iconClass}" aria-hidden="true"></i>${getSlotName(item.slotId)}</strong>`}
         <strong><i class="${iconType} ${iconClass}" aria-hidden="true"></i>${getRarityName(item)} ${item.name}</strong>
     <em>Cấp trang bị ${formatGameNumber(item.level)} | Cường hóa +${enhancementLevel}/${enhancementMax}</em>
-    <em>Lực chiến +${formatGameNumber(getItemPower(item))} | Yêu cầu ${getTierRealmText(item.requiredTier || getEquipmentRequiredTier(item.rarityKey, item.level))}</em>
+    <em>Lực chiến +${formatGameNumber(getItemPower(item))} | Yêu cầu ${getTierRealmText(getEquipmentRequiredTier(item.rarityKey, item.level))}</em>
     ${formatItemStats(item.stats) ? `<small class="item-stat-list">${formatItemStats(item.stats)}</small>` : ''}
     ${renderEquipmentSpecials(item.specialLines)}
   `;

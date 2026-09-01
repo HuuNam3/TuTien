@@ -40,7 +40,16 @@
         "heaven": 4
       }
     },
-    "manaRegenPerTurn": 3,
+    "manaRegenPerTurn": 1,
+    "manaRegenIncreaseEveryMajorRealms": 2,
+    "manaRegenIncreaseAmount": 1,
+    "manaCostPerLevelByGrade": {
+      "mortal": 1,
+      "yellow": 2,
+      "mysterious": 3,
+      "earth": 4,
+      "heaven": 5
+    },
     "combatPowerPerLevel": 20,
     "combatPowerPerMilestone": 10
   },
