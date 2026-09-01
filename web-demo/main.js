@@ -4400,8 +4400,15 @@ function normalizeWanderDefeatedEnemyIds(ids = []) {
 function normalizeWanderMapFlags(flags = {}) {
   return Object.fromEntries(Object.keys(wanderMaps).map((mapId) => [
     mapId,
-    Boolean(flags?.[mapId]),
+    normalizeBooleanFlag(flags?.[mapId]),
   ]));
+}
+
+function normalizeBooleanFlag(value) {
+  if (typeof value === 'string') {
+    return ['true', '1', 'yes'].includes(value.trim().toLowerCase());
+  }
+  return Boolean(value);
 }
 
 function createWanderBossStage(map = getCurrentWanderMap()) {
