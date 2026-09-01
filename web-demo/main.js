@@ -2114,6 +2114,7 @@ function createTrialTowerStage(floorNumber) {
   const majorIndex = Number(floor.realmMajorIndex) || 0;
   const realmLevel = Number(floor.realmLevel) || 1;
   const towerTier = Math.max(1, Number(floor.equipmentLevel) || Number(floor.floor) + 9);
+  const visualSource = stageEnemyData[(Math.max(1, Number(floor.floor) || 1) - 1) % Math.max(1, stageEnemyData.length)] || {};
   return {
     id: `trial-tower-${floor.floor}`,
     title: floor.title || `Tầng ${floor.floor}`,
@@ -2130,6 +2131,11 @@ function createTrialTowerStage(floorNumber) {
       id: guardian.id || `trial-guardian-${floor.floor}`,
       name: guardian.name || `Thủ vệ tầng ${floor.floor}`,
       type: guardian.type || 'Tu sĩ',
+      visual: {
+        image: guardian.visual?.image || visualSource.visual?.image || '',
+        position: guardian.visual?.position || visualSource.visual?.position || 'center',
+        size: guardian.visual?.size || visualSource.visual?.size || '300% 300%',
+      },
       rank: Number(floor.rankLevel) >= 4 ? 'king' : Number(floor.rankLevel) === 3 ? 'leader' : 'elite',
       skillName: guardian.skillName || 'Võ kỹ thủ hộ',
       description: guardian.description || '',
@@ -4055,6 +4061,7 @@ function renderWanderStart(enoughHealth) {
         <span><i class="stat-icon icon-stat-cultivation" aria-hidden="true"></i>Tu vi</span>
         <span><i class="item-icon icon-item-spirit-stone" aria-hidden="true"></i>Linh thạch</span>
         <span><i class="activity-icon icon-activity-chest" aria-hidden="true"></i>Rương trang bị cấp ${chestTier}</span>
+        <span><i class="activity-icon icon-activity-chest" aria-hidden="true"></i>${getWanderSkillChestName(map)}</span>
         <span><i class="item-icon icon-item-health-pill" aria-hidden="true"></i>Sinh Huyết Đan</span>
         <span><i class="item-icon icon-item-mana-flame" aria-hidden="true"></i>Tụ Linh Đan</span>
         <span><i class="item-icon icon-item-enhancement-stone" aria-hidden="true"></i>Đá cường hóa</span>
@@ -4239,6 +4246,7 @@ function createWanderReward(map = getCurrentWanderMap()) {
   if (type === 'cultivation') return createWanderCultivationChoice(map);
   if (type === 'spiritStone') return createWanderSpiritStoneChoice(map);
   if (['healthPotion', 'manaPotion', 'enhancementStone'].includes(type)) return createWanderConsumableChoice(type, map);
+  if (type === 'skillChest') return createWanderSkillChestChoice(map) || createWanderChestChoice(map);
   return createWanderChestChoice(map);
 }
 
@@ -4255,13 +4263,15 @@ function claimWanderChest() {
   hideWanderChestOverlay();
   const rewards = wanderChestRewards.filter((reward) => reward.type !== 'foundation');
   wanderChestRewards = [];
-  rewards.forEach((reward) => applyWanderChoice(reward));
+  const appliedRewards = rewards.map((reward) => applyWanderChoice(reward)).filter(Boolean);
   const preview = groupWanderChestRewards(rewards)
     .slice(0, 3)
     .map((reward) => formatWanderRewardPreview(reward))
     .join(' | ');
   setSubtitle(`Đã mở ${rewards.length} phần thưởng: ${preview}.`);
-  showGameToast(`Đã mở Rương Ngao du, nhận ${rewards.length} phần thưởng.`, 'success');
+  showGameToast(`Đã mở Rương Ngao du, nhận ${rewards.length} phần thưởng.`, 'success', appliedRewards
+    .map((reward) => ({ iconClass: reward.iconClass || 'activity-icon icon-activity-chest', label: reward.message }))
+    .slice(0, 6));
   renderCultivation();
   renderEquipment();
   renderInventory();
@@ -4469,6 +4479,7 @@ function getWanderRewardTypeWeights() {
     { type: 'healthPotion', weight: Math.max(0, Number(weights.healthPotion) || 0) },
     { type: 'manaPotion', weight: Math.max(0, Number(weights.manaPotion) || 0) },
     { type: 'enhancementStone', weight: Math.max(0, Number(weights.enhancementStone) || 0) },
+    { type: 'skillChest', weight: Math.max(0, Number(weights.skillChest) || 0) },
   ];
 }
 
@@ -4571,6 +4582,39 @@ function createWanderChestChoice(map = getCurrentWanderMap()) {
     detail: `Cất vào Túi đồ | ${majorRealmNames[majorRealmIndex] || 'Đại cảnh giới hiện tại'} · trang bị cấp ${minLevel}-${maxLevel}.`,
     majorRealmIndex,
     chestTier,
+  };
+}
+
+function getWanderMapNumber(map = getCurrentWanderMap()) {
+  const mapIndex = wanderMapList.findIndex((entry) => entry.id === map?.id);
+  if (mapIndex >= 0) return mapIndex + 1;
+  const minTier = Math.max(1, Math.floor(Number(map?.minEnemyTier) || 1));
+  return Math.max(1, Math.floor((minTier - 1) / 5) + 1);
+}
+
+function getWanderSkillChestShopItem(map = getCurrentWanderMap()) {
+  const mapNumber = getWanderMapNumber(map);
+  const itemId = mapNumber <= 5
+    ? 'skillChestMortal'
+    : mapNumber <= 10
+    ? 'skillChestYellow'
+    : 'skillChestMysterious';
+  return shopItems.find((item) => item.id === itemId) || null;
+}
+
+function getWanderSkillChestName(map = getCurrentWanderMap()) {
+  return getWanderSkillChestShopItem(map)?.name || 'Rương skill';
+}
+
+function createWanderSkillChestChoice(map = getCurrentWanderMap()) {
+  const shopItem = getWanderSkillChestShopItem(map);
+  if (!shopItem) return null;
+  return {
+    type: 'skillChest',
+    title: shopItem.name,
+    detail: 'Cất vào Túi đồ | Mở rương có 90% nhận mảnh skill và 10% nhận sách skill.',
+    amount: 1,
+    shopItemId: shopItem.id,
   };
 }
 
@@ -4685,6 +4729,7 @@ function applyWanderChoice(choice) {
     return {
       title: 'Đã hấp thu linh khí',
       message: gained > 0 ? `Nhận ${formatGameNumber(gained)} tu vi.` : 'Tu vi đã chạm ngưỡng, tu vi dư chuyển vào Đan điền.',
+      iconClass: 'stat-icon icon-stat-cultivation',
     };
   }
 
@@ -4693,6 +4738,7 @@ function applyWanderChoice(choice) {
     return {
       title: 'Đã nhặt linh thạch',
       message: `Nhận ${formatGameNumber(choice.amount)} linh thạch.`,
+      iconClass: 'item-icon icon-item-spirit-stone',
     };
   }
 
@@ -4703,6 +4749,9 @@ function applyWanderChoice(choice) {
     return {
       title: `Đã nhận ${choice.title}`,
       message: `Nhận ${formatGameNumber(amount)} ${choice.title}.`,
+      iconClass: choice.type === 'healthPotion'
+        ? 'item-icon icon-item-health-pill'
+        : 'item-icon icon-item-mana-flame',
     };
   }
 
@@ -4712,16 +4761,31 @@ function applyWanderChoice(choice) {
     return {
       title: 'Đã nhận Đá cường hóa',
       message: `Nhận ${formatGameNumber(amount)} Đá cường hóa.`,
+      iconClass: 'item-icon icon-item-enhancement-stone',
     };
   }
 
   if (choice.type === 'foundation') return null;
+
+  if (choice.type === 'skillChest') {
+    const shopItem = shopItems.find((item) => item.id === choice.shopItemId);
+    if (!shopItem) return null;
+    const amount = Math.max(1, Math.floor(Number(choice.amount) || 1));
+    addShopInventoryItem(shopItem.id, amount);
+    return {
+      title: 'Đã cất rương skill vào Túi đồ',
+      message: `${shopItem.name} x${amount}.`,
+      detail: 'Khi mở: 90% nhận mảnh skill, 10% nhận sách skill.',
+      iconClass: 'activity-icon icon-activity-chest',
+    };
+  }
 
   const chest = addEquipmentChest({ majorRealmIndex: choice.majorRealmIndex }, { chestTier: choice.chestTier });
   return {
     title: 'Đã cất rương vào Túi đồ',
     message: `${chest.name} đã được chuyển vào Túi đồ.`,
     detail: `Rương sẽ tạo một trang bị trong khoảng cấp ${getChestLevelRange(chest).join('-')} khi mở.`,
+    iconClass: 'activity-icon icon-activity-chest',
   };
 }
 

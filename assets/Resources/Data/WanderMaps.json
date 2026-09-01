@@ -88,7 +88,7 @@
         11,
         15
       ],
-      "equipmentChestTier": 2,
+      "equipmentChestTier": 1,
       "description": "Hang sâu nhiều linh khí, kẻ thù mạnh hơn và có trang bị tốt hơn.",
       "enemyPoolIds": [
         "poison_vine_spirit",
@@ -148,7 +148,7 @@
         21,
         25
       ],
-      "equipmentChestTier": 3,
+      "equipmentChestTier": 2,
       "description": "Núi cao quanh năm vang sấm, nơi tu sĩ Chân Nguyên tranh đoạt linh mạch giữa lôi quang.",
       "enemyPoolIds": [
         "yin_flame_spirit",
@@ -179,7 +179,7 @@
         26,
         30
       ],
-      "equipmentChestTier": 3,
+      "equipmentChestTier": 2,
       "description": "Hoang nguyên cổ xưa ngập tràn đạo vận, mỗi bước chân đều có thể đánh thức di thú viễn cổ.",
       "enemyPoolIds": [
         "spirit_mine_keeper",
@@ -211,7 +211,7 @@
         31,
         35
       ],
-      "equipmentChestTier": 4,
+      "equipmentChestTier": 3,
       "description": "Vực sâu phủ tro đỏ, nơi linh lực biến thành sát khí trong từng cơn gió.",
       "enemyPoolIds": [
         "mud_corpse",
@@ -243,7 +243,7 @@
         36,
         40
       ],
-      "equipmentChestTier": 4,
+      "equipmentChestTier": 3,
       "description": "Thiên quan sấm nổ quanh năm, mỗi đạo lôi quang đều thử thách đạo tâm.",
       "enemyPoolIds": [
         "red_mane_boar",
@@ -275,7 +275,7 @@
         41,
         45
       ],
-      "equipmentChestTier": 5,
+      "equipmentChestTier": 3,
       "description": "Băng nguyên huyền bí đóng băng cả linh mạch, chỉ kẻ đủ mạnh mới tiến được đến cuối đường.",
       "enemyPoolIds": [
         "crystal_shell_beast",
@@ -307,7 +307,7 @@
         46,
         50
       ],
-      "equipmentChestTier": 5,
+      "equipmentChestTier": 4,
       "description": "Vân hải chín tầng trời, nơi những kẻ sống sót sau cùng tranh đoạt cơ duyên thượng giới.",
       "enemyPoolIds": [
         "void_gate_guardian",
@@ -339,7 +339,7 @@
         51,
         55
       ],
-      "equipmentChestTier": 6,
+      "equipmentChestTier": 4,
       "description": "Cổ đạo dẫn lên thiên môn, nơi linh áp dày đặc và những hộ pháp viễn cổ thức tỉnh.",
       "enemyPoolIds": [
         "primordial_bone_dragon",
@@ -371,7 +371,7 @@
         56,
         60
       ],
-      "equipmentChestTier": 6,
+      "equipmentChestTier": 4,
       "description": "Thiên vực bị vạn lôi bao phủ, mỗi bước tiến đều là một lần tôi luyện thân hồn.",
       "enemyPoolIds": [
         "frost_moon_tiger",
@@ -403,7 +403,7 @@
         61,
         65
       ],
-      "equipmentChestTier": 7,
+      "equipmentChestTier": 5,
       "description": "Tinh hà trôi giữa hư không, nơi cổ thú và các hộ vệ lôi mạch tranh giữ đường vào thượng giới.",
       "enemyPoolIds": [
         "jade_serpent",
@@ -435,7 +435,7 @@
         66,
         70
       ],
-      "equipmentChestTier": 7,
+      "equipmentChestTier": 5,
       "description": "Thánh vực không có điểm cuối, nơi đạo vận hóa thành áp lực và mọi đối thủ đều giữ một phần thiên cơ.",
       "enemyPoolIds": [
         "azure_cloud_dragon",

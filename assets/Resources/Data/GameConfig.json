@@ -29,7 +29,8 @@
       "chest": 0.15,
       "healthPotion": 0.05,
       "manaPotion": 0.05,
-      "enhancementStone": 0.05
+      "enhancementStone": 0.04,
+      "skillChest": 0.01
     }
   },
   "dailyFarmLimit": 3,
