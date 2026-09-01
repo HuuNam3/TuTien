@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "maxStars": 10,
+  "feed": {
+    "pointsPerMeal": 10,
+    "pointsPerStar": 100
+  },
+  "starUpgrade": {
+    "spiritStoneBaseCost": 100,
+    "spiritStoneCostStep": 100
+  },
+  "rarities": [
+    {
+      "id": "mortal",
+      "name": "Phàm",
+      "statMultiplier": 1
+    },
+    {
+      "id": "yellow",
+      "name": "Linh",
+      "statMultiplier": 1.2
+    },
+    {
+      "id": "mysterious",
+      "name": "Huyền",
+      "statMultiplier": 1.5
+    },
+    {
+      "id": "earth",
+      "name": "Địa",
+      "statMultiplier": 1.9
+    },
+    {
+      "id": "heaven",
+      "name": "Thiên",
+      "statMultiplier": 2.4
+    }
+  ],
+  "pets": [
+    {
+      "id": "mist_ghost_pet",
+      "name": "U Hồn Tiểu Linh",
+      "type": "U hồn",
+      "rarity": "mortal",
+      "image": "/assets/Art/Sprites/pet/chibi-enemy-ghost.png",
+      "description": "Một linh thú hệ u hồn nhỏ bé, nhanh nhẹn và luôn lặng lẽ bảo vệ chủ nhân.",
+      "baseStats": {
+        "maxHp": 35,
+        "attack": 8,
+        "defense": 5,
+        "speed": 6
+      },
+      "skills": [
+        {
+          "id": "mist_guard",
+          "name": "U Vụ Hộ Thể",
+          "type": "Bị động",
+          "unlockStar": 0,
+          "description": "Khói u hồn bao quanh chủ nhân, tăng khả năng phòng thủ của linh thú."
+        },
+        {
+          "id": "soul_scream",
+          "name": "Hồn Khiếu",
+          "type": "Chủ động",
+          "unlockStar": 3,
+          "description": "Phóng thích tiếng gầm linh hồn, gây sát thương và làm chậm đối thủ."
+        }
+      ]
+    },
+    {
+      "id": "jade_spider_pet",
+      "name": "Bích Ngọc Tri Chu",
+      "type": "Yêu thú",
+      "rarity": "mortal",
+      "image": "/assets/Art/Sprites/pet/chibi-enemy-spider.png",
+      "description": "Tri chu nhỏ mang độc tính linh lực, thân thể mềm dẻo nhưng sức tấn công đáng gờm.",
+      "baseStats": {
+        "maxHp": 42,
+        "attack": 10,
+        "defense": 4,
+        "speed": 5
+      },
+      "skills": [
+        {
+          "id": "jade_web",
+          "name": "Bích Ngọc Võng",
+          "type": "Bị động",
+          "unlockStar": 0,
+          "description": "Tơ ngọc làm suy yếu đối thủ, tăng hiệu quả khống chế của linh thú."
+        },
+        {
+          "id": "venom_bite",
+          "name": "Độc Nha",
+          "type": "Chủ động",
+          "unlockStar": 3,
+          "description": "Cắn trúng mục tiêu và gây độc theo thời gian."
+        }
+      ]
+    }
+  ]
+}

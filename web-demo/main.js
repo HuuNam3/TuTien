@@ -19,6 +19,7 @@ const enemyStatsPath = '/assets/Resources/Data/EnemyStats.json';
 const enemySkillsPath = '/assets/Resources/Data/EnemySkills.json';
 const trialTowerPath = '/assets/Resources/Data/TrialTower.json';
 const questDataPath = '/assets/Resources/Data/Quests.json';
+const petDataPath = '/assets/Resources/Data/PetData.json';
 const enemySkillEffectSpritePath = '/assets/Art/Sprites/Effects/chibi-sword-slash-sheet.png';
 const battleSkillAnimationDuration = 800;
 const battleSkillDamageDelay = 600;
@@ -180,6 +181,7 @@ let combatStyles = {};
 let trialTowerData = { entryRequiredTier: 10, entryText: '', floors: [] };
 let enemySkillData = { defaultSkill: {}, skills: [], assignments: {} };
 let questData = { title: 'Nhiệm vụ', quests: [] };
+let petData = { maxStars: 5, feed: {}, starUpgrade: {}, pets: [] };
 
 let shopItems = [];
 let shopCategory = 'all';
@@ -273,6 +275,8 @@ let dailyShopPurchases = { date: getDailyKey(), counts: {} };
 let resourceDungeonProgress = {};
 let activeSkillId = '';
 let skillTrainingId = '';
+let selectedPetId = '';
+let petStates = {};
 let hasMajorAscensionPermit = false;
 let resettingGameData = false;
 let loadingTargetProgress = 1;
@@ -322,6 +326,7 @@ const trainingPanel = $('trainingPanel');
 const profilePanel = $('profilePanel');
 const equipmentPanel = $('equipmentPanel');
 const inventoryPanel = $('inventoryPanel');
+const petPanel = $('petPanel');
 const shopPanel = $('shopPanel');
 const battleResult = $('battleResult');
 const stageGrid = $('stageGrid');
@@ -412,6 +417,7 @@ const tabButtons = {
   training: trainingButton,
   equipment: equipmentButton,
   inventory: inventoryButton,
+  pets: petButton,
   shop: shopButton,
   enhancement: enhancementButton,
   resourceDungeon: resourceDungeonButton,
@@ -858,6 +864,9 @@ document.addEventListener('click', (event) => {
   if (target.dataset.inventoryUse) return useInventoryItem(target.dataset.inventoryUse);
   if (target.dataset.inventorySell) return sellInventoryItem(target.dataset.inventorySell);
   if (target.dataset.inventoryDetail) return openInventoryItemDetail(target.dataset.inventoryDetail);
+  if (target.dataset.petAction === 'select') return selectPet(target.dataset.petId);
+  if (target.dataset.petAction === 'feed') return feedSelectedPet();
+  if (target.dataset.petAction === 'star') return upgradeSelectedPetStar();
   if (target.dataset.skillAction === 'select') return selectSkillTraining(target.dataset.skillId);
   if (target.dataset.skillAction === 'equip') return toggleEquipSkill(target.dataset.skillId);
   if (target.dataset.skillAction === 'upgrade') return upgradeSkill(target.dataset.skillId);
@@ -1653,6 +1662,7 @@ function renderWanderAmbushOverlay(container, event) {
 
 function hideFeaturePanels() {
   inventoryPanel?.classList.add('is-hidden');
+  petPanel?.classList.add('is-hidden');
   enhancementPanel?.classList.add('is-hidden');
   resourceDungeonPanel?.classList.add('is-hidden');
   trialTowerPanel?.classList.add('is-hidden');
@@ -2443,6 +2453,10 @@ function showInventory() {
   prepareFeatureView(inventoryPanel, 'inventory', renderInventory);
 }
 
+function showPets() {
+  prepareFeatureView(petPanel, 'pets', renderPets);
+}
+
 function showShop() {
   if (busy) return;
   document.body.classList.remove('battle-active');
@@ -2585,6 +2599,7 @@ async function loadAllResources() {
     ['lối đánh', loadCombatStyles],
     ['Tháp thí luyện', loadTrialTowerData],
     ['nhiệm vụ', loadQuestData],
+    ['linh thú', loadPetData],
   ];
   let completedTasks = 0;
   await Promise.all(resourceTasks.map(async ([name, task]) => {
@@ -2752,6 +2767,22 @@ async function loadQuestData() {
     throw new Error('Quest data is incomplete.');
   }
   questData = data;
+}
+
+async function loadPetData() {
+  const response = await fetch(petDataPath);
+  if (!response.ok) throw new Error(`Cannot load pet data: ${response.status}`);
+  const data = await response.json();
+  if (!Array.isArray(data.pets) || data.pets.length === 0
+    || !Array.isArray(data.rarities) || data.rarities.length !== 5
+    || !data.feed || !data.starUpgrade) {
+    throw new Error('Pet data is incomplete.');
+  }
+  const rarityIds = new Set(data.rarities.map((rarity) => rarity.id));
+  if (data.pets.some((pet) => !rarityIds.has(pet.rarity))) {
+    throw new Error('Pet rarity data is incomplete.');
+  }
+  petData = data;
 }
 
 async function loadEquipmentData() {
@@ -3396,6 +3427,10 @@ function loadSavedGame() {
     dailyShopPurchases = normalizeDailyShopPurchases(data.dailyShopPurchases);
     resourceDungeonProgress = normalizeResourceDungeonProgress(data.resourceDungeonProgress);
     activeSkillId = data.activeSkillId || initialState.skillId;
+    selectedPetId = petData.pets.some((pet) => pet.id === data.selectedPetId)
+      ? data.selectedPetId
+      : '';
+    petStates = normalizePetStates(data.petStates);
     skillTrainingId = data.skillTrainingManual ? (data.skillTrainingId || '') : '';
     ensureActiveSkill();
     hasMajorAscensionPermit = false;
@@ -3428,6 +3463,19 @@ function loadSavedGame() {
     window.localStorage.removeItem(saveKey);
     return false;
   }
+}
+
+function normalizePetStates(states = {}) {
+  const maxStars = Math.max(0, Math.floor(Number(petData.maxStars) || 5));
+  const maxFeedPoints = Math.max(1, Math.floor(Number(petData.feed?.pointsPerStar) || 100));
+  if (!states || typeof states !== 'object') return {};
+  return Object.fromEntries(petData.pets.map((pet) => {
+    const state = states[pet.id] || {};
+    return [pet.id, {
+      stars: clamp(Math.floor(Number(state.stars) || 0), 0, maxStars),
+      feedPoints: clamp(Math.floor(Number(state.feedPoints) || 0), 0, maxFeedPoints),
+    }];
+  }).filter(([, state]) => state.stars > 0 || state.feedPoints > 0));
 }
 
 function normalizeSavedItem(item) {
@@ -3593,6 +3641,8 @@ function saveGame() {
     dailyShopPurchases: normalizeDailyShopPurchases(dailyShopPurchases),
     resourceDungeonProgress,
     activeSkillId,
+    selectedPetId,
+    petStates,
     hasMajorAscensionPermit: false,
     equipmentIdSeed,
     equipmentChestIdSeed,
@@ -8181,7 +8231,7 @@ function openShopItemDetail(itemId) {
         <small>${getShopItemPriceDetail(item)}</small>
       </div>
       <label class="shop-detail-quantity">Số lượng
-        <input id="shopDetailQuantity" type="number" min="1" max="${getShopItemQuantityLimit(item)}" value="1" ${canBuy ? '' : 'disabled'}>
+        <input id="shopDetailQuantity" type="number" min="1" max="${getShopItemQuantityLimit(item)}" placeholder="1" aria-label="Số lượng, mặc định 1" ${canBuy ? '' : 'disabled'}>
       </label>
       ${lockedText ? `<em class="shop-detail-lock">${lockedText}</em>` : ''}
       <strong id="shopDetailTotal" class="shop-detail-total">Tổng: ${formatGameNumber(getShopItemCost(item))} linh thạch</strong>
@@ -8193,8 +8243,10 @@ function openShopItemDetail(itemId) {
   const quantityInput = shopDetailOverlay.querySelector('#shopDetailQuantity');
   const totalText = shopDetailOverlay.querySelector('#shopDetailTotal');
   const updateTotal = () => {
-    const quantity = clamp(Math.floor(Number(quantityInput?.value) || 1), 1, getShopItemQuantityLimit(item));
-    if (quantityInput) quantityInput.value = quantity;
+    const rawQuantity = String(quantityInput?.value || '').trim();
+    const quantity = rawQuantity === ''
+      ? 1
+      : clamp(Math.floor(Number(rawQuantity) || 1), 1, getShopItemQuantityLimit(item));
     if (totalText) totalText.textContent = `Tổng: ${formatGameNumber(getShopPurchaseTotal(item, quantity))} linh thạch`;
     const buyButton = shopDetailOverlay.querySelector('.shop-detail-buy');
     if (buyButton && canBuy) buyButton.disabled = getShopPurchaseTotal(item, quantity) > playerSpiritStones;
@@ -8731,6 +8783,182 @@ function hideInventoryItemDetail() {
   inventoryDetailOverlay.classList.add('is-hidden');
   inventoryDetailOverlay.innerHTML = '';
   inventoryDetailOverlay.onclick = null;
+}
+
+function getPetById(petId) {
+  return petData.pets.find((pet) => pet.id === petId) || null;
+}
+
+function getPetState(petId) {
+  if (!petStates[petId]) petStates[petId] = { stars: 0, feedPoints: 0 };
+  return petStates[petId];
+}
+
+function getPetFeedRequirement() {
+  return Math.max(1, Math.floor(Number(petData.feed?.pointsPerStar) || 100));
+}
+
+function getPetStarCost(stars) {
+  const baseCost = Math.max(0, Math.floor(Number(petData.starUpgrade?.spiritStoneBaseCost) || 100));
+  const step = Math.max(0, Math.floor(Number(petData.starUpgrade?.spiritStoneCostStep) || 100));
+  return baseCost + Math.max(0, stars) * step;
+}
+
+function getPetRarity(pet) {
+  return petData.rarities.find((rarity) => rarity.id === pet?.rarity)
+    || petData.rarities[0]
+    || { id: 'mortal', name: 'Phàm', statMultiplier: 1 };
+}
+
+function getPetDisplayStats(pet, state) {
+  const rarityMultiplier = Math.max(0, Number(getPetRarity(pet).statMultiplier) || 1);
+  const multiplier = rarityMultiplier * (1 + state.stars * 0.1);
+  return Object.fromEntries(Object.entries(pet.baseStats || {}).map(([stat, value]) => [
+    stat,
+    Math.max(0, Math.round(Number(value) * multiplier)),
+  ]));
+}
+
+function getPetDisplayPower(stats) {
+  return Math.round(
+    (Number(stats.maxHp) || 0) * 0.25
+      + (Number(stats.attack) || 0) * 5
+      + (Number(stats.defense) || 0) * 3
+      + (Number(stats.speed) || 0) * 4,
+  );
+}
+
+function renderPetStats(stats) {
+  return Object.entries(stats).map(([stat, value]) => (
+    `<span class="pet-stat"><i class="${getStatIconClass(stat).startsWith('icon-unique-') ? 'unique-icon' : 'stat-icon'} ${getStatIconClass(stat)}" aria-hidden="true"></i><b>${getStatLabel(stat)}</b><strong>+${formatGameNumber(value)}</strong></span>`
+  )).join('');
+}
+
+function renderPetSkills(pet, stars) {
+  const skills = Array.isArray(pet.skills) ? pet.skills : [];
+  if (!skills.length) return '';
+  return `
+    <div class="pet-skill-section">
+      <h4><i class="activity-icon icon-activity-skill" aria-hidden="true"></i>Skill linh thú</h4>
+      <div class="pet-skill-list">
+        ${skills.map((skill) => {
+          const unlockStar = Math.max(0, Math.floor(Number(skill.unlockStar) || 0));
+          const unlocked = stars >= unlockStar;
+          return `
+            <div class="pet-skill${unlocked ? '' : ' is-locked'}">
+              <strong><i class="item-icon icon-item-skill-book" aria-hidden="true"></i>${skill.name}</strong>
+              <span>${skill.type || 'Kỹ năng'}${unlocked ? '' : ` · Mở ở ${unlockStar} sao`}</span>
+              <p>${skill.description || 'Chưa có mô tả.'}</p>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderPets() {
+  const selectedPet = getPetById(selectedPetId);
+  const selectedState = selectedPet ? getPetState(selectedPet.id) : null;
+  const feedRequirement = getPetFeedRequirement();
+  const maxStars = Math.max(0, Math.floor(Number(petData.maxStars) || 5));
+  $('petSummary').textContent = selectedPet
+    ? `${selectedPet.name} · Tư chất ${getPetRarity(selectedPet).name} · ${selectedState.stars} sao`
+    : 'Chưa chọn linh thú';
+
+  $('selectedPetView').innerHTML = selectedPet
+    ? (() => {
+      const stats = getPetDisplayStats(selectedPet, selectedState);
+      const starCost = getPetStarCost(selectedState.stars);
+      const atMaxStars = selectedState.stars >= maxStars;
+      const feedPercent = Math.min(100, Math.round((selectedState.feedPoints / feedRequirement) * 100));
+      return `
+        <div class="selected-pet">
+          <div class="pet-visual" style="background-image:url('${selectedPet.image}')" role="img" aria-label="${selectedPet.name}"></div>
+          <div class="selected-pet-details">
+            <span class="pet-type">${selectedPet.type || 'Linh thú'} · <b class="pet-quality pet-quality-${getPetRarity(selectedPet).id}">Tư chất ${getPetRarity(selectedPet).name}</b></span>
+            <h3>${selectedPet.name} <small class="pet-stars"><span class="pet-stars-first">${Array.from({ length: Math.min(5, maxStars) }, (_, index) => index < selectedState.stars ? '★' : '☆').join('')}</span><span class="pet-stars-second">${Array.from({ length: Math.max(0, maxStars - 5) }, (_, index) => index + 5 < selectedState.stars ? '★' : '☆').join('')}</span></small></h3>
+            <p>${selectedPet.description || ''}</p>
+            <div class="pet-stat-grid">${renderPetStats(stats)}</div>
+            <strong class="pet-power">Lực chiến linh thú: ${formatGameNumber(getPetDisplayPower(stats))}</strong>
+            ${renderPetSkills(selectedPet, selectedState.stars)}
+          </div>
+        </div>
+        <div class="pet-progress-heading"><span>Thân mật</span><strong>${selectedState.feedPoints}/${feedRequirement}</strong></div>
+        <div class="pet-progress"><i style="width:${feedPercent}%"></i></div>
+        <div class="pet-actions">
+          <button type="button" class="secondary compact" data-pet-action="feed"><i class="item-icon icon-item-health-pill" aria-hidden="true"></i>Cho ăn +10</button>
+          <button type="button" class="breakthrough compact" data-pet-action="star" ${atMaxStars ? 'disabled' : ''}><i class="unique-icon icon-unique-comprehension" aria-hidden="true"></i>${atMaxStars ? 'Đã tối đa sao' : `Tăng sao · ${formatGameNumber(starCost)} linh thạch`}</button>
+        </div>
+      `;
+    })()
+    : '<div class="pet-empty"><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i><strong>Chưa chọn linh thú</strong><span>Chọn một linh thú bên dưới để bắt đầu nuôi dưỡng.</span></div>';
+
+  $('petList').innerHTML = petData.pets.map((pet) => {
+    const state = getPetState(pet.id);
+    const selected = pet.id === selectedPetId;
+    return `
+      <article class="pet-card${selected ? ' is-selected' : ''}">
+        <div class="pet-card-visual" style="background-image:url('${pet.image}')" role="img" aria-label="${pet.name}"></div>
+        <div class="pet-card-copy"><strong>${pet.name}</strong><span>${pet.type || 'Linh thú'} · <b class="pet-quality pet-quality-${getPetRarity(pet).id}">Tư chất ${getPetRarity(pet).name}</b> · ${state.stars} sao</span></div>
+        <button type="button" class="${selected ? 'breakthrough' : 'secondary'} compact" data-pet-action="select" data-pet-id="${pet.id}">${selected ? 'Đang chọn' : 'Chọn'}</button>
+      </article>
+    `;
+  }).join('');
+}
+
+function selectPet(petId) {
+  if (busy || !getPetById(petId)) return;
+  selectedPetId = petId;
+  const pet = getPetById(petId);
+  renderPets();
+  showGameToast(`Đã chọn linh thú ${pet.name}.`, 'success');
+  saveGame();
+}
+
+function feedSelectedPet() {
+  if (busy || !selectedPetId) return;
+  const pet = getPetById(selectedPetId);
+  if (!pet) return;
+  const state = getPetState(pet.id);
+  const maxStars = Math.max(0, Math.floor(Number(petData.maxStars) || 5));
+  if (state.stars >= maxStars) {
+    showGameToast(`${pet.name} đã đạt tối đa sao.`, 'info');
+    return;
+  }
+  state.feedPoints = Math.min(getPetFeedRequirement(), state.feedPoints + Math.max(1, Number(petData.feed?.pointsPerMeal) || 10));
+  renderPets();
+  showGameToast(`Đã cho ${pet.name} ăn, thân mật +${Math.max(1, Number(petData.feed?.pointsPerMeal) || 10)}.`, 'success');
+  saveGame();
+}
+
+function upgradeSelectedPetStar() {
+  if (busy || !selectedPetId) return;
+  const pet = getPetById(selectedPetId);
+  if (!pet) return;
+  const state = getPetState(pet.id);
+  const maxStars = Math.max(0, Math.floor(Number(petData.maxStars) || 5));
+  const requirement = getPetFeedRequirement();
+  if (state.stars >= maxStars) {
+    showGameToast(`${pet.name} đã đạt tối đa sao.`, 'info');
+    return;
+  }
+  if (state.feedPoints < requirement) {
+    showGameToast(`Cần đủ ${requirement} điểm thân mật để tăng sao.`, 'error');
+    return;
+  }
+  const cost = getPetStarCost(state.stars);
+  if (playerSpiritStones < cost) {
+    showGameToast(`Không đủ linh thạch. Cần ${formatGameNumber(cost)} linh thạch.`, 'error');
+    return;
+  }
+  playerSpiritStones -= cost;
+  state.stars += 1;
+  state.feedPoints = 0;
+  renderPets();
+  renderCultivation();
+  showGameToast(`${pet.name} đã tăng lên ${state.stars} sao.`, 'success');
+  saveGame();
 }
 
 function renderInventory() {

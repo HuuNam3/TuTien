@@ -20,8 +20,8 @@
       "enhancementStone": 30,
       "skillChest": 10,
       "cultivation": 10,
-      "healthPotion": 10,
-      "manaPotion": 10
+      "healthPotion": 30,
+      "manaPotion": 30
     },
     "cultivationRewardMultiplier": 1,
     "wanderRewardBase": {
