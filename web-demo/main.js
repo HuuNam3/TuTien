@@ -7841,10 +7841,6 @@ function enhanceEquipment(itemId) {
     stat,
     getEnhancedStatValue(stat, value),
   ]));
-  item.specialLines = (item.specialLines || []).map((line) => ({
-    ...line,
-    value: getEnhancedStatValue(line.id, line.value),
-  }));
   const successMessage = `${item.name} đã cường hóa lên +${item.enhancementLevel}. Chỉ số và lực chiến đã tăng.`;
   $('enhancementMessage').textContent = successMessage;
   showGameToast(`Cường hóa thành công: ${item.name} lên +${item.enhancementLevel}.`, 'success');
