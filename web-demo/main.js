@@ -2541,7 +2541,7 @@ function finishResourceLoading(status = 'Sẵn sàng nhập đạo.') {
     resourceProgress.setAttribute('aria-valuenow', '100');
     loadingHideScheduled = true;
     resourceLoader.classList.add('is-hidden');
-  }, 1800);
+  }, 380);
 }
 
 function preloadImage(path) {
