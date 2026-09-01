@@ -2830,7 +2830,13 @@ async function loadEnemyData() {
   stageEnemyData = data.enemyPools.map(normalizeEnemyData);
   enemyRankData = data.rankStats || {};
   wanderMaps = Object.fromEntries(data.maps.map((map) => {
-    const defaults = wanderMapDefaults[map.id] || {};
+    const configuredDefaults = wanderMapDefaults[map.id] || {};
+    const defaults = map.id === 'novice' || !wanderMapDefaults.allOther?.enemyRankWeights
+      ? configuredDefaults
+      : {
+        ...configuredDefaults,
+        enemyRankWeights: wanderMapDefaults.allOther.enemyRankWeights,
+      };
     const [minEnemyTier, maxEnemyTier] = normalizeTierRange(map.tierRange, [1, playerMaxMinorLevel]);
     const equipmentChestTier = Math.max(
       1,
@@ -5118,16 +5124,9 @@ function fleeWanderEnemy(stage) {
   saveGame();
 }
 
-function getFleeChance(stage) {
-  const required = getCultivationRequiredForNextLevel();
-  const cultivationProgress = required > 0 ? Math.min(playerCultivation / required, 1) : 0;
-  const playerSnapshot = createFighter(playerName, playerLevel, true);
-  const enemySnapshot = createStageEnemy(stage);
-  const speedBase = Math.max(playerSnapshot.speed, enemySnapshot.speed, 1);
-  const speedAdvantage = (playerSnapshot.speed - enemySnapshot.speed) / speedBase;
-  const cultivationAdvantage = getPlayerCultivationTier() - getStageDifficulty(stage) + cultivationProgress;
-  const ambushPenalty = stage.isAmbush ? 0.08 : 0;
-  return clamp(0.5 + speedAdvantage * 0.36 + cultivationAdvantage * 0.035 - ambushPenalty, 0.05, 0.92);
+function getFleeChance() {
+  const configuredChance = Number(gameConfig.gameplay?.wanderFleeChance);
+  return Number.isFinite(configuredChance) ? clamp(configuredChance, 0, 1) : 0.8;
 }
 
 function selectStage(stage) {

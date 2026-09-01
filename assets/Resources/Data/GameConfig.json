@@ -10,6 +10,7 @@
     "playerMaxMinorLevel": 10,
     "wanderEventDelay": 10000,
     "wanderEnemyChance": 0.4,
+    "wanderFleeChance": 0.8,
     "wanderHighEnemyChance": 0.7,
     "wanderHighEnemyRequiredWins": 10,
     "wanderBossRequiredWins": 30,
@@ -124,9 +125,11 @@
       ],
       "enemyChance": 0.4,
       "enemyRankWeights": {
-        "1": 0.75,
-        "2": 0.2,
-        "3": 0.05
+        "1": 0.5,
+        "2": 0.25,
+        "3": 0.16,
+        "4": 0.06,
+        "5": 0.03
       }
     },
     "spiritCave": {
@@ -143,9 +146,11 @@
       ],
       "enemyChance": 0.4,
       "enemyRankWeights": {
-        "1": 0.75,
-        "2": 0.2,
-        "3": 0.05
+        "1": 0.5,
+        "2": 0.25,
+        "3": 0.16,
+        "4": 0.06,
+        "5": 0.03
       }
     },
     "hollowRealm": {
@@ -162,9 +167,11 @@
       ],
       "enemyChance": 0.4,
       "enemyRankWeights": {
-        "1": 0.75,
-        "2": 0.2,
-        "3": 0.05
+        "1": 0.5,
+        "2": 0.25,
+        "3": 0.16,
+        "4": 0.06,
+        "5": 0.03
       }
     },
     "thunderPeak": {
@@ -181,9 +188,11 @@
       ],
       "enemyChance": 0.4,
       "enemyRankWeights": {
-        "1": 0.75,
-        "2": 0.2,
-        "3": 0.05
+        "1": 0.5,
+        "2": 0.25,
+        "3": 0.16,
+        "4": 0.06,
+        "5": 0.03
       }
     },
     "primordialWastes": {
@@ -200,9 +209,11 @@
       ],
       "enemyChance": 0.4,
       "enemyRankWeights": {
-        "1": 0.75,
-        "2": 0.2,
-        "3": 0.05
+        "1": 0.5,
+        "2": 0.25,
+        "3": 0.16,
+        "4": 0.06,
+        "5": 0.03
       }
     },
     "ashenAbyss": {
@@ -217,9 +228,11 @@
       ],
       "enemyChance": 0.4,
       "enemyRankWeights": {
-        "1": 0.75,
-        "2": 0.2,
-        "3": 0.05
+        "1": 0.5,
+        "2": 0.25,
+        "3": 0.16,
+        "4": 0.06,
+        "5": 0.03
       }
     },
     "skyThunderPass": {
@@ -234,9 +247,11 @@
       ],
       "enemyChance": 0.4,
       "enemyRankWeights": {
-        "1": 0.75,
-        "2": 0.2,
-        "3": 0.05
+        "1": 0.5,
+        "2": 0.25,
+        "3": 0.16,
+        "4": 0.06,
+        "5": 0.03
       }
     },
     "frostMysticLand": {
@@ -251,9 +266,11 @@
       ],
       "enemyChance": 0.4,
       "enemyRankWeights": {
-        "1": 0.75,
-        "2": 0.2,
-        "3": 0.05
+        "1": 0.5,
+        "2": 0.25,
+        "3": 0.16,
+        "4": 0.06,
+        "5": 0.03
       }
     },
     "nineHeavenCloudSea": {
@@ -268,9 +285,20 @@
       ],
       "enemyChance": 0.4,
       "enemyRankWeights": {
-        "1": 0.75,
-        "2": 0.2,
-        "3": 0.05
+        "1": 0.5,
+        "2": 0.25,
+        "3": 0.16,
+        "4": 0.06,
+        "5": 0.03
+      }
+    },
+    "allOther": {
+      "enemyRankWeights": {
+        "1": 0.5,
+        "2": 0.25,
+        "3": 0.16,
+        "4": 0.06,
+        "5": 0.03
       }
     }
   }
