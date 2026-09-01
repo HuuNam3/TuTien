@@ -1755,7 +1755,9 @@ function getCombinedQuestInstanceId(quest, milestone) {
 }
 
 function isCombinedQuestMilestoneClaimed(quest, milestone) {
+  if (milestone.kind === 'map' && Number(milestone.target) > getUnlockedWanderMapCount()) return false;
   if (claimedQuestIds.has(getCombinedQuestInstanceId(quest, milestone))) return true;
+  if (milestone.kind === 'map' && claimedQuestIds.has(`explore-map-${milestone.target}`)) return true;
   if (milestone.kind === 'minor' && claimedQuestIds.has(`cultivation-milestones:${milestone.target}`)) return true;
   if (milestone.kind === 'major' && claimedQuestIds.has(`major-realm-milestones:${milestone.target}`)) return true;
   return false;
