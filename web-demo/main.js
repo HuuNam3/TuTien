@@ -2524,12 +2524,14 @@ loadAllResources()
   .then(async () => {
     const canStart = await prepareCloudSession();
     if (canStart) startGame();
+    hideResourceLoader();
   })
   .catch((error) => {
     console.error(error);
     finishResourceLoading('Không tải được tài nguyên.');
     setSubtitle('Không tải được dữ liệu tài nguyên.');
     stageGrid.innerHTML = '<div class="inventory-empty"><i class="activity-icon icon-activity-locked" aria-hidden="true"></i><span>Lỗi file tài nguyên, kiểm tra lại các file dữ liệu trong assets/Resources/Data.</span></div>';
+    hideResourceLoader();
   });
 
 function updateResourceLoading(progress, status) {
@@ -2555,25 +2557,22 @@ function animateResourceLoading() {
     return;
   }
   loadingAnimationFrame = 0;
-  if (loadingComplete && !loadingHideScheduled) {
-    loadingHideScheduled = true;
-    window.setTimeout(() => resourceLoader.classList.add('is-hidden'), 380);
-  }
 }
 
 function finishResourceLoading(status = 'Sẵn sàng nhập đạo.') {
   loadingComplete = true;
   updateResourceLoading(100, status);
-  window.setTimeout(() => {
-    if (!loadingComplete || resourceLoader.classList.contains('is-hidden')) return;
-    loadingTargetProgress = 100;
-    loadingShownProgress = 100;
-    resourceLoadingBar.style.width = '100%';
-    resourceLoadingPercent.textContent = '100%';
-    resourceProgress.setAttribute('aria-valuenow', '100');
-    loadingHideScheduled = true;
-    resourceLoader.classList.add('is-hidden');
-  }, 380);
+}
+
+function hideResourceLoader() {
+  if (!loadingComplete || resourceLoader.classList.contains('is-hidden')) return;
+  loadingTargetProgress = 100;
+  loadingShownProgress = 100;
+  resourceLoadingBar.style.width = '100%';
+  resourceLoadingPercent.textContent = '100%';
+  resourceProgress.setAttribute('aria-valuenow', '100');
+  loadingHideScheduled = true;
+  resourceLoader.classList.add('is-hidden');
 }
 
 function preloadImage(path) {
