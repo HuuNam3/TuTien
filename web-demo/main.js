@@ -9059,7 +9059,13 @@ function getEquipmentShopValue(item) {
 }
 
 function getEquipmentSellPrice(item) {
-  return Math.max(1, Math.floor(getEquipmentShopValue(item) / 4));
+  const basePrice = Math.max(1, Math.floor(getEquipmentShopValue(item) / 4));
+  const enhancementLevel = Math.max(0, Math.floor(Number(item?.enhancementLevel) || 0));
+  const bonusPerLevel = Math.max(
+    0,
+    Number(progressionFeatures.enhancement?.sellPricePerEnhancementLevel) || 15,
+  );
+  return Math.max(1, Math.floor(basePrice + enhancementLevel * bonusPerLevel));
 }
 
 function enforceEquipmentInventoryLimit() {
@@ -9102,8 +9108,11 @@ function sellItem(itemId) {
 
 function sellEquipmentByRarity(rarityKey = 'all') {
   if (busy) return;
+  const selectedRarityIndex = equipmentQualityOrder.indexOf(rarityKey);
   const sellable = inventory.filter((item) => (
-    (rarityKey === 'all' || item.rarityKey === rarityKey) && !isEquipmentEquipped(item)
+    (rarityKey === 'all'
+      || (selectedRarityIndex >= 0 && equipmentQualityOrder.indexOf(item.rarityKey) <= selectedRarityIndex))
+    && !isEquipmentEquipped(item)
   ));
   if (!sellable.length) {
     const rarityName = rarityKey === 'all' ? 'nào' : (rarityData[rarityKey]?.name || 'phẩm cấp này');
@@ -9111,7 +9120,9 @@ function sellEquipmentByRarity(rarityKey = 'all') {
     return;
   }
 
-  const rarityName = rarityKey === 'all' ? 'tất cả phẩm cấp' : (rarityData[rarityKey]?.name || rarityKey);
+  const rarityName = rarityKey === 'all'
+    ? 'tất cả phẩm cấp'
+    : `${rarityData[rarityKey]?.name || rarityKey} trở xuống`;
   if (!window.confirm(`Bán ${sellable.length} trang bị ${rarityName}? Trang bị đang mặc sẽ được giữ lại.`)) return;
 
   const sellableIds = new Set(sellable.map((item) => String(item.id)));

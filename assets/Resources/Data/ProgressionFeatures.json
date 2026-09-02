@@ -44,6 +44,7 @@
     },
     "cultivationLimitPerMajorRealm": 10,
     "stoneCostPerLevel": 1,
+    "sellPricePerEnhancementLevel": 15,
     "successRateBase": 1,
     "successRateLossPerLevel": 0.03,
     "successRateMinimum": 0.05,
