@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 11,
   "minorRealms": [
     "Nhất tầng",
     "Nhị tầng",
@@ -42,7 +42,7 @@
         "cultivationMultiplier": 1,
         "spiritStoneBonus": 0,
         "equipmentRarityBonus": -0.05,
-        "equipmentDropChance": 0.25,
+        "equipmentDropChance": 0.2,
         "equipmentQualityMax": 3,
         "equipmentQualityWeights": [
           85,
@@ -72,7 +72,7 @@
         "cultivationMultiplier": 1.2,
         "spiritStoneBonus": 5,
         "equipmentRarityBonus": 0,
-        "equipmentDropChance": 0.25,
+        "equipmentDropChance": 0.2,
         "equipmentQualityMax": 3,
         "equipmentQualityWeights": [
           82,
@@ -102,7 +102,7 @@
         "cultivationMultiplier": 1.4,
         "spiritStoneBonus": 10,
         "equipmentRarityBonus": 0.04,
-        "equipmentDropChance": 0.25,
+        "equipmentDropChance": 0.2,
         "equipmentQualityMax": 3,
         "equipmentQualityWeights": [
           79,
@@ -132,7 +132,7 @@
         "cultivationMultiplier": 1.6,
         "spiritStoneBonus": 15,
         "equipmentRarityBonus": 0.05,
-        "equipmentDropChance": 0.25,
+        "equipmentDropChance": 0.2,
         "equipmentQualityMax": 3,
         "equipmentQualityWeights": [
           73,
@@ -162,7 +162,7 @@
         "cultivationMultiplier": 1.8,
         "spiritStoneBonus": 20,
         "equipmentRarityBonus": 0.06,
-        "equipmentDropChance": 0.25,
+        "equipmentDropChance": 0.2,
         "equipmentQualityMax": 4,
         "equipmentQualityWeights": [
           70,
@@ -193,7 +193,7 @@
         "cultivationMultiplier": 2,
         "spiritStoneBonus": 25,
         "equipmentRarityBonus": 0.08,
-        "equipmentDropChance": 0.25,
+        "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
         "equipmentQualityWeights": [
           65,
@@ -225,7 +225,7 @@
         "cultivationMultiplier": 2.2,
         "spiritStoneBonus": 30,
         "equipmentRarityBonus": 0.1,
-        "equipmentDropChance": 0.25,
+        "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
         "equipmentQualityWeights": [
           65,
@@ -257,7 +257,7 @@
         "cultivationMultiplier": 2.4,
         "spiritStoneBonus": 35,
         "equipmentRarityBonus": 0.12,
-        "equipmentDropChance": 0.25,
+        "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
         "equipmentQualityWeights": [
           65,
@@ -289,7 +289,7 @@
         "cultivationMultiplier": 2.6,
         "spiritStoneBonus": 40,
         "equipmentRarityBonus": 0.14,
-        "equipmentDropChance": 0.25,
+        "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
         "equipmentQualityWeights": [
           65,
@@ -321,7 +321,7 @@
         "cultivationMultiplier": 2.8,
         "spiritStoneBonus": 45,
         "equipmentRarityBonus": 0.16,
-        "equipmentDropChance": 0.25,
+        "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
         "equipmentQualityWeights": [
           65,
@@ -353,7 +353,7 @@
         "cultivationMultiplier": 3,
         "spiritStoneBonus": 50,
         "equipmentRarityBonus": 0.18,
-        "equipmentDropChance": 0.25,
+        "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
         "equipmentQualityWeights": [
           65,
@@ -385,7 +385,7 @@
         "cultivationMultiplier": 3.2,
         "spiritStoneBonus": 55,
         "equipmentRarityBonus": 0.2,
-        "equipmentDropChance": 0.25,
+        "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
         "equipmentQualityWeights": [
           65,
@@ -417,7 +417,7 @@
         "cultivationMultiplier": 3.4,
         "spiritStoneBonus": 60,
         "equipmentRarityBonus": 0.22,
-        "equipmentDropChance": 0.25,
+        "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
         "equipmentQualityWeights": [
           65,
@@ -449,7 +449,7 @@
         "cultivationMultiplier": 3.6,
         "spiritStoneBonus": 65,
         "equipmentRarityBonus": 0.24,
-        "equipmentDropChance": 0.25,
+        "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
         "equipmentQualityWeights": [
           65,
@@ -481,7 +481,7 @@
         "cultivationMultiplier": 3.8,
         "spiritStoneBonus": 70,
         "equipmentRarityBonus": 0.26,
-        "equipmentDropChance": 0.25,
+        "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
         "equipmentQualityWeights": [
           65,
@@ -513,7 +513,7 @@
         "cultivationMultiplier": 4,
         "spiritStoneBonus": 75,
         "equipmentRarityBonus": 0.28,
-        "equipmentDropChance": 0.25,
+        "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
         "equipmentQualityWeights": [
           65,
@@ -545,7 +545,7 @@
         "cultivationMultiplier": 4.2,
         "spiritStoneBonus": 80,
         "equipmentRarityBonus": 0.3,
-        "equipmentDropChance": 0.25,
+        "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
         "equipmentQualityWeights": [
           65,
@@ -577,7 +577,7 @@
         "cultivationMultiplier": 4.4,
         "spiritStoneBonus": 85,
         "equipmentRarityBonus": 0.32,
-        "equipmentDropChance": 0.25,
+        "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
         "equipmentQualityWeights": [
           65,
@@ -609,7 +609,7 @@
         "cultivationMultiplier": 4.6,
         "spiritStoneBonus": 90,
         "equipmentRarityBonus": 0.34,
-        "equipmentDropChance": 0.25,
+        "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
         "equipmentQualityWeights": [
           65,
@@ -641,7 +641,7 @@
         "cultivationMultiplier": 4.8,
         "spiritStoneBonus": 95,
         "equipmentRarityBonus": 0.36,
-        "equipmentDropChance": 0.25,
+        "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
         "equipmentQualityWeights": [
           65,

@@ -45,7 +45,8 @@
   "dailyFarmLimit": 3,
   "runtime": {
     "ascensionPermitItemId": "majorAscensionPermit",
-    "wanderChestCapacity": 50,
+    "wanderChestCapacity": 30,
+    "wanderChestCapacityPerMajorRealm": 5,
     "offlineCapSeconds": 28800
   },
   "redeemCodes": {

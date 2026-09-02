@@ -156,14 +156,14 @@
       "schoolId": "sword_cultivator",
       "name": "Kiếm Vũ Lưu Tinh",
       "description": "Kiếm vũ liên hoàn, có cơ hội thi triển kỹ năng lần thứ hai.",
-      "note": "25% cơ hội thi triển lần 2, không tiêu hao thêm linh lực và không kích hoạt lặp lại trong cùng lượt; mỗi cấp tăng 1%.",
+      "note": "25% cơ hội thi triển lần 2, không tiêu hao thêm linh lực và không kích hoạt lặp lại trong cùng lượt; lần 2 giảm 25% sát thương; mỗi cấp tăng 1%.",
       "gradeId": "mysterious",
       "combatPower": 141,
       "requiredTier": 7,
       "multiplier": 1.5,
       "cost": 30,
       "cooldown": 3,
-      "effects": [{ "type": "extraCast", "chance": 0.25, "levelIncrease": 0.01, "levelIncreaseField": "chance" }]
+      "effects": [{ "type": "extraCast", "chance": 0.25, "levelIncrease": 0.01, "levelIncreaseField": "chance", "secondCastDamageMultiplier": 0.75 }]
     },
     {
       "id": "beginner_blade_art",

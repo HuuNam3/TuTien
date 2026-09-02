@@ -133,7 +133,7 @@
       "skillChestChance": 0.5,
       "skillChestGradeByFloor": [
         { "maxFloor": 10, "gradeId": "mortal" },
-        { "maxFloor": 20, "gradeId": "yellow" },
+        { "maxFloor": 15, "gradeId": "yellow" },
         { "maxFloor": 30, "gradeId": "mysterious" }
       ],
       "equipmentChestTierByFloor": [

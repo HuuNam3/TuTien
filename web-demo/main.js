@@ -247,6 +247,7 @@ let autoWanderRecoveryTimer = 0;
 let autoWanderAfterRecovery = false;
 let wanderChestRewards = [];
 let wanderChestCapacity = 0;
+let wanderChestCapacityPerMajorRealm = 0;
 let highEnemyEncounterChance = false;
 let skipEnemyEncounters = false;
 let wanderEventRollCount = 0;
@@ -2145,7 +2146,7 @@ function updateNotificationBadges() {
     .filter((quest) => !temporarilyDisabledQuestCategories.has(quest.category || 'side'))
     .filter(isQuestReady).length;
   const wanderReadyToStart = canEnterDungeon() && !busy && !currentWanderEvent;
-  const wanderChestFull = wanderChestCapacity > 0 && wanderChestRewards.length >= wanderChestCapacity;
+  const wanderChestFull = wanderChestRewards.length >= getWanderChestCapacity();
   const pendingWanderCount = Number(wanderReadyToStart || wanderChestFull);
   const trainingCount = Number(dantianCultivation > 0) + Number(canBreakthrough());
   const resourceSweepCount = (progressionFeatures.resourceDungeons || [])
@@ -2642,7 +2643,11 @@ async function loadDemoConfig() {
   wanderEventDelay = Number(gameConfig.gameplay.wanderEventDelay);
   cultivationRewardMultiplier = Math.max(0, Number(gameConfig.gameplay.cultivationRewardMultiplier ?? 1));
   questRewardGrowthMultiplier = Math.max(1, Number(gameConfig.gameplay.questRewardGrowthMultiplier ?? 1.3));
-  wanderChestCapacity = Number(gameConfig.runtime.wanderChestCapacity);
+  wanderChestCapacity = Math.max(1, Math.floor(Number(gameConfig.runtime.wanderChestCapacity) || 30));
+  wanderChestCapacityPerMajorRealm = Math.max(
+    0,
+    Math.floor(Number(gameConfig.runtime.wanderChestCapacityPerMajorRealm) || 0),
+  );
   offlineCapSeconds = Number(gameConfig.runtime.offlineCapSeconds);
   baseSaveKey = gameConfig.persistence.saveKey;
   setAccountSaveKey();
@@ -4206,15 +4211,21 @@ function renderWanderMapSelector(initialScrollLeft = 0) {
   });
 }
 
+function getWanderChestCapacity() {
+  const majorRealmIndex = Math.max(0, Math.floor(Number(playerMajorRealmIndex) || 0));
+  return Math.max(1, wanderChestCapacity + majorRealmIndex * wanderChestCapacityPerMajorRealm);
+}
+
 function renderWanderChestButton() {
   if (!wanderChestButton) return;
   const rewardCount = wanderChestRewards.length;
+  const capacity = getWanderChestCapacity();
   const blockedByEvent = Boolean(currentWanderEvent && ['enemy', 'ambush'].includes(currentWanderEvent.type));
   const hasRewards = rewardCount > 0;
   wanderChestButton.disabled = busy || !hasRewards || blockedByEvent;
   wanderChestButton.classList.toggle('has-rewards', hasRewards);
   wanderChestButton.title = hasRewards
-    ? `Rương Ngao du: ${rewardCount}/${wanderChestCapacity} phần thưởng`
+    ? `Rương Ngao du: ${rewardCount}/${capacity} phần thưởng`
     : 'Rương Ngao du đang trống';
   wanderChestButton.setAttribute('aria-label', wanderChestButton.title);
 }
@@ -4239,7 +4250,7 @@ function openWanderChest() {
     <div class="wander-event-modal wander-chest-modal" role="dialog" aria-modal="true" aria-label="Kho phần thưởng">
       <button type="button" class="icon-button wander-chest-close" title="Đóng" aria-label="Đóng"><i class="unique-icon icon-unique-close" aria-hidden="true"></i></button>
       <span><i class="activity-icon icon-activity-chest" aria-hidden="true"></i> Kho phần thưởng</span>
-      <em>${wanderChestRewards.length}/${wanderChestCapacity} phần thưởng đang chờ mở.</em>
+      <em>${wanderChestRewards.length}/${getWanderChestCapacity()} phần thưởng đang chờ mở.</em>
       <div class="wander-chest-reward-list">
         ${previewRewards.map((reward) => `
           <div class="wander-chest-reward">
@@ -4537,9 +4548,9 @@ function rollWanderEvent() {
     title: stored ? 'Đã nhận cơ duyên' : 'Rương Ngao du đã đầy',
     message: stored
       ? `Đã cất ${reward.title} vào Rương Ngao du.`
-      : `Phần thưởng mới bị bỏ qua vì Rương Ngao du đã đủ ${wanderChestCapacity} phần.`,
+      : `Phần thưởng mới bị bỏ qua vì Rương Ngao du đã đủ ${getWanderChestCapacity()} phần.`,
     detail: stored ? 'Mở Rương Ngao du để nhận phần thưởng.' : 'Hãy mở rương trước khi tiếp tục ngao du.',
-    autoContinue: stored && wanderChestRewards.length < wanderChestCapacity,
+    autoContinue: stored && wanderChestRewards.length < getWanderChestCapacity(),
   };
 }
 
@@ -4553,7 +4564,7 @@ function createWanderReward(map = getCurrentWanderMap()) {
 }
 
 function queueWanderReward(reward, map = getCurrentWanderMap()) {
-  if (wanderChestRewards.length >= wanderChestCapacity) return false;
+  if (wanderChestRewards.length >= getWanderChestCapacity()) return false;
   if (!reward || reward.type === 'foundation') return false;
   wanderChestRewards.push({ ...reward });
   renderWanderChestButton();
@@ -5934,7 +5945,16 @@ function attack(attacker, target) {
     && !primaryHit.dodged
     && target.hp > 0
     && Math.random() <= clamp(Number(extraCastEffect.chance) || 0, 0, 1)) {
-    bonusHit = resolveAttackHit(attacker, target, selectedSkill.multiplier);
+    const secondCastDamageMultiplier = clamp(
+      Number(extraCastEffect.secondCastDamageMultiplier) || 1,
+      0.1,
+      1,
+    );
+    bonusHit = resolveAttackHit(
+      attacker,
+      target,
+      selectedSkill.multiplier * secondCastDamageMultiplier,
+    );
     bonusHit.skill = true;
     bonusHit.skillId = selectedSkill.id;
     bonusHit.skillName = selectedSkill.name;
@@ -6266,7 +6286,7 @@ function normalizeWanderChestRewards(rewards = []) {
   return Array.isArray(rewards)
     ? rewards
       .filter((reward) => reward && reward.type && reward.title && reward.type !== 'foundation')
-      .slice(0, wanderChestCapacity)
+      .slice(0, getWanderChestCapacity())
     : [];
 }
 
@@ -7519,7 +7539,11 @@ function formatSkillEffects(skill, level = getSkillLevel(skill.id)) {
     const chance = Number(effect.chance);
     const chanceText = Number.isFinite(chance) && chance < 1 ? `${toPercent(chance)}: ` : '';
     if (effect.type === 'extraCast') {
-      return `${toPercent(chance)} cơ hội thi triển kỹ năng lần 2, không tiêu hao thêm linh lực và không lặp trong cùng lượt`;
+      const secondCastDamageMultiplier = Number(effect.secondCastDamageMultiplier);
+      const reductionText = Number.isFinite(secondCastDamageMultiplier) && secondCastDamageMultiplier < 1
+        ? `, lần 2 giảm ${toPercent(1 - secondCastDamageMultiplier)} sát thương`
+        : '';
+      return `${toPercent(chance)} cơ hội thi triển kỹ năng lần 2${reductionText}, không tiêu hao thêm linh lực và không lặp trong cùng lượt`;
     }
     if (effect.type === 'manaRefund') {
       return `${toPercent(chance)} cơ hội hoàn lại linh lực vừa sử dụng`;

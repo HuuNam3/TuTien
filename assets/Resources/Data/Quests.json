@@ -1,5 +1,5 @@
 {
-  "version": 9,
+  "version": 10,
   "title": "Nhiệm vụ",
   "dailyRewardFormula": { "cultivationDivisor": 100, "cultivationBonus": 30, "cultivationRounding": "nearestTen" },
   "quests": [
@@ -90,7 +90,13 @@
           { "id": "map-11", "kind": "map", "target": 11, "mapName": "Thiên Môn Cổ Đạo", "description": "Mở khóa map Thiên Môn Cổ Đạo.", "reward": { "spiritStones": 550, "equipmentChests": 5, "equipmentChestTier": 4, "skillChests": 2, "skillChestId": "skillChestMysterious" } },
           { "id": "map-12", "kind": "map", "target": 12, "mapName": "Vạn Lôi Thiên Vực", "description": "Mở khóa map Vạn Lôi Thiên Vực.", "reward": { "spiritStones": 600, "equipmentChests": 5, "equipmentChestTier": 4, "skillChests": 2, "skillChestId": "skillChestMysterious" } },
           { "id": "map-13", "kind": "map", "target": 13, "mapName": "Tinh Hà Hư Cảnh", "description": "Mở khóa map Tinh Hà Hư Cảnh.", "reward": { "spiritStones": 650, "equipmentChests": 5, "equipmentChestTier": 5, "skillChests": 2, "skillChestId": "skillChestMysterious" } },
-          { "id": "map-14", "kind": "map", "target": 14, "mapName": "Vô Tận Thánh Vực", "description": "Mở khóa map Vô Tận Thánh Vực.", "reward": { "spiritStones": 700, "equipmentChests": 5, "equipmentChestTier": 5, "skillChests": 2, "skillChestId": "skillChestMysterious" } }
+          { "id": "map-14", "kind": "map", "target": 14, "mapName": "Vô Tận Thánh Vực", "description": "Mở khóa map Vô Tận Thánh Vực.", "reward": { "spiritStones": 700, "equipmentChests": 5, "equipmentChestTier": 5, "skillChests": 2, "skillChestId": "skillChestMysterious" } },
+          { "id": "map-15", "kind": "map", "target": 15, "mapName": "Thiên Tinh Cổ Hải", "description": "Mở khóa map Thiên Tinh Cổ Hải.", "reward": { "spiritStones": 750, "equipmentChests": 5, "equipmentChestTier": 5, "skillChests": 2, "skillChestId": "skillChestMysterious" } },
+          { "id": "map-16", "kind": "map", "target": 16, "mapName": "Cửu U Lôi Uyên", "description": "Mở khóa map Cửu U Lôi Uyên.", "reward": { "spiritStones": 800, "equipmentChests": 5, "equipmentChestTier": 6, "skillChests": 2, "skillChestId": "skillChestMysterious" } },
+          { "id": "map-17", "kind": "map", "target": 17, "mapName": "Vạn Tượng Thần Vực", "description": "Mở khóa map Vạn Tượng Thần Vực.", "reward": { "spiritStones": 850, "equipmentChests": 5, "equipmentChestTier": 6, "skillChests": 2, "skillChestId": "skillChestMysterious" } },
+          { "id": "map-18", "kind": "map", "target": 18, "mapName": "Thái Hư Tinh Môn", "description": "Mở khóa map Thái Hư Tinh Môn.", "reward": { "spiritStones": 900, "equipmentChests": 5, "equipmentChestTier": 6, "skillChests": 2, "skillChestId": "skillChestMysterious" } },
+          { "id": "map-19", "kind": "map", "target": 19, "mapName": "Hỗn Độn Vương Giới", "description": "Mở khóa map Hỗn Độn Vương Giới.", "reward": { "spiritStones": 950, "equipmentChests": 5, "equipmentChestTier": 7, "skillChests": 2, "skillChestId": "skillChestMysterious" } },
+          { "id": "map-20", "kind": "map", "target": 20, "mapName": "Sáng Thế Thiên Khư", "description": "Mở khóa map Sáng Thế Thiên Khư.", "reward": { "spiritStones": 1000, "equipmentChests": 5, "equipmentChestTier": 7, "skillChests": 2, "skillChestId": "skillChestMysterious" } }
         ]
       }
     },
