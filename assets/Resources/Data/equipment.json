@@ -1,4 +1,31 @@
 {
+  "description": "6 vị trí và 60 tên trang bị, gồm 10 Vũ khí, 10 Áo giáp, 10 Giày, 10 Nhẫn, 10 Ngọc bội và 10 Pháp bảo; chia thành 10 bộ, mỗi bộ đủ 6 món. Bốn spritesheet 4x4 cung cấp icon riêng cho từng tên item. Dữ liệu quy định cấp trang bị, chỉ số cơ bản, lực chiến và giá bán; trang bị không yêu cầu cảnh giới để mặc, còn thuộc tính đặc biệt giữ nguyên khi cường hóa.",
+  "iconSheets": {
+    "equipment-1": "/assets/Art/Sprites/Items/chibi-equipment-sheet-1.png",
+    "equipment-2": "/assets/Art/Sprites/Items/chibi-equipment-sheet-2.png",
+    "equipment-3": "/assets/Art/Sprites/Items/chibi-equipment-sheet-3.png",
+    "equipment-4": "/assets/Art/Sprites/Items/chibi-equipment-sheet-4.png"
+  },
+  "iconFramesBySlot": {
+    "weapon": [["equipment-1", 0], ["equipment-1", 1], ["equipment-1", 2], ["equipment-1", 3], ["equipment-1", 4], ["equipment-1", 5], ["equipment-1", 6], ["equipment-1", 7], ["equipment-1", 8], ["equipment-1", 9]],
+    "armor": [["equipment-1", 10], ["equipment-1", 11], ["equipment-1", 12], ["equipment-1", 13], ["equipment-1", 14], ["equipment-1", 15], ["equipment-2", 0], ["equipment-2", 1], ["equipment-2", 2], ["equipment-2", 3]],
+    "boots": [["equipment-2", 4], ["equipment-2", 5], ["equipment-2", 6], ["equipment-2", 7], ["equipment-2", 8], ["equipment-2", 9], ["equipment-2", 10], ["equipment-2", 11], ["equipment-2", 12], ["equipment-2", 13]],
+    "ring": [["equipment-2", 14], ["equipment-2", 15], ["equipment-3", 0], ["equipment-3", 1], ["equipment-3", 2], ["equipment-3", 3], ["equipment-3", 4], ["equipment-3", 5], ["equipment-3", 6], ["equipment-3", 7]],
+    "amulet": [["equipment-3", 8], ["equipment-3", 9], ["equipment-3", 10], ["equipment-3", 11], ["equipment-3", 12], ["equipment-3", 13], ["equipment-3", 14], ["equipment-3", 15], ["equipment-4", 0], ["equipment-4", 1]],
+    "artifact": [["equipment-4", 2], ["equipment-4", 3], ["equipment-4", 4], ["equipment-4", 5], ["equipment-4", 6], ["equipment-4", 7], ["equipment-4", 8], ["equipment-4", 9], ["equipment-4", 10], ["equipment-4", 11]]
+  },
+  "setNames": [
+    "Bộ Thanh Cương",
+    "Bộ Hàn Ngọc",
+    "Bộ Xích Mộc",
+    "Bộ Lưu Vân",
+    "Bộ Tử Vân",
+    "Bộ Cửu U",
+    "Bộ Thiên Lôi",
+    "Bộ Phá Vân",
+    "Bộ Kim Ô",
+    "Bộ Thiên Hà"
+  ],
   "slots": [
     {
       "id": "weapon",
@@ -157,7 +184,8 @@
         "Cửu U Đao",
         "Thiên Lôi Thương",
         "Phá Vân Kiếm",
-        "Kim Ô Thương"
+        "Kim Ô Thương",
+        "Thiên Hà Kiếm"
       ],
       "guaranteedStats": [
         {
@@ -194,7 +222,8 @@
         "Huyền Vũ Bào",
         "Thiên Cương Khải",
         "Tử Hà Bảo Y",
-        "Liệt Sơn Giáp"
+        "Liệt Sơn Giáp",
+        "Cửu Tiêu Linh Giáp"
       ],
       "guaranteedStats": [
         {
@@ -231,7 +260,8 @@
         "Vạn Lý Vân Ngoa",
         "Thiên Hành Ngoa",
         "Phi Vũ Ngoa",
-        "Lưu Quang Hài"
+        "Lưu Quang Hài",
+        "Lăng Vân Hài"
       ],
       "guaranteedStats": [
         {
@@ -268,7 +298,8 @@
         "Thái Hư Giới",
         "Tinh Hà Nhẫn",
         "Bích Hải Giới",
-        "Thiên Tâm Nhẫn"
+        "Thiên Tâm Nhẫn",
+        "Vạn Tượng Giới"
       ],
       "guaranteedStats": [
         {
@@ -305,7 +336,8 @@
         "Càn Khôn Ngọc",
         "Thiên Mệnh Bội",
         "Lưu Ly Hộ Bội",
-        "Tĩnh Tâm Ngọc"
+        "Tĩnh Tâm Ngọc",
+        "Ngọc Huyền Tâm"
       ],
       "guaranteedStats": [
         {
@@ -342,7 +374,8 @@
         "Sơn Hà Ấn",
         "Hỗn Nguyên Châu",
         "Cửu Tiêu Lệnh",
-        "Trấn Hải Châu"
+        "Trấn Hải Châu",
+        "Thái Cổ Linh Châu"
       ],
       "guaranteedStats": [
         {
@@ -384,7 +417,7 @@
       "name": "Phá giáp",
       "slots": ["weapon", "armor", "boots", "ring", "amulet", "artifact"],
       "valueRange": [0.01, 0.05],
-      "descriptionTemplate": "Bỏ qua {value} phòng ngự mục tiêu",
+      "descriptionTemplate": "Xuyên giáp {value}; khi kích hoạt bỏ qua 50% Thủ mục tiêu",
       "power": 1000
     },
     {

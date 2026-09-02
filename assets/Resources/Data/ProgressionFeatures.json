@@ -1,4 +1,5 @@
 {
+  "description": "3 nhóm tiến trình chính gồm nâng cấp skill, cường hóa trang bị và phụ bản/resource dungeon. Dữ liệu quy định số sách cần dùng, chi phí Linh lực theo phẩm cấp skill, phần thưởng đá cường hóa, 4 phụ bản có 3 lượt riêng mỗi ngày và các giới hạn/mốc mở khóa liên quan. Ví dụ: phụ bản Tu vi bị trừ lượt riêng, không làm giảm lượt của phụ bản Rương; nâng skill Phàm, Hoàng, Huyền lần lượt tăng chi phí Linh lực thêm 1, 2, 3 mỗi cấp.",
   "skills": [
     {
       "id": "shadowSword",

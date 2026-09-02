@@ -1,7 +1,9 @@
 {
   "version": 1,
+  "description": "8 skill đặc biệt và 1 skill cơ bản mặc định của kẻ địch, mô tả sát thương, chi phí Linh lực, hồi chiêu, hiệu ứng và điều kiện gán. Mỗi kẻ địch chiến đấu với 2 skill: 1 skill đặc biệt được phân bổ theo dữ liệu và 1 skill cơ bản để dùng khi skill đặc biệt đang hồi hoặc không đủ Linh lực; hồi chiêu của hai skill độc lập.",
   "defaultSkill": {
     "id": "enemy_basic",
+    "name": "Đánh cơ bản",
     "multiplier": 1.4,
     "cost": 16,
     "cooldown": 1,
@@ -42,7 +44,7 @@
       "multiplier": 1.3,
       "cost": 20,
       "cooldown": 2,
-      "description": "Tăng 10% xuyên trong 2 lượt, không cộng dồn.",
+      "description": "Tăng tỉ lệ Xuyên giáp +10%; khi kích hoạt bỏ qua 50% Thủ mục tiêu trong 2 lượt, không cộng dồn.",
       "effects": [{ "type": "selfBuff", "stat": "armorPierce", "value": 0.1, "duration": 2, "chance": 1, "nonStacking": true }]
     },
     {

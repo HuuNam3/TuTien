@@ -1,5 +1,6 @@
 {
   "version": 10,
+  "description": "12 nhiệm vụ gồm tuyến chính, nhiệm vụ mở map, vượt tháp và nhiệm vụ hàng ngày. Mỗi nhiệm vụ có mục tiêu, tiến độ, điều kiện nhận một lần hoặc reset theo ngày và phần thưởng. Ví dụ: nhiệm vụ khám phá vùng đất mới chạy tuần hoàn theo số map đã mở; nhiệm vụ tháp tăng mốc sau mỗi 3 tầng; thưởng Linh thạch và tu vi được tính từ mốc hiện tại.",
   "title": "Nhiệm vụ",
   "dailyRewardFormula": { "cultivationDivisor": 100, "cultivationBonus": 30, "cultivationRounding": "nearestTen" },
   "quests": [

@@ -1,30 +1,71 @@
 {
   "version": 1,
+  "description": "10 nội tại chiến đấu tự động của kẻ thù: Thủ vững, Bạo kích, Hồi phục, Phản đòn, Cuồng chiến, Tụ thế, Hấp linh, Săn mồi, Thiết cốt và Ảnh bộ. Ví dụ: Hồi phục hồi 25% Sinh lực khi xuống 50% và chỉ kích hoạt lại sau 3 lượt; Thủ vững giảm sát thương nhận, Phản đòn có cơ hội phản kích, các nội tại khác tăng chí mạng, Công, chính xác, hút máu, Thủ hoặc Né tránh.",
   "styles": [
     {
       "id": "defense",
       "label": "Thủ vững",
-      "description": "Định kỳ bỏ lượt để thủ thế, giảm mạnh sát thương nhận ở lượt kế.",
-      "guardReduction": 0.62
+      "description": "Nội tại phòng thủ, luôn giảm một phần sát thương nhận vào.",
+      "damageReduction": 0.12
     },
     {
       "id": "crit",
       "label": "Bạo kích",
-      "description": "Có lúc dồn sát ý, tăng tỉ lệ chí mạng cho đòn đánh kế tiếp.",
+      "description": "Nội tại bạo kích, luôn tăng tỉ lệ chí mạng khi tấn công.",
       "critBonus": 0.24
     },
     {
       "id": "heal",
       "label": "Hồi phục",
-      "description": "Khi sinh lực thấp sẽ bỏ lượt để hồi lại một phần sinh lực.",
-      "healPercent": 0.2
+      "description": "Nội tại hồi phục, định kỳ hồi sinh lực nhưng không bỏ lượt tấn công.",
+      "healPercent": 0.25,
+      "healInterval": 3,
+      "hpThreshold": 0.5
     },
     {
       "id": "counter",
       "label": "Phản đòn",
-      "description": "Có cơ hội phản kích ngay sau khi bị đánh trúng.",
+      "description": "Nội tại phản đòn, có cơ hội phản kích ngay sau khi bị đánh trúng.",
       "counterChance": 0.32,
       "counterMultiplier": 0.58
+    },
+    {
+      "id": "berserker",
+      "label": "Cuồng chiến",
+      "description": "Nội tại cuồng chiến, khi sinh lực xuống thấp thì mọi đòn đánh đều mạnh hơn.",
+      "hpThreshold": 0.5,
+      "attackBonus": 0.12
+    },
+    {
+      "id": "focus",
+      "label": "Tụ thế",
+      "description": "Nội tại tụ thế, luôn giữ khả năng tập trung để tăng khả năng đánh trúng.",
+      "accuracyBonus": 0.08
+    },
+    {
+      "id": "drain",
+      "label": "Hấp linh",
+      "description": "Nội tại hấp linh, một phần sát thương gây ra được chuyển thành sinh lực.",
+      "lifeStealBonus": 0.08
+    },
+    {
+      "id": "predator",
+      "label": "Săn mồi",
+      "description": "Nội tại săn mồi, gây thêm sát thương lên đối thủ đang bị trọng thương.",
+      "targetHpThreshold": 0.5,
+      "attackBonus": 0.1
+    },
+    {
+      "id": "ironbody",
+      "label": "Thiết cốt",
+      "description": "Nội tại thiết cốt, thân thể cứng rắn giúp tăng phòng thủ.",
+      "defenseBonus": 0.1
+    },
+    {
+      "id": "shadowstep",
+      "label": "Ảnh bộ",
+      "description": "Nội tại ảnh bộ, di chuyển khó đoán giúp tăng né tránh.",
+      "dodgeBonus": 0.06
     }
   ]
 }

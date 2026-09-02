@@ -1,5 +1,6 @@
 {
   "version": 1,
+  "description": "18 thuộc tính chiến đấu và quy tắc quy đổi sang lực chiến. Ví dụ: Sinh lực, Linh lực, Công, Thủ, Tốc độ, Chính xác, Né tránh, Đỡ đòn, Chí mạng và Hút máu đều được dùng trong tính toán chiến đấu; mỗi thuộc tính có mô tả riêng để giao diện hiển thị đúng.",
   "stats": [
     {
       "id": "maxHp",
@@ -19,7 +20,7 @@
       "id": "foundation",
       "name": "Căn cơ",
       "unit": "point",
-      "powerPerPoint": 2,
+      "powerPerPoint": 0,
       "description": "Nền tảng tu luyện, hỗ trợ tích lũy tu vi khi ngao du."
     },
     {
@@ -132,7 +133,8 @@
       "unit": "rate",
       "powerPerPoint": 1000,
       "countsTowardCombatPower": false,
-      "description": "Tỉ lệ bỏ qua giáp để gây sát thương trực tiếp vào sinh lực đối thủ."
+      "defenseIgnoreRate": 0.5,
+      "description": "Xuyên giáp là tỉ lệ kích hoạt trên từng đòn đánh; khi kích hoạt sẽ bỏ qua cố định 50% Thủ của đối thủ. Ví dụ: 10% Xuyên giáp nghĩa là mỗi đòn có 10% cơ hội bỏ qua 50% Thủ."
     }
   ]
 }

@@ -1,5 +1,6 @@
 {
   "version": 1,
+  "description": "Kịch bản kiểm tra 9 bước chơi, 4 quy tắc ưu tiên và 7 kết quả mong đợi. Ví dụ: đăng nhập, tải tài nguyên, tạo nhân vật, ngao du, vào chiến đấu, thi triển skill, nhận rương và F5 phải khôi phục dữ liệu từ Mongo; dùng để phát hiện lỗi chuyển tab, hồi chiêu hoặc phần thưởng.",
   "title": "Kịch bản test trải nghiệm cơ bản",
   "purpose": "Dùng lại làm checklist cho các lần test sau.",
   "priorityRules": [

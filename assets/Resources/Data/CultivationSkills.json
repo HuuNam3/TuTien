@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "description": "18 skill tu luyện cùng 3 ô trang bị, 5 phẩm cấp, điều kiện học, cấp tối đa, chi phí sách, chi phí Linh lực và hệ số tăng theo cấp. Ví dụ: skill Phàm phẩm tăng chi phí sử dụng thêm 1 Linh lực mỗi cấp, Hoàng phẩm thêm 2 và Huyền phẩm thêm 3; Kiếm Vũ Lưu Tinh có thể thi triển lần hai theo tỉ lệ của skill.",
   "equipSlots": [
     { "slot": 1, "requiredTier": 1 },
     { "slot": 2, "requiredTier": 10 },
@@ -212,7 +213,7 @@
       "schoolId": "blade_cultivator",
       "name": "Liệt Địa Trảm",
       "description": "Đao lực xé giáp, gây sát thương rất cao và tăng xuyên giáp tạm thời.",
-      "note": "Tăng Xuyên giáp +4% trong 2 lượt.",
+      "note": "Tăng tỉ lệ Xuyên giáp +4%; khi kích hoạt bỏ qua 50% Thủ mục tiêu trong 2 lượt.",
       "gradeId": "yellow",
       "combatPower": 118,
       "requiredTier": 4,

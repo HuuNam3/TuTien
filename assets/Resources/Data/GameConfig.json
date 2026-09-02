@@ -1,4 +1,5 @@
 {
+  "description": "Cấu hình trung tâm cho giao diện, nhịp chiến đấu, animation 0,8 giây, delay sát thương, tỉ lệ gặp địch mặc định 80%, phần thưởng, giới hạn mua, lưu dữ liệu, mã đổi thưởng và các quy tắc Ngao du. Ví dụ: khi F5 có token, game lấy dữ liệu Mongo ghi đè dữ liệu cũ; khi chưa có token thì bắt đăng nhập.",
   "display": {
     "targetViewportWidth": 390,
     "targetViewportHeight": 850,

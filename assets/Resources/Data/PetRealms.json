@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "realmSystem": "pet",
+  "description": "10 đại cảnh giới riêng dành cho Linh thú, mỗi cảnh giới có 9 tiểu giai từ Sơ giai đến Cửu giai và tiến trình độc lập với nhân vật. Bảng này chứa mức cộng Sinh lực, Công, Thủ, Linh lực và lực chiến của từng tiểu giai và đại cảnh giới; ví dụ khi lên đại cảnh giới mới, linh thú dùng mức cộng riêng thay vì bảng Kiếm Tu.",
+  "realms": [
+    { "id": 1, "name": "Ấu Linh", "minorRealms": ["Sơ giai", "Nhị giai", "Tam giai", "Tứ giai", "Ngũ giai", "Lục giai", "Thất giai", "Bát giai", "Cửu giai"] },
+    { "id": 2, "name": "Khai Linh", "minorRealms": ["Sơ giai", "Nhị giai", "Tam giai", "Tứ giai", "Ngũ giai", "Lục giai", "Thất giai", "Bát giai", "Cửu giai"] },
+    { "id": 3, "name": "Tụ Linh", "minorRealms": ["Sơ giai", "Nhị giai", "Tam giai", "Tứ giai", "Ngũ giai", "Lục giai", "Thất giai", "Bát giai", "Cửu giai"] },
+    { "id": 4, "name": "Linh Đan", "minorRealms": ["Sơ giai", "Nhị giai", "Tam giai", "Tứ giai", "Ngũ giai", "Lục giai", "Thất giai", "Bát giai", "Cửu giai"] },
+    { "id": 5, "name": "Hóa Hình", "minorRealms": ["Sơ giai", "Nhị giai", "Tam giai", "Tứ giai", "Ngũ giai", "Lục giai", "Thất giai", "Bát giai", "Cửu giai"] },
+    { "id": 6, "name": "Linh Vương", "minorRealms": ["Sơ giai", "Nhị giai", "Tam giai", "Tứ giai", "Ngũ giai", "Lục giai", "Thất giai", "Bát giai", "Cửu giai"] },
+    { "id": 7, "name": "Linh Hoàng", "minorRealms": ["Sơ giai", "Nhị giai", "Tam giai", "Tứ giai", "Ngũ giai", "Lục giai", "Thất giai", "Bát giai", "Cửu giai"] },
+    { "id": 8, "name": "Linh Tôn", "minorRealms": ["Sơ giai", "Nhị giai", "Tam giai", "Tứ giai", "Ngũ giai", "Lục giai", "Thất giai", "Bát giai", "Cửu giai"] },
+    { "id": 9, "name": "Thánh Linh", "minorRealms": ["Sơ giai", "Nhị giai", "Tam giai", "Tứ giai", "Ngũ giai", "Lục giai", "Thất giai", "Bát giai", "Cửu giai"] },
+    { "id": 10, "name": "Đế Linh", "minorRealms": ["Sơ giai", "Nhị giai", "Tam giai", "Tứ giai", "Ngũ giai", "Lục giai", "Thất giai", "Bát giai", "Cửu giai"] }
+  ]
+}

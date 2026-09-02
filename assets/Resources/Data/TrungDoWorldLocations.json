@@ -1,5 +1,6 @@
 {
   "version": 1,
+  "description": "Dữ liệu thế giới Trung Đô gồm 9 mốc bản đồ, 4 vùng, 17 địa điểm, 2 thành trì, 5 kết nối, 6 nguồn tham khảo và các ghi chú bối cảnh. Ví dụ: mỗi địa điểm có tên, vùng, tọa độ hoặc mô tả để làm nền cho bản đồ và các tuyến khám phá sau này.",
   "worldId": "zhongduWorld",
   "worldName": "Trung Đô thế giới",
   "scope": "Các địa danh và thế lực có tên trong tuyến Trung Đô thế giới của Võ Luyện Đỉnh Phong.",

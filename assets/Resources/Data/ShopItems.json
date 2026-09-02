@@ -1,4 +1,5 @@
 {
+  "description": "20 mặt hàng trong cửa hàng gồm rương trang bị, rương skill Phàm/Hoàng/Huyền, đan dược và đá cường hóa. Dữ liệu quy định giá, loại vật phẩm, giới hạn mua theo ngày và cách mở khóa; ví dụ rương trang bị chỉ bán một cấp phù hợp map đã mở, mỗi ngày tối đa 20 rương, còn rương skill có giới hạn riêng theo phẩm chất.",
   "shopItems": [
     {
       "id": "equipmentTier1Chest",

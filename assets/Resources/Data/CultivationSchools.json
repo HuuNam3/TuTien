@@ -1,5 +1,6 @@
 {
   "version": 1,
+  "description": "20 phái tu luyện, mỗi phái có vai trò, tư chất, chỉ số ban đầu, bảng tăng trưởng, chỉ số trọng tâm và mức cộng khi đột phá đại cảnh giới. Skill được quản lý riêng trong CultivationSkills.json; ví dụ Kiếm Tu dùng bảng tăng trưởng riêng cho Sinh lực, Công, Thủ và Linh lực nhưng danh sách skill không nằm trong file phái.",
   "schools": [
     {
       "id": "sword_cultivator",
@@ -7,11 +8,6 @@
       "role": "single_target_damage",
       "talent": "Kiếm Tâm Thông Minh",
       "talentDescription": "Tăng chính xác và tỷ lệ chí mạng.",
-      "starterSkill": {
-        "id": "beginner_sword_art",
-        "name": "Ngự Kiếm Quyết",
-        "description": "Điều khiển kiếm khí tấn công chính xác vào một mục tiêu."
-      },
       "cultivationPath": "Tập trung tốc độ, chí mạng và sát thương đơn mục tiêu.",
       "initialStats": {
         "maxHp": 85,
@@ -211,23 +207,6 @@
         "critRate",
         "attack"
       ],
-      "skills": [
-        {
-          "id": "sword_intent",
-          "name": "Kiếm Ý",
-          "description": "Tăng sát thương cho đòn đánh kế tiếp."
-        },
-        {
-          "id": "piercing_sword",
-          "name": "Phá Không Kiếm",
-          "description": "Đòn kiếm có khả năng xuyên giáp."
-        },
-        {
-          "id": "myriad_swords",
-          "name": "Vạn Kiếm Quy Tông",
-          "description": "Gây sát thương lớn lên một mục tiêu."
-        }
-      ],
       "majorBreakthroughGrowthByRealm": [
         {
           "maxHp": 113,
@@ -412,11 +391,6 @@
       "role": "berserker",
       "talent": "Cuồng Đao Ý",
       "talentDescription": "Sát thương tăng khi sinh lực bản thân giảm.",
-      "starterSkill": {
-        "id": "beginner_blade_art",
-        "name": "Truy Phong Đao Quyết",
-        "description": "Vung đao liên hoàn, tăng sát thương theo thế đánh."
-      },
       "cultivationPath": "Tập trung công kích, bạo kích và chiến đấu càng lâu càng mạnh.",
       "initialStats": {
         "maxHp": 88,
@@ -466,23 +440,6 @@
         "critRate",
         "critDamage",
         "maxHp"
-      ],
-      "skills": [
-        {
-          "id": "blood_blade",
-          "name": "Huyết Đao",
-          "description": "Gây sát thương và hồi một phần sinh lực."
-        },
-        {
-          "id": "crazy_blade",
-          "name": "Cuồng Trảm",
-          "description": "Tăng sát thương theo lượng máu đã mất."
-        },
-        {
-          "id": "heaven_splitter",
-          "name": "Khai Thiên Đao",
-          "description": "Đòn đánh mạnh có tỷ lệ chí mạng cao."
-        }
       ]
     },
     {
@@ -491,11 +448,6 @@
       "role": "tank",
       "talent": "Kim Cương Thể",
       "talentDescription": "Giảm sát thương nhận vào.",
-      "starterSkill": {
-        "id": "beginner_body_art",
-        "name": "Kim Cương Luyện Thể Quyết",
-        "description": "Rèn thân thể, tăng phòng thủ và sức chịu đựng."
-      },
       "cultivationPath": "Tập trung sinh lực, phòng thủ và khả năng chống chịu.",
       "initialStats": {
         "maxHp": 110,
@@ -545,23 +497,6 @@
         "defense",
         "blockRate",
         "blockReduction"
-      ],
-      "skills": [
-        {
-          "id": "iron_fist",
-          "name": "Thiết Quyền",
-          "description": "Đấm mạnh và có cơ hội làm choáng."
-        },
-        {
-          "id": "body_guard",
-          "name": "Hộ Thể",
-          "description": "Giảm sát thương trong vài lượt."
-        },
-        {
-          "id": "mountain_body",
-          "name": "Sơn Nhạc Thể",
-          "description": "Tăng phòng thủ và sinh lực tối đa."
-        }
       ]
     },
     {
@@ -579,23 +514,6 @@
         "attack",
         "comprehension",
         "critDamage"
-      ],
-      "skills": [
-        {
-          "id": "fire_burst",
-          "name": "Liệt Hỏa Pháp",
-          "description": "Gây sát thương hỏa mạnh."
-        },
-        {
-          "id": "ice_seal",
-          "name": "Huyền Băng Ấn",
-          "description": "Gây sát thương và làm chậm mục tiêu."
-        },
-        {
-          "id": "thunderfall",
-          "name": "Thiên Lôi Giáng",
-          "description": "Đánh sét với tỷ lệ chí mạng cao."
-        }
       ]
     },
     {
@@ -613,23 +531,6 @@
         "maxHp",
         "comprehension",
         "defense"
-      ],
-      "skills": [
-        {
-          "id": "summon_beast",
-          "name": "Gọi Linh Thú",
-          "description": "Triệu hồi linh thú chiến đấu bên cạnh."
-        },
-        {
-          "id": "bloodline_boost",
-          "name": "Cường Hóa Huyết Mạch",
-          "description": "Tăng công và máu cho linh thú."
-        },
-        {
-          "id": "beast_guard",
-          "name": "Vạn Thú Hộ Chủ",
-          "description": "Linh thú nhận sát thương thay chủ nhân."
-        }
       ]
     },
     {
@@ -647,23 +548,6 @@
         "maxMana",
         "maxHp",
         "spiritSense"
-      ],
-      "skills": [
-        {
-          "id": "healing_pill",
-          "name": "Hồi Nguyên Đan",
-          "description": "Hồi phục sinh lực theo thời gian."
-        },
-        {
-          "id": "cleansing_pill",
-          "name": "Thanh Tâm Đan",
-          "description": "Giải một hiệu ứng bất lợi."
-        },
-        {
-          "id": "golden_pill",
-          "name": "Kim Đan Hộ Mệnh",
-          "description": "Ngăn một lần bị hạ gục."
-        }
       ]
     },
     {
@@ -681,23 +565,6 @@
         "defense",
         "maxHp",
         "comprehension"
-      ],
-      "skills": [
-        {
-          "id": "forge_weapon",
-          "name": "Luyện Khí",
-          "description": "Tăng sức mạnh trang bị trong trận."
-        },
-        {
-          "id": "artifact_overload",
-          "name": "Khí Linh Bộc Phát",
-          "description": "Kích hoạt thêm thuộc tính đặc biệt."
-        },
-        {
-          "id": "perfect_refinement",
-          "name": "Tôi Luyện Hoàn Mỹ",
-          "description": "Tăng hiệu quả cường hóa lâu dài."
-        }
       ]
     },
     {
@@ -715,23 +582,6 @@
         "accuracy",
         "comprehension",
         "maxMana"
-      ],
-      "skills": [
-        {
-          "id": "binding_formation",
-          "name": "Khốn Tiên Trận",
-          "description": "Giảm tốc và khóa kỹ năng mục tiêu."
-        },
-        {
-          "id": "spirit_formation",
-          "name": "Tụ Linh Trận",
-          "description": "Tăng linh lực và sát thương kỹ năng."
-        },
-        {
-          "id": "heaven_lock",
-          "name": "Thiên La Địa Võng",
-          "description": "Khống chế nhiều mục tiêu."
-        }
       ]
     },
     {
@@ -749,23 +599,6 @@
         "maxMana",
         "blockRate",
         "spiritSense"
-      ],
-      "skills": [
-        {
-          "id": "shield_talisman",
-          "name": "Hộ Thân Phù",
-          "description": "Tạo khiên hấp thụ sát thương."
-        },
-        {
-          "id": "thunder_talisman",
-          "name": "Lôi Phù",
-          "description": "Gây sát thương lôi lên mục tiêu."
-        },
-        {
-          "id": "seal_talisman",
-          "name": "Phong Linh Phù",
-          "description": "Giảm tốc độ và linh lực của địch."
-        }
       ]
     },
     {
@@ -783,23 +616,6 @@
         "lifeSteal",
         "critRate",
         "maxHp"
-      ],
-      "skills": [
-        {
-          "id": "demonic_blood",
-          "name": "Ma Huyết Trảm",
-          "description": "Gây sát thương và hồi máu."
-        },
-        {
-          "id": "soul_burn",
-          "name": "Thiêu Đốt Hồn",
-          "description": "Gây sát thương theo thời gian."
-        },
-        {
-          "id": "demon_awakening",
-          "name": "Ma Thần Thức Tỉnh",
-          "description": "Tăng công kích khi sinh lực thấp."
-        }
       ]
     },
     {
@@ -817,23 +633,6 @@
         "speed",
         "critRate",
         "spiritSense"
-      ],
-      "skills": [
-        {
-          "id": "ghost_step",
-          "name": "U Minh Bộ",
-          "description": "Tăng né tránh trong vài lượt."
-        },
-        {
-          "id": "soul_chain",
-          "name": "Câu Hồn Tỏa",
-          "description": "Kéo dài thời gian hồi kỹ năng của địch."
-        },
-        {
-          "id": "ghost_army",
-          "name": "Âm Hồn Quân",
-          "description": "Triệu hồi âm hồn gây sát thương."
-        }
       ]
     },
     {
@@ -851,23 +650,6 @@
         "defense",
         "maxMana",
         "accuracy"
-      ],
-      "skills": [
-        {
-          "id": "yin_yang_shift",
-          "name": "Âm Dương Chuyển Luân",
-          "description": "Đổi trạng thái công kích hoặc phòng thủ."
-        },
-        {
-          "id": "five_elements",
-          "name": "Ngũ Hành Khắc Chế",
-          "description": "Tăng sát thương lên mục tiêu bị khắc chế."
-        },
-        {
-          "id": "harmony_field",
-          "name": "Điều Hòa Linh Vực",
-          "description": "Cân bằng sinh lực và linh lực."
-        }
       ]
     },
     {
@@ -885,23 +667,6 @@
         "comprehension",
         "maxMana",
         "defense"
-      ],
-      "skills": [
-        {
-          "id": "spirit_contract",
-          "name": "Linh Khế",
-          "description": "Liên kết sức mạnh với đồng đội."
-        },
-        {
-          "id": "spirit_transfer",
-          "name": "Linh Lực Truyền Dẫn",
-          "description": "Chuyển linh lực cho đồng minh."
-        },
-        {
-          "id": "spirit_fusion",
-          "name": "Linh Thể Hợp Nhất",
-          "description": "Tăng thuộc tính theo số linh thể đang có."
-        }
       ]
     },
     {
@@ -919,23 +684,6 @@
         "defense",
         "blockReduction",
         "speed"
-      ],
-      "skills": [
-        {
-          "id": "unbreakable_body",
-          "name": "Bất Hoại Thể",
-          "description": "Giảm sát thương và hiệu ứng khống chế."
-        },
-        {
-          "id": "earth_shock",
-          "name": "Địa Chấn",
-          "description": "Gây sát thương và làm choáng diện rộng."
-        },
-        {
-          "id": "blood_rebirth",
-          "name": "Huyết Nhục Trùng Sinh",
-          "description": "Hồi phục khi sinh lực xuống thấp."
-        }
       ]
     },
     {
@@ -953,23 +701,6 @@
         "attack",
         "critRate",
         "spiritSense"
-      ],
-      "skills": [
-        {
-          "id": "venom_strike",
-          "name": "Độc Nhận",
-          "description": "Gây độc theo thời gian."
-        },
-        {
-          "id": "poison_field",
-          "name": "Vạn Độc Trận",
-          "description": "Tạo vùng độc gây sát thương mỗi lượt."
-        },
-        {
-          "id": "corrosive_blood",
-          "name": "Thực Cốt Độc",
-          "description": "Giảm phòng thủ và hồi phục của mục tiêu."
-        }
       ]
     },
     {
@@ -987,23 +718,6 @@
         "critRate",
         "critDamage",
         "speed"
-      ],
-      "skills": [
-        {
-          "id": "soul_chasing_arrow",
-          "name": "Truy Hồn Tiễn",
-          "description": "Tăng sát thương lên mục tiêu yếu máu."
-        },
-        {
-          "id": "rain_arrows",
-          "name": "Lạc Nhật Tiễn Vũ",
-          "description": "Bắn nhiều mũi tên lên một khu vực."
-        },
-        {
-          "id": "piercing_arrow",
-          "name": "Xuyên Vân Tiễn",
-          "description": "Bỏ qua một phần phòng thủ."
-        }
       ]
     },
     {
@@ -1021,23 +735,6 @@
         "accuracy",
         "maxMana",
         "comprehension"
-      ],
-      "skills": [
-        {
-          "id": "soul_music",
-          "name": "Nhiếp Hồn Khúc",
-          "description": "Có cơ hội khiến mục tiêu mất lượt."
-        },
-        {
-          "id": "slow_tune",
-          "name": "Hoãn Nguyệt Khúc",
-          "description": "Giảm tốc độ và chính xác của địch."
-        },
-        {
-          "id": "war_song",
-          "name": "Chiến Tâm Khúc",
-          "description": "Tăng công kích và chí mạng cho đồng minh."
-        }
       ]
     },
     {
@@ -1055,23 +752,6 @@
         "speed",
         "accuracy",
         "maxMana"
-      ],
-      "skills": [
-        {
-          "id": "mirror_image",
-          "name": "Kính Ảnh Phân Thân",
-          "description": "Tạo ảo ảnh hấp thụ một đòn đánh."
-        },
-        {
-          "id": "dream_bind",
-          "name": "Mộng Yểm",
-          "description": "Làm mục tiêu giảm chính xác."
-        },
-        {
-          "id": "false_reality",
-          "name": "Hư Thực Đảo Điên",
-          "description": "Đổi vị trí và xóa một hiệu ứng bất lợi."
-        }
       ]
     },
     {
@@ -1089,23 +769,6 @@
         "attack",
         "critRate",
         "dodgeRate"
-      ],
-      "skills": [
-        {
-          "id": "blink_strike",
-          "name": "Không Bộ Sát",
-          "description": "Dịch chuyển tới mục tiêu và gây sát thương."
-        },
-        {
-          "id": "space_cut",
-          "name": "Không Gian Trảm",
-          "description": "Gây sát thương bỏ qua khoảng cách."
-        },
-        {
-          "id": "void_escape",
-          "name": "Hư Không Độn",
-          "description": "Né toàn bộ sát thương trong thời gian ngắn."
-        }
       ]
     },
     {
@@ -1123,23 +786,6 @@
         "maxMana",
         "comprehension",
         "accuracy"
-      ],
-      "skills": [
-        {
-          "id": "sword_array",
-          "name": "Kiếm Trận",
-          "description": "Dựng trận gây sát thương mỗi lượt."
-        },
-        {
-          "id": "flying_swords",
-          "name": "Phi Kiếm Liên Hoàn",
-          "description": "Tấn công liên tiếp nhiều lần."
-        },
-        {
-          "id": "sword_domain",
-          "name": "Kiếm Vực",
-          "description": "Giảm tốc và tăng sát thương lên kẻ địch trong trận."
-        }
       ]
     }
   ]

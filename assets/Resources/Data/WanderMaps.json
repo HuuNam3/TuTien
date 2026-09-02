@@ -1,5 +1,6 @@
 {
-  "version": 11,
+  "version": 12,
+  "description": "26 map Ngao du, 10 nhóm tiểu cảnh giới và 6 nhóm đại cảnh giới, kèm phạm vi tầng, hệ số tu vi, hệ số Linh thạch, phẩm chất quái, rương và phần thưởng. Ví dụ: map 1 có hệ số tu vi 1,0, mỗi map sau cộng 0,2; tỉ lệ rơi rương sau khi thắng là 25% cho mọi map; từ map 2 trở đi phẩm chất quái là 50% Bình thường, 25% Tinh anh, 16% Thủ lĩnh, 6% Vương giả và 3% Chúa tể.",
   "minorRealms": [
     "Nhất tầng",
     "Nhị tầng",
@@ -641,6 +642,198 @@
         "cultivationMultiplier": 4.8,
         "spiritStoneBonus": 95,
         "equipmentRarityBonus": 0.36,
+        "equipmentDropChance": 0.2,
+        "equipmentQualityMax": 5,
+        "equipmentQualityWeights": [
+          65,
+          25,
+          8,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "id": "celestialRuinFrontier",
+      "name": "Thiên Khuyết Cổ Lộ",
+      "tierRange": [
+        101,
+        105
+      ],
+      "equipmentChestTier": 7,
+      "description": "Cổ lộ rạn vỡ giữa trời sao, nơi những kiếm hồn và lôi thú canh giữ dấu tích thiên môn.",
+      "enemyPoolIds": [
+        "celestial_sunder_beast",
+        "astral_sword_revenant",
+        "frost_crystal_fiend",
+        "celestial_lion_guardian",
+        "frost_crystal_qilin",
+        "moon_lotus_mystic"
+      ],
+      "rewardSettings": {
+        "cultivationMultiplier": 5,
+        "spiritStoneBonus": 100,
+        "equipmentRarityBonus": 0.38,
+        "equipmentDropChance": 0.2,
+        "equipmentQualityMax": 5,
+        "equipmentQualityWeights": [
+          65,
+          25,
+          8,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "id": "frostStarValley",
+      "name": "Hàn Tinh Tuyết Vực",
+      "tierRange": [
+        106,
+        110
+      ],
+      "equipmentChestTier": 8,
+      "description": "Tuyết vực đóng băng tinh quang, nơi hộ pháp kim sơn và pháp sư hư diễm tranh đoạt đạo nguyên.",
+      "enemyPoolIds": [
+        "golden_mountain_guardian",
+        "voidflame_magus",
+        "astral_sea_serpent",
+        "star_sword_wraith",
+        "ancient_mushroom_sage",
+        "void_mist_fiend"
+      ],
+      "rewardSettings": {
+        "cultivationMultiplier": 5.2,
+        "spiritStoneBonus": 105,
+        "equipmentRarityBonus": 0.4,
+        "equipmentDropChance": 0.2,
+        "equipmentQualityMax": 5,
+        "equipmentQualityWeights": [
+          65,
+          25,
+          8,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "id": "astralSeaTemple",
+      "name": "Tinh Hải Thần Điện",
+      "tierRange": [
+        111,
+        115
+      ],
+      "equipmentChestTier": 8,
+      "description": "Thần điện nổi trên biển sao, nơi sát thủ nguyệt ảnh và lôi long ấu thú thử thách người vượt biển.",
+      "enemyPoolIds": [
+        "moonlit_hunter",
+        "fallen_winged_beast",
+        "lightning_dragon_whelp",
+        "heavenlight_warden",
+        "scarlet_phoenix_demon",
+        "astral_whale_spirit"
+      ],
+      "rewardSettings": {
+        "cultivationMultiplier": 5.4,
+        "spiritStoneBonus": 110,
+        "equipmentRarityBonus": 0.42,
+        "equipmentDropChance": 0.2,
+        "equipmentQualityMax": 5,
+        "equipmentQualityWeights": [
+          65,
+          25,
+          8,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "id": "voidEmperorPass",
+      "name": "Hư Không Đế Quan",
+      "tierRange": [
+        116,
+        120
+      ],
+      "equipmentChestTier": 8,
+      "description": "Đế quan xuyên qua hư không, cơ vệ hỗn tinh và yêu long tinh tú bảo vệ con đường đế vương.",
+      "enemyPoolIds": [
+        "chaos_crystal_golem",
+        "void_emperor_wraith",
+        "sacred_fire_qilin",
+        "black_moon_void_knight",
+        "azure_thunder_dragonling",
+        "celestial_clockwork_sentinel"
+      ],
+      "rewardSettings": {
+        "cultivationMultiplier": 5.6,
+        "spiritStoneBonus": 115,
+        "equipmentRarityBonus": 0.44,
+        "equipmentDropChance": 0.2,
+        "equipmentQualityMax": 5,
+        "equipmentQualityWeights": [
+          65,
+          25,
+          8,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "id": "chaosLotusSanctum",
+      "name": "Hỗn Độn Liên Cung",
+      "tierRange": [
+        121,
+        125
+      ],
+      "equipmentChestTier": 9,
+      "description": "Liên cung hỗn độn nở giữa các tầng không gian, nơi phượng lôi và chu ma săn tìm linh hồn lạc lối.",
+      "enemyPoolIds": [
+        "star_gate_guardian",
+        "black_thunder_phoenix",
+        "cosmic_spider_demon",
+        "moon_lotus_mystic",
+        "obsidian_mountain_fiend",
+        "star_eater_imp"
+      ],
+      "rewardSettings": {
+        "cultivationMultiplier": 5.8,
+        "spiritStoneBonus": 120,
+        "equipmentRarityBonus": 0.46,
+        "equipmentDropChance": 0.2,
+        "equipmentQualityMax": 5,
+        "equipmentQualityWeights": [
+          65,
+          25,
+          8,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "id": "creationDawnRealm",
+      "name": "Sáng Thế Thần Khư",
+      "tierRange": [
+        126,
+        130
+      ],
+      "equipmentChestTier": 9,
+      "description": "Thần khư buổi khai thiên, nơi liên thú sáng thế và thần long kim thiên giữ cánh cửa cuối cùng.",
+      "enemyPoolIds": [
+        "creation_lotus_beast",
+        "golden_celestial_dragon",
+        "chaos_realm_imp",
+        "celestial_lion_guardian",
+        "frost_crystal_qilin",
+        "thunder_abyss_ape"
+      ],
+      "rewardSettings": {
+        "cultivationMultiplier": 6,
+        "spiritStoneBonus": 125,
+        "equipmentRarityBonus": 0.48,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
         "equipmentQualityWeights": [

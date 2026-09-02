@@ -6357,6 +6357,19 @@ button > .game-icon {
   pointer-events: none;
 }
 
+.equipment-item-icon {
+  background-repeat: no-repeat;
+  background-size: 400% 400%;
+}
+
+.equipment-set-name {
+  display: block;
+  color: #f5c45b;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 800;
+}
+
 button > .item-icon,
 strong > .item-icon,
 .resource-dungeon-icon > .item-icon {
@@ -6427,9 +6440,37 @@ strong > .activity-icon,
 .icon-wander-map-12,
 .icon-wander-map-13,
 .icon-wander-map-14,
+.icon-wander-map-15,
+.icon-wander-map-16,
+.icon-wander-map-17,
+.icon-wander-map-18,
+.icon-wander-map-19,
+.icon-wander-map-20,
+.icon-wander-map-21,
+.icon-wander-map-22,
+.icon-wander-map-23,
+.icon-wander-map-24,
+.icon-wander-map-25,
+.icon-wander-map-26,
 .icon-wander-increase-enemy,
 .icon-wander-skip-enemy {
   background-image: url('/assets/Art/Sprites/UI/chibi-wander-map-icon-sheet.png');
+  background-size: 400% 300%;
+}
+
+.icon-wander-map-15,
+.icon-wander-map-16,
+.icon-wander-map-17,
+.icon-wander-map-18,
+.icon-wander-map-19,
+.icon-wander-map-20,
+.icon-wander-map-21,
+.icon-wander-map-22,
+.icon-wander-map-23,
+.icon-wander-map-24,
+.icon-wander-map-25,
+.icon-wander-map-26 {
+  background-image: url('/assets/Art/Sprites/UI/chibi-wander-map-icon-sheet-late.png');
   background-size: 400% 300%;
 }
 
@@ -6443,6 +6484,18 @@ strong > .activity-icon,
 .icon-wander-map-12 { background-position: 100% 50%; }
 .icon-wander-map-13 { background-position: 0% 100%; }
 .icon-wander-map-14 { background-position: 33.333% 100%; }
+.icon-wander-map-15 { background-position: 0% 0%; }
+.icon-wander-map-16 { background-position: 33.333% 0%; }
+.icon-wander-map-17 { background-position: 66.666% 0%; }
+.icon-wander-map-18 { background-position: 100% 0%; }
+.icon-wander-map-19 { background-position: 0% 50%; }
+.icon-wander-map-20 { background-position: 33.333% 50%; }
+.icon-wander-map-21 { background-position: 66.666% 50%; }
+.icon-wander-map-22 { background-position: 100% 50%; }
+.icon-wander-map-23 { background-position: 0% 100%; }
+.icon-wander-map-24 { background-position: 33.333% 100%; }
+.icon-wander-map-25 { background-position: 66.666% 100%; }
+.icon-wander-map-26 { background-position: 100% 100%; }
 .icon-wander-increase-enemy { background-position: 66.666% 100%; }
 .icon-wander-skip-enemy { background-position: 100% 100%; }
 

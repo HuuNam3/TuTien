@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "description": "Thông số chung dùng để tạo kẻ thù, tách khỏi dữ liệu yêu cầu tu vi của người chơi.",
+  "description": "Bảng tăng trưởng chỉ số riêng của kẻ địch qua 26 đại cảnh giới và các tiểu cảnh giới tương ứng. Dữ liệu dùng để tính Sinh lực, Công, Thủ, Linh lực và lực chiến hiển thị của kẻ địch; tu vi của quái do map tạo ra, không lấy từ bảng tu vi người chơi. Ví dụ: khi kẻ địch lên đại cảnh giới, chỉ số được cộng theo bảng EnemyStats rồi tính lại lực chiến.",
   "baseStats": {
     "maxHp": 85,
     "maxMana": 20,

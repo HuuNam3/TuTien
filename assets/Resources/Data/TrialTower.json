@@ -1,5 +1,6 @@
 {
   "version": 1,
+  "description": "Tháp thí luyện gồm 50 tầng, điều kiện vào, kẻ địch, lực chiến mẫu đã tính sau trang bị và phần thưởng vượt tầng. Ví dụ: phần thưởng đá cường hóa tăng theo mốc mỗi 3 tầng, rương trang bị tăng cấp theo từng 10 tầng và nhiệm vụ tuyến tháp tăng sau mỗi 3 tầng đã vượt.",
   "entryRequiredTier": 10,
   "entryText": "Cần đạt Khai Nguyên cảnh Nhất tầng",
   "floors": [

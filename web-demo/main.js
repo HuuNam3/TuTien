@@ -20,6 +20,7 @@ const enemySkillsPath = '/assets/Resources/Data/EnemySkills.json';
 const trialTowerPath = '/assets/Resources/Data/TrialTower.json';
 const questDataPath = '/assets/Resources/Data/Quests.json';
 const petDataPath = '/assets/Resources/Data/PetData.json';
+const petRealmsPath = '/assets/Resources/Data/PetRealms.json';
 const enemySkillEffectSpritePath = '/assets/Art/Sprites/Effects/chibi-sword-slash-sheet.png';
 const battleSkillAnimationDuration = 800;
 const battleSkillDamageDelay = 600;
@@ -160,6 +161,9 @@ let equipmentSlots = [];
 let rarityData = {};
 let equipmentQualityOrder = [];
 let equipmentTemplates = {};
+let equipmentIconSheets = {};
+let equipmentIconFramesBySlot = {};
+let equipmentSetNames = [];
 let specialLineData = [];
 let equipmentMajorRealmRarityProfiles = [];
 let equipmentStatGeneration = {
@@ -182,6 +186,7 @@ let trialTowerData = { entryRequiredTier: 10, entryText: '', floors: [] };
 let enemySkillData = { defaultSkill: {}, skills: [], assignments: {} };
 let questData = { title: 'Nhiệm vụ', quests: [] };
 let petData = { maxStars: 5, feed: {}, starUpgrade: {}, pets: [] };
+let petRealmData = { realmSystem: 'pet', realms: [] };
 
 let shopItems = [];
 let shopCategory = 'all';
@@ -312,6 +317,9 @@ const criticalAssetPaths = [
   '/assets/Art/Sprites/Enemies/chibi-enemy-spirits-sheet.png',
   '/assets/Art/Sprites/Enemies/chibi-enemy-constructs-sheet.png',
   '/assets/Art/Sprites/Enemies/chibi-enemy-specials-sheet.png',
+  '/assets/Art/Sprites/Enemies/chibi-enemy-late-1-sheet.png',
+  '/assets/Art/Sprites/Enemies/chibi-enemy-late-2-sheet.png',
+  '/assets/Art/Sprites/UI/chibi-wander-map-icon-sheet-late.png',
 ];
 
 const $ = (id) => document.getElementById(id);
@@ -823,7 +831,7 @@ profileButton?.addEventListener('click', showProfile);
 playerAvatarButton?.addEventListener('click', showProfile);
 equipmentButton.addEventListener('click', showEquipment);
 inventoryButton?.addEventListener('click', showInventory);
-petButton?.addEventListener('click', () => showGameToast('Tính năng Linh thú đang phát triển.', 'locked'));
+petButton?.addEventListener('click', () => showGameToast('Linh thú đang phát triển.', 'locked'));
 shopButton.addEventListener('click', showShop);
 shopCategoryFilters?.addEventListener('click', (event) => {
   const button = event.target.closest('[data-shop-category]');
@@ -1403,7 +1411,7 @@ function renderStartScreen() {
     <button type="button" class="school-choice ${school.id === playerSchoolId ? 'selected' : ''} ${available ? '' : 'is-developing'}" data-school-id="${school.id}" aria-disabled="${!available}">
       <span class="school-choice-art ${getSchoolVisualClass(school.id)}" aria-hidden="true"></span>
       <strong>${school.name}</strong>
-      <span>${school.starterSkill?.name || school.skills?.[0]?.name || 'Nhập môn'}</span>
+      <span>Nhập môn</span>
       <small>${available ? getSchoolFocusText(school) : 'Đang phát triển'}</small>
     </button>
   `;
@@ -1431,7 +1439,7 @@ function updateStartScreenAvailability() {
   if (enterGameButton) enterGameButton.disabled = !hasName || !hasSchool;
   if (startSchoolHint) {
     startSchoolHint.textContent = hasSchool
-      ? `${getPlayerSchool().name}: ${getPlayerSchool().starterSkill?.name || 'Nhập môn'}`
+      ? `${getPlayerSchool().name}: Nhập môn`
       : 'Chọn một phái';
   }
 }
@@ -1597,7 +1605,7 @@ function renderWanderEnemyOverlay(container, event) {
     <div class="enemy-encounter-meta">
       <span><b>Phẩm chất</b><strong>${getEnemyRankLabel(stage.enemyData, stage.enemyRankLevel)}</strong></span>
       <span><b>Tu vi</b><strong>${stage.realmText}</strong></span>
-      <span><b>Lối đánh</b><strong>${getCombatStyleLabel(stage.enemyData)}</strong></span>
+      <span><b>Nội tại</b><strong>${getCombatStyleLabel(stage.enemyData)}</strong></span>
       <span><b>Skill</b><strong>${stage.enemyData.skillName}</strong></span>
     </div>
     <div class="enemy-encounter-summary">
@@ -1637,7 +1645,7 @@ function renderWanderAmbushOverlay(container, event) {
     <div class="enemy-encounter-meta">
       <span><b>Phẩm chất</b><strong>${getEnemyRankLabel(stage.enemyData, stage.enemyRankLevel)}</strong></span>
       <span><b>Tu vi</b><strong>${stage.realmText}</strong></span>
-      <span><b>Lối đánh</b><strong>${getCombatStyleLabel(stage.enemyData)}</strong></span>
+      <span><b>Nội tại</b><strong>${getCombatStyleLabel(stage.enemyData)}</strong></span>
       <span><b>Skill</b><strong>${stage.enemyData.skillName}</strong></span>
     </div>
     <div class="enemy-encounter-summary">
@@ -2597,10 +2605,11 @@ async function loadAllResources() {
     ['chỉ số chiến đấu', loadCombatStats],
     ['thông số kẻ thù', loadEnemyStats],
     ['skill kẻ thù', loadEnemySkills],
-    ['lối đánh', loadCombatStyles],
+    ['nội tại', loadCombatStyles],
     ['Tháp thí luyện', loadTrialTowerData],
     ['nhiệm vụ', loadQuestData],
     ['linh thú', loadPetData],
+    ['cảnh giới Linh thú', loadPetRealmData],
   ];
   let completedTasks = 0;
   await Promise.all(resourceTasks.map(async ([name, task]) => {
@@ -2790,6 +2799,17 @@ async function loadPetData() {
   petData = data;
 }
 
+async function loadPetRealmData() {
+  const response = await fetch(petRealmsPath);
+  if (!response.ok) throw new Error(`Cannot load pet realm data: ${response.status}`);
+  const data = await response.json();
+  if (data.realmSystem !== 'pet' || !Array.isArray(data.realms) || data.realms.length !== 10
+    || data.realms.some((realm) => !realm.name || !Array.isArray(realm.minorRealms) || realm.minorRealms.length !== 9)) {
+    throw new Error('Pet realm data is incomplete.');
+  }
+  petRealmData = data;
+}
+
 async function loadEquipmentData() {
   const response = await fetch(equipmentPath);
   if (!response.ok) throw new Error(`Cannot load equipment data: ${response.status}`);
@@ -2798,6 +2818,9 @@ async function loadEquipmentData() {
   rarityData = data.rarities;
   equipmentQualityOrder = data.qualityOrder || ['common', 'uncommon', 'rare'];
   equipmentTemplates = data.templates;
+  equipmentIconSheets = data.iconSheets || {};
+  equipmentIconFramesBySlot = data.iconFramesBySlot || {};
+  equipmentSetNames = Array.isArray(data.setNames) ? data.setNames : [];
   specialLineData = data.specialLines;
   equipmentMajorRealmRarityProfiles = Array.isArray(data.majorRealmRarityProfiles)
     ? data.majorRealmRarityProfiles
@@ -2974,7 +2997,7 @@ function getEnemySkillDefinition(enemyData = {}) {
   return {
     ...(enemySkillData.defaultSkill || {}),
     ...(definition || {}),
-    name: enemyData.skillName || definition?.name || 'Skill kẻ địch',
+    name: enemyData.skillName || definition?.name || enemySkillData.defaultSkill?.name || 'Đánh cơ bản',
     description: enemyData.skillDescription || definition?.description || 'Không có hiệu ứng thêm',
   };
 }
@@ -2995,15 +3018,16 @@ function createEnemySkillRuntime(enemyData) {
 }
 
 function applyEnemySkillRuntime(fighter, enemyData) {
-  const skill = createEnemySkillRuntime(enemyData);
-  fighter.skillId = skill.id;
-  fighter.skillName = skill.name;
-  fighter.skillDescription = skill.description;
-  fighter.skillCost = skill.cost;
-  fighter.skillMultiplier = skill.multiplier;
-  fighter.skillCooldown = skill.cooldown;
-  fighter.skillCooldownRemaining = skill.cooldownRemaining;
-  fighter.skills = [skill];
+  const specialSkill = createEnemySkillRuntime(enemyData);
+  const basicSkill = createEnemySkillRuntime({ skillId: 'enemy_basic' });
+  fighter.skillId = specialSkill.id;
+  fighter.skillName = specialSkill.name;
+  fighter.skillDescription = specialSkill.description;
+  fighter.skillCost = specialSkill.cost;
+  fighter.skillMultiplier = specialSkill.multiplier;
+  fighter.skillCooldown = specialSkill.cooldown;
+  fighter.skillCooldownRemaining = specialSkill.cooldownRemaining;
+  fighter.skills = [specialSkill, basicSkill];
 }
 
 function normalizeTierRange(range, fallback) {
@@ -3354,6 +3378,19 @@ async function resetGameData() {
   window.location.reload();
 }
 
+function hasExistingCharacterSave(data = {}) {
+  const savedName = sanitizePlayerName(data.playerName);
+  const hasName = Boolean(data.hasSetPlayerName) || (savedName && savedName !== defaultPlayerName);
+  const hasProgress = Number(data.playerLevel) > 1
+    || Number(data.playerCultivation) > 0
+    || Number(data.playerSpiritStones) > 0
+    || Number(data.playerFoundation) > 1
+    || Array.isArray(data.learnedSkillIds) && data.learnedSkillIds.length > 0
+    || Array.isArray(data.inventory) && data.inventory.length > 0
+    || data.equippedItems && Object.values(data.equippedItems).some(Boolean);
+  return Boolean(data.playerSchoolId) || hasName || hasProgress;
+}
+
 function loadSavedGame() {
   try {
     const raw = window.localStorage.getItem(saveKey);
@@ -3363,10 +3400,11 @@ function loadSavedGame() {
     playerName = sanitizePlayerName(data.playerName);
     if (playerName === 'Đạo hữu vô danh') playerName = defaultPlayerName;
     hasSetPlayerName = Boolean(data.hasSetPlayerName) || playerName !== defaultPlayerName;
+    const hasCharacterSave = hasExistingCharacterSave(data);
     playerSchoolId = cultivationSchools.some((school) => school.id === data.playerSchoolId)
       ? data.playerSchoolId
-      : '';
-    hasCompletedStartScreen = Boolean(data.hasCompletedStartScreen) && Boolean(playerSchoolId);
+      : hasCharacterSave ? 'sword_cultivator' : '';
+    hasCompletedStartScreen = Boolean(data.hasCompletedStartScreen || hasCharacterSave) && Boolean(playerSchoolId);
     playerMajorRealmIndex = clamp(Number(data.playerMajorRealmIndex) || 0, 0, majorRealmNames.length - 1);
     playerLevel = clamp(Number(data.playerLevel) || 1, 1, getMinorRealmLevelCap(playerMajorRealmIndex));
     playerCultivation = Math.max(0, Number(data.playerCultivation) || 0);
@@ -3479,8 +3517,15 @@ function normalizePetStates(states = {}) {
     return [pet.id, {
       stars: clamp(Math.floor(Number(state.stars) || 0), 0, maxStars),
       feedPoints: clamp(Math.floor(Number(state.feedPoints) || 0), 0, maxFeedPoints),
+      cultivation: Math.max(0, Number(state.cultivation) || 0),
+      realmIndex: clamp(Math.floor(Number(state.realmIndex) || 0), 0, Math.max(0, petRealmData.realms.length - 1)),
+      level: clamp(
+        Math.floor(Number(state.level) || 1),
+        1,
+        petRealmData.realms[Math.floor(Number(state.realmIndex) || 0)]?.minorRealms?.length || 9,
+      ),
     }];
-  }).filter(([, state]) => state.stars > 0 || state.feedPoints > 0));
+  }).filter(([, state]) => state.stars > 0 || state.feedPoints > 0 || state.cultivation > 0));
 }
 
 function normalizeSavedItem(item) {
@@ -3491,14 +3536,14 @@ function normalizeSavedItem(item) {
     ? Object.fromEntries(Object.entries(item.stats).filter(([stat]) => stat !== 'blockReduction'))
     : createEquipmentStats(item.slotId, Number(item.level) || 1, item.rarityKey);
   const enhancementLevel = Math.max(0, Number(item.enhancementLevel) || 0);
+  const name = item.name || pickRandom(getEquipmentNamePool(item.slotId, normalizedItemLevel));
   return {
     id: Number(item.id) || equipmentIdSeed++,
     slotId: item.slotId,
-    name: item.name || pickRandom(getEquipmentNamePool(item.slotId, normalizedItemLevel)),
+    name,
+    setName: item.setName || getEquipmentSetName(item.slotId, name),
     rarityKey: item.rarityKey,
     level: normalizedItemLevel,
-    requiredLevel: clamp(Number(item.requiredLevel) || itemLevel, 1, playerMaxMinorLevel),
-    requiredTier: getEquipmentRequiredTier(item.rarityKey, normalizedItemLevel),
     sourceChestTier: Math.max(0, Number(item.sourceChestTier) || 0),
     enhancementLevel: Math.min(
       getEquipmentEnhancementQualityMax(item),
@@ -4611,6 +4656,18 @@ function getWanderMapIconClass(mapId) {
     thunderHeavenDomain: 'icon-wander-map-12',
     starRiverVoid: 'icon-wander-map-13',
     endlessHolyRealm: 'icon-wander-map-14',
+    celestialStarSea: 'icon-wander-map-15',
+    nineNetherThunderAbyss: 'icon-wander-map-16',
+    myriadFormDivineDomain: 'icon-wander-map-17',
+    voidStarGate: 'icon-wander-map-18',
+    chaosEmperorRealm: 'icon-wander-map-19',
+    creationHeavenRuin: 'icon-wander-map-20',
+    celestialRuinFrontier: 'icon-wander-map-21',
+    frostStarValley: 'icon-wander-map-22',
+    astralSeaTemple: 'icon-wander-map-23',
+    voidEmperorPass: 'icon-wander-map-24',
+    chaosLotusSanctum: 'icon-wander-map-25',
+    creationDawnRealm: 'icon-wander-map-26',
   };
   return iconByMap[mapId] || 'icon-activity-path';
 }
@@ -4992,7 +5049,7 @@ function renderWanderAmbushEvent(event) {
     <div class="enemy-encounter-meta">
       <span><b>Phẩm chất</b><strong>${getEnemyRankLabel(stage.enemyData, stage.enemyRankLevel)}</strong></span>
       <span><b>Tu vi</b><strong>${stage.realmText}</strong></span>
-      <span><b>Lối đánh</b><strong>${getCombatStyleLabel(stage.enemyData)}</strong></span>
+      <span><b>Nội tại</b><strong>${getCombatStyleLabel(stage.enemyData)}</strong></span>
       <span><b>Skill</b><strong>${stage.enemyData.skillName}</strong></span>
     </div>
     <div class="enemy-encounter-summary">
@@ -5259,7 +5316,7 @@ function startStageBattle(stage) {
     pushLog(`${resourceDungeon?.name || 'Phụ bản'}: còn ${getRemainingResourceAttempts(stage.resourceDungeonId)}/${getResourceDungeonDailyLimit(resourceDungeon)} lượt riêng hôm nay.`);
   }
   if (!isTrialTower && !isResourceDungeon && !config.unlimited) pushLog(`${config.name}: còn ${getRemainingDungeonAttempts(config.id)}/${dailyFarmLimit} lượt hôm nay.`);
-  pushLog(`${enemy.name} mang ${getEnemyEquipmentText(stage)}, dùng ${enemy.skillName} và theo lối ${getCombatStyleLabel(stage.enemyData)}.`);
+  pushLog(`${enemy.name} mang ${getEnemyEquipmentText(stage)}, dùng ${enemy.skillName} và có nội tại ${getCombatStyleLabel(stage.enemyData)}.`);
   saveGame();
   startBattle();
 }
@@ -5334,6 +5391,9 @@ function startBattle() {
   startButton.classList.add('is-hidden');
   battleResult.classList.add('is-hidden');
   pushLog('Đấu pháp bắt đầu.');
+  if (enemy.combatStyleLabel) {
+    pushLog(`${enemy.name} sở hữu nội tại ${enemy.combatStyleLabel}: ${enemy.combatStyleDescription}`);
+  }
   const firstTurn = player.speed >= enemy.speed ? playerTurn : enemyTurn;
   pushLog(`${firstTurn === playerTurn ? player.name : enemy.name} có tốc độ cao hơn và ra đòn trước.`);
   timer = window.setTimeout(firstTurn, 250);
@@ -5564,6 +5624,9 @@ function applyEnemyCombatStyle(fighter, enemyData = {}) {
     cooldown: 0,
     guarding: false,
     critBoost: 0,
+    attackBoost: 0,
+    accuracyBoost: 0,
+    lifeStealBoost: 0,
   };
 }
 
@@ -5686,20 +5749,7 @@ function enemyTurn() {
 
   tickBattleBuffs(enemy);
   const manaRecovered = regenerateBattleMana(enemy);
-  const styleAction = prepareEnemyCombatStyle(enemy);
-  if (styleAction.type === 'guard') {
-    render();
-    pushLog(`${enemy.name} dùng ${getCombatStyleLabel(enemy)} và thủ thế, giảm ${toPercent(styleAction.reduction)} sát thương lượt kế.`);
-    timer = window.setTimeout(playerTurn, turnInterval * 0.5);
-    return;
-  }
-  if (styleAction.type === 'heal') {
-    render();
-    pushLog(`${enemy.name} dùng ${getCombatStyleLabel(enemy)} hồi ${styleAction.amount} sinh lực.`);
-    timer = window.setTimeout(playerTurn, turnInterval * 0.5);
-    return;
-  }
-  if (styleAction.type === 'crit') pushLog(`${enemy.name} dồn sát ý, chuẩn bị một đòn bạo kích.`);
+  const passiveResult = applyEnemyCombatPassives(enemy);
   const result = attack(enemy, player);
   enemy.combatStyleState.critBoost = 0;
   animateAttack('enemyCard', 'playerCard', 'playerFloat', result, enemy);
@@ -5708,6 +5758,9 @@ function enemyTurn() {
   }
   render();
   if (manaRecovered > 0) pushLog(`${enemy.name} hồi ${manaRecovered} linh lực.`);
+  if (passiveResult.healAmount > 0) {
+    pushLog(`${enemy.name} kích hoạt nội tại ${getCombatStyleLabel(enemy)}, hồi ${passiveResult.healAmount} sinh lực.`);
+  }
   pushLog(formatAttackLog(enemy, result));
 
   if (player.hp <= 0) return finishBattle(`${enemy.name} thắng.`, 'lose');
@@ -5777,40 +5830,34 @@ function tickSkillCooldowns(attacker, usedSkillId = '') {
     : Math.max(0, attacker.skillCooldownRemaining - 1);
 }
 
-function prepareEnemyCombatStyle(fighter) {
+function applyEnemyCombatPassives(fighter) {
   const style = getCombatStyleDefinition(fighter.combatStyle);
   const state = fighter.combatStyleState || { cooldown: 0, guarding: false, critBoost: 0 };
   fighter.combatStyleState = state;
   state.cooldown = Math.max(0, Number(state.cooldown) - 1);
-  state.critBoost = 0;
+  state.guarding = false;
+  state.critBoost = clamp(Number(style.critBonus) || 0, 0, 0.35);
+  state.attackBoost = fighter.combatStyle === 'berserker'
+    && fighter.hp / fighter.maxHp <= clamp(Number(style.hpThreshold) || 0.5, 0.2, 0.7)
+    ? clamp(Number(style.attackBonus) || 0.12, 0.05, 0.25)
+    : 0;
+  state.accuracyBoost = clamp(Number(style.accuracyBonus) || 0, 0, 0.2);
+  state.lifeStealBoost = clamp(Number(style.lifeStealBonus) || 0, 0, 0.15);
 
-  if (fighter.combatStyle === 'defense'
-    && state.cooldown <= 0
-    && (fighter.hp / fighter.maxHp <= 0.7 || turn % 4 === 0)) {
-    state.cooldown = 3;
-    state.guarding = true;
-    fighter.guardReduction = clamp(Number(style.guardReduction) || 0.6, 0.1, 0.85);
-    return { type: 'guard', reduction: fighter.guardReduction };
-  }
-
+  let healAmount = 0;
+  const healInterval = Math.max(1, Math.floor(Number(style.healInterval) || 4));
+  const healThreshold = clamp(Number(style.hpThreshold) || 0.5, 0.2, 0.8);
   if (fighter.combatStyle === 'heal'
-    && state.cooldown <= 0
-    && fighter.hp / fighter.maxHp <= 0.58) {
-    state.cooldown = 3;
-    const amount = Math.min(
+    && turn % healInterval === 0
+    && fighter.hp / fighter.maxHp <= healThreshold) {
+    healAmount = Math.min(
       fighter.maxHp - fighter.hp,
-      Math.max(1, Math.round(fighter.maxHp * clamp(Number(style.healPercent) || 0.2, 0.05, 0.45))),
+      Math.max(1, Math.round(fighter.maxHp * clamp(Number(style.healPercent) || 0.2, 0.05, 0.3))),
     );
-    fighter.hp += amount;
-    return { type: 'heal', amount };
+    fighter.hp += healAmount;
   }
 
-  if (fighter.combatStyle === 'crit' && turn % 3 === 0) {
-    state.critBoost = clamp(Number(style.critBonus) || 0.2, 0.05, 0.5);
-    return { type: 'crit' };
-  }
-
-  return { type: 'attack' };
+  return { healAmount };
 }
 
 function resolveCounterStrike(target, attacker) {
@@ -5890,17 +5937,32 @@ function resolveAttackHit(attacker, target, multiplier = 1) {
   );
   const blocked = Math.random() < target.blockRate;
   const blockMultiplier = blocked ? 0.2 : 1;
-  const styleGuardMultiplier = target.combatStyleState?.guarding
-    ? 1 - clamp(Number(target.guardReduction) || 0.6, 0.1, 0.85)
-    : 1;
-  const effectiveDefense = Math.max(0, Math.round(target.defense * (1 - attacker.armorPierce)));
+  const styleDamageReduction = target.combatStyle === 'defense'
+    ? clamp(Number(getCombatStyleDefinition('defense').damageReduction) || 0.12, 0, 0.35)
+    : 0;
+  const targetStyle = getCombatStyleDefinition(target.combatStyle);
+  const styleDefenseBonus = target.combatStyle === 'ironbody'
+    ? clamp(Number(targetStyle.defenseBonus) || 0.1, 0, 0.2)
+    : 0;
+  const armorPierceDefinition = combatStatDefinitions.find((definition) => definition.id === 'armorPierce');
+  const armorPierceChance = clamp(Number(attacker.armorPierce) || 0, 0, 1);
+  const pierced = armorPierceChance > 0 && Math.random() < armorPierceChance;
+  const armorPierceDefenseIgnore = pierced
+    ? clamp(Number(armorPierceDefinition?.defenseIgnoreRate) || 0.5, 0, 1)
+    : 0;
+  const effectiveDefense = Math.max(
+    0,
+    Math.round(target.defense * (1 + styleDefenseBonus) * (1 - armorPierceDefenseIgnore)),
+  );
   const reducedRawDamage = rawDamage
     * (1 - clamp(target.damageReduction, 0, 0.9))
-    * styleGuardMultiplier;
+    * (1 - styleDamageReduction);
   const damage = Math.max(1, Math.round(reducedRawDamage * blockMultiplier) - effectiveDefense);
   target.hp = Math.max(0, target.hp - damage);
   if (target.combatStyleState?.guarding) target.combatStyleState.guarding = false;
-  const heal = Math.min(attacker.maxHp - attacker.hp, Math.floor(damage * attacker.lifeSteal));
+  const lifeSteal = Math.max(0, Number(attacker.lifeSteal) || 0)
+    + Math.max(0, Number(attacker.combatStyleState?.lifeStealBoost) || 0);
+  const heal = Math.min(attacker.maxHp - attacker.hp, Math.floor(damage * lifeSteal));
   if (heal > 0) attacker.hp += heal;
   return {
     damage,
@@ -5908,7 +5970,7 @@ function resolveAttackHit(attacker, target, multiplier = 1) {
     critical,
     dodged: false,
     blocked,
-    pierced: attacker.armorPierce > 0,
+    pierced,
   };
 }
 
@@ -5931,7 +5993,22 @@ function attack(attacker, target) {
     attacker.mana = Math.min(attacker.maxMana, attacker.mana + manaRefunded);
   }
 
-  const primaryHit = resolveAttackHit(attacker, target, skill ? selectedSkill.multiplier : 1);
+  const attackerStyle = getCombatStyleDefinition(attacker.combatStyle);
+  const predatorThreshold = clamp(Number(attackerStyle.targetHpThreshold) || 0.5, 0.2, 0.8);
+  const predatorBonus = attacker.combatStyle === 'predator'
+    && target.hp / target.maxHp <= predatorThreshold
+    ? clamp(Number(attackerStyle.attackBonus) || 0.1, 0.05, 0.2)
+    : 0;
+  const styleDamageMultiplier = 1 + clamp(
+    (Number(attacker.combatStyleState?.attackBoost) || 0) + predatorBonus,
+    0,
+    0.35,
+  );
+  const primaryHit = resolveAttackHit(
+    attacker,
+    target,
+    (skill ? selectedSkill.multiplier : 1) * styleDamageMultiplier,
+  );
   if (skill) {
     primaryHit.skill = true;
     primaryHit.skillId = selectedSkill.id;
@@ -5953,7 +6030,7 @@ function attack(attacker, target) {
     bonusHit = resolveAttackHit(
       attacker,
       target,
-      selectedSkill.multiplier * secondCastDamageMultiplier,
+      selectedSkill.multiplier * secondCastDamageMultiplier * styleDamageMultiplier,
     );
     bonusHit.skill = true;
     bonusHit.skillId = selectedSkill.id;
@@ -5974,7 +6051,18 @@ function attack(attacker, target) {
 }
 
 function getHitChance(attacker, target) {
-  return clamp(attacker.accuracy - target.dodgeRate, 0.1, 0.98);
+  const targetStyle = getCombatStyleDefinition(target.combatStyle);
+  const styleDodgeBonus = target.combatStyle === 'shadowstep'
+    ? clamp(Number(targetStyle.dodgeBonus) || 0.06, 0, 0.12)
+    : 0;
+  return clamp(
+    attacker.accuracy
+      + (Number(attacker.combatStyleState?.accuracyBoost) || 0)
+      - target.dodgeRate
+      - styleDodgeBonus,
+    0.1,
+    0.98,
+  );
 }
 
 function rollDamagePercent() {
@@ -6488,14 +6576,14 @@ function getCurrentRealmText() {
 function createEquipmentItem(slotId, level, rarityKey, options = {}) {
   const stats = options.stats || createEquipmentStats(slotId, level, rarityKey);
   const normalizedItemLevel = clamp(Number(level) || 1, 1, maxEquipmentLevel);
+  const name = options.name || pickRandom(getEquipmentNamePool(slotId, level));
   return {
     id: equipmentIdSeed++,
     slotId,
-    name: options.name || pickRandom(getEquipmentNamePool(slotId, level)),
+    name,
+    setName: options.setName || getEquipmentSetName(slotId, name),
     rarityKey,
     level: normalizedItemLevel,
-    requiredLevel: Math.min(normalizedItemLevel, playerMaxMinorLevel),
-    requiredTier: getEquipmentRequiredTier(rarityKey, normalizedItemLevel),
     enhancementLevel: 0,
     stats,
     baseStats: options.baseStats || { ...stats },
@@ -6506,14 +6594,14 @@ function createEquipmentItem(slotId, level, rarityKey, options = {}) {
 function createEquipmentLikeItem(slotId, level, rarityKey) {
   const stats = createEquipmentStats(slotId, level, rarityKey);
   const normalizedItemLevel = clamp(Number(level) || 1, 1, maxEquipmentLevel);
+  const name = pickRandom(getEquipmentNamePool(slotId, level));
   return {
     id: 0,
     slotId,
-    name: pickRandom(getEquipmentNamePool(slotId, level)),
+    name,
+    setName: getEquipmentSetName(slotId, name),
     rarityKey,
     level: normalizedItemLevel,
-    requiredLevel: Math.min(normalizedItemLevel, playerMaxMinorLevel),
-    requiredTier: getEquipmentRequiredTier(rarityKey, normalizedItemLevel),
     enhancementLevel: 0,
     stats,
     baseStats: { ...stats },
@@ -6531,6 +6619,12 @@ function getEquipmentNamePool(slotId, level = 1) {
     Math.max(0, Math.floor((Math.max(1, Number(level) || 1) - 1) / 30)),
   );
   return names.slice(bandIndex * 3, bandIndex * 3 + 3);
+}
+
+function getEquipmentSetName(slotId, itemName) {
+  const names = equipmentTemplates[slotId]?.names || [];
+  const itemIndex = names.indexOf(itemName);
+  return equipmentSetNames[itemIndex] || '';
 }
 
 function createEquipmentStats(slotId, level, rarityKey) {
@@ -7094,11 +7188,6 @@ function equipItem(itemId) {
   if (index < 0) return;
 
   const item = inventory[index];
-  if (!canEquipEquipment(item)) {
-    showGameToast(`Chưa đủ tu vi để mặc ${item.name}.`, 'error');
-    return;
-  }
-
   const previousPower = getEquipmentPower();
   inventory.splice(index, 1);
   const oldItem = equippedItems[item.slotId];
@@ -7135,7 +7224,7 @@ function quickEquipBestItems() {
 
   equipmentSlots.forEach((slot) => {
     const candidates = allItems
-      .filter((item) => item.slotId === slot.id && canEquipEquipment(item))
+      .filter((item) => item.slotId === slot.id)
       .sort((a, b) => getItemPower(b) - getItemPower(a));
 
     if (candidates.length > 0) {
@@ -7757,16 +7846,6 @@ function selectSkill(skillId) {
 function getEquipmentEnhancementQualityMax(item) {
   const configured = progressionFeatures.enhancement.maxLevelByRarity?.[item.rarityKey];
   return Math.max(1, Number(configured) || 30);
-}
-
-function getEquipmentRequiredTier(rarityKey, itemLevel = 1) {
-  const qualityIndex = Math.max(0, equipmentQualityOrder.indexOf(rarityKey));
-  const level = Math.max(1, Math.floor(Number(itemLevel) || 1));
-  return level + qualityIndex;
-}
-
-function canEquipEquipment(item) {
-  return getPlayerCultivationTier() >= getEquipmentRequiredTier(item.rarityKey, item.level);
 }
 
 function getCultivationEnhancementLimit() {
@@ -8438,7 +8517,7 @@ function renderProfile() {
     const rarityClass = item ? rarityData[item.rarityKey]?.className || '' : '';
     return `
       <div class="profile-equipment-slot ${rarityClass}" title="${item ? `${getRarityName(item)} ${item.name}` : `${slot.name}: Trống`}">
-        <i class="${getEquipmentIconClass(slot.id).startsWith('icon-unique-') ? 'unique-icon' : 'item-icon'} ${getEquipmentIconClass(slot.id)}" aria-hidden="true"></i>
+        ${item ? getEquipmentIconMarkup(item) : '<i class="item-icon icon-item-robe" aria-hidden="true"></i>'}
         <span>${slot.name}</span>
         <strong>${item ? item.name : 'Trống'}</strong>
         <em>Lực chiến ${item ? formatGameNumber(getItemPower(item)) : '0'}</em>
@@ -8492,14 +8571,11 @@ function renderEquipment() {
 
   $('equipmentInventoryList').innerHTML = visibleInventory.length
     ? visibleInventory.map((item) => {
-      const locked = !canEquipEquipment(item);
       const equipped = isEquipmentEquipped(item);
       return `
         <div class="inventory-item ${rarityData[item.rarityKey].className}">
           ${renderEquipmentSummary(item)}
-           <button type="button" ${locked ? 'disabled' : ''} onclick="equipItem(${item.id})">
-             ${locked ? `Cần ${getTierRealmText(getEquipmentRequiredTier(item.rarityKey, item.level))}` : 'Mặc'}
-           </button>
+           <button type="button" onclick="equipItem(${item.id})">Mặc</button>
            <button type="button" class="secondary" ${equipped ? 'disabled title="Không thể bán trang bị đang mặc"' : ''} onclick="sellItem(${item.id})">
              ${equipped ? 'Đang mặc' : `Bán ${formatGameNumber(getEquipmentSellPrice(item))}`}
            </button>
@@ -8814,8 +8890,29 @@ function getPetById(petId) {
 }
 
 function getPetState(petId) {
-  if (!petStates[petId]) petStates[petId] = { stars: 0, feedPoints: 0 };
+  if (!petStates[petId]) petStates[petId] = {
+    stars: 0,
+    feedPoints: 0,
+    cultivation: 0,
+    realmIndex: 0,
+    level: 1,
+  };
   return petStates[petId];
+}
+
+function getPetRealmText(state = {}) {
+  const realmIndex = clamp(
+    Math.floor(Number(state.realmIndex) || 0),
+    0,
+    Math.max(0, petRealmData.realms.length - 1),
+  );
+  const realm = petRealmData.realms[realmIndex];
+  const levelIndex = clamp(
+    Math.floor(Number(state.level) || 1) - 1,
+    0,
+    Math.max(0, (realm?.minorRealms?.length || 1) - 1),
+  );
+  return `${realm?.name || 'Ấu Linh'} ${realm?.minorRealms?.[levelIndex] || 'Sơ giai'}`;
 }
 
 function getPetFeedRequirement() {
@@ -8886,10 +8983,6 @@ function renderPets() {
   const selectedState = selectedPet ? getPetState(selectedPet.id) : null;
   const feedRequirement = getPetFeedRequirement();
   const maxStars = Math.max(0, Math.floor(Number(petData.maxStars) || 5));
-  $('petSummary').textContent = selectedPet
-    ? `${selectedPet.name} · Tư chất ${getPetRarity(selectedPet).name} · ${selectedState.stars} sao`
-    : 'Chưa chọn linh thú';
-
   $('selectedPetView').innerHTML = selectedPet
     ? (() => {
       const stats = getPetDisplayStats(selectedPet, selectedState);
@@ -8901,6 +8994,7 @@ function renderPets() {
           <div class="pet-visual" style="background-image:url('${selectedPet.image}')" role="img" aria-label="${selectedPet.name}"></div>
           <div class="selected-pet-details">
             <span class="pet-type">${selectedPet.type || 'Linh thú'} · <b class="pet-quality pet-quality-${getPetRarity(selectedPet).id}">Tư chất ${getPetRarity(selectedPet).name}</b></span>
+            <span class="pet-type">${getPetRealmText(selectedState)} · Tu vi ${formatGameNumber(selectedState.cultivation)}</span>
             <h3>${selectedPet.name} <small class="pet-stars"><span class="pet-stars-first">${Array.from({ length: Math.min(5, maxStars) }, (_, index) => index < selectedState.stars ? '★' : '☆').join('')}</span><span class="pet-stars-second">${Array.from({ length: Math.max(0, maxStars - 5) }, (_, index) => index + 5 < selectedState.stars ? '★' : '☆').join('')}</span></small></h3>
             <p>${selectedPet.description || ''}</p>
             <div class="pet-stat-grid">${renderPetStats(stats)}</div>
@@ -9142,13 +9236,12 @@ function sellEquipmentByRarity(rarityKey = 'all') {
 function renderEquipmentSummary(item, options = {}) {
   const enhancementLevel = Number(item.enhancementLevel) || 0;
   const enhancementMax = getEquipmentEnhancementQualityMax(item);
-  const iconClass = getEquipmentIconClass(item.slotId);
-  const iconType = iconClass.startsWith('icon-unique-') ? 'unique-icon' : 'item-icon';
   return `
-        ${options.showSlotName === false ? '' : `<strong><i class="${iconType} ${iconClass}" aria-hidden="true"></i>${getSlotName(item.slotId)}</strong>`}
-        <strong><i class="${iconType} ${iconClass}" aria-hidden="true"></i>${getRarityName(item)} ${item.name}</strong>
+        ${options.showSlotName === false ? '' : `<strong>${getEquipmentIconMarkup(item)}${getSlotName(item.slotId)}</strong>`}
+        <strong>${getEquipmentIconMarkup(item)}${getRarityName(item)} ${item.name}</strong>
+    ${item.setName ? `<small class="equipment-set-name">${item.setName}</small>` : ''}
     <em>Cấp trang bị ${formatGameNumber(item.level)} | Cường hóa +${enhancementLevel}/${enhancementMax}</em>
-    <em>Lực chiến +${formatGameNumber(getItemPower(item))} | Yêu cầu ${getTierRealmText(getEquipmentRequiredTier(item.rarityKey, item.level))}</em>
+    <em>Lực chiến +${formatGameNumber(getItemPower(item))}</em>
     ${formatItemStats(item.stats) ? `<small class="item-stat-list">${formatItemStats(item.stats)}</small>` : ''}
     ${renderEquipmentSpecials(item.specialLines)}
   `;
@@ -9157,20 +9250,35 @@ function renderEquipmentSummary(item, options = {}) {
 function renderEquippedEquipmentSummary(item, slotName, options = {}) {
   const enhancementLevel = Number(item.enhancementLevel) || 0;
   const enhancementMax = getEquipmentEnhancementQualityMax(item);
-  const iconClass = getEquipmentIconClass(item.slotId);
-  const iconType = iconClass.startsWith('icon-unique-') ? 'unique-icon' : 'item-icon';
   const specialMarkup = renderEquipmentSpecials(item.specialLines || []);
   return `
     <div class="equipped-equipment-summary">
       <div class="equipped-equipment-heading"><span>${slotName}</span><b>LC +${formatGameNumber(getItemPower(item))}</b></div>
       <div class="equipped-equipment-name">
-        <span class="equipped-equipment-visual"><i class="${iconType} ${iconClass}" aria-hidden="true"></i><em>Cấp ${formatGameNumber(item.level)}</em></span>
+        <span class="equipped-equipment-visual">${getEquipmentIconMarkup(item)}<em>Cấp ${formatGameNumber(item.level)}</em></span>
         <span class="equipped-equipment-name-copy"><strong>${item.name}</strong><b>+${formatGameNumber(enhancementLevel)}/${formatGameNumber(enhancementMax)}</b></span>
       </div>
+      ${item.setName ? `<small class="equipment-set-name">${item.setName}</small>` : ''}
       ${options.showStats !== false && formatItemStats(item.stats) ? `<div class="equipped-equipment-stats">${formatItemStats(item.stats)}</div>` : ''}
       ${options.showSpecials !== false ? specialMarkup : ''}
     </div>
   `;
+}
+
+function getEquipmentIconMarkup(item) {
+  const slotId = item?.slotId;
+  const names = equipmentTemplates[slotId]?.names || [];
+  const itemIndex = names.indexOf(item?.name);
+  const assignment = equipmentIconFramesBySlot[slotId]?.[itemIndex];
+  const sheetPath = assignment ? equipmentIconSheets[assignment[0]] : '';
+  const frame = Number(assignment?.[1]);
+  if (sheetPath && Number.isInteger(frame) && frame >= 0 && frame < 16) {
+    const column = frame % 4;
+    const row = Math.floor(frame / 4);
+    const position = `${(column * 100) / 3}% ${(row * 100) / 3}%`;
+    return `<i class="item-icon equipment-item-icon" style="background-image:url('${sheetPath}');background-position:${position}" aria-hidden="true"></i>`;
+  }
+  return `<i class="item-icon ${getEquipmentIconClass(slotId)}" aria-hidden="true"></i>`;
 }
 
 function getEquipmentIconClass(slotId) {
@@ -9187,7 +9295,6 @@ function getEquipmentIconClass(slotId) {
 
 function hasQuickEquipCandidate() {
   return inventory.some((item) => {
-    if (!canEquipEquipment(item)) return false;
     const currentItem = equippedItems[item.slotId];
     return !currentItem || getItemPower(item) > getItemPower(currentItem);
   });

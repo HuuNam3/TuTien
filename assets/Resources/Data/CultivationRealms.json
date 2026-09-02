@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "description": "26 đại cảnh giới tu luyện của nhân vật, kèm mốc tu vi cần đạt, tên hiển thị và tiến trình 9 tiểu cảnh giới từ Nhất tầng đến Cửu tầng. Ví dụ: Thối Thể là cảnh giới đầu, khi đủ tu vi sẽ đột phá sang Khai Nguyên; bảng này là nguồn chuẩn để xác định cảnh giới hiện tại và yêu cầu trang bị.",
   "realms": [
     {
       "id": 1,
@@ -15,7 +16,6 @@
         "Bát tầng",
         "Cửu tầng"
       ],
-      "breakthroughCondition": "Tu luyện: tôi luyện da thịt, gân cốt, huyết khí đến cực hạn",
       "minorBaseRequirement": 150,
       "minorStepRequirement": 90,
       "majorBreakthroughRequirement": 1350
@@ -34,7 +34,6 @@
         "Bát tầng",
         "Cửu tầng"
       ],
-      "breakthroughCondition": "Tu luyện: khai mở đan điền, sinh và tích lũy Nguyên Khí",
       "minorBaseRequirement": 390,
       "minorStepRequirement": 180,
       "majorBreakthroughRequirement": 3300
@@ -53,7 +52,6 @@
         "Bát tầng",
         "Cửu tầng"
       ],
-      "breakthroughCondition": "Tu luyện: Nguyên Khí vận hành toàn thân, thông suốt kinh mạch",
       "minorBaseRequirement": 840,
       "minorStepRequirement": 360,
       "majorBreakthroughRequirement": 7800
@@ -72,7 +70,6 @@
         "Bát tầng",
         "Cửu tầng"
       ],
-      "breakthroughCondition": "Tu luyện + tâm cảnh: điều hòa Tinh-Khí-Thần, ổn định tâm cảnh",
       "minorBaseRequirement": 1650,
       "minorStepRequirement": 690,
       "majorBreakthroughRequirement": 16500
@@ -91,7 +88,6 @@
         "Bát tầng",
         "Cửu tầng"
       ],
-      "breakthroughCondition": "Tu luyện: Nguyên Khí hoàn toàn chuyển thành Chân Nguyên",
       "minorBaseRequirement": 3150,
       "minorStepRequirement": 1275,
       "majorBreakthroughRequirement": 34500
@@ -110,7 +106,6 @@
         "Bát tầng",
         "Cửu tầng"
       ],
-      "breakthroughCondition": "Trúc Cơ Đan hoặc Trúc Cơ linh vật + tu luyện: xây dựng Đạo Cơ; thiên tài có thể không dùng đan",
       "minorBaseRequirement": 6000,
       "minorStepRequirement": 2250,
       "majorBreakthroughRequirement": 72000
@@ -129,7 +124,6 @@
         "Bát tầng",
         "Cửu tầng"
       ],
-      "breakthroughCondition": "Tu luyện thần hồn: mở Thức Hải, hình thành Thần Thức",
       "minorBaseRequirement": 10800,
       "minorStepRequirement": 4200,
       "majorBreakthroughRequirement": 142500
@@ -148,7 +142,6 @@
         "Bát tầng",
         "Cửu tầng"
       ],
-      "breakthroughCondition": "Tu luyện: Tinh-Khí-Thần hội tụ, Chân Nguyên ngưng thành Đạo Đan",
       "minorBaseRequirement": 19500,
       "minorStepRequirement": 7800,
       "majorBreakthroughRequirement": 285000
@@ -167,7 +160,6 @@
         "Bát tầng",
         "Cửu tầng"
       ],
-      "breakthroughCondition": "Tu luyện + thần hồn: phá Đan hóa Anh, Nguyên Anh viên mãn",
       "minorBaseRequirement": 36000,
       "minorStepRequirement": 13500,
       "majorBreakthroughRequirement": 540000
@@ -186,7 +178,6 @@
         "Bát Trọng Thiên",
         "Cửu Trọng Thiên"
       ],
-      "breakthroughCondition": "Tu luyện: thân thể, Chân Nguyên và Nguyên Anh đồng thời vượt giới hạn phàm tục",
       "minorBaseRequirement": 63000,
       "minorStepRequirement": 24000,
       "majorBreakthroughRequirement": 1020000
@@ -205,7 +196,6 @@
         "Bát Trọng Thiên",
         "Cửu Trọng Thiên"
       ],
-      "breakthroughCondition": "Tu luyện: Chân Nguyên lột xác thành Thánh Nguyên",
       "minorBaseRequirement": 108000,
       "minorStepRequirement": 42000,
       "majorBreakthroughRequirement": 1875000
@@ -224,7 +214,6 @@
         "Bát Trọng Thiên",
         "Cửu Trọng Thiên"
       ],
-      "breakthroughCondition": "Tu luyện: Thánh Nguyên viên mãn, thần hồn bắt đầu cộng hưởng thiên địa",
       "minorBaseRequirement": 180000,
       "minorStepRequirement": 69000,
       "majorBreakthroughRequirement": 3300000
@@ -239,7 +228,6 @@
         "Đỉnh phong",
         "Đại viên mãn"
       ],
-      "breakthroughCondition": "Tu luyện + ngộ: Nguyên Anh thăng hoa thành Nguyên Thần, lĩnh ngộ Ý Cảnh",
       "minorBaseRequirement": 315000,
       "minorStepRequirement": 135000,
       "majorBreakthroughRequirement": 6300000
@@ -254,7 +242,6 @@
         "Đỉnh phong",
         "Đại viên mãn"
       ],
-      "breakthroughCondition": "Tu luyện + ngộ: Ý Cảnh hóa Thế, Nguyên Thần giao hòa thiên địa",
       "minorBaseRequirement": 540000,
       "minorStepRequirement": 225000,
       "majorBreakthroughRequirement": 11400000
@@ -269,7 +256,6 @@
         "Đỉnh phong",
         "Đại viên mãn"
       ],
-      "breakthroughCondition": "Tu luyện + ngộ: Nguyên Thần trải qua chất biến; hồn dược có thể hỗ trợ",
       "minorBaseRequirement": 930000,
       "minorStepRequirement": 390000,
       "majorBreakthroughRequirement": 20250000
@@ -284,7 +270,6 @@
         "Đỉnh phong",
         "Đại viên mãn"
       ],
-      "breakthroughCondition": "Tu luyện + ngộ: Thế thăng hoa thành Vực Trường, có thể áp chế một phương",
       "minorBaseRequirement": 1575000,
       "minorStepRequirement": 645000,
       "majorBreakthroughRequirement": 35250000
@@ -299,7 +284,6 @@
         "Vấn Đạo",
         "Vấn Thiên"
       ],
-      "breakthroughCondition": "Ngộ Đạo: xác định con đường và Đại Đạo của chính mình",
       "minorBaseRequirement": 2625000,
       "minorStepRequirement": 1080000,
       "majorBreakthroughRequirement": 60750000
@@ -314,7 +298,6 @@
         "Ngự Đạo",
         "Hóa Đạo"
       ],
-      "breakthroughCondition": "Tu luyện + ngộ: lĩnh ngộ Pháp Tắc, lực lượng chuyển thành Đạo Nguyên",
       "minorBaseRequirement": 4350000,
       "minorStepRequirement": 1800000,
       "majorBreakthroughRequirement": 103500000
@@ -329,7 +312,6 @@
         "Ngự Hư",
         "Hư Cực"
       ],
-      "breakthroughCondition": "Tu luyện + pháp tắc: luyện Pháp Tắc nhập thân, chạm đến Hư Không",
       "minorBaseRequirement": 7200000,
       "minorStepRequirement": 3000000,
       "majorBreakthroughRequirement": 172500000
@@ -342,7 +324,6 @@
         "Hồn Hợp",
         "Đạo Hợp"
       ],
-      "breakthroughCondition": "Tu luyện + ngộ: Thân-Hồn-Pháp Tắc hợp nhất",
       "minorBaseRequirement": 12000000,
       "minorStepRequirement": 5400000,
       "majorBreakthroughRequirement": 285000000
@@ -356,7 +337,6 @@
         "Thiên Cực",
         "Đạo Cực"
       ],
-      "breakthroughCondition": "Tu luyện + ngộ: Đại Đạo bản thân tiến đến viên mãn",
       "minorBaseRequirement": 19800000,
       "minorStepRequirement": 8700000,
       "majorBreakthroughRequirement": 472500000
@@ -375,7 +355,6 @@
         "Đế Mệnh",
         "Đại Đế"
       ],
-      "breakthroughCondition": "Tu luyện + ngộ: Đế Nguyên, Đế Uy và Đại Đạo đạt cực hạn",
       "minorBaseRequirement": 33000000,
       "minorStepRequirement": 13800000,
       "majorBreakthroughRequirement": 780000000
@@ -394,7 +373,6 @@
         "Đạo Kiếp",
         "Thiên Đạo Kiếp"
       ],
-      "breakthroughCondition": "Vượt Cửu Kiếp: thiên tài địa bảo/pháp bảo chỉ hỗ trợ, bản thân bắt buộc phải chịu kiếp",
       "minorBaseRequirement": 54000000,
       "minorStepRequirement": 22500000,
       "majorBreakthroughRequirement": 1290000000
@@ -410,7 +388,6 @@
         "Đạo Ấn Viên Mãn",
         "Nửa Bước Khai Thiên"
       ],
-      "breakthroughCondition": "Ngộ Đạo + thiên tài địa bảo: luyện hóa Âm Dương Ngũ Hành, hoàn thiện Đạo Ấn",
       "minorBaseRequirement": 90000000,
       "minorStepRequirement": 37500000,
       "majorBreakthroughRequirement": 2100000000
@@ -429,7 +406,6 @@
         "Bát phẩm",
         "Cửu phẩm"
       ],
-      "breakthroughCondition": "Tu luyện Tiểu Càn Khôn + Thế Giới Vĩ Lực + Đại Đạo",
       "minorBaseRequirement": 150000000,
       "minorStepRequirement": 63000000,
       "majorBreakthroughRequirement": 3450000000
@@ -444,7 +420,6 @@
         "Đạo Tổ",
         "Sáng Thế"
       ],
-      "breakthroughCondition": "Ngộ Tam Thiên Đại Đạo: cuối cùng Tam Thiên Đại Đạo quy nhất",
       "minorBaseRequirement": 247500000,
       "minorStepRequirement": 105000000,
       "majorBreakthroughRequirement": null

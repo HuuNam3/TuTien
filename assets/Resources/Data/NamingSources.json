@@ -1,5 +1,6 @@
 {
   "version": 1,
+  "description": "3 nguồn tham khảo, 5 quy tắc đặt tên và phạm vi áp dụng cho trang bị, vật phẩm, skill, kẻ địch và địa danh. Ví dụ: tên phải giữ phong cách tiên hiệp thống nhất, không trùng tên đã dùng và phù hợp với nhóm dữ liệu hiển thị trong game.",
   "importance": "high",
   "purpose": "Nguon tham khao dat ten cho trang bi, vat pham va skill trong game Tu Tien.",
   "approvedSources": [

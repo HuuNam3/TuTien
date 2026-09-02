@@ -1,4 +1,5 @@
 {
+  "description": "Mẫu dữ liệu khởi tạo nhân vật mới gồm tên, cảnh giới, tu vi, Linh thạch, skill, trang bị, túi đồ và trạng thái hệ thống. Ví dụ: khi đăng ký tài khoản mới, game dùng mẫu này để tạo nhân vật ban đầu nhưng không ghi đè dữ liệu nhân vật đã lưu trong Mongo.",
   "starterInventory": [],
   "initialPlayer": {
     "name": "Vô danh",
