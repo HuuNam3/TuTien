@@ -41,9 +41,6 @@
         "heaven": 4
       }
     },
-    "manaRegenPerTurn": 1,
-    "manaRegenIncreaseEveryMajorRealms": 2,
-    "manaRegenIncreaseAmount": 1,
     "manaCostPerLevelByGrade": {
       "mortal": 1,
       "yellow": 2,

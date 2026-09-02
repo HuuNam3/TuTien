@@ -254,7 +254,7 @@ let wanderChestRewards = [];
 let wanderChestCapacity = 0;
 let wanderChestCapacityPerMajorRealm = 0;
 let highEnemyEncounterChance = false;
-let skipEnemyEncounters = false;
+let autoWanderEnabled = false;
 let wanderEventRollCount = 0;
 let dantianCultivation = 0;
 let dantianCultivationSeconds = 0;
@@ -1531,6 +1531,16 @@ function showBattleReturnTab() {
 function returnFromBattleScreen() {
   const shouldResumeWander = battleReturnToWander;
   battleReturnToWander = false;
+  if (shouldResumeWander && autoWanderEnabled) {
+    if (!canEnterDungeon()) {
+      autoWanderAfterRecovery = true;
+      showTrainingMessage('Tự động ngao du đang hồi phục vì đạo hữu đã trọng thương.');
+      scheduleAutoWanderAfterRecovery();
+    } else {
+      continueAutoWander();
+    }
+    return;
+  }
   if (lastBattleOutcome === 'lose') {
     showTrainingMessage('Đã thua, hãy về tu luyện để hồi phục.');
     return;
@@ -2766,7 +2776,7 @@ async function loadTrialTowerData() {
   const response = await fetch(trialTowerPath);
   if (!response.ok) throw new Error(`Cannot load trial tower data: ${response.status}`);
   const data = await response.json();
-  if (!Array.isArray(data.floors) || data.floors.length !== 50 || !Number.isFinite(Number(data.entryRequiredTier))) {
+  if (!Array.isArray(data.floors) || data.floors.length !== 80 || !Number.isFinite(Number(data.entryRequiredTier))) {
     throw new Error('Trial tower data is incomplete.');
   }
   trialTowerData = data;
@@ -3344,7 +3354,7 @@ async function resetGameData() {
       devMode: false,
       foundationFindCounts: {},
       highEnemyEncounterChance: false,
-      skipEnemyEncounters: false,
+      autoWanderEnabled: false,
       wanderEventRollCount: 0,
       wanderWinCount: 0,
       wanderRewardCount: 0,
@@ -3417,7 +3427,7 @@ function loadSavedGame() {
     foundationFindCounts = normalizeFoundationFindCounts(data.foundationFindCounts);
     wanderChestRewards = normalizeWanderChestRewards(data.wanderChestRewards);
     highEnemyEncounterChance = Boolean(data.highEnemyEncounterChance);
-    skipEnemyEncounters = Boolean(data.skipEnemyEncounters);
+    autoWanderEnabled = Boolean(data.autoWanderEnabled ?? data.skipEnemyEncounters);
     wanderEventRollCount = Math.max(0, Math.floor(Number(data.wanderEventRollCount) || 0));
     wanderWinCount = Math.max(0, Math.floor(Number(data.wanderWinCount) || 0));
     wanderRewardCount = Math.max(0, Math.floor(Number(data.wanderRewardCount) || 0));
@@ -3646,7 +3656,7 @@ function saveGame() {
     foundationFindCounts,
     wanderChestRewards,
     highEnemyEncounterChance,
-    skipEnemyEncounters,
+    autoWanderEnabled,
     wanderEventRollCount,
     wanderWinCount,
     wanderRewardCount,
@@ -4404,7 +4414,7 @@ function renderWanderStart(enoughHealth) {
   const bossRequiredWins = getWanderBossRequiredWins();
   const bossUnlocked = defeatedCount >= bossRequiredWins && !bossDefeated;
   const highEnemyUnlocked = canUseHighEnemyEncounter(map);
-  const skipEnemyUnlocked = canUseSkipEnemyEncounters(map);
+  const autoWanderUnlocked = canUseAutoWander(map);
   const highEnemyRequiredWins = Math.max(0, Math.floor(Number(gameConfig.gameplay?.wanderHighEnemyRequiredWins) || 10));
   const panel = document.createElement('section');
   panel.className = 'wander-info-panel';
@@ -4434,10 +4444,10 @@ function renderWanderStart(enoughHealth) {
     </div>
     <div class="wander-encounter-toggle">
       <div>
-        <strong><i class="unique-icon icon-wander-skip-enemy" aria-hidden="true"></i>Bỏ qua kẻ địch</strong>
+        <strong><i class="activity-icon icon-activity-path" aria-hidden="true"></i>Tự động ngao du</strong>
       </div>
-      <button type="button" class="secondary compact ${skipEnemyEncounters ? 'is-active' : ''} ${skipEnemyUnlocked ? '' : 'is-locked'}" data-wander-skip-enemy aria-pressed="${String(skipEnemyEncounters)}" aria-disabled="false" title="${skipEnemyUnlocked ? 'Bỏ qua kẻ địch trong map này' : 'Cần đánh bại Boss trong map'}">
-        <i class="unique-icon icon-wander-skip-enemy" aria-hidden="true"></i>${skipEnemyEncounters ? 'Đang bật' : 'Bật'}
+      <button type="button" class="secondary compact ${autoWanderEnabled ? 'is-active' : ''} ${autoWanderUnlocked ? '' : 'is-locked'}" data-wander-auto aria-pressed="${String(autoWanderEnabled)}" aria-disabled="false" title="${autoWanderUnlocked ? 'Tự động ngao du và chiến đấu trong map này' : 'Cần đánh bại Boss trong map'}">
+        <i class="activity-icon icon-activity-path" aria-hidden="true"></i>${autoWanderEnabled ? 'Đang bật' : 'Bật'}
       </button>
     </div>
     <div class="wander-boss-panel ${bossDefeated ? 'is-defeated' : ''}">
@@ -4457,6 +4467,12 @@ function renderWanderStart(enoughHealth) {
   const button = panel.querySelector('[data-wander-start]');
   const encounterToggle = panel.querySelector('[data-wander-high-enemy]');
   button.disabled = !enoughHealth;
+  if (autoWanderEnabled) {
+    encounterToggle.disabled = true;
+    encounterToggle.classList.add('is-locked');
+    encounterToggle.title = 'Không dùng cùng Tự động ngao du';
+    encounterToggle.setAttribute('aria-disabled', 'true');
+  }
   button.addEventListener('click', () => beginWander(false));
   encounterToggle.addEventListener('click', () => {
     if (!canUseHighEnemyEncounter(map)) {
@@ -4464,22 +4480,34 @@ function renderWanderStart(enoughHealth) {
       return;
     }
     highEnemyEncounterChance = !highEnemyEncounterChance;
-    if (highEnemyEncounterChance) skipEnemyEncounters = false;
+    if (highEnemyEncounterChance) autoWanderEnabled = false;
     saveGame();
     showGameToast(highEnemyEncounterChance ? 'Đã bật tăng tỉ lệ gặp kẻ địch.' : 'Đã tắt tăng tỉ lệ gặp kẻ địch.', 'success');
     renderStageMap();
   });
-  const skipEnemyToggle = panel.querySelector('[data-wander-skip-enemy]');
-  skipEnemyToggle.addEventListener('click', () => {
-    if (!canUseSkipEnemyEncounters(map)) {
-      showLockedFeatureNotice('Bỏ qua kẻ địch', 'Cần đánh bại Boss trong map');
+  const autoWanderToggle = panel.querySelector('[data-wander-auto]');
+  autoWanderToggle.addEventListener('click', () => {
+    if (!canUseAutoWander(map)) {
+      showLockedFeatureNotice('Tự động ngao du', 'Cần đánh bại Boss trong map');
       return;
     }
-    skipEnemyEncounters = !skipEnemyEncounters;
-    if (skipEnemyEncounters) highEnemyEncounterChance = false;
+    autoWanderEnabled = !autoWanderEnabled;
+    if (autoWanderEnabled) highEnemyEncounterChance = false;
     saveGame();
-    showGameToast(skipEnemyEncounters ? 'Đã bật bỏ qua kẻ địch.' : 'Đã tắt bỏ qua kẻ địch.', 'success');
+    showGameToast(autoWanderEnabled ? 'Đã bật tự động ngao du.' : 'Đã tắt tự động ngao du.', 'success');
     renderStageMap();
+    if (autoWanderEnabled) {
+      if (canEnterDungeon()) beginWander();
+      else {
+        autoWanderAfterRecovery = true;
+        showTrainingMessage('Tự động ngao du đang chờ hồi phục vì đạo hữu đã trọng thương.');
+        scheduleAutoWanderAfterRecovery();
+      }
+    } else {
+      autoWanderAfterRecovery = false;
+      window.clearTimeout(autoWanderRecoveryTimer);
+      autoWanderRecoveryTimer = 0;
+    }
   });
   const bossButton = panel.querySelector('[data-wander-boss]');
   bossButton.addEventListener('click', () => {
@@ -4502,6 +4530,9 @@ function renderWanderStart(enoughHealth) {
 
 function beginWander() {
   if (busy) return;
+  if (autoWanderEnabled && wanderChestRewards.length >= getWanderChestCapacity()) {
+    claimWanderChest();
+  }
   if (!canEnterDungeon()) {
     renderCultivation();
     showTrainingMessage('Đang bị trọng thương, không thể ngao du tiếp.');
@@ -4548,6 +4579,21 @@ function resolveWanderEvent() {
   clearWanderTimer();
   try {
     currentWanderEvent = rollWanderEvent();
+    if (autoWanderEnabled && currentWanderEvent.type === 'enemy') {
+      const stage = currentWanderEvent.stage;
+      renderStageMap();
+      saveGame();
+      startStageBattle(stage);
+      return;
+    }
+    if (autoWanderEnabled && currentWanderEvent.type === 'result'
+      && wanderChestRewards.length >= getWanderChestCapacity()) {
+      currentWanderEvent = null;
+      hideWanderEventOverlay();
+      claimWanderChest();
+      continueAutoWander();
+      return;
+    }
     renderStageMap();
     updateWanderEventOverlay();
     saveGame();
@@ -4570,9 +4616,7 @@ function rollWanderEvent() {
   const map = getCurrentWanderMap();
   syncWanderEncounterToggles(map);
   const stage = getRandomWanderEnemyStage(map);
-  const enemyChance = skipEnemyEncounters
-    ? 0
-    : highEnemyEncounterChance
+  const enemyChance = highEnemyEncounterChance
     ? Number(gameConfig.gameplay?.wanderHighEnemyChance) || 0.7
     : Number(map.enemyChance) || Number(gameConfig.gameplay?.wanderEnemyChance) || 0.4;
   wanderEventRollCount += 1;
@@ -4721,14 +4765,15 @@ function getWanderBossRequiredWins() {
   return Math.max(0, Math.floor(Number(gameConfig.gameplay?.wanderBossRequiredWins) || 30));
 }
 
-function canUseSkipEnemyEncounters(map = getCurrentWanderMap()) {
+function canUseAutoWander(map = getCurrentWanderMap()) {
   const requiresBoss = gameConfig.gameplay?.wanderSkipEnemyRequiresBoss !== false;
   return !requiresBoss || Boolean(wanderBossDefeatedByMap[map?.id]);
 }
 
 function syncWanderEncounterToggles(map = getCurrentWanderMap()) {
   if (!canUseHighEnemyEncounter(map)) highEnemyEncounterChance = false;
-  if (!canUseSkipEnemyEncounters(map)) skipEnemyEncounters = false;
+  if (!canUseAutoWander(map)) autoWanderEnabled = false;
+  if (autoWanderEnabled) highEnemyEncounterChance = false;
 }
 
 function normalizeWanderMapCounts(counts = {}) {
@@ -4827,6 +4872,10 @@ function renderWanderTraveling(event) {
 function stopWander() {
   if (busy) return;
   clearWanderTimer();
+  autoWanderEnabled = false;
+  autoWanderAfterRecovery = false;
+  window.clearTimeout(autoWanderRecoveryTimer);
+  autoWanderRecoveryTimer = 0;
   currentWanderEvent = null;
   hideWanderEventOverlay();
   renderStageMap();
@@ -5087,6 +5136,13 @@ function renderWanderResult(event) {
   const stopButton = card.querySelector('button');
   stopButton.addEventListener('click', stopWander);
   stageGrid.appendChild(card);
+
+  if (autoWanderEnabled && !canEnterDungeon()) {
+    autoWanderAfterRecovery = true;
+    showTrainingMessage('Tự động ngao du đang hồi phục vì đạo hữu đã trọng thương.');
+    scheduleAutoWanderAfterRecovery();
+    return;
+  }
 
   if (canContinue) {
     wanderContinueTimer = window.setTimeout(() => {
@@ -5455,8 +5511,7 @@ function scheduleAutoWanderAfterRecovery() {
     window.clearTimeout(autoWanderRecoveryTimer);
     autoWanderRecoveryTimer = 0;
     autoWanderAfterRecovery = false;
-    showMap();
-    beginWander();
+    continueAutoWander();
   };
 
   if (canEnterDungeon()) {
@@ -5466,6 +5521,19 @@ function scheduleAutoWanderAfterRecovery() {
 
   autoWanderRecoveryTimer = window.setTimeout(resume, 1000);
   saveGame();
+}
+
+function continueAutoWander() {
+  if (!autoWanderEnabled || busy) return;
+  if (!canEnterDungeon()) {
+    autoWanderAfterRecovery = true;
+    showTrainingMessage('Tự động ngao du đang hồi phục vì đạo hữu đã trọng thương.');
+    scheduleAutoWanderAfterRecovery();
+    return;
+  }
+  if (wanderChestRewards.length >= getWanderChestCapacity()) claimWanderChest();
+  showMap();
+  beginWander();
 }
 
 function getNextBattleStage() {
@@ -5714,14 +5782,12 @@ function playerTurn() {
 
   turn += 1;
   tickBattleBuffs(player);
-  const manaRecovered = regenerateBattleMana(player);
   const result = attack(player, enemy);
   animateAttack('playerCard', 'enemyCard', 'enemyFloat', result, player);
   if (result.bonusHit) {
     window.setTimeout(() => animateAttack('playerCard', 'enemyCard', 'enemyFloat', result.bonusHit, player), battleSkillAnimationDuration);
   }
   render();
-  if (manaRecovered > 0) pushLog(`${player.name} hồi ${manaRecovered} linh lực.`);
   pushLog(formatAttackLog(player, result));
   if (result.counterDamage > 0) {
     animateAttack('enemyCard', 'playerCard', 'playerFloat', {
@@ -5747,7 +5813,6 @@ function enemyTurn() {
   if (!busy || battleOver) return;
 
   tickBattleBuffs(enemy);
-  const manaRecovered = regenerateBattleMana(enemy);
   const passiveResult = applyEnemyCombatPassives(enemy);
   const result = attack(enemy, player);
   enemy.combatStyleState.critBoost = 0;
@@ -5756,7 +5821,6 @@ function enemyTurn() {
     window.setTimeout(() => animateAttack('enemyCard', 'playerCard', 'playerFloat', result.bonusHit, enemy), battleSkillAnimationDuration);
   }
   render();
-  if (manaRecovered > 0) pushLog(`${enemy.name} hồi ${manaRecovered} linh lực.`);
   if (passiveResult.healAmount > 0) {
     pushLog(`${enemy.name} kích hoạt nội tại ${getCombatStyleLabel(enemy)}, hồi ${passiveResult.healAmount} sinh lực.`);
   }
@@ -5769,19 +5833,6 @@ function enemyTurn() {
     playerTurn,
     turnInterval + (result.skill ? battleEnemyTurnDelay : 0),
   );
-}
-
-function regenerateBattleMana(fighter) {
-  const upgrade = cultivationSkillData.upgrade || {};
-  const baseAmount = Math.max(0, Number(upgrade.manaRegenPerTurn) || 0);
-  const realmInterval = Math.max(1, Math.floor(Number(upgrade.manaRegenIncreaseEveryMajorRealms) || 1));
-  const increaseAmount = Math.max(0, Number(upgrade.manaRegenIncreaseAmount) || 0);
-  const majorRealmIndex = Math.max(0, Math.floor(Number(fighter?.majorRealmIndex) || 0));
-  const amount = baseAmount + Math.floor(majorRealmIndex / realmInterval) * increaseAmount;
-  if (!amount || fighter.mana >= fighter.maxMana) return 0;
-  const recovered = Math.min(amount, fighter.maxMana - fighter.mana);
-  fighter.mana += recovered;
-  return recovered;
 }
 
 function tickBattleBuffs(fighter) {
@@ -7075,6 +7126,36 @@ function usePotion(type, amount = 1) {
   if (!stageDetailPanel.classList.contains('is-hidden') && selectedStage) renderStageDetail(selectedStage);
   saveGame();
   return used;
+}
+
+function exchangePotions(direction) {
+  if (busy) return false;
+
+  const exchangeCost = 6;
+  if (direction === 'healthToMana') {
+    if (healthPotionCount < exchangeCost) {
+      showGameToast('Cần 6 Sinh Huyết Đan để đổi.', 'error');
+      return false;
+    }
+    healthPotionCount -= exchangeCost;
+    manaPotionCount += 1;
+    showGameToast('Đã đổi 6 Sinh Huyết Đan thành 1 Tụ Linh Đan.', 'success');
+  } else if (direction === 'manaToHealth') {
+    if (manaPotionCount < exchangeCost) {
+      showGameToast('Cần 6 Tụ Linh Đan để đổi.', 'error');
+      return false;
+    }
+    manaPotionCount -= exchangeCost;
+    healthPotionCount += 1;
+    showGameToast('Đã đổi 6 Tụ Linh Đan thành 1 Sinh Huyết Đan.', 'success');
+  } else {
+    return false;
+  }
+
+  renderCultivation();
+  renderInventory();
+  saveGame();
+  return true;
 }
 
 function getPotionRecoveryPercent(potionType) {
@@ -8850,6 +8931,21 @@ function openInventoryItemDetail(itemId) {
   const item = getInventoryItem(itemId);
   if (!item) return;
   const canUse = Boolean(item.usable);
+  const potionExchange = item.id === 'health-potion'
+    ? {
+      direction: 'healthToMana',
+      iconClass: 'item-icon icon-item-mana-flame',
+      label: '6 Sinh Huyết Đan → 1 Tụ Linh Đan',
+      enabled: healthPotionCount >= 6,
+    }
+    : item.id === 'mana-potion'
+    ? {
+      direction: 'manaToHealth',
+      iconClass: 'item-icon icon-item-health-pill',
+      label: '6 Tụ Linh Đan → 1 Sinh Huyết Đan',
+      enabled: manaPotionCount >= 6,
+    }
+    : null;
   const maxQuantity = item.category === 'Công pháp' ? 1 : Math.max(1, Number(item.count) || 1);
   inventoryDetailOverlay.innerHTML = `
     <div class="wander-event-modal shop-detail-modal inventory-detail-modal" role="dialog" aria-modal="true" aria-labelledby="inventoryDetailTitle">
@@ -8861,6 +8957,12 @@ function openInventoryItemDetail(itemId) {
         <p>Số lượng trong túi: x${formatGameNumber(item.count)}</p>
         ${getInventoryItemDetails(item).map((line) => `<p>${line}</p>`).join('')}
       </div>
+      ${potionExchange ? `<div class="inventory-detail-exchange">
+        <strong>Tỉ lệ đan</strong>
+        <button type="button" class="breakthrough inventory-detail-exchange-button" data-exchange-direction="${potionExchange.direction}" ${potionExchange.enabled ? '' : 'disabled'}>
+          <i class="${potionExchange.iconClass}" aria-hidden="true"></i>${potionExchange.label}
+        </button>
+      </div>` : ''}
       ${canUse ? `<label class="shop-detail-quantity">Số lượng
         <input id="inventoryDetailQuantity" type="number" min="1" max="${maxQuantity}" value="1">
       </label>
@@ -8872,6 +8974,9 @@ function openInventoryItemDetail(itemId) {
   inventoryDetailOverlay.querySelector('.inventory-detail-use')?.addEventListener('click', () => {
     const quantity = clamp(Math.floor(Number(inventoryDetailOverlay.querySelector('#inventoryDetailQuantity')?.value) || 1), 1, maxQuantity);
     if (useInventoryItem(item.id, quantity)) hideInventoryItemDetail();
+  });
+  inventoryDetailOverlay.querySelector('.inventory-detail-exchange-button')?.addEventListener('click', (event) => {
+    if (exchangePotions(event.currentTarget.dataset.exchangeDirection)) hideInventoryItemDetail();
   });
   inventoryDetailOverlay.onclick = (event) => {
     if (event.target === inventoryDetailOverlay) hideInventoryItemDetail();
