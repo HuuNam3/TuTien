@@ -33,7 +33,7 @@ const playerSkillEffectSprites = Object.freeze({
   sword_domain: '/assets/Art/Sprites/Effects/skill-sword-domain-sheet.png',
   sword_storm: '/assets/Art/Sprites/Effects/skill-sword-storm-sheet.png',
 });
-const maxEquipmentLevel = 120;
+const maxEquipmentLevel = 50;
 const equipmentLevelsPerChestTier = 5;
 const maxEquipmentInventory = 100;
 const maxShopPurchaseQuantity = 999;
@@ -8035,12 +8035,8 @@ function getEquipmentEnhancementQualityMax(item) {
   return Math.max(1, Number(configured) || 30);
 }
 
-function getCultivationEnhancementLimit() {
-  return Math.max(1, getPlayerCultivationTier() + 5);
-}
-
 function getEquipmentEnhancementMax(item) {
-  return Math.min(getEquipmentEnhancementQualityMax(item), getCultivationEnhancementLimit());
+  return getEquipmentEnhancementQualityMax(item);
 }
 
 function getEnhancementCost(item) {

@@ -32,16 +32,16 @@
   "enhancement": {
     "entryRequiredTier": 15,
     "maxLevelByRarity": {
-      "common": 10,
-      "uncommon": 9,
-      "rare": 8,
-      "epic": 7,
-      "legendary": 6,
-      "immortal": 5,
-      "sacred": 4,
-      "divine": 3,
-      "emperor": 2,
-      "chaos": 3
+      "common": 30,
+      "uncommon": 31,
+      "rare": 32,
+      "epic": 33,
+      "legendary": 34,
+      "immortal": 35,
+      "sacred": 36,
+      "divine": 37,
+      "emperor": 38,
+      "chaos": 40
     },
     "cultivationLimitPerMajorRealm": 10,
     "stoneCostPerLevel": 1,
