@@ -5485,6 +5485,59 @@ li {
   color: #ffb477;
 }
 
+#skillsList .feature-item {
+  border-width: 2px;
+  border-color: var(--skill-rarity-color, #f5f7fa);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--skill-rarity-color, #f5f7fa) 16%, #151d27), #151d27 70%);
+}
+
+#skillsList .skill-name,
+#skillsList .skill-grade,
+.shop-item[class*="grade-"] > strong {
+  color: var(--skill-rarity-color, #f5f7fa);
+}
+
+.shop-item[class*="grade-"] {
+  border-color: var(--skill-rarity-color, #f5f7fa);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--skill-rarity-color, #f5f7fa) 16%, #151d27), #151d27 70%);
+}
+
+#skillsList .skill-title > .skill-item-icon,
+#skillsList .skill-title > .item-icon,
+.shop-item[class*="grade-"] > strong > .skill-item-icon,
+.shop-item[class*="grade-"] > strong > .item-icon,
+.profile-skill-row .skill-item-icon,
+.profile-skill-row .item-icon {
+  box-sizing: border-box;
+  border: 1px solid var(--skill-rarity-color, #f5f7fa);
+  border-radius: 5px;
+  background-color: color-mix(in srgb, var(--skill-rarity-color, #f5f7fa) 18%, #151d27);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 0 8px color-mix(in srgb, var(--skill-rarity-color, #f5f7fa) 45%, transparent);
+}
+
+#skillsList .skill-title > .skill-item-icon,
+#skillsList .skill-title > .item-icon {
+  position: relative;
+  flex-basis: 40px;
+  width: 40px;
+  height: 40px;
+  vertical-align: middle;
+}
+
+#skillsList .skill-level-badge {
+  position: absolute;
+  z-index: 2;
+  top: 1px;
+  right: 1px;
+  color: #ffe27b;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(5, 8, 12, 0.95), 0 0 2px rgba(5, 8, 12, 0.9);
+  pointer-events: none;
+}
+
 .skill-practice-label {
   display: flex;
   justify-content: space-between;
@@ -7464,15 +7517,22 @@ button.breakthrough:not(:disabled) {
 }
 
 #skillsList .skill-actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 6px;
 }
 
-#skillsList .skill-actions button,
-#skillsList > .feature-item > button {
-  min-height: 36px;
-  height: 36px;
-  padding-inline: 6px;
+#skillsList .skill-actions button:only-child {
+  grid-column: 1 / -1;
+}
+
+#skillsList .skill-actions button {
+  min-width: 0;
+  min-height: 32px;
+  height: 32px;
+  padding: 4px;
   font-size: 12px;
+  line-height: 1.1;
+  white-space: normal;
 }
 
 #skillsList .skill-title {
@@ -7523,6 +7583,45 @@ button.breakthrough:not(:disabled) {
   background: rgba(214, 169, 87, 0.08);
   color: #f2d58a;
   line-height: 1.45;
+}
+
+#skillsList .skill-description-toggle {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: auto;
+  padding: 5px 7px;
+  border: 1px solid color-mix(in srgb, var(--skill-rarity-color, #f5f7fa) 35%, transparent);
+  background: rgba(214, 169, 87, 0.08);
+  color: #f2d58a;
+  font-size: 12px;
+  line-height: 1.35;
+  text-align: left;
+}
+
+#skillsList .skill-description-toggle > span {
+  min-width: 0;
+}
+
+#skillsList .skill-description-toggle > small {
+  flex: 0 0 auto;
+  color: var(--skill-rarity-color, #f5f7fa);
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+#skillsList .skill-description-detail {
+  padding: 5px 7px;
+  border-left: 2px solid var(--skill-rarity-color, #f5f7fa);
+  background: color-mix(in srgb, var(--skill-rarity-color, #f5f7fa) 8%, transparent);
+  color: #d9e4ef;
+  font-size: 11px;
+  line-height: 1.4;
 }
 
 #skillsList .skill-mana-cost {

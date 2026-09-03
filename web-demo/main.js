@@ -282,6 +282,7 @@ let dailyShopPurchases = { date: getDailyKey(), counts: {} };
 let resourceDungeonProgress = {};
 let activeSkillId = '';
 let skillTrainingId = '';
+let expandedSkillDetailsId = '';
 let selectedPetId = '';
 let petStates = {};
 let hasMajorAscensionPermit = false;
@@ -908,6 +909,7 @@ document.addEventListener('click', (event) => {
   if (target.dataset.petAction === 'select') return selectPet(target.dataset.petId);
   if (target.dataset.petAction === 'feed') return feedSelectedPet();
   if (target.dataset.petAction === 'star') return upgradeSelectedPetStar();
+  if (target.dataset.skillAction === 'details') return toggleSkillDetails(target.dataset.skillId);
   if (target.dataset.skillAction === 'select') return selectSkillTraining(target.dataset.skillId);
   if (target.dataset.skillAction === 'equip') return toggleEquipSkill(target.dataset.skillId);
   if (target.dataset.skillAction === 'upgrade') return upgradeSkill(target.dataset.skillId);
@@ -1085,6 +1087,14 @@ function isSkillLearned(skillId) {
 
 function getSkillGradeName(skill) {
   return cultivationSkillData.grades.find((grade) => grade.id === skill.gradeId)?.name || 'Phẩm cấp chưa định';
+}
+
+function getSkillGradeColor(gradeId) {
+  const gradeIndex = cultivationSkillData.grades.findIndex((grade) => grade.id === gradeId);
+  const rarityKey = cultivationSkillData.gradeColorRarityMap?.[gradeId]
+    || equipmentQualityOrder[Math.max(0, gradeIndex)]
+    || 'common';
+  return rarityData[rarityKey]?.color || '#f5f7fa';
 }
 
 function getSkillRequiredTier(skill) {
@@ -7838,11 +7848,17 @@ function formatSkillEffects(skill, level = getSkillLevel(skill.id)) {
 }
 
 function formatSkillDisplayNote(skill, level = getSkillLevel(skill.id)) {
+  if (skill?.id === 'sword_domain') {
+    const effects = getSkillEffects(skill, level);
+    const attackBuff = effects.find((effect) => effect.stat === 'attack');
+    const critBuff = effects.find((effect) => effect.stat === 'critRate');
+    const duration = Math.max(1, Number(attackBuff?.duration || critBuff?.duration) || 3);
+    return `Gây ${Math.round(getSkillMultiplier(skill, level) * 100)}% sát thương Công lên kẻ địch và tăng Công +${toPercent(attackBuff?.value)} cộng thêm, tăng Chí mạng +${toPercent(critBuff?.value)} cộng thêm trong ${duration} lượt, không cộng dồn.`;
+  }
   const parts = [`Gây ${Math.round(getSkillMultiplier(skill, level) * 100)}% Công lên kẻ địch`];
   const effectText = formatSkillEffects(skill, level);
   if (effectText !== 'Không có hiệu ứng thêm') parts.push(effectText);
-  const cooldownText = `thời gian hồi ${Math.max(1, Number(skill.cooldown) || 1)} lượt`;
-  return `${parts.join(' và ')}; ${cooldownText}.`;
+  return `${parts.join(' và ')}.`;
 }
 
 function renderSkills() {
@@ -7874,9 +7890,6 @@ function renderSkills() {
     const practiceReady = level < maxLevel && practice >= practiceRequired;
     const bookReady = !bookRequired || bookCount >= bookRequired;
     const canUpgrade = level < maxLevel && practiceReady && bookReady;
-    const upgradeText = bookRequired
-      ? `Nâng cấp cần ${bookRequired} sách`
-      : 'Nâng cấp';
     const active = skill.id === skillTrainingId && !practiceReady && level < maxLevel;
     const equipText = equipped
       ? 'Tháo skill'
@@ -7892,21 +7905,38 @@ function renderSkills() {
       : active
       ? 'Đang tu luyện'
       : 'Tu luyện';
+    const progressAction = practiceReady ? 'upgrade' : 'select';
+    const progressText = practiceReady
+      ? bookRequired
+        ? `Nâng cấp cần ${bookRequired} sách`
+        : 'Nâng cấp'
+      : trainingText;
+    const progressButton = level < maxLevel
+      ? `<button type="button" class="${practiceReady && canUpgrade ? 'breakthrough skill-upgrade-ready' : active ? 'breakthrough' : 'secondary'} compact" ${buttonDisabledAttributes(practiceReady ? !canUpgrade : false, practiceReady ? 'Chưa có đủ sách skill.' : 'Skill đã đủ tiến độ, hãy nâng cấp trước.')} data-skill-action="${progressAction}" data-skill-id="${skill.id}">${progressText}</button>`
+      : '';
+    const detailsOpen = expandedSkillDetailsId === skill.id;
+    const skillDescription = skill.description || 'Gây sát thương lên kẻ địch.';
+    const skillIconClass = getSkillItemIconMarkupClass(skill.id);
     return `
-      <div class="feature-item grade-${skill.gradeId || 'mortal'} ${active ? 'active' : ''}">
-        <strong class="skill-title"><i class="${getSkillItemIconMarkupClass(skill.id)}" aria-hidden="true"></i><span class="skill-name">${skill.name}</span><small class="skill-grade">${getSkillGradeName(skill)}</small><span class="skill-level">+${level}</span><span class="skill-power">LC ${formatGameNumber(skillPower)}</span></strong>
-        <small class="skill-mana-cost"><i class="stat-icon icon-stat-mana" aria-hidden="true"></i>Linh lực cần ${formatGameNumber(getSkillManaCost(skill, level))}</small>
-        <small class="skill-effect-line">${formatSkillDisplayNote(skill, level)}</small>
+      <div class="feature-item grade-${skill.gradeId || 'mortal'} ${active ? 'active' : ''}" style="--skill-rarity-color: ${getSkillGradeColor(skill.gradeId)};">
+        <strong class="skill-title"><i class="${skillIconClass}" aria-hidden="true"><b class="skill-level-badge">+${level}</b></i><span class="skill-name">${skill.name}</span><small class="skill-grade">${getSkillGradeName(skill)}</small><span class="skill-power">LC ${formatGameNumber(skillPower)}</span></strong>
+        <small class="skill-mana-cost"><i class="stat-icon icon-stat-mana" aria-hidden="true"></i>Linh lực cần ${formatGameNumber(getSkillManaCost(skill, level))} · Hồi chiêu ${formatGameNumber(Math.max(1, Number(skill.cooldown) || 1))} lượt</small>
+        <button type="button" class="skill-description-toggle" data-skill-action="details" data-skill-id="${skill.id}" aria-expanded="${detailsOpen}"><span>${skillDescription}</span><small>${detailsOpen ? 'Ẩn chi tiết' : 'Xem chi tiết'}</small></button>
+        ${detailsOpen ? `<div class="skill-description-detail">${formatSkillDisplayNote(skill, level)}</div>` : ''}
         <div class="skill-practice-label"><span>Tu luyện ${practice}/${level >= maxLevel ? 'Tối đa' : practiceRequired}</span><strong>${level >= maxLevel ? 'Đã viên mãn' : `${practicePercent}%`}</strong></div>
         <div class="skill-practice-bar"><i style="width: ${practicePercent}%"></i></div>
         <div class="skill-actions">
-          <button type="button" class="${active ? 'breakthrough' : 'secondary'} compact" ${buttonDisabledAttributes(level >= maxLevel || practiceReady, level >= maxLevel ? 'Skill đã đạt cấp tối đa.' : 'Skill đã đủ tiến độ, hãy nâng cấp trước.')} data-skill-action="select" data-skill-id="${skill.id}">${trainingText}</button>
-          <button type="button" class="${canUpgrade ? 'breakthrough skill-upgrade-ready' : 'secondary'} compact" ${buttonDisabledAttributes(!canUpgrade, level >= maxLevel ? 'Skill đã đạt cấp tối đa.' : !practiceReady ? 'Skill chưa đủ tiến độ tu luyện.' : 'Chưa có đủ sách skill.')} data-skill-action="upgrade" data-skill-id="${skill.id}">${upgradeText}</button>
+          ${progressButton}
+          <button type="button" class="secondary compact" ${buttonDisabledAttributes(!equipped && (equippedSkillIds.length >= maxEquipped || getPlayerCultivationTier() < getSkillRequiredTier(skill)), equippedSkillIds.length >= maxEquipped ? 'Đã đầy ô skill.' : `Cần ${getTierRealmText(getSkillRequiredTier(skill))} để trang bị skill.`)} data-skill-action="equip" data-skill-id="${skill.id}">${equipText}</button>
         </div>
-        <button type="button" class="secondary compact" ${buttonDisabledAttributes(!equipped && (equippedSkillIds.length >= maxEquipped || getPlayerCultivationTier() < getSkillRequiredTier(skill)), equippedSkillIds.length >= maxEquipped ? 'Đã đầy ô skill.' : `Cần ${getTierRealmText(getSkillRequiredTier(skill))} để trang bị skill.`)} data-skill-action="equip" data-skill-id="${skill.id}">${equipText}</button>
       </div>
     `;
   }).join('') : '<div class="inventory-empty"><i class="stat-icon icon-stat-skill" aria-hidden="true"></i><span>Chưa học skill nào.</span></div>';
+}
+
+function toggleSkillDetails(skillId) {
+  expandedSkillDetailsId = expandedSkillDetailsId === skillId ? '' : skillId;
+  renderSkills();
 }
 
 function selectSkillTraining(skillId) {
@@ -8620,11 +8650,12 @@ function renderShop() {
       : dailyLimitReached ? 'Hết lượt hôm nay'
       : bought ? 'Đã mua' : locked ? 'Chưa mở' : 'Mua';
     const qualityClass = item.gradeId ? `grade-${item.gradeId}` : item.rarityKey ? `quality-${item.rarityKey}` : '';
+    const skillColorStyle = item.gradeId ? ` style="--skill-rarity-color: ${getSkillGradeColor(item.gradeId)};"` : '';
 
     const canBuyOne = canBuy && !bought;
     const detailButtonText = canBuyOne ? 'Mua nhiều' : 'Chi tiết';
     return `
-      <article class="shop-item ${qualityClass}" data-shop-detail="${item.id}" tabindex="0">
+      <article class="shop-item ${qualityClass}"${skillColorStyle} data-shop-detail="${item.id}" tabindex="0">
          <strong>${getShopItemIconMarkup(item)}${item.name}</strong>
         <span>${item.description}</span>
         <em>${meta}</em>
@@ -8688,7 +8719,7 @@ function renderProfile() {
     const active = skill.id === activeSkillId;
     const skillPower = getSkillCombatPower(skill, level);
     return `
-      <div class="profile-skill-row ${active ? 'active' : ''}">
+      <div class="profile-skill-row ${active ? 'active' : ''}" style="--skill-rarity-color: ${getSkillGradeColor(skill.gradeId)};">
         <div class="profile-skill-icon"><i class="${getSkillItemIconClass(skill.id).startsWith('icon-skill-item-') ? 'skill-item-icon' : 'item-icon'} ${getSkillItemIconClass(skill.id)}" aria-hidden="true"></i></div>
         <div class="profile-skill-copy">
           <strong>${skill.name}</strong>
