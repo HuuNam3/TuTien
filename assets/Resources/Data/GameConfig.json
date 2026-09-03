@@ -54,9 +54,27 @@
     "devgame": {
       "once": true,
       "grant": {
-        "spiritStones": 100000000,
-        "foundation": 1000000,
-        "comprehension": 10000
+        "spiritStones": 10000000000,
+        "foundation": 1000000000,
+        "comprehension": 100000,
+        "ascensionPermits": 26,
+        "equipmentChestTier1": 999,
+        "equipmentChestTier2": 999,
+        "equipmentChestTier3": 999,
+        "equipmentChestTier4": 999,
+        "equipmentChestTier5": 999,
+        "equipmentChestTier6": 999,
+        "equipmentChestTier7": 999,
+        "equipmentChestTier8": 999,
+        "equipmentChestTier9": 999,
+        "equipmentChestTier10": 999,
+        "skillChestMortal": 999,
+        "skillChestYellow": 999,
+        "skillChestMysterious": 999,
+        "enhancementStones": 9990000,
+        "healthPotions": 100000,
+        "manaPotions": 100000,
+        "unlockAllWanderMaps": true
       }
     },
     "newbie": {

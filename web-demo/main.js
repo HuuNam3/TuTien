@@ -163,6 +163,7 @@ let equipmentQualityOrder = [];
 let equipmentTemplates = {};
 let equipmentIconSheets = {};
 let equipmentIconFramesBySlot = {};
+let equipmentLevelColorGroups = [];
 let equipmentSetNames = [];
 let specialLineData = [];
 let equipmentMajorRealmRarityProfiles = [];
@@ -779,7 +780,7 @@ function renderOnboardingGuide() {
       ${hasTarget ? `<p class="onboarding-target-hint"><i class="activity-icon icon-activity-guide" aria-hidden="true"></i>Hãy bấm vào ${step.targetLabel} đang phát sáng để tiếp tục.</p>` : ''}
       <div class="onboarding-actions">
         <button type="button" class="secondary compact onboarding-skip">Bỏ qua</button>
-        <button type="button" class="${hasTarget ? 'secondary' : 'breakthrough'} compact onboarding-next" ${hasTarget ? 'disabled' : ''}><i class="${step.iconType} ${step.icon}" aria-hidden="true"></i>${hasTarget ? 'Đang chờ thao tác' : step.action}</button>
+        <button type="button" class="${hasTarget ? 'secondary' : 'breakthrough'} compact onboarding-next" ${buttonDisabledAttributes(hasTarget, 'Hãy thực hiện thao tác được hướng dẫn trước.')}><i class="${step.iconType} ${step.icon}" aria-hidden="true"></i>${hasTarget ? 'Đang chờ thao tác' : step.action}</button>
       </div>
     </div>
   `;
@@ -809,6 +810,37 @@ audioToggleButton?.addEventListener('click', toggleAudio);
 document.addEventListener('pointerdown', () => {
   if (audioEnabled) ensureAudioStarted();
 }, { passive: true });
+function getButtonDisabledMessage(button) {
+  return button.dataset.disabledToast || button.title || 'Chức năng này hiện chưa thể sử dụng.';
+}
+
+function buttonDisabledAttributes(disabled, message) {
+  if (!disabled) return '';
+  const safeMessage = String(message || 'Chức năng này hiện chưa thể sử dụng.')
+    .replaceAll('&', '&amp;')
+    .replaceAll('"', '&quot;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;');
+  return `aria-disabled="true" data-disabled-toast="${safeMessage}"`;
+}
+
+function setButtonDisabledState(button, disabled, message) {
+  if (!button) return;
+  const unavailable = Boolean(disabled);
+  button.disabled = false;
+  button.classList.toggle('is-unavailable', unavailable);
+  button.setAttribute('aria-disabled', String(unavailable));
+  if (unavailable) button.dataset.disabledToast = message || 'Chức năng này hiện chưa thể sử dụng.';
+  else delete button.dataset.disabledToast;
+}
+
+document.addEventListener('click', (event) => {
+  const target = event.target instanceof Element ? event.target.closest('button[data-disabled-toast]') : null;
+  if (!target) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  showGameToast(getButtonDisabledMessage(target), 'locked');
+}, true);
 document.addEventListener('click', (event) => {
   const target = event.target instanceof Element ? event.target.closest('button') : null;
   if (target && target !== audioToggleButton && !target.disabled) playAudioCue('click');
@@ -1436,7 +1468,7 @@ function renderStartScreen() {
 function updateStartScreenAvailability() {
   const hasName = Boolean(sanitizePlayerName(startPlayerNameInput?.value));
   const hasSchool = playerSchoolId === 'sword_cultivator';
-  if (enterGameButton) enterGameButton.disabled = !hasName || !hasSchool;
+  setButtonDisabledState(enterGameButton, !hasName || !hasSchool, !hasName ? 'Vui lòng nhập tên nhân vật.' : 'Vui lòng chọn môn phái.');
   if (startSchoolHint) {
     startSchoolHint.textContent = hasSchool
       ? `${getPlayerSchool().name}: Nhập môn`
@@ -1764,11 +1796,36 @@ function getRedeemCodeConfig(code) {
 
 function getRedeemRewardToastItems(code, grant = {}) {
   if (code === 'devgame') {
-    return [
+    const items = [
       { iconClass: 'item-icon icon-item-spirit-stone', label: `Linh thạch +${formatGameNumber(grant.spiritStones)}` },
       { iconClass: 'stat-icon icon-stat-gem', label: `Căn cơ +${formatGameNumber(grant.foundation)}` },
       { iconClass: 'unique-icon icon-unique-comprehension', label: `Ngộ tính +${formatGameNumber(grant.comprehension)}` },
+      { iconClass: 'activity-icon icon-activity-gate', label: `Phá Cảnh Đan x${formatGameNumber(grant.ascensionPermits)}` },
     ];
+    Object.entries(grant).forEach(([key, amount]) => {
+      const equipmentMatch = key.match(/^equipmentChestTier(\d+)$/);
+      if (equipmentMatch) {
+        items.push({
+          iconClass: 'activity-icon icon-activity-chest',
+          label: `Rương trang bị cấp ${equipmentMatch[1]} x${formatGameNumber(amount)}`,
+        });
+        return;
+      }
+      const skillChest = shopItems.find((item) => item.id === key && item.type === 'skillChest');
+      if (skillChest && Number(amount) > 0) {
+        items.push({
+          iconClass: 'activity-icon icon-activity-chest',
+          label: `${skillChest.name} x${formatGameNumber(amount)}`,
+        });
+      }
+    });
+    items.push(
+      { iconClass: 'item-icon icon-item-enhancement-stone', label: `Đá cường hóa x${formatGameNumber(grant.enhancementStones)}` },
+      { iconClass: 'item-icon icon-item-health-pill', label: `Sinh Huyết Đan x${formatGameNumber(grant.healthPotions)}` },
+      { iconClass: 'item-icon icon-item-mana-flame', label: `Tụ Linh Đan x${formatGameNumber(grant.manaPotions)}` },
+      { iconClass: 'activity-icon icon-activity-path', label: 'Đã mở tất cả map Ngao du' },
+    );
+    return items;
   }
   if (code === 'newbie') {
     return [
@@ -1780,7 +1837,29 @@ function getRedeemRewardToastItems(code, grant = {}) {
       { iconClass: 'item-icon icon-item-mana-flame', label: `Tụ Linh Đan x${formatGameNumber(grant.manaPotions)}` },
     ];
   }
-  return [];
+  const chestRewards = Object.entries(grant)
+    .map(([key, amount]) => {
+      const match = key.match(/^equipmentChestTier(\d+)$/);
+      return match ? { tier: Number(match[1]), amount: Number(amount) || 0 } : null;
+    })
+    .filter((reward) => reward && reward.amount > 0);
+  const rewardItems = chestRewards.map((reward) => ({
+      iconClass: 'activity-icon icon-activity-chest',
+      label: `Rương cấp ${reward.tier} x${formatGameNumber(reward.amount)}`,
+  }));
+  if (grant.enhancementStones) {
+    rewardItems.push({
+      iconClass: 'item-icon icon-item-enhancement-stone',
+      label: `Đá cường hóa x${formatGameNumber(grant.enhancementStones)}`,
+    });
+  }
+  if (grant.ascensionPermits) {
+    rewardItems.push({
+      iconClass: 'activity-icon icon-activity-gate',
+      label: `Phá Cảnh Đan x${formatGameNumber(grant.ascensionPermits)}`,
+    });
+  }
+  return rewardItems;
 }
 
 function redeemCode() {
@@ -1809,8 +1888,22 @@ function redeemCode() {
   healthPotionCount += Math.max(0, Number(grant.healthPotions) || 0);
   manaPotionCount += Math.max(0, Number(grant.manaPotions) || 0);
   addShopInventoryItem(ascensionPermitItemId, grant.ascensionPermits);
-  for (let index = 0; index < Math.max(0, Number(grant.equipmentChestTier1) || 0); index += 1) {
-    addEquipmentChest({ majorRealmIndex: playerMajorRealmIndex }, { chestTier: 1 });
+  Object.entries(grant).forEach(([key, amount]) => {
+    const match = key.match(/^equipmentChestTier(\d+)$/);
+    if (!match) return;
+    const chestTier = Math.max(1, Number(match[1]) || 1);
+    for (let index = 0; index < Math.max(0, Number(amount) || 0); index += 1) {
+      addEquipmentChest({ majorRealmIndex: playerMajorRealmIndex }, { chestTier });
+    }
+  });
+  Object.entries(grant).forEach(([key, amount]) => {
+    const skillChest = shopItems.find((item) => item.id === key && item.type === 'skillChest');
+    if (skillChest) addShopInventoryItem(skillChest.id, amount);
+  });
+  if (grant.unlockAllWanderMaps) {
+    wanderMapList.forEach((map) => {
+      wanderBossDefeatedByMap[map.id] = true;
+    });
   }
 
   if (code === 'devgame') devMode = true;
@@ -1826,7 +1919,7 @@ function redeemCode() {
   saveGame();
   if (codeInput) codeInput.value = '';
   showGameToast(
-    code === 'devgame' ? 'Đã nhận quà Dev:' : 'Đã nhận quà tân thủ:',
+    code === 'devgame' ? 'Đã nhận quà Dev:' : code === 'newbie' ? 'Đã nhận quà tân thủ:' : 'Đã nhận quà từ mã redeem:',
     'success',
     getRedeemRewardToastItems(code, grant),
   );
@@ -2140,7 +2233,7 @@ function renderQuests() {
         <p>${description}</p>
         <div class="quest-progress-bar"><i style="width:${percent}%"></i></div>
         <small>Thưởng: ${formatQuestReward(reward)}</small>
-        <button type="button" class="${ready ? 'breakthrough' : 'secondary'} compact" ${ready ? '' : 'disabled'} onclick="claimQuest('${quest.id}')">
+        <button type="button" class="${ready ? 'breakthrough' : 'secondary'} compact" ${buttonDisabledAttributes(!ready, progress.finished ? 'Nhiệm vụ đã hoàn tất.' : claimed ? 'Nhiệm vụ đã nhận thưởng.' : 'Nhiệm vụ chưa hoàn thành.')} onclick="claimQuest('${quest.id}')">
           ${progress.finished ? 'Đã hoàn tất' : claimed ? 'Đã nhận' : ready ? 'Nhận thưởng' : 'Đang tiến hành'}
         </button>
       </article>
@@ -2344,7 +2437,7 @@ function renderTrialTower() {
         </div>
         <em>${rankText} | ${floor.realmText} | ${getCombatStyleLabel(stage?.enemyData)} | Lực chiến ${formatGameNumber(stage?.trialCombatPower || (preview ? getCombatPower(preview) : 0))}</em>
         <small>${formatTrialTowerReward(floor.reward)}</small>
-        <button type="button" class="${unlocked ? 'breakthrough' : 'secondary'} compact" ${unlocked ? '' : 'disabled'} data-trial-floor="${floorNumber}">
+        <button type="button" class="${unlocked ? 'breakthrough' : 'secondary'} compact" ${buttonDisabledAttributes(!unlocked, !entered || locked ? 'Tầng này chưa mở.' : 'Chưa thể khiêu chiến tầng này.')} data-trial-floor="${floorNumber}">
           ${cleared ? 'Đã vượt' : !entered ? 'Chưa mở' : locked ? 'Chưa mở' : 'Khiêu chiến'}
         </button>
       </div>
@@ -2371,7 +2464,7 @@ function showMap() {
   window.clearTimeout(timer);
   busy = false;
   battleOver = false;
-  startButton.disabled = false;
+  setButtonDisabledState(startButton, false);
   startButton.textContent = 'Tiếp tục ngao du';
   selectedStage = null;
   battleResult.classList.add('is-hidden');
@@ -2829,6 +2922,7 @@ async function loadEquipmentData() {
   equipmentTemplates = data.templates;
   equipmentIconSheets = data.iconSheets || {};
   equipmentIconFramesBySlot = data.iconFramesBySlot || {};
+  equipmentLevelColorGroups = Array.isArray(data.levelColorGroups) ? data.levelColorGroups : [];
   equipmentSetNames = Array.isArray(data.setNames) ? data.setNames : [];
   specialLineData = data.specialLines;
   equipmentMajorRealmRarityProfiles = Array.isArray(data.majorRealmRarityProfiles)
@@ -3194,7 +3288,7 @@ async function submitAuth(event) {
   event.preventDefault();
   if (authSubmitting) return;
   authSubmitting = true;
-  if (authSubmitButton) authSubmitButton.disabled = true;
+  setButtonDisabledState(authSubmitButton, true, 'Đang xác thực, vui lòng chờ.');
   setAuthMessage('Đang xác thực...');
   try {
     const response = await fetch(cloudAuthEndpoint, {
@@ -3217,7 +3311,7 @@ async function submitAuth(event) {
     setAuthMessage('Không thể kết nối dịch vụ tài khoản.', 'error');
   } finally {
     authSubmitting = false;
-    if (authSubmitButton) authSubmitButton.disabled = false;
+    setButtonDisabledState(authSubmitButton, false);
   }
 }
 
@@ -4040,7 +4134,7 @@ function resetBattle() {
   logList.innerHTML = '';
   battleResult.classList.add('is-hidden');
   hideBattleResultOverlay();
-  startButton.disabled = true;
+  setButtonDisabledState(startButton, true, 'Trận đấu đang diễn ra.');
   startButton.textContent = 'Đang đấu';
   startButton.classList.remove('is-hidden');
 }
@@ -4188,9 +4282,8 @@ function renderWanderMapSelector(initialScrollLeft = 0) {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = `wander-map-card ${active ? 'active' : ''} ${unlocked ? '' : 'locked'}`;
-    button.disabled = lockedByEvent;
     button.classList.toggle('locked-tab', !unlocked);
-    button.setAttribute('aria-disabled', String(lockedByEvent));
+    setButtonDisabledState(button, lockedByEvent, 'Đang trong trận đấu, chưa thể đổi map.');
     button.setAttribute('role', 'tab');
     button.setAttribute('aria-selected', String(active));
     button.innerHTML = `
@@ -4276,7 +4369,13 @@ function renderWanderChestButton() {
   const capacity = getWanderChestCapacity();
   const blockedByEvent = Boolean(currentWanderEvent && ['enemy', 'ambush'].includes(currentWanderEvent.type));
   const hasRewards = rewardCount > 0;
-  wanderChestButton.disabled = busy || !hasRewards || blockedByEvent;
+  const unavailable = busy || !hasRewards || blockedByEvent;
+  const unavailableMessage = busy
+    ? 'Đang xử lý ngao du, vui lòng chờ.'
+    : blockedByEvent
+    ? 'Hãy kết thúc trận đấu trước khi mở rương.'
+    : 'Rương Ngao du đang trống.';
+  setButtonDisabledState(wanderChestButton, unavailable, unavailableMessage);
   wanderChestButton.classList.toggle('has-rewards', hasRewards);
   wanderChestButton.title = hasRewards
     ? `Rương Ngao du: ${rewardCount}/${capacity} phần thưởng`
@@ -4455,7 +4554,7 @@ function renderWanderStart(enoughHealth) {
         <strong><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i>Boss map</strong>
         <small>${bossDefeated ? 'Đã chinh phục' : `Đã đánh bại ${defeatedCount}/${bossRequiredWins} kẻ địch`}</small>
       </div>
-      <button type="button" class="secondary compact ${bossUnlocked ? '' : bossDefeated ? 'is-defeated' : 'is-locked'}" data-wander-boss aria-disabled="${String(bossDefeated)}" ${bossDefeated ? 'disabled' : ''}>
+      <button type="button" class="secondary compact ${bossUnlocked ? '' : bossDefeated ? 'is-defeated' : 'is-locked'}" data-wander-boss ${buttonDisabledAttributes(bossDefeated, 'Boss trong map đã bị đánh bại.')}>
         <i class="item-icon icon-item-sword" aria-hidden="true"></i>${bossDefeated ? 'Đã thắng' : 'Khiêu chiến'}
       </button>
     </div>
@@ -4466,12 +4565,11 @@ function renderWanderStart(enoughHealth) {
   `;
   const button = panel.querySelector('[data-wander-start]');
   const encounterToggle = panel.querySelector('[data-wander-high-enemy]');
-  button.disabled = !enoughHealth;
+  setButtonDisabledState(button, !enoughHealth, 'Sinh lực chưa đủ để bắt đầu ngao du.');
   if (autoWanderEnabled) {
-    encounterToggle.disabled = true;
     encounterToggle.classList.add('is-locked');
     encounterToggle.title = 'Không dùng cùng Tự động ngao du';
-    encounterToggle.setAttribute('aria-disabled', 'true');
+    setButtonDisabledState(encounterToggle, true, 'Không thể bật tăng tỉ lệ gặp kẻ địch khi đang tự động ngao du.');
   }
   button.addEventListener('click', () => beginWander(false));
   encounterToggle.addEventListener('click', () => {
@@ -5394,7 +5492,11 @@ function renderStageDetail(stage) {
     <div><span>Đỡ đòn</span><strong>${toPercent(preview.blockRate)}</strong></div>
   `;
   $('stageDetailRewards').textContent = `Thắng nhận ${formatGameNumber(winReward)} tu vi, rớt ${formatGameNumber(stoneDrop.min)}-${formatGameNumber(stoneDrop.max)} linh thạch và tiếp tục ngao du; thua thì về tu luyện.`;
-  challengeStageButton.disabled = busy || !canEnterDungeon() || !canRunDungeon(config.id);
+  setButtonDisabledState(
+    challengeStageButton,
+    busy || !canEnterDungeon() || !canRunDungeon(config.id),
+    busy ? 'Trận đấu đang diễn ra.' : !canEnterDungeon() ? 'Sinh lực chưa đủ để khiêu chiến.' : 'Chưa đủ điều kiện để khiêu chiến phụ bản.',
+  );
 }
 
 function getCurrentDungeonStage() {
@@ -5441,7 +5543,7 @@ function startBattle() {
   if (busy || battleOver) return;
 
   busy = true;
-  startButton.disabled = true;
+  setButtonDisabledState(startButton, true, 'Trận đấu đang diễn ra.');
   startButton.textContent = 'Đang đấu';
   startButton.classList.add('is-hidden');
   battleResult.classList.add('is-hidden');
@@ -6203,7 +6305,7 @@ function finishBattle(message, outcome = 'lose') {
     spiritStoneReward = addSpiritStoneReward(outcome);
     droppedItem = rollEquipmentDrop(outcome);
   }
-  startButton.disabled = false;
+  setButtonDisabledState(startButton, false);
   startButton.textContent = getPostBattleButtonText(outcome);
   startButton.classList.add('is-hidden');
   renderBattleResult(message, outcome, reward, spiritStoneReward, droppedItem, bonusRewardText, cultivationAward);
@@ -6756,7 +6858,7 @@ function rollEquipmentDrop(outcome) {
 
 function getEquipmentLevelRange(source = currentStage) {
   const chestTier = getEquipmentChestTier(source);
-  const min = chestTier === 1 ? 1 : (chestTier - 1) * equipmentLevelsPerChestTier;
+  const min = (chestTier - 1) * equipmentLevelsPerChestTier + 1;
   const max = chestTier * equipmentLevelsPerChestTier;
   return normalizeEquipmentLevelRange([min, max], [1, equipmentLevelsPerChestTier]);
 }
@@ -7128,26 +7230,31 @@ function usePotion(type, amount = 1) {
   return used;
 }
 
-function exchangePotions(direction) {
+function exchangePotions(direction, amount = 1) {
   if (busy) return false;
 
   const exchangeCost = 6;
+  const requestedExchanges = Math.max(1, Math.floor(Number(amount) || 1));
   if (direction === 'healthToMana') {
-    if (healthPotionCount < exchangeCost) {
+    const availableExchanges = Math.floor(healthPotionCount / exchangeCost);
+    const exchanges = Math.min(requestedExchanges, availableExchanges);
+    if (exchanges <= 0) {
       showGameToast('Cần 6 Sinh Huyết Đan để đổi.', 'error');
       return false;
     }
-    healthPotionCount -= exchangeCost;
-    manaPotionCount += 1;
-    showGameToast('Đã đổi 6 Sinh Huyết Đan thành 1 Tụ Linh Đan.', 'success');
+    healthPotionCount -= exchanges * exchangeCost;
+    manaPotionCount += exchanges;
+    showGameToast('Đã đổi ' + (exchanges * exchangeCost) + ' Sinh Huyết Đan thành ' + exchanges + ' Tụ Linh Đan.', 'success');
   } else if (direction === 'manaToHealth') {
-    if (manaPotionCount < exchangeCost) {
+    const availableExchanges = Math.floor(manaPotionCount / exchangeCost);
+    const exchanges = Math.min(requestedExchanges, availableExchanges);
+    if (exchanges <= 0) {
       showGameToast('Cần 6 Tụ Linh Đan để đổi.', 'error');
       return false;
     }
-    manaPotionCount -= exchangeCost;
-    healthPotionCount += 1;
-    showGameToast('Đã đổi 6 Tụ Linh Đan thành 1 Sinh Huyết Đan.', 'success');
+    manaPotionCount -= exchanges * exchangeCost;
+    healthPotionCount += exchanges;
+    showGameToast('Đã đổi ' + (exchanges * exchangeCost) + ' Tụ Linh Đan thành ' + exchanges + ' Sinh Huyết Đan.', 'success');
   } else {
     return false;
   }
@@ -7646,12 +7753,12 @@ function renderCultivation() {
   $('dantianCultivationText').textContent = `${formatGameNumber(dantianCultivation)}/${formatGameNumber(getDantianCultivationCap())} tu vi dự trữ`;
   useHealthPotionButton.textContent = `Sinh Huyết Đan x${healthPotionCount}`;
   useManaPotionButton.textContent = `Tụ Linh Đan x${manaPotionCount}`;
-  useHealthPotionButton.disabled = busy || healthPotionCount <= 0 || resourceView.hp >= playerSnapshot.maxHp;
-  useManaPotionButton.disabled = busy || manaPotionCount <= 0 || resourceView.mana >= playerSnapshot.maxMana;
+  setButtonDisabledState(useHealthPotionButton, busy || healthPotionCount <= 0 || resourceView.hp >= playerSnapshot.maxHp, busy ? 'Trận đấu đang diễn ra.' : healthPotionCount <= 0 ? 'Đã hết Sinh Huyết Đan.' : 'Sinh lực đã đầy.');
+  setButtonDisabledState(useManaPotionButton, busy || manaPotionCount <= 0 || resourceView.mana >= playerSnapshot.maxMana, busy ? 'Trận đấu đang diễn ra.' : manaPotionCount <= 0 ? 'Đã hết Tụ Linh Đan.' : 'Linh lực đã đầy.');
   $('rewardPreview').textContent = canEnterDungeon()
     ? `${dungeonConfig.name}: thắng ${currentStage.title} nhận ${formatGameNumber(winReward)} tu vi, rớt ${formatGameNumber(stoneDrop.min)}-${formatGameNumber(stoneDrop.max)} linh thạch; thua không nhận tu vi.${attemptSuffix}`
     : 'Sinh lực dưới 15%, không thể ngao du. Dùng Sinh Huyết Đan hoặc chờ hồi phục.';
-  breakthroughButton.disabled = busy || !canBreakthrough();
+  setButtonDisabledState(breakthroughButton, busy || !canBreakthrough(), busy ? 'Trận đấu đang diễn ra.' : 'Chưa đủ điều kiện đột phá.');
   breakthroughButton.textContent = getBreakthroughButtonText();
   updateNotificationBadges();
   updateBattleActionAvailability();
@@ -7683,10 +7790,10 @@ function getBreakthroughButtonText() {
 function updateBattleActionAvailability() {
   if (!battleOver) return;
   if (startButton.textContent === 'Tiếp tục' || startButton.textContent === 'Về tu luyện') {
-    startButton.disabled = false;
+    setButtonDisabledState(startButton, false);
     return;
   }
-  startButton.disabled = !canEnterDungeon();
+  setButtonDisabledState(startButton, !canEnterDungeon(), 'Sinh lực chưa đủ để tiếp tục khiêu chiến.');
 }
 
 function getVisiblePlayerResources() {
@@ -7793,10 +7900,10 @@ function renderSkills() {
         <div class="skill-practice-label"><span>Tu luyện ${practice}/${level >= maxLevel ? 'Tối đa' : practiceRequired}</span><strong>${level >= maxLevel ? 'Đã viên mãn' : `${practicePercent}%`}</strong></div>
         <div class="skill-practice-bar"><i style="width: ${practicePercent}%"></i></div>
         <div class="skill-actions">
-          <button type="button" class="${active ? 'breakthrough' : 'secondary'} compact" ${level >= maxLevel || practiceReady ? 'disabled' : ''} data-skill-action="select" data-skill-id="${skill.id}">${trainingText}</button>
-          <button type="button" class="${canUpgrade ? 'breakthrough skill-upgrade-ready' : 'secondary'} compact" ${canUpgrade ? '' : 'disabled'} data-skill-action="upgrade" data-skill-id="${skill.id}">${upgradeText}</button>
+          <button type="button" class="${active ? 'breakthrough' : 'secondary'} compact" ${buttonDisabledAttributes(level >= maxLevel || practiceReady, level >= maxLevel ? 'Skill đã đạt cấp tối đa.' : 'Skill đã đủ tiến độ, hãy nâng cấp trước.')} data-skill-action="select" data-skill-id="${skill.id}">${trainingText}</button>
+          <button type="button" class="${canUpgrade ? 'breakthrough skill-upgrade-ready' : 'secondary'} compact" ${buttonDisabledAttributes(!canUpgrade, level >= maxLevel ? 'Skill đã đạt cấp tối đa.' : !practiceReady ? 'Skill chưa đủ tiến độ tu luyện.' : 'Chưa có đủ sách skill.')} data-skill-action="upgrade" data-skill-id="${skill.id}">${upgradeText}</button>
         </div>
-        <button type="button" class="secondary compact" ${!equipped && (equippedSkillIds.length >= maxEquipped || getPlayerCultivationTier() < getSkillRequiredTier(skill)) ? 'disabled' : ''} data-skill-action="equip" data-skill-id="${skill.id}">${equipText}</button>
+        <button type="button" class="secondary compact" ${buttonDisabledAttributes(!equipped && (equippedSkillIds.length >= maxEquipped || getPlayerCultivationTier() < getSkillRequiredTier(skill)), equippedSkillIds.length >= maxEquipped ? 'Đã đầy ô skill.' : `Cần ${getTierRealmText(getSkillRequiredTier(skill))} để trang bị skill.`)} data-skill-action="equip" data-skill-id="${skill.id}">${equipText}</button>
       </div>
     `;
   }).join('') : '<div class="inventory-empty"><i class="stat-icon icon-stat-skill" aria-hidden="true"></i><span>Chưa học skill nào.</span></div>';
@@ -8036,7 +8143,7 @@ function renderEnhancement() {
             <span><i class="unique-icon icon-unique-spirit-stone" aria-hidden="true"></i><b>${formatGameNumber(cost)}</b></span>
             <span><i class="stat-icon icon-stat-reward" aria-hidden="true"></i><b>${toPercent(successRate)}</b></span>
           </div>
-          <button type="button" class="secondary compact enhancement-action-button" data-enhance-item="${item.id}" ${canEnhance ? '' : 'disabled'}>
+          <button type="button" class="secondary compact enhancement-action-button" data-enhance-item="${item.id}" ${buttonDisabledAttributes(!canEnhance, maxed ? 'Trang bị đã đạt tối đa phẩm cấp.' : cultivationLocked ? `Tu vi chỉ mở đến +${maxLevel}.` : stoneCost && enhancementStones < stoneCost ? `Cần ${formatGameNumber(stoneCost)} đá cường hóa.` : `Cần ${formatGameNumber(cost)} linh thạch.`)}>
             <i class="game-icon icon-hammer" aria-hidden="true"></i>${maxed ? 'Đã tối đa phẩm cấp' : cultivationLocked ? `Tu vi chỉ mở đến +${maxLevel}` : canEnhance ? `Cường hóa lên +${targetLevel}` : stoneCost && enhancementStones < stoneCost ? `Cần ${formatGameNumber(stoneCost)} đá cường hóa` : `Cần ${formatGameNumber(cost)} linh thạch`}
           </button>
         </div>
@@ -8228,10 +8335,10 @@ function renderResourceDungeons() {
         <div class="resource-dungeon-attempts"><span>Tiến độ</span><strong>${highestFloor}/${totalFloors} tầng · ${usedAttempts}/${dailyLimit} lượt</strong></div>
         <div class="resource-dungeon-progress"><i style="width:${progress}%"></i></div>
         <div class="resource-dungeon-actions">
-        <button type="button" class="${canChallenge ? 'breakthrough' : 'secondary'} compact" ${canChallenge ? '' : 'disabled'} data-resource-dungeon="${dungeon.id}">
+        <button type="button" class="${canChallenge ? 'breakthrough' : 'secondary'} compact" ${buttonDisabledAttributes(!canChallenge, locked ? `Cần ${getTierRealmText(nextTier)} để mở phụ bản.` : exhausted ? 'Phụ bản đã hết lượt hôm nay.' : 'Chưa thể đánh phụ bản lúc này.')} data-resource-dungeon="${dungeon.id}">
             ${cleared ? 'Đã hoàn thành' : locked ? `Cần ${getTierRealmText(nextTier)}` : exhausted ? 'Hết lượt' : `Đánh tầng ${nextFloor}`}
           </button>
-          <button type="button" class="${canSweep ? 'secondary' : 'secondary'} compact" ${canSweep ? '' : 'disabled'} onclick="sweepResourceDungeon('${dungeon.id}')">
+          <button type="button" class="${canSweep ? 'secondary' : 'secondary'} compact" ${buttonDisabledAttributes(!canSweep, highestFloor <= 0 ? 'Chưa có tầng để quét.' : 'Phụ bản đã hết lượt hôm nay.')} onclick="sweepResourceDungeon('${dungeon.id}')">
             ${highestFloor > 0 ? `Quét tầng ${highestFloor}` : 'Chưa có tầng để quét'}
           </button>
         </div>
@@ -8418,7 +8525,7 @@ function openShopItemDetail(itemId) {
       </label>
       ${lockedText ? `<em class="shop-detail-lock">${lockedText}</em>` : ''}
       <strong id="shopDetailTotal" class="shop-detail-total">Tổng: ${formatGameNumber(getShopItemCost(item))} linh thạch</strong>
-      <button type="button" class="breakthrough shop-detail-buy" ${canBuy ? '' : 'disabled'}>${lockedText ? 'Chưa mở' : 'Xác nhận mua'}</button>
+      <button type="button" class="breakthrough shop-detail-buy" ${buttonDisabledAttributes(!canBuy, lockedText || 'Không đủ điều kiện để mua vật phẩm.')}>${lockedText ? 'Chưa mở' : 'Xác nhận mua'}</button>
     </div>
   `;
   shopDetailOverlay.classList.remove('is-hidden');
@@ -8432,7 +8539,10 @@ function openShopItemDetail(itemId) {
       : clamp(Math.floor(Number(rawQuantity) || 1), 1, getShopItemQuantityLimit(item));
     if (totalText) totalText.textContent = `Tổng: ${formatGameNumber(getShopPurchaseTotal(item, quantity))} linh thạch`;
     const buyButton = shopDetailOverlay.querySelector('.shop-detail-buy');
-    if (buyButton && canBuy) buyButton.disabled = getShopPurchaseTotal(item, quantity) > playerSpiritStones;
+    if (buyButton && canBuy) {
+      const total = getShopPurchaseTotal(item, quantity);
+      setButtonDisabledState(buyButton, total > playerSpiritStones, 'Không đủ linh thạch để mua số lượng này.');
+    }
   };
   closeButton?.addEventListener('click', hideShopItemDetail);
   quantityInput?.addEventListener('input', updateTotal);
@@ -8523,7 +8633,7 @@ function renderShop() {
         <span>${item.description}</span>
         <em>${meta}</em>
         <div class="shop-item-actions">
-          <button type="button" ${canBuyOne ? '' : 'disabled'} data-shop-item="${item.id}">${canBuyOne ? 'Mua' : buttonText}</button>
+          <button type="button" ${buttonDisabledAttributes(!canBuyOne, buttonText)} data-shop-item="${item.id}">${canBuyOne ? 'Mua' : buttonText}</button>
           <button type="button" class="secondary" data-shop-detail="${item.id}">${detailButtonText}</button>
         </div>
       </article>
@@ -8595,8 +8705,11 @@ function renderProfile() {
   $('profileEquipmentList').innerHTML = equipmentSlots.map((slot) => {
     const item = equippedItems[slot.id];
     const rarityClass = item ? rarityData[item.rarityKey]?.className || '' : '';
+    const levelClass = item ? getEquipmentLevelClass(item) : '';
+    const levelColor = item ? getEquipmentLevelColor(item) : '';
+    const rarityColor = item ? getEquipmentRarityColor(item) : '';
     return `
-      <div class="profile-equipment-slot ${rarityClass}" title="${item ? `${getRarityName(item)} ${item.name}` : `${slot.name}: Trống`}">
+      <div class="profile-equipment-slot ${rarityClass} ${levelClass}" style="${item ? `--equipment-level-color: ${levelColor}; --rarity-color: ${rarityColor};` : ''}" title="${item ? `${getRarityName(item)} ${item.name}` : `${slot.name}: Trống`}">
         ${item ? getEquipmentIconMarkup(item) : '<i class="item-icon icon-item-robe" aria-hidden="true"></i>'}
         <span>${slot.name}</span>
         <strong>${item ? item.name : 'Trống'}</strong>
@@ -8617,7 +8730,7 @@ function renderPlayerAvatar() {
 
 function renderEquipment() {
   const playerSnapshot = createFighter(playerName, playerLevel, true);
-  $('equipmentPowerText').textContent = `Lực chiến ${formatGameNumber(getCombatPower(playerSnapshot))} | Trang bị +${formatGameNumber(getEquipmentPower())}`;
+  $('equipmentPowerText').textContent = `Trang bị  LC +${formatGameNumber(getEquipmentPower())}`;
   if ($('equipmentInventorySummary')) $('equipmentInventorySummary').textContent = `${inventory.length} vật phẩm`;
   $('equipmentStatsSummary').innerHTML = renderEquipmentContributionSummary();
   if (equipmentBulkSellRarity && equipmentBulkSellRarity.options.length <= 1) {
@@ -8627,12 +8740,15 @@ function renderEquipment() {
     ].join('');
   }
   const quickEquipAvailable = hasQuickEquipCandidate();
-  quickEquipButton.disabled = busy || !quickEquipAvailable;
+  setButtonDisabledState(quickEquipButton, busy || !quickEquipAvailable, busy ? 'Đang xử lý, vui lòng chờ.' : 'Không có trang bị phù hợp để mặc nhanh.');
   setNotificationBadge(equipmentBadge, Number(quickEquipAvailable));
   $('equipmentSlots').innerHTML = equipmentSlots.map((slot) => {
     const item = equippedItems[slot.id];
+    const levelClass = item ? getEquipmentLevelClass(item) : '';
+    const levelColor = item ? getEquipmentLevelColor(item) : '';
+    const rarityColor = item ? getEquipmentRarityColor(item) : '';
     return `
-      <div class="equipment-slot ${item ? rarityData[item.rarityKey].className : ''}">
+      <div class="equipment-slot ${item ? `${rarityData[item.rarityKey].className} ${levelClass}` : ''}" style="${item ? `--equipment-level-color: ${levelColor}; --rarity-color: ${rarityColor};` : ''}">
         ${item ? renderEquippedEquipmentSummary(item, slot.name) : `<span>${slot.name}</span><strong>Trống</strong><em>Chưa mặc trang bị</em>`}
         ${item ? `<button type="button" onclick="unequipItem('${slot.id}')">Tháo</button>` : ''}
       </div>
@@ -8652,13 +8768,18 @@ function renderEquipment() {
   $('equipmentInventoryList').innerHTML = visibleInventory.length
     ? visibleInventory.map((item) => {
       const equipped = isEquipmentEquipped(item);
+      const levelClass = getEquipmentLevelClass(item);
+      const levelColor = getEquipmentLevelColor(item);
+      const rarityColor = getEquipmentRarityColor(item);
       return `
-        <div class="inventory-item ${rarityData[item.rarityKey].className}">
-          ${renderEquipmentSummary(item)}
-           <button type="button" onclick="equipItem(${item.id})">Mặc</button>
-           <button type="button" class="secondary" ${equipped ? 'disabled title="Không thể bán trang bị đang mặc"' : ''} onclick="sellItem(${item.id})">
-             ${equipped ? 'Đang mặc' : `Bán ${formatGameNumber(getEquipmentSellPrice(item))}`}
-           </button>
+        <div class="inventory-item ${rarityData[item.rarityKey].className} ${levelClass}" style="--equipment-level-color: ${levelColor}; --rarity-color: ${rarityColor};">
+          ${renderEquippedEquipmentSummary(item, getSlotName(item.slotId))}
+           <div class="inventory-equipment-actions">
+             <button type="button" onclick="equipItem(${item.id})">Mặc</button>
+             <button type="button" class="secondary" ${buttonDisabledAttributes(equipped, 'Không thể bán trang bị đang mặc.')} onclick="sellItem(${item.id})">
+               ${equipped ? 'Đang mặc' : `Bán ${formatGameNumber(getEquipmentSellPrice(item))}`}
+             </button>
+           </div>
          </div>
        `;
     }).join('')
@@ -8926,6 +9047,37 @@ function useInventoryItem(itemId, amount = 1) {
   return used > 0;
 }
 
+function renderPotionExchangePanel(exchange) {
+  const maxExchanges = Math.max(0, Math.floor(Number(exchange.maxExchanges) || 0));
+  const inputDisabled = maxExchanges > 0 ? '' : ' disabled';
+  const unavailable = maxExchanges > 0 ? '' : ' is-unavailable';
+  const sourceIcon = '<i class="' + exchange.sourceIconClass + '" aria-hidden="true"></i>';
+  const targetIcon = '<i class="' + exchange.targetIconClass + '" aria-hidden="true"></i>';
+  return [
+    '      <div class="inventory-detail-exchange">',
+    '        <strong>Đổi đan</strong>',
+    '        <div class="potion-exchange-recipe">',
+    '          <div class="potion-exchange-side">',
+    '            <div class="potion-exchange-icons" aria-hidden="true">' + sourceIcon + '</div>',
+    '            <span>x' + exchange.sourceAmount + ' ' + exchange.sourceName + '</span>',
+    '          </div>',
+    '          <b class="potion-exchange-arrow" aria-hidden="true">→</b>',
+    '          <div class="potion-exchange-side">',
+    '            <div class="potion-exchange-icons" aria-hidden="true">' + targetIcon + '</div>',
+    '            <span>' + exchange.targetAmount + ' ' + exchange.targetName + '</span>',
+    '          </div>',
+    '        </div>',
+    '        <label class="shop-detail-quantity">Số lần đổi (mỗi lần ' + exchange.sourceAmount + ' viên)',
+    '          <input id="inventoryExchangeQuantity" type="number" min="1" max="' + maxExchanges + '" value="' + (maxExchanges > 0 ? 1 : 0) + '"' + inputDisabled + '>',
+    '        </label>',
+    '        <small class="inventory-exchange-available">Có thể đổi tối đa ' + maxExchanges + ' lần.</small>',
+    '        <button type="button" class="breakthrough inventory-detail-exchange-button' + unavailable + '" data-exchange-direction="' + exchange.direction + '" aria-disabled="' + String(maxExchanges < 1) + '" title="' + (maxExchanges > 0 ? 'Đổi đan' : 'Cần ' + exchange.sourceAmount + ' ' + exchange.sourceName + ' để đổi') + '">',
+    '          Đổi',
+    '        </button>',
+    '      </div>',
+  ].join('');
+}
+
 function openInventoryItemDetail(itemId) {
   if (busy) return;
   const item = getInventoryItem(itemId);
@@ -8934,16 +9086,24 @@ function openInventoryItemDetail(itemId) {
   const potionExchange = item.id === 'health-potion'
     ? {
       direction: 'healthToMana',
-      iconClass: 'item-icon icon-item-mana-flame',
-      label: '6 Sinh Huyết Đan → 1 Tụ Linh Đan',
-      enabled: healthPotionCount >= 6,
+      sourceIconClass: 'item-icon icon-item-health-pill',
+      sourceName: 'Sinh Huyết Đan',
+      targetIconClass: 'item-icon icon-item-mana-flame',
+      targetName: 'Tụ Linh Đan',
+      sourceAmount: 6,
+      targetAmount: 1,
+      maxExchanges: Math.floor(healthPotionCount / 6),
     }
     : item.id === 'mana-potion'
     ? {
       direction: 'manaToHealth',
-      iconClass: 'item-icon icon-item-health-pill',
-      label: '6 Tụ Linh Đan → 1 Sinh Huyết Đan',
-      enabled: manaPotionCount >= 6,
+      sourceIconClass: 'item-icon icon-item-mana-flame',
+      sourceName: 'Tụ Linh Đan',
+      targetIconClass: 'item-icon icon-item-health-pill',
+      targetName: 'Sinh Huyết Đan',
+      sourceAmount: 6,
+      targetAmount: 1,
+      maxExchanges: Math.floor(manaPotionCount / 6),
     }
     : null;
   const maxQuantity = item.category === 'Công pháp' ? 1 : Math.max(1, Number(item.count) || 1);
@@ -8957,16 +9117,11 @@ function openInventoryItemDetail(itemId) {
         <p>Số lượng trong túi: x${formatGameNumber(item.count)}</p>
         ${getInventoryItemDetails(item).map((line) => `<p>${line}</p>`).join('')}
       </div>
-      ${potionExchange ? `<div class="inventory-detail-exchange">
-        <strong>Tỉ lệ đan</strong>
-        <button type="button" class="breakthrough inventory-detail-exchange-button" data-exchange-direction="${potionExchange.direction}" ${potionExchange.enabled ? '' : 'disabled'}>
-          <i class="${potionExchange.iconClass}" aria-hidden="true"></i>${potionExchange.label}
-        </button>
-      </div>` : ''}
+      ${potionExchange ? renderPotionExchangePanel(potionExchange) : ''}
       ${canUse ? `<label class="shop-detail-quantity">Số lượng
         <input id="inventoryDetailQuantity" type="number" min="1" max="${maxQuantity}" value="1">
       </label>
-      <button type="button" class="breakthrough inventory-detail-use">${item.useLabel || 'Dùng'}</button>` : '<em class="shop-detail-lock">Vật phẩm này chưa có thao tác sử dụng trực tiếp.</em>'}
+      <button type="button" class="breakthrough inventory-detail-use">${item.useLabel || 'Dùng'}</button>` : potionExchange ? '' : '<em class="shop-detail-lock">Vật phẩm này chưa có thao tác sử dụng trực tiếp.</em>'}
     </div>
   `;
   inventoryDetailOverlay.classList.remove('is-hidden');
@@ -8976,7 +9131,17 @@ function openInventoryItemDetail(itemId) {
     if (useInventoryItem(item.id, quantity)) hideInventoryItemDetail();
   });
   inventoryDetailOverlay.querySelector('.inventory-detail-exchange-button')?.addEventListener('click', (event) => {
-    if (exchangePotions(event.currentTarget.dataset.exchangeDirection)) hideInventoryItemDetail();
+    if (!potionExchange) return;
+    if (potionExchange.maxExchanges < 1) {
+      showGameToast('Cần ' + potionExchange.sourceAmount + ' ' + potionExchange.sourceName + ' để đổi.', 'error');
+      return;
+    }
+    const quantityInput = inventoryDetailOverlay.querySelector('#inventoryExchangeQuantity');
+    const quantity = clamp(Math.floor(Number(quantityInput?.value) || 1), 1, potionExchange.maxExchanges);
+    const sourceTotal = quantity * potionExchange.sourceAmount;
+    const targetTotal = quantity * potionExchange.targetAmount;
+    const confirmed = window.confirm('Đổi ' + sourceTotal + ' ' + potionExchange.sourceName + ' lấy ' + targetTotal + ' ' + potionExchange.targetName + '?');
+    if (confirmed && exchangePotions(event.currentTarget.dataset.exchangeDirection, quantity)) hideInventoryItemDetail();
   });
   inventoryDetailOverlay.onclick = (event) => {
     if (event.target === inventoryDetailOverlay) hideInventoryItemDetail();
@@ -9110,7 +9275,7 @@ function renderPets() {
         <div class="pet-progress"><i style="width:${feedPercent}%"></i></div>
         <div class="pet-actions">
           <button type="button" class="secondary compact" data-pet-action="feed"><i class="item-icon icon-item-health-pill" aria-hidden="true"></i>Cho ăn +10</button>
-          <button type="button" class="breakthrough compact" data-pet-action="star" ${atMaxStars ? 'disabled' : ''}><i class="unique-icon icon-unique-comprehension" aria-hidden="true"></i>${atMaxStars ? 'Đã tối đa sao' : `Tăng sao · ${formatGameNumber(starCost)} linh thạch`}</button>
+          <button type="button" class="breakthrough compact" data-pet-action="star" ${buttonDisabledAttributes(atMaxStars, 'Linh thú đã đạt tối đa 10 sao.')}><i class="unique-icon icon-unique-comprehension" aria-hidden="true"></i>${atMaxStars ? 'Đã tối đa sao' : `Tăng sao · ${formatGameNumber(starCost)} linh thạch`}</button>
         </div>
       `;
     })()
@@ -9257,7 +9422,7 @@ function getEquipmentShopValue(item) {
 }
 
 function getEquipmentSellPrice(item) {
-  const basePrice = Math.max(1, Math.floor(getEquipmentShopValue(item) / 4));
+  const basePrice = Math.max(1, Math.floor(getEquipmentShopValue(item) / 5));
   const enhancementLevel = Math.max(0, Math.floor(Number(item?.enhancementLevel) || 0));
   const bonusPerLevel = Math.max(
     0,
@@ -9338,33 +9503,46 @@ function sellEquipmentByRarity(rarityKey = 'all') {
 }
 
 function renderEquipmentSummary(item, options = {}) {
-  const enhancementLevel = Number(item.enhancementLevel) || 0;
-  const enhancementMax = getEquipmentEnhancementQualityMax(item);
   return `
-        ${options.showSlotName === false ? '' : `<strong>${getEquipmentIconMarkup(item)}${getSlotName(item.slotId)}</strong>`}
+        ${options.showSlotName === false ? '' : `<strong>${getSlotName(item.slotId)}</strong>`}
         <strong>${getEquipmentIconMarkup(item)}${getRarityName(item)} ${item.name}</strong>
     ${item.setName ? `<small class="equipment-set-name">${item.setName}</small>` : ''}
-    <em>Cấp trang bị ${formatGameNumber(item.level)} | Cường hóa +${enhancementLevel}/${enhancementMax}</em>
     <em>Lực chiến +${formatGameNumber(getItemPower(item))}</em>
     ${formatItemStats(item.stats) ? `<small class="item-stat-list">${formatItemStats(item.stats)}</small>` : ''}
     ${renderEquipmentSpecials(item.specialLines)}
   `;
 }
 
+function getEquipmentLevelClass(item) {
+  const level = Math.max(1, Math.min(50, Math.floor(Number(item?.level) || 1)));
+  return `equipment-level-${level}`;
+}
+
+function getEquipmentLevelColor(item) {
+  const level = Math.max(1, Math.floor(Number(item?.level) || 1));
+  const group = equipmentLevelColorGroups.find((entry) => (
+    level >= Math.max(1, Number(entry?.minLevel) || 1)
+    && level <= Math.max(1, Number(entry?.maxLevel) || 1)
+  ));
+  return group?.color || '#f5f7fa';
+}
+
+function getEquipmentRarityColor(item) {
+  return rarityData[item?.rarityKey]?.color || '#f5f7fa';
+}
+
 function renderEquippedEquipmentSummary(item, slotName, options = {}) {
-  const enhancementLevel = Number(item.enhancementLevel) || 0;
-  const enhancementMax = getEquipmentEnhancementQualityMax(item);
   const specialMarkup = renderEquipmentSpecials(item.specialLines || []);
   return `
     <div class="equipped-equipment-summary">
       <div class="equipped-equipment-heading"><span>${slotName}</span><b>LC +${formatGameNumber(getItemPower(item))}</b></div>
       <div class="equipped-equipment-name">
-        <span class="equipped-equipment-visual">${getEquipmentIconMarkup(item)}<em>Cấp ${formatGameNumber(item.level)}</em></span>
-        <span class="equipped-equipment-name-copy"><strong>${item.name}</strong><b>+${formatGameNumber(enhancementLevel)}/${formatGameNumber(enhancementMax)}</b></span>
+        <span class="equipped-equipment-visual">${getEquipmentIconMarkup(item)}</span>
+        <span class="equipped-equipment-name-copy"><strong>${item.name}</strong></span>
       </div>
       ${item.setName ? `<small class="equipment-set-name">${item.setName}</small>` : ''}
       ${options.showStats !== false && formatItemStats(item.stats) ? `<div class="equipped-equipment-stats">${formatItemStats(item.stats)}</div>` : ''}
-      ${options.showSpecials !== false ? specialMarkup : ''}
+      ${options.showSpecials !== false ? (specialMarkup || '<div class="equipped-equipment-specials equipped-equipment-specials-placeholder" aria-hidden="true"></div>') : ''}
     </div>
   `;
 }
@@ -9376,13 +9554,20 @@ function getEquipmentIconMarkup(item) {
   const assignment = equipmentIconFramesBySlot[slotId]?.[itemIndex];
   const sheetPath = assignment ? equipmentIconSheets[assignment[0]] : '';
   const frame = Number(assignment?.[1]);
+  const enhancementLevel = Math.max(0, Math.floor(Number(item?.enhancementLevel) || 0));
+  const equipmentLevel = Math.max(1, Math.floor(Number(item?.level) || 1));
+  const levelMarkup = `<small class="equipment-level-badge">LV.${formatGameNumber(equipmentLevel)}</small>`;
+  const enhancementMarkup = enhancementLevel > 0
+    ? `<b class="equipment-enhancement-badge">+${formatGameNumber(enhancementLevel)}</b>`
+    : '';
+  const badgeMarkup = `${enhancementMarkup}${levelMarkup}`;
   if (sheetPath && Number.isInteger(frame) && frame >= 0 && frame < 16) {
     const column = frame % 4;
     const row = Math.floor(frame / 4);
     const position = `${(column * 100) / 3}% ${(row * 100) / 3}%`;
-    return `<i class="item-icon equipment-item-icon" style="background-image:url('${sheetPath}');background-position:${position}" aria-hidden="true"></i>`;
+    return `<i class="item-icon equipment-item-icon" style="background-image:url('${sheetPath}');background-position:${position}" aria-hidden="true">${badgeMarkup}</i>`;
   }
-  return `<i class="item-icon ${getEquipmentIconClass(slotId)}" aria-hidden="true"></i>`;
+  return `<i class="item-icon ${getEquipmentIconClass(slotId)}" aria-hidden="true">${badgeMarkup}</i>`;
 }
 
 function getEquipmentIconClass(slotId) {

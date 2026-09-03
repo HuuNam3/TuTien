@@ -14,6 +14,18 @@
     "amulet": [["equipment-3", 8], ["equipment-3", 9], ["equipment-3", 10], ["equipment-3", 11], ["equipment-3", 12], ["equipment-3", 13], ["equipment-3", 14], ["equipment-3", 15], ["equipment-4", 0], ["equipment-4", 1]],
     "artifact": [["equipment-4", 2], ["equipment-4", 3], ["equipment-4", 4], ["equipment-4", 5], ["equipment-4", 6], ["equipment-4", 7], ["equipment-4", 8], ["equipment-4", 9], ["equipment-4", 10], ["equipment-4", 11]]
   },
+  "levelColorGroups": [
+    { "minLevel": 1, "maxLevel": 5, "color": "#f5f7fa", "label": "Trắng" },
+    { "minLevel": 6, "maxLevel": 10, "color": "#68d391", "label": "Lục" },
+    { "minLevel": 11, "maxLevel": 15, "color": "#60a5fa", "label": "Lam" },
+    { "minLevel": 16, "maxLevel": 20, "color": "#67e8f9", "label": "Thanh" },
+    { "minLevel": 21, "maxLevel": 25, "color": "#a78bfa", "label": "Tím" },
+    { "minLevel": 26, "maxLevel": 30, "color": "#e879f9", "label": "Tử hồng" },
+    { "minLevel": 31, "maxLevel": 35, "color": "#fb923c", "label": "Cam" },
+    { "minLevel": 36, "maxLevel": 40, "color": "#facc15", "label": "Hoàng kim" },
+    { "minLevel": 41, "maxLevel": 45, "color": "#f87171", "label": "Xích" },
+    { "minLevel": 46, "maxLevel": 50, "color": "#ff4fd8", "label": "Hỗn độn" }
+  ],
   "setNames": [
     "Bộ Thanh Cương",
     "Bộ Hàn Ngọc",
@@ -95,6 +107,7 @@
     "common": {
       "name": "Phàm phẩm",
       "className": "common",
+      "color": "#f5f7fa",
       "statScale": 1,
       "statLines": 2,
       "specialChance": 0.05,
@@ -103,6 +116,7 @@
     "uncommon": {
       "name": "Linh phẩm",
       "className": "uncommon",
+      "color": "#68d391",
       "statScale": 1.45,
       "statLines": 3,
       "specialChance": 0.1,
@@ -111,6 +125,7 @@
     "rare": {
       "name": "Địa phẩm",
       "className": "rare",
+      "color": "#60a5fa",
       "statScale": 2.05,
       "statLines": 4,
       "specialChance": 0.15,
@@ -119,6 +134,7 @@
     "epic": {
       "name": "Huyền phẩm",
       "className": "epic",
+      "color": "#67e8f9",
       "statScale": 2.8,
       "statLines": 4,
       "specialChance": 0.2,
@@ -127,6 +143,7 @@
     "legendary": {
       "name": "Thiên phẩm",
       "className": "legendary",
+      "color": "#a78bfa",
       "statScale": 3.8,
       "statLines": 5,
       "specialChance": 0.25,
@@ -135,6 +152,7 @@
     "immortal": {
       "name": "Tiên phẩm",
       "className": "immortal",
+      "color": "#e879f9",
       "statScale": 5.1,
       "statLines": 5,
       "specialChance": 0.3,
@@ -143,6 +161,7 @@
     "sacred": {
       "name": "Thánh phẩm",
       "className": "sacred",
+      "color": "#fb923c",
       "statScale": 6.7,
       "statLines": 5,
       "specialChance": 0.35,
@@ -151,6 +170,7 @@
     "divine": {
       "name": "Thần phẩm",
       "className": "divine",
+      "color": "#facc15",
       "statScale": 8.7,
       "statLines": 6,
       "specialChance": 0.4,
@@ -159,6 +179,7 @@
     "emperor": {
       "name": "Đế phẩm",
       "className": "emperor",
+      "color": "#f87171",
       "statScale": 11.2,
       "statLines": 6,
       "specialChance": 0.45,
@@ -167,6 +188,7 @@
     "chaos": {
       "name": "Hỗn Độn phẩm",
       "className": "chaos",
+      "color": "#ff4fd8",
       "statScale": 14.5,
       "statLines": 6,
       "specialChance": 0.5,

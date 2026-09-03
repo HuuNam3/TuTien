@@ -54,7 +54,7 @@
           <small id="startSchoolHint">Chọn một phái</small>
         </div>
         <div class="school-choice-grid" id="schoolChoiceGrid"></div>
-        <button id="enterGameButton" class="breakthrough start-submit" type="button" disabled><i class="activity-icon icon-activity-gate" aria-hidden="true"></i>Nhập đạo</button>
+        <button id="enterGameButton" class="breakthrough start-submit" type="button" aria-disabled="true" data-disabled-toast="Vui lòng nhập tên nhân vật và chọn môn phái."><i class="activity-icon icon-activity-gate" aria-hidden="true"></i>Nhập đạo</button>
       </div>
     </section>
     <section class="cultivation-panel">
@@ -144,7 +144,7 @@
       <section class="map-panel embedded-map" id="mapPanel">
         <div class="map-header">
           <h2><i class="game-icon icon-compass" aria-hidden="true"></i>Ngao du</h2>
-          <button id="wanderChestButton" class="icon-button wander-chest-button" type="button" title="Rương Ngao du đang trống" aria-label="Rương Ngao du đang trống" disabled>
+          <button id="wanderChestButton" class="icon-button wander-chest-button" type="button" title="Rương Ngao du đang trống" aria-label="Rương Ngao du đang trống" aria-disabled="true" data-disabled-toast="Rương Ngao du đang trống.">
             <i class="activity-icon icon-activity-chest" aria-hidden="true"></i>
             <span>Rương Ngao du</span>
           </button>
@@ -203,7 +203,7 @@
         <div class="shop-category-filters quest-category-filters" id="questCategoryFilters" role="tablist" aria-label="Phân loại nhiệm vụ">
           <button type="button" class="secondary compact is-active" data-quest-category="main" role="tab" aria-selected="true"><i class="item-icon icon-item-quest-target" aria-hidden="true"></i>Chính tuyến</button>
           <button type="button" class="secondary compact" data-quest-category="daily" role="tab" aria-selected="false"><i class="item-icon icon-item-daily-calendar" aria-hidden="true"></i>Hàng ngày</button>
-          <button type="button" class="secondary compact quest-category-locked" data-quest-category="side" role="tab" aria-selected="false" aria-disabled="true" disabled><i class="item-icon icon-item-side-pouch" aria-hidden="true"></i>Nhiệm vụ phụ</button>
+          <button type="button" class="secondary compact quest-category-locked" data-quest-category="side" role="tab" aria-selected="false" aria-disabled="true" data-disabled-toast="Nhiệm vụ phụ đang phát triển."><i class="item-icon icon-item-side-pouch" aria-hidden="true"></i>Nhiệm vụ phụ</button>
         </div>
         <div class="quest-list" id="questList"></div>
         <p class="shop-message" id="questMessage"></p>
@@ -273,7 +273,7 @@
       <div class="profile-header">
         <div>
           <h2><i class="game-icon icon-sword" aria-hidden="true"></i>Trang bị</h2>
-          <p id="equipmentPowerText">Lực chiến: 0</p>
+          <p id="equipmentPowerText">Trang bị  LC +0</p>
         </div>
         <div class="equipment-header-actions">
           <button id="quickEquipButton" class="breakthrough compact" type="button"><i class="item-icon icon-item-sword" aria-hidden="true"></i>Mặc nhanh</button>

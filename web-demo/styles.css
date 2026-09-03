@@ -4790,6 +4790,18 @@ li {
   color: #c9d5e2;
 }
 
+.inventory-equipment-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  min-width: 0;
+}
+
+.inventory-equipment-actions button {
+  min-width: 0;
+  margin-top: 0;
+}
+
 .shop-message,
 .equipment-panel .shop-message {
   margin: 8px 2px 0;
@@ -4836,6 +4848,54 @@ li {
 .inventory-detail-exchange strong {
   color: #f2bb4b;
   font-size: 13px;
+}
+
+.potion-exchange-recipe {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 8px 4px;
+}
+
+.potion-exchange-side {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: 0;
+  text-align: center;
+}
+
+.potion-exchange-icons {
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+  min-height: 24px;
+  flex-wrap: wrap;
+}
+
+.potion-exchange-icons .item-icon {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+}
+
+.potion-exchange-side span,
+.inventory-exchange-available {
+  color: #c7d5e3;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.potion-exchange-arrow {
+  color: #f2bb4b;
+  font-size: 20px;
+}
+
+.inventory-exchange-available {
+  display: block;
+  margin: 2px 0;
+  color: #9facbc;
 }
 
 .inventory-detail-exchange-button {
@@ -4964,6 +5024,7 @@ li {
   align-items: center;
   gap: 7px;
   min-width: 0;
+  min-height: 42px;
   color: #f3f7fb;
   font-size: 13px;
 }
@@ -5012,9 +5073,14 @@ li {
 .equipped-equipment-specials {
   display: grid;
   gap: 2px;
+  min-height: 24px;
   color: #d99a70;
   font-size: 9px;
   line-height: 1.25;
+}
+
+.equipped-equipment-specials-placeholder {
+  visibility: hidden;
 }
 
 .equipped-special-line strong {
@@ -5635,6 +5701,18 @@ button:not(:disabled):active {
 
 button:disabled {
   cursor: not-allowed;
+}
+
+button[data-disabled-toast],
+button[data-disabled-toast]:hover,
+button[data-disabled-toast]:active,
+button.is-unavailable,
+button.is-unavailable:hover,
+button.is-unavailable:active {
+  cursor: not-allowed;
+  filter: grayscale(0.4);
+  opacity: 0.75;
+  transform: none;
 }
 
 @media (max-width: 360px) {
@@ -10429,6 +10507,228 @@ body.battle-active .battle-panel {
   background-image: url('/assets/Art/Sprites/UI/chibi-wander-map-icon-sheet.png');
   background-size: 400% 300%;
   background-position: 100% 100%;
+}
+
+/* Keep every icon in the Ngao du panel at the same readable size. */
+.embedded-map .game-icon,
+.embedded-map .activity-icon,
+.embedded-map .item-icon,
+.embedded-map .stat-icon,
+.embedded-map .unique-icon {
+  flex-basis: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.embedded-map .wander-encounter-toggle strong > .activity-icon {
+  flex-basis: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+.embedded-map .wander-encounter-toggle button > .activity-icon {
+  display: none;
+}
+
+.embedded-map [data-wander-start] > .activity-icon,
+.embedded-map .wander-stop-action > .unique-icon,
+.embedded-map .wander-boss-panel button > .item-icon {
+  flex-basis: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+#equipmentSlots .item-icon,
+#equipmentInventoryList .item-icon {
+  position: relative;
+  box-sizing: border-box;
+  flex-basis: 42px;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--rarity-color, #526176);
+  border-radius: 5px;
+  background-color: color-mix(in srgb, var(--rarity-color, #526176) 18%, #151d27);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 0 8px color-mix(in srgb, var(--rarity-color, #526176) 45%, transparent);
+}
+
+#equipmentSlots .item-icon::before,
+#equipmentSlots .item-icon::after,
+#equipmentInventoryList .item-icon::before,
+#equipmentInventoryList .item-icon::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  top: 0;
+  width: 16px;
+  height: 2px;
+  border-radius: 999px;
+  clip-path: polygon(0 50%, 76% 28%, 100% 0, 100% 100%, 76% 72%);
+  background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--rarity-color, #f5f7fa) 35%, transparent) 38%, var(--rarity-color, #f5f7fa) 72%, #ffffff 100%);
+  filter: drop-shadow(0 0 2px var(--rarity-color, #f5f7fa));
+  offset-path: path("M 33 2 L 9 2 Q 2 2 2 9 L 2 33 Q 2 40 9 40 L 33 40 Q 40 40 40 33 L 40 9 Q 40 2 33 2");
+  offset-anchor: 50% 50%;
+  offset-rotate: auto;
+  pointer-events: none;
+  will-change: offset-distance, transform;
+  display: none;
+  animation: equipment-icon-orbit 3s linear infinite;
+}
+
+#equipmentSlots .item-icon::after,
+#equipmentInventoryList .item-icon::after {
+  animation-delay: -1.5s;
+}
+
+#equipmentSlots .equipment-slot:is(.immortal, .sacred, .divine, .emperor, .chaos) .item-icon::before,
+#equipmentSlots .equipment-slot:is(.immortal, .sacred, .divine, .emperor, .chaos) .item-icon::after,
+#equipmentInventoryList .inventory-item:is(.immortal, .sacred, .divine, .emperor, .chaos) .item-icon::before,
+#equipmentInventoryList .inventory-item:is(.immortal, .sacred, .divine, .emperor, .chaos) .item-icon::after {
+  display: block;
+}
+
+@keyframes equipment-icon-orbit {
+  from { offset-distance: 0%; }
+  to { offset-distance: 100%; }
+}
+
+.equipment-slot.emperor,
+.inventory-item.emperor {
+  --rarity-color: #ffd3f4;
+}
+
+.equipment-slot.chaos,
+.inventory-item.chaos {
+  --rarity-color: #ffffff;
+}
+
+#equipmentSlots .equipment-slot,
+#equipmentInventoryList .inventory-item {
+  border-width: 2px;
+  border-color: var(--rarity-color, #526176);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--rarity-color, #526176) 18%, #151d27), #151d27 72%);
+  color: #edf3f8;
+}
+
+.profile-equipment-slot[class] {
+  border-color: var(--rarity-color, rgba(93, 107, 128, 0.58));
+  background: linear-gradient(145deg, color-mix(in srgb, var(--rarity-color, #526176) 18%, #151d27), #151d27 72%);
+}
+
+.profile-equipment-slot > .item-icon {
+  box-sizing: border-box;
+  border: 1px solid var(--rarity-color, #526176);
+  border-radius: 4px;
+  background-color: color-mix(in srgb, var(--rarity-color, #526176) 18%, #151d27);
+}
+
+.equipment-enhancement-badge,
+.equipment-level-badge {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(5, 8, 12, 0.95), 0 0 2px rgba(5, 8, 12, 0.9);
+}
+
+.equipment-enhancement-badge {
+  top: 1px;
+  right: 1px;
+  color: #ffe27b;
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1;
+}
+
+#equipmentSlots .equipment-level-badge,
+#equipmentInventoryList .equipment-level-badge,
+.profile-equipment-slot .equipment-level-badge {
+  bottom: 0;
+  left: 50%;
+  padding: 0 1px;
+  transform: translateX(-50%);
+  color: #ffffff;
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1;
+}
+
+#equipmentSlots .equipment-slot strong,
+#equipmentInventoryList .inventory-item strong {
+  color: var(--rarity-color, #edf3f8);
+  font-weight: 900;
+  text-shadow: 0 1px 2px rgba(5, 8, 12, 0.9);
+}
+
+#equipmentSlots .equipped-equipment-name-copy > strong {
+  font-size: 11px;
+  line-height: 1.15;
+}
+
+#equipmentSlots .equipped-equipment-heading {
+  height: 18px;
+  min-height: 18px;
+}
+
+#equipmentSlots .equipped-equipment-summary {
+  align-content: start;
+}
+
+#equipmentSlots .equipped-equipment-name {
+  height: 45px;
+  min-height: 45px;
+  align-items: flex-start;
+}
+
+#equipmentSlots .equipped-equipment-summary > .equipment-set-name {
+  height: 17px;
+  min-height: 17px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+#equipmentSlots .equipped-equipment-stats {
+  min-height: 66px;
+  grid-auto-rows: 15px;
+  align-content: start;
+  height: 66px;
+  max-height: 66px;
+  grid-template-rows: repeat(4, 15px);
+  overflow: hidden;
+}
+
+#equipmentSlots .equipped-equipment-stats .item-stat-line {
+  height: 15px;
+  min-height: 15px;
+}
+
+#equipmentSlots .equipped-equipment-stats .item-stat-line > span {
+  overflow: hidden;
+  overflow-wrap: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#equipmentInventoryList .equipped-equipment-stats .item-stat-line,
+#equipmentInventoryList .equipped-equipment-stats .item-stat-line > span,
+#equipmentInventoryList .equipped-equipment-stats .item-stat-line > b {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: normal;
+}
+
+#equipmentSlots .equipment-slot > button {
+  align-self: end;
+  height: 34px;
+  min-height: 34px;
+}
+
+.profile-equipment-slot strong {
+  color: var(--rarity-color, #f7f8fb);
+  font-weight: 900;
+  text-shadow: 0 1px 2px rgba(5, 8, 12, 0.9);
 }
 
 @media (max-width: 520px) {
