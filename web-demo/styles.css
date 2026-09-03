@@ -5518,10 +5518,18 @@ li {
 #skillsList .skill-title > .skill-item-icon,
 #skillsList .skill-title > .item-icon {
   position: relative;
+  align-self: flex-start;
+  display: block;
+  flex: 0 0 40px;
+  min-width: 40px;
+  min-height: 40px;
   flex-basis: 40px;
   width: 40px;
   height: 40px;
-  vertical-align: middle;
+  margin: 0;
+  line-height: 0;
+  vertical-align: top;
+  overflow: hidden;
 }
 
 #skillsList .skill-level-badge {
@@ -6921,6 +6929,31 @@ button.breakthrough:not(:disabled) {
   background: linear-gradient(145deg, rgba(87, 101, 117, 0.28), #151d27 68%);
 }
 
+.inventory-item {
+  border-width: 2px;
+}
+
+.shop-item {
+  border-width: 2px;
+}
+
+.rarity-rate {
+  display: inline-block;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.rarity-rate.rarity-common { color: #f5f7fa; }
+.rarity-rate.rarity-uncommon { color: #68d391; }
+.rarity-rate.rarity-rare { color: #60a5fa; }
+.rarity-rate.rarity-epic { color: #67e8f9; }
+.rarity-rate.rarity-legendary { color: #a78bfa; }
+.rarity-rate.rarity-immortal { color: #e879f9; }
+.rarity-rate.rarity-sacred { color: #fb923c; }
+.rarity-rate.rarity-divine { color: #facc15; }
+.rarity-rate.rarity-emperor { color: #f87171; }
+.rarity-rate.rarity-chaos { color: #ff4fd8; }
+
 .equipment-slot.uncommon,
 .inventory-item.uncommon,
 .shop-item.quality-uncommon {
@@ -7537,7 +7570,7 @@ button.breakthrough:not(:disabled) {
 
 #skillsList .skill-title {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   flex-wrap: wrap;
   gap: 4px 7px;
   color: #f4f7fb;
@@ -7551,6 +7584,8 @@ button.breakthrough:not(:disabled) {
 
 #skillsList .skill-name {
   color: #f4f7fb;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 #skillsList .skill-grade {
@@ -7572,9 +7607,25 @@ button.breakthrough:not(:disabled) {
 }
 
 #skillsList .skill-power {
+  flex: 0 0 auto;
+  margin-left: auto;
   color: #73dfff;
   font-size: 12px;
   font-weight: 900;
+  text-align: right;
+  white-space: nowrap;
+}
+
+#inventoryList .skill-rarity-item .bag-item-icon {
+  box-sizing: border-box;
+  border: 1px solid var(--rarity-color, #f5f7fa);
+  border-radius: 5px;
+  background-color: color-mix(in srgb, var(--rarity-color, #f5f7fa) 18%, #151d27);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 0 8px color-mix(in srgb, var(--rarity-color, #f5f7fa) 45%, transparent);
+}
+
+#inventoryList .skill-rarity-item > .bag-item-header strong {
+  color: var(--rarity-color, #f3f7fb);
 }
 
 #skillsList .skill-effect-line {
@@ -10644,10 +10695,10 @@ body.battle-active .battle-panel {
   flex-basis: 42px;
   width: 42px;
   height: 42px;
-  border: 1px solid var(--rarity-color, #526176);
+  border: 1px solid var(--equipment-level-color, #f5f7fa);
   border-radius: 5px;
-  background-color: color-mix(in srgb, var(--rarity-color, #526176) 18%, #151d27);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 0 8px color-mix(in srgb, var(--rarity-color, #526176) 45%, transparent);
+  background-color: color-mix(in srgb, var(--equipment-level-color, #f5f7fa) 18%, #151d27);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 0 8px color-mix(in srgb, var(--equipment-level-color, #f5f7fa) 45%, transparent);
 }
 
 #equipmentSlots .item-icon::before,
@@ -10709,6 +10760,11 @@ body.battle-active .battle-panel {
   color: #edf3f8;
 }
 
+#inventoryList .inventory-item.equipment-chest-item {
+  border-color: var(--rarity-color, #526176);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--rarity-color, #526176) 18%, #151d27), #151d27 72%);
+}
+
 .profile-equipment-slot[class] {
   border-color: var(--rarity-color, rgba(93, 107, 128, 0.58));
   background: linear-gradient(145deg, color-mix(in srgb, var(--rarity-color, #526176) 18%, #151d27), #151d27 72%);
@@ -10716,9 +10772,9 @@ body.battle-active .battle-panel {
 
 .profile-equipment-slot > .item-icon {
   box-sizing: border-box;
-  border: 1px solid var(--rarity-color, #526176);
+  border: 1px solid var(--equipment-level-color, #f5f7fa);
   border-radius: 4px;
-  background-color: color-mix(in srgb, var(--rarity-color, #526176) 18%, #151d27);
+  background-color: color-mix(in srgb, var(--equipment-level-color, #f5f7fa) 18%, #151d27);
 }
 
 .equipment-enhancement-badge,

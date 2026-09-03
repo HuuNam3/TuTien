@@ -1,156 +1,6 @@
 {
-  "description": "20 mặt hàng trong cửa hàng gồm rương trang bị, rương skill Phàm/Hoàng/Huyền, đan dược và đá cường hóa. Dữ liệu quy định giá, loại vật phẩm, giới hạn mua theo ngày và cách mở khóa; ví dụ rương trang bị chỉ bán một cấp phù hợp map đã mở, mỗi ngày tối đa 20 rương, còn rương skill có giới hạn riêng theo phẩm chất.",
+  "description": "10 mặt hàng trong cửa hàng gồm rương skill Phàm/Hoàng/Huyền, đan dược và đá cường hóa. Dữ liệu quy định giá, loại vật phẩm và giới hạn mua theo ngày; rương trang bị chỉ nhận từ phần thưởng Ngao du, tháp và nhiệm vụ.",
   "shopItems": [
-    {
-      "id": "equipmentTier1Chest",
-      "name": "Rương trang bị cấp 1",
-      "description": "Mở ra 1 trang bị cấp 1–5 theo tỉ lệ phẩm chất của đại cảnh giới tương ứng.",
-      "cost": 100,
-      "type": "equipmentChest",
-      "equipmentChestTier": 1,
-      "equipmentMajorRealmId": 1,
-      "rarityQualityMax": 3,
-      "rarityWeights": [
-        85,
-        15,
-        0
-      ]
-    },
-    {
-      "id": "equipmentTier2Chest",
-      "name": "Rương trang bị cấp 2",
-      "description": "Mở ra 1 trang bị cấp 5–10 theo tỉ lệ phẩm chất của đại cảnh giới tương ứng.",
-      "cost": 200,
-      "type": "equipmentChest",
-      "equipmentChestTier": 2,
-      "equipmentMajorRealmId": 2,
-      "rarityQualityMax": 3,
-      "rarityWeights": [
-        82,
-        18,
-        0
-      ]
-    },
-    {
-      "id": "equipmentTier3Chest",
-      "name": "Rương trang bị cấp 3",
-      "description": "Mở ra 1 trang bị cấp 10–15 theo tỉ lệ phẩm chất của đại cảnh giới tương ứng.",
-      "cost": 300,
-      "type": "equipmentChest",
-      "equipmentChestTier": 3,
-      "equipmentMajorRealmId": 3,
-      "rarityQualityMax": 3,
-      "rarityWeights": [
-        79,
-        20,
-        1
-      ]
-    },
-    {
-      "id": "equipmentTier4Chest",
-      "name": "Rương trang bị cấp 4",
-      "description": "Mở ra 1 trang bị cấp 15–20 theo tỉ lệ phẩm chất của đại cảnh giới tương ứng.",
-      "cost": 400,
-      "type": "equipmentChest",
-      "equipmentChestTier": 4,
-      "equipmentMajorRealmId": 4,
-      "rarityQualityMax": 3,
-      "rarityWeights": [
-        79,
-        20,
-        1
-      ]
-    },
-    {
-      "id": "equipmentTier5Chest",
-      "name": "Rương trang bị cấp 5",
-      "description": "Mở ra 1 trang bị cấp 20–25 theo tỉ lệ phẩm chất của đại cảnh giới tương ứng.",
-      "cost": 500,
-      "type": "equipmentChest",
-      "equipmentChestTier": 5,
-      "equipmentMajorRealmId": 5,
-      "rarityQualityMax": 3,
-      "rarityWeights": [
-        79,
-        20,
-        1
-      ]
-    },
-    {
-      "id": "equipmentTier6Chest",
-      "name": "Rương trang bị cấp 6",
-      "description": "Mở ra 1 trang bị cấp 25–30 theo tỉ lệ phẩm chất của đại cảnh giới tương ứng.",
-      "cost": 600,
-      "type": "equipmentChest",
-      "equipmentChestTier": 6,
-      "equipmentMajorRealmId": 6,
-      "rarityQualityMax": 3,
-      "rarityWeights": [
-        79,
-        20,
-        1
-      ]
-    },
-    {
-      "id": "equipmentTier7Chest",
-      "name": "Rương trang bị cấp 7",
-      "description": "Mở ra 1 trang bị cấp 30–35 theo tỉ lệ phẩm chất của đại cảnh giới tương ứng.",
-      "cost": 700,
-      "type": "equipmentChest",
-      "equipmentChestTier": 7,
-      "equipmentMajorRealmId": 7,
-      "rarityQualityMax": 3,
-      "rarityWeights": [
-        79,
-        20,
-        1
-      ]
-    },
-    {
-      "id": "equipmentTier8Chest",
-      "name": "Rương trang bị cấp 8",
-      "description": "Mở ra 1 trang bị cấp 35–40 theo tỉ lệ phẩm chất của đại cảnh giới tương ứng.",
-      "cost": 800,
-      "type": "equipmentChest",
-      "equipmentChestTier": 8,
-      "equipmentMajorRealmId": 8,
-      "rarityQualityMax": 3,
-      "rarityWeights": [
-        79,
-        20,
-        1
-      ]
-    },
-    {
-      "id": "equipmentTier9Chest",
-      "name": "Rương trang bị cấp 9",
-      "description": "Mở ra 1 trang bị cấp 40–45 theo tỉ lệ phẩm chất của đại cảnh giới tương ứng.",
-      "cost": 900,
-      "type": "equipmentChest",
-      "equipmentChestTier": 9,
-      "equipmentMajorRealmId": 9,
-      "rarityQualityMax": 3,
-      "rarityWeights": [
-        79,
-        20,
-        1
-      ]
-    },
-    {
-      "id": "equipmentTier10Chest",
-      "name": "Rương trang bị cấp 10",
-      "description": "Mở ra 1 trang bị cấp 45–50 theo tỉ lệ phẩm chất của đại cảnh giới tương ứng.",
-      "cost": 1000,
-      "type": "equipmentChest",
-      "equipmentChestTier": 10,
-      "equipmentMajorRealmId": 10,
-      "rarityQualityMax": 3,
-      "rarityWeights": [
-        79,
-        20,
-        1
-      ]
-    },
     {
       "id": "enhancementStone",
       "name": "Đá Cường Hóa",
@@ -195,39 +45,39 @@
     {
       "id": "cultivationPill",
       "name": "Tiểu Tu Vi Đan",
-      "description": "Dùng nhận 50 tu vi. Giá cố định, giới hạn 10 viên mỗi ngày.",
-      "cost": 50,
+    "description": "Dùng nhận 100 tu vi. Giá cố định, giới hạn 10 viên mỗi ngày.",
+    "cost": 100,
       "type": "cultivation",
-      "cultivation": 50,
+    "cultivation": 100,
       "priceStep": 0
     },
     {
       "id": "greaterCultivationPill",
       "name": "Trung Tu Vi Đan",
-      "description": "Dùng nhận 150 tu vi. Giá cố định, giới hạn 10 viên mỗi ngày. Yêu cầu đại cảnh giới 2.",
-      "cost": 130,
+    "description": "Dùng nhận 500 tu vi. Giá cố định, giới hạn 10 viên mỗi ngày. Yêu cầu đại cảnh giới 2.",
+    "cost": 490,
       "type": "cultivation",
-      "cultivation": 150,
+    "cultivation": 500,
       "requiredMajorRealmIndex": 1,
       "priceStep": 0
     },
     {
       "id": "highestCultivationPill",
       "name": "Cao Tu Vi Đan",
-      "description": "Dùng nhận 500 tu vi. Giá cố định, giới hạn 10 viên mỗi ngày. Yêu cầu Khí Động cảnh.",
-      "cost": 450,
+    "description": "Dùng nhận 1000 tu vi. Giá cố định, giới hạn 10 viên mỗi ngày. Yêu cầu Khí Động cảnh.",
+    "cost": 980,
       "type": "cultivation",
-      "cultivation": 500,
+    "cultivation": 1000,
       "requiredMajorRealmIndex": 2,
       "priceStep": 0
     },
     {
       "id": "majorAscensionPermit",
       "name": "Phá Cảnh Đan",
-      "description": "Dùng để đột phá đại cảnh giới. Có thể mua nhiều.",
-      "cost": 500,
-      "type": "ascension",
-      "priceMultiplier": 2
+    "description": "Dùng để đột phá đại cảnh giới. Giá gốc 1000 linh thạch, mỗi lần mua tăng thêm 2000.",
+    "cost": 1000,
+    "type": "ascension",
+    "priceStep": 2000
     },
     {
       "id": "healthPotion",

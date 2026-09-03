@@ -6,8 +6,8 @@ let cultivationRewardMultiplier = 0;
 let questRewardGrowthMultiplier = 1.3;
 let gameConfig = {};
 const cultivationRealmsPath = '/assets/Resources/Data/CultivationRealms.json';
-const gameConfigPath = '/assets/Resources/Data/GameConfig.json';
-const shopItemsPath = '/assets/Resources/Data/ShopItems.json';
+const gameConfigPath = '/assets/Resources/Data/GameConfig.json?v=20260903-shop2';
+const shopItemsPath = '/assets/Resources/Data/ShopItems.json?v=20260903-shop2';
 const starterDataPath = '/assets/Resources/Data/StarterData.json';
 const equipmentPath = '/assets/Resources/Data/equipment.json';
 const progressionFeaturesPath = '/assets/Resources/Data/ProgressionFeatures.json';
@@ -17,7 +17,7 @@ const combatStatsPath = '/assets/Resources/Data/CombatStats.json';
 const combatStylesPath = '/assets/Resources/Data/CombatStyles.json';
 const enemyStatsPath = '/assets/Resources/Data/EnemyStats.json';
 const enemySkillsPath = '/assets/Resources/Data/EnemySkills.json';
-const trialTowerPath = '/assets/Resources/Data/TrialTower.json';
+const trialTowerPath = '/assets/Resources/Data/TrialTower.json?v=20260903-tower-reward3';
 const questDataPath = '/assets/Resources/Data/Quests.json';
 const petDataPath = '/assets/Resources/Data/PetData.json';
 const petRealmsPath = '/assets/Resources/Data/PetRealms.json';
@@ -166,7 +166,7 @@ let equipmentIconFramesBySlot = {};
 let equipmentLevelColorGroups = [];
 let equipmentSetNames = [];
 let specialLineData = [];
-let equipmentMajorRealmRarityProfiles = [];
+let equipmentChestRarityProfiles = [];
 let equipmentStatGeneration = {
   varianceMin: 0.8,
   varianceMax: 1.2,
@@ -301,30 +301,19 @@ let audioFallbackEnabled = false;
 const audioFallbackCache = new Map();
 const criticalAssetPaths = [
   '/assets/Art/Textures/game-background-mobile.png',
-  '/assets/Art/Textures/game-background-chibi-mobile.png',
   '/assets/Art/Sprites/UI/chibi-ui-icon-sheet.png',
   '/assets/Art/Sprites/UI/chibi-stat-icon-sheet.png',
   '/assets/Art/Sprites/UI/chibi-item-status-icon-sheet.png',
   '/assets/Art/Sprites/UI/chibi-activity-icon-sheet.png',
-  '/assets/Art/Sprites/UI/chibi-unique-icon-sheet.png',
-  '/assets/Art/Sprites/UI/chibi-critical-damage-icon.png',
-  '/assets/Art/Sprites/Items/chibi-skill-item-sheet.png',
-  '/assets/Art/Sprites/Characters/chibi-sword-cultivator.png',
-  '/assets/Art/Sprites/Characters/chibi-blade-cultivator.png',
-  '/assets/Art/Sprites/Characters/chibi-martial-cultivator.png',
-  '/assets/Art/Sprites/pet/chibi-enemy-ghost.png',
-  '/assets/Art/Sprites/pet/chibi-enemy-spider.png',
-  '/assets/Art/Sprites/Enemies/chibi-enemy-beasts-sheet.png',
-  '/assets/Art/Sprites/Enemies/chibi-enemy-cultivators-sheet.png',
-  '/assets/Art/Sprites/Enemies/chibi-enemy-spirits-sheet.png',
-  '/assets/Art/Sprites/Enemies/chibi-enemy-constructs-sheet.png',
-  '/assets/Art/Sprites/Enemies/chibi-enemy-specials-sheet.png',
-  '/assets/Art/Sprites/Enemies/chibi-enemy-late-1-sheet.png',
-  '/assets/Art/Sprites/Enemies/chibi-enemy-late-2-sheet.png',
-  '/assets/Art/Sprites/UI/chibi-wander-map-icon-sheet-late.png',
 ];
 
 const $ = (id) => document.getElementById(id);
+function setPanelMessage(id, message, useHtml = false) {
+  const element = $(id);
+  if (!element) return;
+  if (useHtml) element.innerHTML = message;
+  else element.textContent = message;
+}
 const resourceLoader = $('resourceLoader');
 const resourceLoadingStatus = $('resourceLoadingStatus');
 const resourceLoadingBar = $('resourceLoadingBar');
@@ -1089,11 +1078,15 @@ function getSkillGradeName(skill) {
   return cultivationSkillData.grades.find((grade) => grade.id === skill.gradeId)?.name || 'Phẩm cấp chưa định';
 }
 
-function getSkillGradeColor(gradeId) {
+function getSkillGradeRarityKey(gradeId) {
   const gradeIndex = cultivationSkillData.grades.findIndex((grade) => grade.id === gradeId);
-  const rarityKey = cultivationSkillData.gradeColorRarityMap?.[gradeId]
+  return cultivationSkillData.gradeColorRarityMap?.[gradeId]
     || equipmentQualityOrder[Math.max(0, gradeIndex)]
     || 'common';
+}
+
+function getSkillGradeColor(gradeId) {
+  const rarityKey = getSkillGradeRarityKey(gradeId);
   return rarityData[rarityKey]?.color || '#f5f7fa';
 }
 
@@ -1212,8 +1205,11 @@ function getSkillMultiplier(skill, level = getSkillLevel(skill.id)) {
 function getSkillManaCost(skill, level = getSkillLevel(skill?.id)) {
   if (!skill) return 0;
   const baseCost = Math.max(0, Number(skill.cost) || 0);
+  const perLevelBySchool = cultivationSkillData.upgrade?.manaCostPerLevelBySchool || {};
+  const schoolPerLevel = perLevelBySchool[skill.schoolId] || {};
   const perLevelByGrade = cultivationSkillData.upgrade?.manaCostPerLevelByGrade || {};
-  const perLevel = Math.max(0, Number(perLevelByGrade[skill.gradeId]
+  const perLevel = Math.max(0, Number(schoolPerLevel[skill.gradeId]
+    ?? perLevelByGrade[skill.gradeId]
     ?? cultivationSkillData.upgrade?.manaCostPerLevel) || 0);
   return Math.max(0, Math.round(baseCost + Math.max(0, Number(level) || 0) * perLevel));
 }
@@ -1221,8 +1217,13 @@ function getSkillManaCost(skill, level = getSkillLevel(skill?.id)) {
 function getSkillCombatPower(skill, level = getSkillLevel(skill.id)) {
   if (!skill) return 0;
   if (Number.isFinite(Number(skill.combatPowerValue))) return Math.max(0, Math.round(Number(skill.combatPowerValue)));
-  const perLevel = Math.max(0, Number(cultivationSkillData.upgrade?.combatPowerPerLevel) || 0);
-  const perMilestone = Math.max(0, Number(cultivationSkillData.upgrade?.combatPowerPerMilestone) || 0);
+  const perLevelBySchool = cultivationSkillData.upgrade?.combatPowerPerLevelBySchool || {};
+  const schoolPerLevel = perLevelBySchool[skill.schoolId] || {};
+  const perLevel = Math.max(0, Number(schoolPerLevel[skill.gradeId]
+    ?? cultivationSkillData.upgrade?.combatPowerPerLevel) || 0);
+  const perMilestoneBySchool = cultivationSkillData.upgrade?.combatPowerPerMilestoneBySchool || {};
+  const perMilestone = Math.max(0, Number(perMilestoneBySchool[skill.schoolId]
+    ?? cultivationSkillData.upgrade?.combatPowerPerMilestone) || 0);
   const milestoneCount = Math.floor(Math.max(0, level) / 3);
   return Math.max(0, Math.round((Number(skill.combatPower) || 0) + Math.max(0, level) * perLevel + milestoneCount * perMilestone));
 }
@@ -1968,8 +1969,8 @@ function getQuestMilestoneIndex(quest, milestone) {
 function getCultivationRequirementForQuestMilestone(milestone) {
   if (!milestone) return 0;
   if (milestone.kind === 'major') {
-    const previousRealm = cultivationProgression[Math.max(0, Number(milestone.target) - 1)];
-    return Math.max(0, Number(previousRealm?.majorBreakthroughRequirement) || 0);
+    const nextRealm = cultivationProgression[Math.max(0, Number(milestone.target))];
+    return Math.max(0, Number(nextRealm?.minorBaseRequirement) || 0);
   }
   let remainingTier = Math.max(1, Math.floor(Number(milestone.target) || 1));
   for (let majorIndex = 0; majorIndex < cultivationProgression.length; majorIndex += 1) {
@@ -1989,6 +1990,7 @@ function getCultivationRequirementForQuestMilestone(milestone) {
 
 function roundQuestCultivationReward(value, rounding = 'nearestTen') {
   const amount = Math.max(0, Number(value) || 0);
+  if (rounding === 'ceilTen') return Math.max(0, Math.ceil(amount / 10) * 10);
   if (rounding === 'nearestTen') return Math.max(0, Math.round(amount / 10) * 10);
   return Math.max(0, Math.round(amount));
 }
@@ -1999,7 +2001,10 @@ function getFormulaQuestReward(quest, milestone) {
   const milestoneIndex = getQuestMilestoneIndex(quest, milestone);
   if (milestoneIndex < 0) return null;
   const requirement = getCultivationRequirementForQuestMilestone(milestone);
-  const divisor = Math.max(1, Number(formula.cultivationDivisor) || 1);
+  const configuredDivisor = milestone.kind === 'major'
+    ? formula.majorCultivationDivisor ?? formula.cultivationDivisor
+    : formula.cultivationDivisor;
+  const divisor = Math.max(1, Number(configuredDivisor) || 1);
   const reward = {
     cultivation: roundQuestCultivationReward(requirement / divisor, formula.cultivationRounding),
     spiritStones: Math.max(0,
@@ -2016,11 +2021,16 @@ function getFormulaQuestReward(quest, milestone) {
 function getDailyQuestCultivationReward() {
   const formula = questData.dailyRewardFormula || {};
   const divisor = Math.max(1, Number(formula.cultivationDivisor) || 1);
-  const requirement = Math.max(0,
-    Number(cultivationProgression[playerMajorRealmIndex]?.majorBreakthroughRequirement) || 0,
-  );
+  const requirement = getCultivationRequirementForQuestMilestone({
+    kind: 'minor',
+    target: getPlayerCultivationTier(),
+  });
   const bonus = Number(formula.cultivationBonus) || 0;
-  return roundQuestCultivationReward(requirement / divisor + bonus, formula.cultivationRounding || 'nearest');
+  const levelBonus = Number(formula.cultivationBonusPerLevel) || 0;
+  return roundQuestCultivationReward(
+    requirement / divisor + bonus + Math.max(1, Number(playerLevel) || 1) * levelBonus,
+    formula.cultivationRounding || 'nearest',
+  );
 }
 
 function getMilestoneQuestFormulaReward(quest) {
@@ -2249,9 +2259,9 @@ function renderQuests() {
       </article>
     `;
   }).join('');
-  $('questMessage').textContent = readyCount > 0
+  setPanelMessage('questMessage', readyCount > 0
     ? `Có ${readyCount} nhiệm vụ đã hoàn thành.`
-    : 'Hoàn thành mục tiêu để mở khóa phần thưởng.';
+    : 'Hoàn thành mục tiêu để mở khóa phần thưởng.');
   updateNotificationBadges();
 }
 
@@ -2330,7 +2340,7 @@ function claimQuest(questId) {
   }
   playerFoundation += Math.max(0, Math.floor(Number(reward.foundation) || 0));
   playerComprehension += Math.max(0, Math.floor(Number(reward.comprehension) || 0));
-  $('questMessage').innerHTML = `Đã nhận: ${formatQuestReward(reward)}.`;
+  setPanelMessage('questMessage', `Đã nhận: ${formatQuestReward(reward)}.`, true);
   showGameToast(`Đã nhận thưởng nhiệm vụ: ${quest.title}.`, 'success');
   renderQuests();
   renderCultivation();
@@ -2453,9 +2463,6 @@ function renderTrialTower() {
       </div>
     `;
   }).join('');
-  $('trialTowerMessage').textContent = entered
-    ? 'Mỗi tầng chỉ nhận thưởng một lần. Hãy chuẩn bị kỹ trước khi khiêu chiến.'
-    : `Tháp thí luyện mở từ ${getTierRealmText(entryTier)}.`;
 }
 
 function startTrialTowerBattle(floorNumber) {
@@ -2935,8 +2942,8 @@ async function loadEquipmentData() {
   equipmentLevelColorGroups = Array.isArray(data.levelColorGroups) ? data.levelColorGroups : [];
   equipmentSetNames = Array.isArray(data.setNames) ? data.setNames : [];
   specialLineData = data.specialLines;
-  equipmentMajorRealmRarityProfiles = Array.isArray(data.majorRealmRarityProfiles)
-    ? data.majorRealmRarityProfiles
+  equipmentChestRarityProfiles = Array.isArray(data.chestRarityProfiles)
+    ? data.chestRarityProfiles
     : [];
   equipmentStatGeneration = { ...equipmentStatGeneration, ...(data.statGeneration || {}) };
   validateEquipmentData();
@@ -2973,22 +2980,22 @@ function validateEquipmentData() {
   equipmentQualityOrder.forEach((rarityKey) => {
     if (!rarityData[rarityKey]) throw new Error(`Equipment rarity missing: ${rarityKey}`);
   });
-  if (equipmentMajorRealmRarityProfiles.length < 26) {
-    throw new Error('Equipment data must contain rarity profiles for 26 major realms.');
+  if (equipmentChestRarityProfiles.length !== 10) {
+    throw new Error('Equipment data must contain rarity profiles for 10 chest tiers.');
   }
   const profileIds = new Set();
-  equipmentMajorRealmRarityProfiles.forEach((profile) => {
-    const realmId = Number(profile?.majorRealmId);
+  equipmentChestRarityProfiles.forEach((profile) => {
+    const chestTier = Number(profile?.chestTier);
     const weights = profile?.weights;
-    if (!Number.isInteger(realmId) || realmId < 1 || realmId > 26 || profileIds.has(realmId)) {
-      throw new Error(`Invalid equipment rarity profile for major realm ${realmId}.`);
+    if (!Number.isInteger(chestTier) || chestTier < 1 || chestTier > 10 || profileIds.has(chestTier)) {
+      throw new Error(`Invalid equipment rarity profile for chest tier ${chestTier}.`);
     }
     if (!Array.isArray(weights) || weights.length !== equipmentQualityOrder.length
       || weights.some((weight) => !Number.isFinite(Number(weight)) || Number(weight) < 0)
       || Math.round(weights.reduce((sum, weight) => sum + Number(weight), 0)) !== 100) {
-      throw new Error(`Equipment rarity profile ${realmId} must contain 10 weights totaling 100.`);
+      throw new Error(`Equipment rarity profile ${chestTier} must contain 10 weights totaling 100.`);
     }
-    profileIds.add(realmId);
+    profileIds.add(chestTier);
   });
 }
 
@@ -3704,7 +3711,7 @@ function normalizeEquipmentChestInventory(items) {
         25,
       );
       const levelRange = getEquipmentLevelRange({ chestTier: storedTier });
-      const rarityProfile = getEquipmentRarityProfile({ majorRealmIndex });
+      const rarityProfile = getEquipmentRarityProfile({ chestTier: storedTier });
       const idNumber = Math.max(1, Number(item.idNumber) || equipmentChestIdSeed++);
       return {
         id: item.id || `equipmentChest-${idNumber}`,
@@ -3917,7 +3924,6 @@ function recordEquipmentChestPurchase() {
 
 function getDailyShopPurchaseLimit(shopItem) {
   if (!shopItem) return 0;
-  if (shopItem.type === 'equipmentChest') return getEquipmentChestDailyPurchaseLimit();
   const limits = gameConfig.gameplay?.dailyShopPurchaseLimits || {};
   const limitKey = shopItem.type === 'potion'
     ? `${shopItem.potionType || 'health'}Potion`
@@ -3939,7 +3945,6 @@ function normalizeDailyShopPurchases(purchases = {}) {
 }
 
 function getDailyShopPurchaseCount(shopItem) {
-  if (shopItem?.type === 'equipmentChest') return getDailyEquipmentChestPurchaseCount();
   dailyShopPurchases = normalizeDailyShopPurchases(dailyShopPurchases);
   return dailyShopPurchases.counts[shopItem?.id] || 0;
 }
@@ -3951,10 +3956,6 @@ function getRemainingShopPurchases(shopItem) {
 }
 
 function recordShopItemPurchase(shopItem) {
-  if (shopItem?.type === 'equipmentChest') {
-    recordEquipmentChestPurchase();
-    return;
-  }
   if (getDailyShopPurchaseLimit(shopItem) <= 0) return;
   dailyShopPurchases = normalizeDailyShopPurchases(dailyShopPurchases);
   const current = getDailyShopPurchaseCount(shopItem);
@@ -4487,12 +4488,12 @@ function isWanderMapUnlocked(map) {
 }
 
 function getAvailableEquipmentChestTier() {
-  return Math.max(1, Math.ceil(getUnlockedWanderMapCount() / 3));
+  return Math.max(1, Math.ceil(getUnlockedWanderMapCount() / getWanderChestTierStepMaps()));
 }
 
-function isEquipmentChestShopItemAvailable(shopItem) {
-  return shopItem?.type === 'equipmentChest'
-    && Number(shopItem.equipmentChestTier) === getAvailableEquipmentChestTier();
+function getWanderChestTierStepMaps() {
+  const configured = Number(gameConfig.gameplay?.wanderChestTierStepMaps);
+  return Math.max(1, Math.floor(configured) || 4);
 }
 
 function getUnlockedWanderMapCount() {
@@ -5070,7 +5071,7 @@ function createWanderRewardStage(map = getCurrentWanderMap()) {
 }
 
 function createWanderConsumableChoice(type, map = getCurrentWanderMap()) {
-  const amount = Math.max(1, Math.floor(rollWanderRewardBase(type) * getRewardSettings(map).cultivationMultiplier));
+  const amount = Math.max(1, Math.floor(rollWanderRewardBase(type)));
   const rewardData = {
     healthPotion: {
       title: 'Sinh Huyết Đan',
@@ -5333,7 +5334,7 @@ function openEquipmentChest(chestId, amount = 1) {
   if (index < 0) return;
   const chest = equipmentChestInventory[index];
   const [minLevel, maxLevel] = getChestLevelRange(chest);
-  const currentRarityProfile = getEquipmentRarityProfile({ majorRealmIndex: playerMajorRealmIndex });
+  const currentRarityProfile = getEquipmentRarityProfile(chest);
   chest.rarityProfile = currentRarityProfile;
   const quantity = clamp(Math.floor(Number(amount) || 1), 1, chest.count);
   const openedItems = [];
@@ -5385,20 +5386,25 @@ function createAmbushStage(map = getCurrentWanderMap()) {
 function fleeWanderEnemy(stage) {
   hideWanderEventOverlay();
   clearWanderTimer();
+  syncPlayerResourceCaps();
+  const manaBeforeFlee = playerCurrentMana;
+  const fleeManaCost = Math.ceil(manaBeforeFlee * 0.25);
+  playerCurrentMana = Math.max(0, manaBeforeFlee - fleeManaCost);
+  if (player) player.mana = playerCurrentMana;
   const chance = getFleeChance(stage);
   if (Math.random() > chance) {
     currentWanderEvent = null;
     startStageBattle(stage);
+    pushLog(`Chạy thoát thất bại, mất ${formatGameNumber(fleeManaCost)} linh lực.`);
     pushLog(`${stage.enemyData.name} đuổi kịp, không thể chạy thoát.`);
     return;
   }
 
-  player.mana = Math.max(0, Math.round(player.mana * 0.9));
   currentWanderEvent = {
     type: 'result',
     title: 'Đã rút lui',
     message: `Chạy thoát khỏi ${stage.enemyData.name}.`,
-    detail: `Tỉ lệ chạy thoát: ${toPercent(chance)}. Mất 10% linh lực hiện tại, không nhận thưởng từ đối thủ này.`,
+    detail: `Tỉ lệ chạy thoát: ${toPercent(chance)}. Mất 25% linh lực hiện tại, không nhận thưởng từ đối thủ này.`,
   };
   renderStageMap();
   renderCultivation();
@@ -6244,7 +6250,10 @@ function applyTrialTowerReward(stage) {
   playerSpiritStones += spiritStones;
   const enhancementStoneReward = Math.max(0, Math.floor(Number(reward.enhancementStones) || 0));
   enhancementStones += enhancementStoneReward;
-  const chestTier = Math.max(0, Math.floor(Number(reward.equipmentChestTier) || 0));
+  const configuredStep = Math.max(1, Math.floor(Number(trialTowerData.rewardChestTierStepFloors) || 15));
+  const chestTier = floorNumber > 0
+    ? clamp(2 + Math.floor((floorNumber - 1) / configuredStep), 1, 10)
+    : Math.max(0, Math.floor(Number(reward.equipmentChestTier) || 0));
   const droppedChest = chestTier > 0
     ? addEquipmentChest({ majorRealmIndex: stage.enemyMajorRealmIndex }, { chestTier })
     : null;
@@ -6490,7 +6499,6 @@ function getRewardSettings(stage = currentStage) {
     cultivationMultiplier: (map.rewardSettings?.cultivationMultiplier
       ?? config.cultivationMultiplier
       ?? 1) * cultivationRewardMultiplier,
-    spiritStoneBonus: Math.max(0, Number(map.rewardSettings?.spiritStoneBonus) || 0),
     equipmentDropChance: map.rewardSettings?.equipmentDropChance ?? config.equipmentDropChance ?? 0,
     equipmentRarityBonus: map.rewardSettings?.equipmentRarityBonus ?? config.equipmentRarityBonus ?? 0,
     equipmentQualityMax: map.rewardSettings?.equipmentQualityMax ?? 1,
@@ -6506,7 +6514,7 @@ function getWanderCultivationAmount(stage, settings = getRewardSettings(stage)) 
 }
 
 function getWanderSpiritStoneAmount(stage, settings = getRewardSettings(stage)) {
-  return Math.max(1, Math.round(rollWanderRewardBase('spiritStone') + settings.spiritStoneBonus));
+  return Math.max(1, Math.round(rollWanderRewardBase('spiritStone') * settings.cultivationMultiplier));
 }
 
 function rollWanderRewardBase(type) {
@@ -6587,22 +6595,15 @@ function getEquipmentMajorRealmIndex(source = currentStage) {
 }
 
 function getEquipmentRarityProfile(source = currentStage) {
-  const majorRealmId = getEquipmentMajorRealmIndex(source) + 1;
-  const configured = equipmentMajorRealmRarityProfiles.find((profile) => Number(profile.majorRealmId) === majorRealmId);
+  const chestTier = getEquipmentChestTier(source);
+  const configured = equipmentChestRarityProfiles.find((profile) => Number(profile.chestTier) === chestTier);
   if (configured) {
     const sourceWeights = configured.weights.map((weight) => Math.max(0, Number(weight) || 0));
     let qualityMax = sourceWeights.reduce((last, weight, index) => (weight > 0 ? index + 1 : last), 0);
     qualityMax = clamp(qualityMax || 1, 1, equipmentQualityOrder.length);
-    return { qualityMax, weights: sourceWeights.slice(0, qualityMax) };
+    return { qualityMax, weights: sourceWeights };
   }
-
-  const map = source?.mapId && wanderMaps[source.mapId]
-    ? wanderMaps[source.mapId]
-    : wanderMaps[source?.id] || getCurrentWanderMap();
-  const settings = getRewardSettings(map);
-  const qualityMax = clamp(Math.floor(Number(settings.equipmentQualityMax) || 1), 1, equipmentQualityOrder.length);
-  const weights = Array.from({ length: qualityMax }, (_, index) => Math.max(0, Number(settings.equipmentQualityWeights?.[index]) || 0));
-  return { qualityMax, weights };
+  return { qualityMax: 1, weights: [100] };
 }
 
 function rollEquipmentRarity(profile) {
@@ -6625,16 +6626,15 @@ function rollEquipmentRarity(profile) {
 function calculateCultivationReward(stage, outcome) {
   if (outcome !== 'win') return 0;
 
-  const enemyCultivation = getStageDifficulty(stage);
   const baseCultivation = rollWanderRewardBase('cultivation');
   const multiplier = getRewardSettings(stage).cultivationMultiplier * getEnemyRewardMultiplier(stage);
 
-  return Math.round((baseCultivation + enemyCultivation / 2) * multiplier);
+  return Math.round(baseCultivation * multiplier);
 }
 
 function getEnemyRewardMultiplier(stage = currentStage) {
   const rankLevel = clamp(Math.floor(Number(stage?.enemyRankLevel) || 1), 1, 5);
-  return 1 + ((rankLevel - 1) * 0.1);
+  return 1 + ((rankLevel - 1) * 0.05);
 }
 
 function getEnemyRewardBonusPercent(stage = currentStage) {
@@ -6642,12 +6642,11 @@ function getEnemyRewardBonusPercent(stage = currentStage) {
 }
 
 function getSpiritStoneDropRange(stage = currentStage) {
-  const enemyCultivation = getStageDifficulty(stage);
   const [minBase, maxBase] = getWanderRewardBaseRange('spiritStone');
   const multiplier = getRewardSettings(stage).cultivationMultiplier * getEnemyRewardMultiplier(stage);
   return {
-    min: Math.max(1, Math.round((minBase + enemyCultivation / 4) * multiplier)),
-    max: Math.max(1, Math.round((maxBase + enemyCultivation / 4) * multiplier)),
+    min: Math.max(1, Math.round(minBase * multiplier)),
+    max: Math.max(1, Math.round(maxBase * multiplier)),
   };
 }
 
@@ -6662,10 +6661,9 @@ function getSpiritStonePreviewRange(stage = currentStage) {
 
 function rollSpiritStoneDrop(outcome) {
   if (outcome !== 'win') return 0;
-  const enemyCultivation = getStageDifficulty(currentStage);
   const baseDrop = rollWanderRewardBase('spiritStone');
   const multiplier = getRewardSettings(currentStage).cultivationMultiplier * getEnemyRewardMultiplier(currentStage);
-  const reward = Math.max(1, Math.round((baseDrop + enemyCultivation / 4) * multiplier));
+  const reward = Math.max(1, Math.round(baseDrop * multiplier));
   const bonus = player?.spiritStoneBonus || 0;
   return Math.round(reward * (1 + bonus));
 }
@@ -6903,14 +6901,24 @@ function getEquipmentChestMajorRealmIndex(source = currentStage) {
 }
 
 function getEquipmentChestTier(source = currentStage) {
-  const directTier = Number(source?.chestTier ?? source?.equipmentChestTier ?? source?.tier);
-  if (Number.isInteger(directTier) && directTier > 0) return Math.max(1, directTier);
+  const directTier = Number(source?.chestTier ?? source?.tier);
+  if (Number.isInteger(directTier) && directTier > 0) return clamp(directTier, 1, 10);
 
   const map = source?.mapId && wanderMaps[source.mapId]
     ? wanderMaps[source.mapId]
     : wanderMaps[source?.id];
-  if (map?.equipmentChestTier) return Math.max(1, Math.floor(Number(map.equipmentChestTier)));
+  if (map) {
+    const mapNumber = getWanderMapNumber(map);
+    return clamp(Math.ceil(mapNumber / getWanderChestTierStepMaps()), 1, 10);
+  }
+  const configuredTier = Number(source?.equipmentChestTier);
+  if (Number.isInteger(configuredTier) && configuredTier > 0) return clamp(configuredTier, 1, 10);
   return 1;
+}
+
+function getEquipmentChestDisplayRarityKey(source = currentStage) {
+  const chestTier = clamp(getEquipmentChestTier(source), 1, equipmentQualityOrder.length);
+  return equipmentQualityOrder[chestTier - 1] || equipmentQualityOrder[0] || 'common';
 }
 
 function getEquipmentChestName(source = currentStage) {
@@ -6936,7 +6944,7 @@ function addEquipmentChest(source = currentStage, options = {}) {
     tier: chestTier,
     chestTier,
     levelRange: getEquipmentLevelRange({ chestTier }),
-    rarityProfile: options.rarityProfile || getEquipmentRarityProfile({ majorRealmIndex }),
+    rarityProfile: options.rarityProfile || getEquipmentRarityProfile({ chestTier }),
     count: 1,
   };
   equipmentChestInventory.unshift(chest);
@@ -6967,8 +6975,8 @@ function getShopPurchaseTotal(shopItem, quantity = 1) {
     } else if (shopItem.type === 'ascension') {
       const baseCost = Math.max(1, Number(shopItem.cost) || 1);
       const purchaseCount = Math.max(0, Number(ascensionPillPurchases[shopItem.id]) || 0);
-      const multiplier = Math.max(1, Number(shopItem.priceMultiplier) || 2);
-      total += baseCost * Math.pow(multiplier, purchaseCount + index);
+      const priceStep = Math.max(0, Number(shopItem.priceStep) || 0);
+      total += baseCost + priceStep * (purchaseCount + index);
     } else if (shopItem.type === 'skillBook') {
       const baseCost = Math.max(1, Number(shopItem.cost) || 1);
       const multiplier = Math.max(0.01, Number(shopItem.priceMultiplier) || 1);
@@ -7032,15 +7040,6 @@ function buyShopItem(itemId, amount = 1) {
       inventory.unshift(lastItem);
     }
 
-    if (shopItem.type === 'equipmentChest') {
-      const majorRealmIndex = Math.max(0, (Number(shopItem.equipmentMajorRealmId) || 1) - 1);
-      addEquipmentChest({ majorRealmIndex }, {
-        chestTier: Math.max(1, Number(shopItem.equipmentChestTier) || 1),
-        rarityProfile: getEquipmentRarityProfile({ majorRealmIndex: playerMajorRealmIndex }),
-      });
-      recordShopItemPurchase(shopItem);
-    }
-
     if (shopItem.type === 'enhancementStone') {
       enhancementStones += Math.max(1, Number(shopItem.amount) || 1);
     }
@@ -7076,7 +7075,7 @@ function buyShopItem(itemId, amount = 1) {
     if (shopItem.type === 'ascension') {
       ascensionPillPurchases[shopItem.id] = (ascensionPillPurchases[shopItem.id] || 0) + 1;
     }
-    if (shopItem.type !== 'equipmentChest' && dailyLimit > 0) {
+    if (dailyLimit > 0) {
       recordShopItemPurchase(shopItem);
     }
     purchased += 1;
@@ -7089,10 +7088,6 @@ function buyShopItem(itemId, amount = 1) {
     setShopMessage(`Đã mua ${shopItem.name}${suffix}, đã chuyển vào Túi đồ.`);
   } else if (shopItem.type === 'equipment' || shopItem.type === 'equipmentRandom') {
     setShopMessage(`Đã mua${suffix}: ${lastItem ? `${getRarityName(lastItem)} ${lastItem.name}` : shopItem.name}.`);
-  } else if (shopItem.type === 'equipmentChest') {
-    const chestTier = Math.max(1, Number(shopItem.equipmentChestTier) || 1);
-    const [minLevel, maxLevel] = getEquipmentLevelRange({ chestTier });
-    setShopMessage(`Đã mua ${shopItem.name}${suffix}, mở ra trang bị cấp ${minLevel}-${maxLevel} trong Túi đồ.`);
   } else if (shopItem.type === 'potion') {
     setShopMessage(`Đã mua ${shopItem.name}${suffix}.`);
   } else if (shopItem.type === 'skillBook') {
@@ -7111,8 +7106,6 @@ function buyShopItem(itemId, amount = 1) {
 function canBuyShopItem(shopItem) {
   if (playerSpiritStones < getShopItemCost(shopItem)) return false;
   if (getDailyShopPurchaseLimit(shopItem) > 0 && getRemainingShopPurchases(shopItem) <= 0) return false;
-  if (shopItem.type === 'equipmentChest'
-    && (!isEquipmentChestShopItemAvailable(shopItem) || getRemainingEquipmentChestPurchases() <= 0)) return false;
   if (shopItem.requiredLevel && playerLevel < shopItem.requiredLevel) return false;
   if (shopItem.type === 'skillBook' && (
     shopItem.schoolId !== playerSchoolId
@@ -7156,8 +7149,8 @@ function getShopItemCost(shopItem) {
   if (shopItem.type === 'ascension') {
     const baseCost = Math.max(1, Number(shopItem.cost) || 1);
     const purchaseCount = Math.max(0, Number(ascensionPillPurchases[shopItem.id]) || 0);
-    const multiplier = Math.max(1, Number(shopItem.priceMultiplier) || 2);
-    return Math.max(1, Math.round(baseCost * Math.pow(multiplier, purchaseCount)));
+    const priceStep = Math.max(0, Number(shopItem.priceStep) || 0);
+    return Math.max(1, Math.round(baseCost + priceStep * purchaseCount));
   }
   if (shopItem.type === 'potion') {
     const baseCost = Math.max(1, Number(shopItem.cost) || 5);
@@ -7201,7 +7194,7 @@ function addShopInventoryItem(itemId, amount = 1) {
 }
 
 function setShopMessage(message) {
-  $('shopMessage').textContent = message;
+  setPanelMessage('shopMessage', message);
   showGameToast(message, /^(Không|Chưa|Đã đạt giới hạn)/.test(message) ? 'error' : 'success');
 }
 
@@ -7919,7 +7912,7 @@ function renderSkills() {
     const skillIconClass = getSkillItemIconMarkupClass(skill.id);
     return `
       <div class="feature-item grade-${skill.gradeId || 'mortal'} ${active ? 'active' : ''}" style="--skill-rarity-color: ${getSkillGradeColor(skill.gradeId)};">
-        <strong class="skill-title"><i class="${skillIconClass}" aria-hidden="true"><b class="skill-level-badge">+${level}</b></i><span class="skill-name">${skill.name}</span><small class="skill-grade">${getSkillGradeName(skill)}</small><span class="skill-power">LC ${formatGameNumber(skillPower)}</span></strong>
+        <strong class="skill-title"><i class="${skillIconClass}" aria-hidden="true"><b class="skill-level-badge">+${level}</b></i><span class="skill-name">${skill.name}</span><span class="skill-power">LC +${formatGameNumber(skillPower)}</span></strong>
         <small class="skill-mana-cost"><i class="stat-icon icon-stat-mana" aria-hidden="true"></i>Linh lực cần ${formatGameNumber(getSkillManaCost(skill, level))} · Hồi chiêu ${formatGameNumber(Math.max(1, Number(skill.cooldown) || 1))} lượt</small>
         <button type="button" class="skill-description-toggle" data-skill-action="details" data-skill-id="${skill.id}" aria-expanded="${detailsOpen}"><span>${skillDescription}</span><small>${detailsOpen ? 'Ẩn chi tiết' : 'Xem chi tiết'}</small></button>
         ${detailsOpen ? `<div class="skill-description-detail">${formatSkillDisplayNote(skill, level)}</div>` : ''}
@@ -7947,14 +7940,14 @@ function selectSkillTraining(skillId) {
   const practiceRequired = getSkillPracticeRequired(skill, level + 1);
   if (level >= getSkillMaxLevel() || getSkillPractice(skill.id) >= practiceRequired) {
     skillTrainingId = '';
-    $('skillsMessage').textContent = `${skill.name} đã đạt 100%, hãy nâng cấp trước khi tu luyện tiếp.`;
+    setPanelMessage('skillsMessage', `${skill.name} đã đạt 100%, hãy nâng cấp trước khi tu luyện tiếp.`);
     showGameToast(`${skill.name} đã đạt 100%, hãy nâng cấp trước khi tu luyện tiếp.`, 'info');
     renderSkills();
     saveGame();
     return;
   }
   skillTrainingId = skill.id;
-  $('skillsMessage').textContent = `Đang tu luyện ${skill.name}.`;
+  setPanelMessage('skillsMessage', `Đang tu luyện ${skill.name}.`);
   showGameToast(`Đã chọn ${skill.name} để tu luyện.`, 'info');
   renderSkills();
   saveGame();
@@ -7965,7 +7958,7 @@ function learnSkill(skillId) {
   const skill = getPlayerSkills().find((entry) => entry.id === skillId);
   if (!skill || isSkillLearned(skill.id)) return;
   if (getPlayerCultivationTier() < getSkillRequiredTier(skill)) {
-    $('skillsMessage').textContent = `Chưa đủ tu vi để học ${skill.name}.`;
+    setPanelMessage('skillsMessage', `Chưa đủ tu vi để học ${skill.name}.`);
     showGameToast(`Chưa đủ tu vi để học ${skill.name}.`, 'error');
     return;
   }
@@ -7975,7 +7968,7 @@ function learnSkill(skillId) {
   skillPractice[skill.id] = 0;
   skillTrainingId = '';
   activeSkillId = skill.id;
-  $('skillsMessage').textContent = `Đã học ${skill.name}. Hãy bấm Tu luyện để bắt đầu.`;
+  setPanelMessage('skillsMessage', `Đã học ${skill.name}. Hãy bấm Tu luyện để bắt đầu.`);
   showGameToast(`Đã học ${skill.name}.`, 'success');
   renderSkills();
   renderCultivation();
@@ -7995,12 +7988,12 @@ function upgradeSkill(skillId) {
   const bookRequirement = getSkillBookRequirement(skill, targetLevel);
   const bookRequired = bookRequirement.total;
   if (getSkillPractice(skill.id) < practiceRequired) {
-    $('skillsMessage').textContent = `Cần tu luyện ${skill.name} đạt ${practiceRequired} trước.`;
+    setPanelMessage('skillsMessage', `Cần tu luyện ${skill.name} đạt ${practiceRequired} trước.`);
     showGameToast(`Chưa đủ tiến độ để nâng ${skill.name}.`, 'error');
     return;
   }
   if (getSkillBookCount(skill.id) < bookRequired) {
-    $('skillsMessage').textContent = `Cần ${bookRequired} sách ${skill.name} để nâng lên cấp ${targetLevel}.`;
+    setPanelMessage('skillsMessage', `Cần ${bookRequired} sách ${skill.name} để nâng lên cấp ${targetLevel}.`);
     showGameToast(`Chưa đủ sách skill để nâng ${skill.name}.`, 'error');
     return;
   }
@@ -8008,7 +8001,7 @@ function upgradeSkill(skillId) {
   skillLevels[skill.id] = targetLevel;
   skillPractice[skill.id] = 0;
   if (skillTrainingId === skill.id) skillTrainingId = '';
-  $('skillsMessage').textContent = `${skill.name} đã tăng lên cấp ${targetLevel}. Hãy bấm Chọn tu luyện để luyện tiếp.`;
+  setPanelMessage('skillsMessage', `${skill.name} đã tăng lên cấp ${targetLevel}. Hãy bấm Chọn tu luyện để luyện tiếp.`);
   showGameToast(`${skill.name} đã nâng lên cấp ${targetLevel}.`, 'success');
   renderSkills();
   renderCultivation();
@@ -8024,7 +8017,7 @@ function toggleEquipSkill(skillId) {
   if (equippedIndex >= 0) {
     equippedSkillIds.splice(equippedIndex, 1);
     if (activeSkillId === skill.id) activeSkillId = equippedSkillIds[0] || '';
-    $('skillsMessage').textContent = `Đã tháo ${skill.name}.`;
+    setPanelMessage('skillsMessage', `Đã tháo ${skill.name}.`);
     showGameToast(`Đã tháo ${skill.name}.`, 'success');
   } else {
     if (getPlayerCultivationTier() < getSkillRequiredTier(skill)) {
@@ -8032,13 +8025,13 @@ function toggleEquipSkill(skillId) {
       return;
     }
     if (equippedSkillIds.length >= getMaxEquippedSkills()) {
-      $('skillsMessage').textContent = `Cần tu vi để mở ô skill tiếp theo hoặc hãy tháo một skill.`;
+      setPanelMessage('skillsMessage', `Cần tu vi để mở ô skill tiếp theo hoặc hãy tháo một skill.`);
       showGameToast('Chưa thể trang bị thêm skill.', 'error');
       return;
     }
     equippedSkillIds.push(skill.id);
     if (!activeSkillId) activeSkillId = skill.id;
-    $('skillsMessage').textContent = `Đã trang bị ${skill.name}.`;
+    setPanelMessage('skillsMessage', `Đã trang bị ${skill.name}.`);
     showGameToast(`Đã trang bị ${skill.name}.`, 'success');
   }
   renderSkills();
@@ -8052,7 +8045,7 @@ function selectSkill(skillId) {
   const skill = getPlayerSkills().find((entry) => entry.id === skillId);
   if (!skill || !isSkillLearned(skill.id)) return;
   activeSkillId = skill.id;
-  $('skillsMessage').textContent = `Đã chọn ${skill.name}.`;
+  setPanelMessage('skillsMessage', `Đã chọn ${skill.name}.`);
   showGameToast(`Đã chọn ${skill.name} làm skill chủ động.`, 'info');
   renderSkills();
   renderCultivation();
@@ -8194,7 +8187,7 @@ function enhanceEquipment(itemId) {
   const successRate = getEnhancementSuccessRate(targetLevel);
   if (Math.random() > successRate) {
     const failureMessage = `${item.name} cường hóa thất bại ở cấp +${targetLevel}. Chỉ mất ${formatGameNumber(stoneCost)} đá cường hóa, không mất linh thạch. Tỉ lệ lần này: ${toPercent(successRate)}.`;
-    $('enhancementMessage').textContent = failureMessage;
+    setPanelMessage('enhancementMessage', failureMessage);
     showGameToast(`Cường hóa thất bại: ${item.name} ở cấp +${targetLevel}.`, 'error');
     renderEnhancement();
     renderCultivation();
@@ -8208,7 +8201,7 @@ function enhanceEquipment(itemId) {
     getEnhancedStatValue(stat, value),
   ]));
   const successMessage = `${item.name} đã cường hóa lên +${item.enhancementLevel}. Chỉ số và lực chiến đã tăng.`;
-  $('enhancementMessage').textContent = successMessage;
+  setPanelMessage('enhancementMessage', successMessage);
   showGameToast(`Cường hóa thành công: ${item.name} lên +${item.enhancementLevel}.`, 'success');
   renderEnhancement();
   renderEquipment();
@@ -8390,7 +8383,7 @@ function sweepResourceDungeon(dungeonId) {
   if (!dungeon || floor <= 0 || !consumeResourceAttempt(dungeonId)) return;
   const reward = grantResourceDungeonReward(dungeonId, floor);
   const rewardText = formatResourceReward(dungeon, reward.amount, reward);
-  $('resourceDungeonMessage').textContent = `${dungeon.name}: quét tầng ${floor}, nhận ${rewardText}.`;
+  setPanelMessage('resourceDungeonMessage', `${dungeon.name}: quét tầng ${floor}, nhận ${rewardText}.`);
   showGameToast(`Đã quét ${dungeon.name} tầng ${floor}, nhận ${rewardText}.`, 'success');
   renderResourceDungeons();
   renderCultivation();
@@ -8403,7 +8396,7 @@ function runResourceDungeon(dungeonId) {
 }
 
 function getShopItemCategory(item) {
-  if (item.type === 'equipment' || item.type === 'equipmentRandom' || item.type === 'equipmentChest') return 'equipment';
+  if (item.type === 'equipment' || item.type === 'equipmentRandom') return 'equipment';
   if (item.type === 'skillBook' || item.type === 'skillChest') return 'skill';
   if (item.type === 'cultivation' || item.type === 'foundation' || item.type === 'ascension') return 'cultivation';
   if (item.type === 'potion') return 'consumable';
@@ -8414,7 +8407,6 @@ function getShopItemIconClass(item) {
   if (item.type === 'skillBook') return getSkillItemIconClass(item.skillId);
   if (item.type === 'skillChest') return 'icon-activity-chest';
   if (item.type === 'equipment' || item.type === 'equipmentRandom') return 'icon-unique-equipment';
-  if (item.type === 'equipmentChest') return 'icon-activity-chest';
   if (item.type === 'potion') {
     return item.potionType === 'mana' ? 'icon-item-mana-flame' : 'icon-item-health-pill';
   }
@@ -8449,14 +8441,6 @@ function getShopItemLockText(item) {
   const lockedByRealm = Number.isInteger(item.requiredMajorRealmIndex)
     && playerMajorRealmIndex < item.requiredMajorRealmIndex;
   const lockedByMap = item.requiredMapId && !isWanderMapUnlocked(wanderMaps[item.requiredMapId]);
-  if (item.type === 'equipmentChest' && !isEquipmentChestShopItemAvailable(item)) {
-    const chestTier = Math.max(1, Math.floor(Number(item.equipmentChestTier) || 1));
-    const requiredMapCount = Math.min(wanderMapList.length, (chestTier - 1) * 3 + 1);
-    return `Mở ít nhất ${requiredMapCount} map để bán rương này`;
-  }
-  if (item.type === 'equipmentChest' && getRemainingEquipmentChestPurchases() <= 0) {
-    return `Đã đạt giới hạn ${getEquipmentChestDailyPurchaseLimit()} rương trang bị hôm nay`;
-  }
   const dailyLimit = getDailyShopPurchaseLimit(item);
   if (dailyLimit > 0 && getRemainingShopPurchases(item) <= 0) {
     return `Đã đạt giới hạn ${dailyLimit} lần mua ${item.name} hôm nay`;
@@ -8480,7 +8464,10 @@ function getShopItemPriceDetail(item) {
   if (item.type === 'potion') {
     return `Mỗi lần mua trong ngày tăng ${formatGameNumber(Number(item.priceStep) || 5)} linh thạch; sang ngày mới giá reset về ${formatGameNumber(Number(item.cost) || 5)}.`;
   }
-  if (item.type === 'ascension') return 'Mỗi lần mua tiếp theo tăng gấp 2 lần giá; có thể mua nhiều.';
+  if (item.type === 'ascension') {
+    const priceStep = Math.max(0, Number(item.priceStep) || 0);
+    return `Giá gốc ${formatGameNumber(Number(item.cost) || 1)} linh thạch; mỗi lần mua tăng ${formatGameNumber(priceStep)} linh thạch.`;
+  }
   if (item.type === 'skillBook') return 'Giá bán bằng 1/4 giá gốc, làm tròn đến linh thạch gần nhất.';
   if (item.type === 'skillChest') return 'Giá cố định; mỗi rương mở ra mảnh skill hoặc sách skill.';
   return 'Giá cố định cho mỗi lần mua.';
@@ -8514,17 +8501,6 @@ function getShopItemDetailLines(item) {
   const dailyLimit = getDailyShopPurchaseLimit(item);
   if (dailyLimit > 0) {
     lines.push(`Giới hạn mua: ${getDailyShopPurchaseCount(item)}/${dailyLimit} hôm nay.`);
-  }
-  if (item.type === 'equipmentChest') {
-    const majorRealmIndex = clamp(Number(playerMajorRealmIndex) || 0, 0, majorRealmNames.length - 1);
-    const chestTier = Math.max(1, Number(item.equipmentChestTier) || 1);
-    const chestSource = { chestTier };
-    const profile = getEquipmentRarityProfile({ majorRealmIndex });
-    const rarityText = profile.weights
-      .map((weight, index) => `${rarityData[equipmentQualityOrder[index]]?.name || equipmentQualityOrder[index]} ${weight}%`)
-      .join(' · ');
-    lines.push(`Đại cảnh giới: ${majorRealmNames[majorRealmIndex] || 'hiện tại'}.`);
-    lines.push(`Tỉ lệ phẩm cấp của trang bị trong rương: ${rarityText}.`);
   }
   return lines;
 }
@@ -8597,7 +8573,6 @@ function renderShop() {
   });
   const visibleShopItems = shopItems
     .filter((item) => item.type !== 'skillBook' || item.schoolId === playerSchoolId)
-    .filter((item) => item.type !== 'equipmentChest' || isEquipmentChestShopItemAvailable(item))
     .filter((item) => shopCategory === 'all' || getShopItemCategory(item) === shopCategory);
   if (!visibleShopItems.length) {
     $('shopList').innerHTML = '<div class="inventory-empty"><i class="activity-icon icon-activity-chest" aria-hidden="true"></i><span>Chưa có vật phẩm trong phân loại này.</span></div>';
@@ -8870,6 +8845,10 @@ function getBagItems() {
         category,
         count,
         iconClass: getShopItemBagIconClass(shopItem),
+        rarityClass: shopItem.type === 'skillChest'
+          ? `${rarityData[getSkillGradeRarityKey(shopItem.gradeId)]?.className || 'common'} skill-rarity-item`
+          : '',
+        rarityColor: shopItem.type === 'skillChest' ? getSkillGradeColor(shopItem.gradeId) : '',
         description: shopItem.description || getShopItemDetailLines(shopItem).join(' '),
         usable: shopItem.type !== 'ascension',
         useLabel: shopItem.type === 'skillChest' ? 'Mở' : shopItem.type === 'ascension' ? '' : 'Dùng',
@@ -8886,6 +8865,8 @@ function getBagItems() {
       category: 'Công pháp',
       count: safeCount,
       iconClass: getSkillItemIconMarkupClass(skillId),
+      rarityClass: `${rarityData[getSkillGradeRarityKey(skill.gradeId)]?.className || 'common'} skill-rarity-item`,
+      rarityColor: getSkillGradeColor(skill.gradeId),
       description: `Dùng để nâng cấp ${skill.name}.`,
       usable: !isSkillLearned(skill.id) && getPlayerCultivationTier() >= getSkillRequiredTier(skill),
       useLabel: 'Học skill',
@@ -8904,6 +8885,8 @@ function getBagItems() {
       category: 'Mảnh skill',
       count: safeCount,
       iconClass: getSkillItemIconMarkupClass(skillId),
+      rarityClass: `${rarityData[getSkillGradeRarityKey(skill.gradeId)]?.className || 'common'} skill-rarity-item`,
+      rarityColor: getSkillGradeColor(skill.gradeId),
       description: `Mảnh dùng để ghép sách skill ${skill.name}.`,
       usable: false,
       sellable: true,
@@ -8912,13 +8895,18 @@ function getBagItems() {
   });
 
   equipmentChestInventory.forEach((chest) => {
+    const chestRarityKey = getEquipmentChestDisplayRarityKey(chest);
     items.push({
       id: chest.id,
+      type: 'equipmentChest',
       name: chest.name,
       category: 'Rương',
       count: chest.count,
+      chestTier: chest.tier,
       iconClass: 'activity-icon icon-activity-chest',
-      description: `${wanderMaps[chest.mapId]?.name || 'Ngao du'} | Trang bị cấp ${getChestLevelRange(chest).join('-')} khi mở.`,
+      rarityClass: chestRarityKey,
+      rarityColor: rarityData[chestRarityKey]?.color || '#526176',
+      description: `Rương cấp ${getEquipmentChestTier(chest)} mở trang bị cấp ${getChestLevelRange(chest).join('-')}.`,
       usable: true,
       useLabel: 'Mở',
     });
@@ -8972,7 +8960,14 @@ function getInventoryItemDetails(item) {
     if (shopItem?.type === 'ascension') details.push('Chỉ dùng tại nút thăng đại cảnh giới tiếp theo.');
     if (shopItem?.type === 'skillChest') details.push('Mở rương để nhận 1 mảnh skill hoặc 1 sách skill theo tỉ lệ của rương.');
   }
-  if (item.category === 'Rương') details.push(`Có thể mở nhiều rương cùng lúc; mỗi lần mở tạo một trang bị.`);
+  if (item.category === 'Rương') {
+    const profile = getEquipmentRarityProfile(item);
+    const rates = equipmentQualityOrder
+      .map((rarityKey, index) => `<span class="rarity-rate rarity-${rarityKey}">${rarityData[rarityKey]?.name || rarityKey} ${formatGameNumber(profile.weights[index] || 0)}%</span>`)
+      .join(' · ');
+    details.push(`Tỉ lệ phẩm chất: ${rates}`);
+    details.push(`Có thể mở nhiều rương cùng lúc; mỗi lần mở tạo một trang bị.`);
+  }
   if (item.category === 'Rương skill') details.push(`Có thể mở nhiều rương cùng lúc; đủ 5 mảnh của cùng skill sẽ tự ghép thành 1 sách.`);
   return details;
 }
@@ -9030,12 +9025,17 @@ function usePurchasedShopItem(item, amount = 1) {
 
   if (!used) return 0;
   if (shopItem.type === 'skillChest') {
-    const bookRewards = skillChestRewards.filter((reward) => reward.kind === 'book').length;
-    const fragmentRewards = skillChestRewards.filter((reward) => reward.kind === 'fragment').length;
+    const rewardNameCounts = new Map();
+    skillChestRewards.forEach((reward) => {
+      const kindLabel = reward.kind === 'book' ? 'Sách skill' : 'Mảnh skill';
+      const key = `${reward.kind}:${reward.skill.id}`;
+      const current = rewardNameCounts.get(key) || { kindLabel, name: reward.skill.name, count: 0 };
+      current.count += 1;
+      rewardNameCounts.set(key, current);
+    });
     const completedBooks = skillChestRewards.reduce((total, reward) => total + reward.completedBooks, 0);
-    const rewardParts = [];
-    if (fragmentRewards) rewardParts.push(`${fragmentRewards} mảnh skill`);
-    if (bookRewards) rewardParts.push(`${bookRewards} sách skill`);
+    const rewardParts = Array.from(rewardNameCounts.values())
+      .map((reward) => `${reward.kindLabel} ${reward.name} x${reward.count}`);
     if (completedBooks) rewardParts.push(`ghép ${completedBooks} sách skill`);
     showGameToast(`Đã mở ${shopItem.name}${used > 1 ? ` x${used}` : ''}: ${rewardParts.join(', ')}.`, 'success');
   } else {
@@ -9380,7 +9380,7 @@ function renderInventory() {
   $('inventorySummary').textContent = `${bagItems.length} loại vật phẩm`;
   $('inventoryList').innerHTML = bagItems.length
     ? bagItems.map((item) => `
-      <div class="inventory-item bag-item">
+      <div class="inventory-item bag-item ${item.rarityClass || ''} ${item.type === 'equipmentChest' ? 'equipment-chest-item' : ''}"${item.rarityColor ? ` style="--rarity-color:${item.rarityColor}"` : ''}>
         <div class="bag-item-header">
           <div class="bag-item-identity">
             <i class="bag-item-icon ${item.iconClass}" aria-hidden="true"></i>
@@ -9432,20 +9432,7 @@ function getEquipmentShopValue(item) {
     1,
     Math.floor(Number(item?.sourceChestTier) || Math.ceil(level / equipmentLevelsPerChestTier)),
   );
-  const exactChest = shopItems.find((shopItem) => (
-    shopItem.type === 'equipmentChest'
-      && Number(shopItem.equipmentChestTier) === chestTier
-  ));
-  if (exactChest) return Math.max(1, Number(exactChest.cost) || 1);
-
-  const chestPrices = shopItems
-    .filter((shopItem) => shopItem.type === 'equipmentChest' && Number(shopItem.cost) > 0)
-    .sort((a, b) => Number(b.equipmentChestTier) - Number(a.equipmentChestTier));
-  const highestChest = chestPrices[0];
-  if (!highestChest) return 100;
-  const highestTier = Math.max(1, Number(highestChest.equipmentChestTier) || 1);
-  const highestPrice = Math.max(1, Number(highestChest.cost) || 1);
-  return highestPrice + Math.max(0, chestTier - highestTier) * 100;
+  return chestTier * 100;
 }
 
 function getEquipmentSellPrice(item) {
@@ -9453,7 +9440,7 @@ function getEquipmentSellPrice(item) {
   const enhancementLevel = Math.max(0, Math.floor(Number(item?.enhancementLevel) || 0));
   const bonusPerLevel = Math.max(
     0,
-    Number(progressionFeatures.enhancement?.sellPricePerEnhancementLevel) || 15,
+    Number(progressionFeatures.enhancement?.sellPricePerEnhancementLevel) || 30,
   );
   return Math.max(1, Math.floor(basePrice + enhancementLevel * bonusPerLevel));
 }
@@ -9488,7 +9475,7 @@ function sellItem(itemId) {
   inventory.splice(index, 1);
   const price = getEquipmentSellPrice(item);
   playerSpiritStones += price;
-  $('equipmentMessage').textContent = `Đã bán ${getRarityName(item)} ${item.name}, nhận ${formatGameNumber(price)} linh thạch.`;
+  setPanelMessage('equipmentMessage', `Đã bán ${getRarityName(item)} ${item.name}, nhận ${formatGameNumber(price)} linh thạch.`);
   showGameToast(`Đã bán ${getRarityName(item)} ${item.name}, nhận ${formatGameNumber(price)} linh thạch.`, 'success');
   renderEquipment();
   renderCultivation();
@@ -9520,7 +9507,7 @@ function sellEquipmentByRarity(rarityKey = 'all') {
   inventory = inventory.filter((item) => !sellableIds.has(String(item.id)) || isEquipmentEquipped(item));
   playerSpiritStones += totalPrice;
   const message = `Đã bán ${sellable.length} trang bị ${rarityName}, nhận ${formatGameNumber(totalPrice)} linh thạch.`;
-  $('equipmentMessage').textContent = message;
+  setPanelMessage('equipmentMessage', message);
   showGameToast(message, 'success');
   renderEquipment();
   renderProfile();

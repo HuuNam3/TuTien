@@ -60,9 +60,15 @@ const server = http.createServer((request, response) => {
       return;
     }
 
-    response.writeHead(200, {
+    const headers = {
       'Content-Type': types[path.extname(filePath)] || 'application/octet-stream',
-    });
+    };
+    if (pathname.startsWith('/assets/')) {
+      headers['Cache-Control'] = pathname.startsWith('/assets/Resources/Data/')
+        ? 'no-store'
+        : 'public, max-age=3600';
+    }
+    response.writeHead(200, headers);
     response.end(data);
   });
 });

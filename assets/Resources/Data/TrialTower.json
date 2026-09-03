@@ -1,8 +1,9 @@
 {
   "version": 1,
-  "description": "Tháp thí luyện gồm 80 tầng, điều kiện vào, kẻ địch, lực chiến mẫu đã tính sau trang bị và phần thưởng vượt tầng. Ví dụ: phần thưởng đá cường hóa tăng theo mốc mỗi 3 tầng, rương trang bị tăng cấp theo từng 10 tầng và nhiệm vụ tuyến tháp tăng sau mỗi 3 tầng đã vượt.",
+  "description": "Tháp thí luyện gồm 80 tầng, điều kiện vào, kẻ địch, lực chiến mẫu đã tính sau trang bị và phần thưởng vượt tầng. Tu vi tính theo số tầng nhân hệ số; hệ số gốc nhóm 10 tầng đầu là 150 và mỗi nhóm 10 tầng tăng 5, các mốc 3 tầng trong nhóm cộng thêm 10. Linh thạch bắt đầu từ 50 và tăng 15 mỗi tầng; rương trang bị bắt đầu cấp 2 và tăng 1 cấp sau mỗi 15 tầng.",
   "entryRequiredTier": 10,
   "entryText": "Cần đạt Khai Nguyên cảnh Nhất tầng",
+  "rewardChestTierStepFloors": 15,
   "floors": [
     {
       "floor": 1,
@@ -93,7 +94,7 @@
       },
       "reward": {
         "cultivation": 300,
-        "spiritStones": 75,
+        "spiritStones": 65,
         "equipmentChestTier": 2
       },
       "equipmentLevel": 11,
@@ -141,7 +142,7 @@
       },
       "reward": {
         "cultivation": 450,
-        "spiritStones": 100,
+        "spiritStones": 80,
         "equipmentChestTier": 2,
         "enhancementStones": 1
       },
@@ -190,7 +191,7 @@
       },
       "reward": {
         "cultivation": 640,
-        "spiritStones": 125,
+        "spiritStones": 95,
         "equipmentChestTier": 2
       },
       "equipmentLevel": 13,
@@ -238,7 +239,7 @@
       },
       "reward": {
         "cultivation": 800,
-        "spiritStones": 150,
+        "spiritStones": 110,
         "equipmentChestTier": 2
       },
       "equipmentLevel": 14,
@@ -286,7 +287,7 @@
       },
       "reward": {
         "cultivation": 960,
-        "spiritStones": 175,
+        "spiritStones": 125,
         "equipmentChestTier": 2,
         "enhancementStones": 2
       },
@@ -335,7 +336,7 @@
       },
       "reward": {
         "cultivation": 1190,
-        "spiritStones": 200,
+        "spiritStones": 140,
         "equipmentChestTier": 2
       },
       "equipmentLevel": 16,
@@ -383,7 +384,7 @@
       },
       "reward": {
         "cultivation": 1360,
-        "spiritStones": 225,
+        "spiritStones": 155,
         "equipmentChestTier": 2
       },
       "equipmentLevel": 17,
@@ -431,7 +432,7 @@
       },
       "reward": {
         "cultivation": 1530,
-        "spiritStones": 250,
+        "spiritStones": 170,
         "equipmentChestTier": 2,
         "enhancementStones": 3
       },
@@ -480,7 +481,7 @@
       },
       "reward": {
         "cultivation": 1800,
-        "spiritStones": 275,
+        "spiritStones": 185,
         "equipmentChestTier": 2
       },
       "equipmentLevel": 19,
@@ -527,9 +528,9 @@
         ]
       },
       "reward": {
-        "cultivation": 2200,
-        "spiritStones": 300,
-        "equipmentChestTier": 3
+        "cultivation": 1705,
+        "spiritStones": 200,
+        "equipmentChestTier": 2
       },
       "equipmentLevel": 20,
       "combatPower": 5694,
@@ -575,9 +576,9 @@
         ]
       },
       "reward": {
-        "cultivation": 2400,
-        "spiritStones": 325,
-        "equipmentChestTier": 3,
+        "cultivation": 1860,
+        "spiritStones": 215,
+        "equipmentChestTier": 2,
         "enhancementStones": 4
       },
       "equipmentLevel": 21,
@@ -624,9 +625,9 @@
         ]
       },
       "reward": {
-        "cultivation": 2600,
-        "spiritStones": 350,
-        "equipmentChestTier": 3
+        "cultivation": 2015,
+        "spiritStones": 230,
+        "equipmentChestTier": 2
       },
       "equipmentLevel": 22,
       "combatPower": 6316,
@@ -672,9 +673,9 @@
         ]
       },
       "reward": {
-        "cultivation": 2940,
-        "spiritStones": 375,
-        "equipmentChestTier": 3
+        "cultivation": 2310,
+        "spiritStones": 245,
+        "equipmentChestTier": 2
       },
       "equipmentLevel": 23,
       "combatPower": 6944,
@@ -720,9 +721,9 @@
         ]
       },
       "reward": {
-        "cultivation": 3150,
-        "spiritStones": 400,
-        "equipmentChestTier": 3,
+        "cultivation": 2475,
+        "spiritStones": 260,
+        "equipmentChestTier": 2,
         "enhancementStones": 5
       },
       "equipmentLevel": 24,
@@ -769,8 +770,8 @@
         ]
       },
       "reward": {
-        "cultivation": 3360,
-        "spiritStones": 425,
+        "cultivation": 2640,
+        "spiritStones": 275,
         "equipmentChestTier": 3
       },
       "equipmentLevel": 25,
@@ -817,8 +818,8 @@
         ]
       },
       "reward": {
-        "cultivation": 3740,
-        "spiritStones": 450,
+        "cultivation": 2975,
+        "spiritStones": 290,
         "equipmentChestTier": 3
       },
       "equipmentLevel": 26,
@@ -865,8 +866,8 @@
         ]
       },
       "reward": {
-        "cultivation": 3960,
-        "spiritStones": 475,
+        "cultivation": 3150,
+        "spiritStones": 305,
         "equipmentChestTier": 3,
         "enhancementStones": 6
       },
@@ -914,8 +915,8 @@
         ]
       },
       "reward": {
-        "cultivation": 4180,
-        "spiritStones": 500,
+        "cultivation": 3325,
+        "spiritStones": 320,
         "equipmentChestTier": 3
       },
       "equipmentLevel": 28,
@@ -962,8 +963,8 @@
         ]
       },
       "reward": {
-        "cultivation": 4600,
-        "spiritStones": 525,
+        "cultivation": 3700,
+        "spiritStones": 335,
         "equipmentChestTier": 3
       },
       "equipmentLevel": 29,
@@ -1010,9 +1011,9 @@
         ]
       },
       "reward": {
-        "cultivation": 5250,
-        "spiritStones": 550,
-        "equipmentChestTier": 4,
+        "cultivation": 3360,
+        "spiritStones": 350,
+        "equipmentChestTier": 3,
         "enhancementStones": 7
       },
       "equipmentLevel": 30,
@@ -1059,9 +1060,9 @@
         ]
       },
       "reward": {
-        "cultivation": 5500,
-        "spiritStones": 575,
-        "equipmentChestTier": 4
+        "cultivation": 3520,
+        "spiritStones": 365,
+        "equipmentChestTier": 3
       },
       "equipmentLevel": 31,
       "combatPower": 12806,
@@ -1107,9 +1108,9 @@
         ]
       },
       "reward": {
-        "cultivation": 5750,
-        "spiritStones": 600,
-        "equipmentChestTier": 4
+        "cultivation": 3680,
+        "spiritStones": 380,
+        "equipmentChestTier": 3
       },
       "equipmentLevel": 32,
       "combatPower": 13380,
@@ -1155,9 +1156,9 @@
         ]
       },
       "reward": {
-        "cultivation": 6240,
-        "spiritStones": 625,
-        "equipmentChestTier": 4,
+        "cultivation": 4080,
+        "spiritStones": 395,
+        "equipmentChestTier": 3,
         "enhancementStones": 8
       },
       "equipmentLevel": 33,
@@ -1204,9 +1205,9 @@
         ]
       },
       "reward": {
-        "cultivation": 6500,
-        "spiritStones": 650,
-        "equipmentChestTier": 4
+        "cultivation": 4250,
+        "spiritStones": 410,
+        "equipmentChestTier": 3
       },
       "equipmentLevel": 34,
       "combatPower": 14998,
@@ -1252,9 +1253,9 @@
         ]
       },
       "reward": {
-        "cultivation": 6760,
-        "spiritStones": 675,
-        "equipmentChestTier": 4
+        "cultivation": 4420,
+        "spiritStones": 425,
+        "equipmentChestTier": 3
       },
       "equipmentLevel": 35,
       "combatPower": 15553,
@@ -1300,9 +1301,9 @@
         ]
       },
       "reward": {
-        "cultivation": 7290,
-        "spiritStones": 700,
-        "equipmentChestTier": 4,
+        "cultivation": 4860,
+        "spiritStones": 440,
+        "equipmentChestTier": 3,
         "enhancementStones": 9
       },
       "equipmentLevel": 36,
@@ -1349,9 +1350,9 @@
         ]
       },
       "reward": {
-        "cultivation": 7560,
-        "spiritStones": 725,
-        "equipmentChestTier": 4
+        "cultivation": 5040,
+        "spiritStones": 455,
+        "equipmentChestTier": 3
       },
       "equipmentLevel": 37,
       "combatPower": 17285,
@@ -1397,9 +1398,9 @@
         ]
       },
       "reward": {
-        "cultivation": 7830,
-        "spiritStones": 750,
-        "equipmentChestTier": 4
+        "cultivation": 5220,
+        "spiritStones": 470,
+        "equipmentChestTier": 3
       },
       "equipmentLevel": 38,
       "combatPower": 17850,
@@ -1445,9 +1446,9 @@
         ]
       },
       "reward": {
-        "cultivation": 8400,
-        "spiritStones": 775,
-        "equipmentChestTier": 4,
+        "cultivation": 5700,
+        "spiritStones": 485,
+        "equipmentChestTier": 3,
         "enhancementStones": 10
       },
       "equipmentLevel": 39,
@@ -1464,9 +1465,9 @@
       "equipmentLevel": 40,
       "combatPower": 23398,
       "reward": {
-        "cultivation": 9300,
-        "spiritStones": 800,
-        "equipmentChestTier": 5
+        "cultivation": 5115,
+        "spiritStones": 500,
+        "equipmentChestTier": 4
       },
       "guardian": {
         "name": "Chân Nguyên Tân Vệ",
@@ -1512,9 +1513,9 @@
       "equipmentLevel": 41,
       "combatPower": 24284,
       "reward": {
-        "cultivation": 9600,
-        "spiritStones": 825,
-        "equipmentChestTier": 5
+        "cultivation": 5280,
+        "spiritStones": 515,
+        "equipmentChestTier": 4
       },
       "guardian": {
         "name": "Nguyên Mạch Tu Sĩ",
@@ -1560,9 +1561,9 @@
       "equipmentLevel": 42,
       "combatPower": 25129,
       "reward": {
-        "cultivation": 9900,
-        "spiritStones": 850,
-        "equipmentChestTier": 5,
+        "cultivation": 5445,
+        "spiritStones": 530,
+        "equipmentChestTier": 4,
         "enhancementStones": 11
       },
       "guardian": {
@@ -1609,9 +1610,9 @@
       "equipmentLevel": 43,
       "combatPower": 26809,
       "reward": {
-        "cultivation": 10540,
-        "spiritStones": 875,
-        "equipmentChestTier": 5
+        "cultivation": 5950,
+        "spiritStones": 545,
+        "equipmentChestTier": 4
       },
       "guardian": {
         "name": "Xích Nguyên Hộ Pháp",
@@ -1657,9 +1658,9 @@
       "equipmentLevel": 44,
       "combatPower": 27683,
       "reward": {
-        "cultivation": 10850,
-        "spiritStones": 900,
-        "equipmentChestTier": 5
+        "cultivation": 6125,
+        "spiritStones": 560,
+        "equipmentChestTier": 4
       },
       "guardian": {
         "name": "Thiên Nguyên Tinh Anh",
@@ -1705,9 +1706,9 @@
       "equipmentLevel": 45,
       "combatPower": 28555,
       "reward": {
-        "cultivation": 11160,
-        "spiritStones": 925,
-        "equipmentChestTier": 5,
+        "cultivation": 6300,
+        "spiritStones": 575,
+        "equipmentChestTier": 4,
         "enhancementStones": 12
       },
       "guardian": {
@@ -1754,9 +1755,9 @@
       "equipmentLevel": 46,
       "combatPower": 30357,
       "reward": {
-        "cultivation": 11840,
-        "spiritStones": 950,
-        "equipmentChestTier": 5
+        "cultivation": 6845,
+        "spiritStones": 590,
+        "equipmentChestTier": 4
       },
       "guardian": {
         "name": "Tử Nguyên Tinh Anh",
@@ -1802,9 +1803,9 @@
       "equipmentLevel": 47,
       "combatPower": 31258,
       "reward": {
-        "cultivation": 12160,
-        "spiritStones": 975,
-        "equipmentChestTier": 5
+        "cultivation": 7030,
+        "spiritStones": 605,
+        "equipmentChestTier": 4
       },
       "guardian": {
         "name": "Huyền Nguyên Vệ",
@@ -1850,9 +1851,9 @@
       "equipmentLevel": 48,
       "combatPower": 32187,
       "reward": {
-        "cultivation": 12480,
-        "spiritStones": 1000,
-        "equipmentChestTier": 5,
+        "cultivation": 7215,
+        "spiritStones": 620,
+        "equipmentChestTier": 4,
         "enhancementStones": 13
       },
       "guardian": {
@@ -1899,9 +1900,9 @@
       "equipmentLevel": 49,
       "combatPower": 42975,
       "reward": {
-        "cultivation": 13200,
-        "spiritStones": 1025,
-        "equipmentChestTier": 5
+        "cultivation": 7800,
+        "spiritStones": 635,
+        "equipmentChestTier": 4
       },
       "guardian": {
         "name": "Trúc Cơ Chúa Tể",
@@ -1947,9 +1948,9 @@
       "equipmentLevel": 50,
       "combatPower": 40824,
       "reward": {
-        "cultivation": 14350,
-        "spiritStones": 1050,
-        "equipmentChestTier": 6
+        "cultivation": 6970,
+        "spiritStones": 650,
+        "equipmentChestTier": 4
       },
       "guardian": {
         "name": "Trúc Cơ Tân Vệ",
@@ -1995,9 +1996,9 @@
       "equipmentLevel": 51,
       "combatPower": 42080,
       "reward": {
-        "cultivation": 14700,
-        "spiritStones": 1075,
-        "equipmentChestTier": 6,
+        "cultivation": 7140,
+        "spiritStones": 665,
+        "equipmentChestTier": 4,
         "enhancementStones": 14
       },
       "guardian": {
@@ -2044,9 +2045,9 @@
       "equipmentLevel": 52,
       "combatPower": 43376,
       "reward": {
-        "cultivation": 15050,
-        "spiritStones": 1100,
-        "equipmentChestTier": 6
+        "cultivation": 7310,
+        "spiritStones": 680,
+        "equipmentChestTier": 4
       },
       "guardian": {
         "name": "Linh Cơ Thủ Vệ",
@@ -2092,9 +2093,9 @@
       "equipmentLevel": 53,
       "combatPower": 45836,
       "reward": {
-        "cultivation": 15840,
-        "spiritStones": 1125,
-        "equipmentChestTier": 6
+        "cultivation": 7920,
+        "spiritStones": 695,
+        "equipmentChestTier": 4
       },
       "guardian": {
         "name": "Xích Cơ Hộ Pháp",
@@ -2140,9 +2141,9 @@
       "equipmentLevel": 54,
       "combatPower": 47128,
       "reward": {
-        "cultivation": 16200,
-        "spiritStones": 1150,
-        "equipmentChestTier": 6,
+        "cultivation": 8100,
+        "spiritStones": 710,
+        "equipmentChestTier": 4,
         "enhancementStones": 15
       },
       "guardian": {
@@ -2189,9 +2190,9 @@
       "equipmentLevel": 55,
       "combatPower": 48459,
       "reward": {
-        "cultivation": 16560,
-        "spiritStones": 1175,
-        "equipmentChestTier": 6
+        "cultivation": 8280,
+        "spiritStones": 725,
+        "equipmentChestTier": 5
       },
       "guardian": {
         "name": "Cơ Mạch Thủ Lĩnh",
@@ -2237,9 +2238,9 @@
       "equipmentLevel": 56,
       "combatPower": 51072,
       "reward": {
-        "cultivation": 17390,
-        "spiritStones": 1200,
-        "equipmentChestTier": 6
+        "cultivation": 8930,
+        "spiritStones": 740,
+        "equipmentChestTier": 5
       },
       "guardian": {
         "name": "Tử Cơ Tinh Anh",
@@ -2285,9 +2286,9 @@
       "equipmentLevel": 57,
       "combatPower": 52438,
       "reward": {
-        "cultivation": 17760,
-        "spiritStones": 1225,
-        "equipmentChestTier": 6,
+        "cultivation": 9120,
+        "spiritStones": 755,
+        "equipmentChestTier": 5,
         "enhancementStones": 16
       },
       "guardian": {
@@ -2334,9 +2335,9 @@
       "equipmentLevel": 58,
       "combatPower": 53754,
       "reward": {
-        "cultivation": 18130,
-        "spiritStones": 1250,
-        "equipmentChestTier": 6
+        "cultivation": 9310,
+        "spiritStones": 770,
+        "equipmentChestTier": 5
       },
       "guardian": {
         "name": "Vạn Cơ Thủ Lĩnh",
@@ -2382,9 +2383,9 @@
       "equipmentLevel": 59,
       "combatPower": 70599,
       "reward": {
-        "cultivation": 19000,
-        "spiritStones": 1275,
-        "equipmentChestTier": 6
+        "cultivation": 10000,
+        "spiritStones": 785,
+        "equipmentChestTier": 5
       },
       "guardian": {
         "name": "Thần Du Chúa Tể",
@@ -2429,8 +2430,44 @@
       "realmText": "Thần Du cảnh Nhất tầng",
       "equipmentLevel": 60,
       "combatPower": 66558,
-      "reward": { "cultivation": 20400, "spiritStones": 1300, "equipmentChestTier": 7, "enhancementStones": 17 },
-      "guardian": { "name": "Thần Du Tân Vệ", "type": "Tu sĩ", "skillName": "Du Thần Kình", "description": "Thủ vệ mới bước vào Thần Du, thần thức đã kết thành khí thế.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 8925,
+        "spiritStones": 800,
+        "equipmentChestTier": 5,
+        "enhancementStones": 17
+      },
+      "guardian": {
+        "name": "Thần Du Tân Vệ",
+        "type": "Tu sĩ",
+        "skillName": "Du Thần Kình",
+        "description": "Thủ vệ mới bước vào Thần Du, thần thức đã kết thành khí thế.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 4
     },
     {
@@ -2442,8 +2479,43 @@
       "realmText": "Thần Du cảnh Nhị tầng",
       "equipmentLevel": 61,
       "combatPower": 67965,
-      "reward": { "cultivation": 20800, "spiritStones": 1325, "equipmentChestTier": 7 },
-      "guardian": { "name": "Thiên Du Tu Sĩ", "type": "Tu sĩ", "skillName": "Thiên Du Phá", "description": "Tu sĩ dùng thần thức dẫn động linh lực xuyên phá hộ thể.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 9100,
+        "spiritStones": 815,
+        "equipmentChestTier": 5
+      },
+      "guardian": {
+        "name": "Thiên Du Tu Sĩ",
+        "type": "Tu sĩ",
+        "skillName": "Thiên Du Phá",
+        "description": "Tu sĩ dùng thần thức dẫn động linh lực xuyên phá hộ thể.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 4
     },
     {
@@ -2455,8 +2527,43 @@
       "realmText": "Thần Du cảnh Tam tầng",
       "equipmentLevel": 62,
       "combatPower": 69416,
-      "reward": { "cultivation": 21200, "spiritStones": 1350, "equipmentChestTier": 7 },
-      "guardian": { "name": "Huyền Thức Thủ Vệ", "type": "Tu sĩ", "skillName": "Huyền Thức Trấn", "description": "Thủ vệ ngưng tụ thần thức thành áp lực nặng nề.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 9275,
+        "spiritStones": 830,
+        "equipmentChestTier": 5
+      },
+      "guardian": {
+        "name": "Huyền Thức Thủ Vệ",
+        "type": "Tu sĩ",
+        "skillName": "Huyền Thức Trấn",
+        "description": "Thủ vệ ngưng tụ thần thức thành áp lực nặng nề.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 4
     },
     {
@@ -2468,8 +2575,44 @@
       "realmText": "Thần Du cảnh Tứ tầng",
       "equipmentLevel": 63,
       "combatPower": 72171,
-      "reward": { "cultivation": 22140, "spiritStones": 1375, "equipmentChestTier": 7, "enhancementStones": 18 },
-      "guardian": { "name": "Tử Phủ Hộ Pháp", "type": "Tu sĩ", "skillName": "Tử Phủ Liệt Không", "description": "Hộ pháp mở rộng thần thức, từng đòn đánh đều xé rách không khí.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 9990,
+        "spiritStones": 845,
+        "equipmentChestTier": 5,
+        "enhancementStones": 18
+      },
+      "guardian": {
+        "name": "Tử Phủ Hộ Pháp",
+        "type": "Tu sĩ",
+        "skillName": "Tử Phủ Liệt Không",
+        "description": "Hộ pháp mở rộng thần thức, từng đòn đánh đều xé rách không khí.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 4.1
     },
     {
@@ -2481,8 +2624,43 @@
       "realmText": "Thần Du cảnh Ngũ tầng",
       "equipmentLevel": 64,
       "combatPower": 73618,
-      "reward": { "cultivation": 22550, "spiritStones": 1400, "equipmentChestTier": 7 },
-      "guardian": { "name": "Lưu Quang Tinh Anh", "type": "Tu sĩ", "skillName": "Lưu Quang Đoạt Mệnh", "description": "Tinh anh biến thần thức thành những luồng sáng đánh thẳng vào sơ hở.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 10175,
+        "spiritStones": 860,
+        "equipmentChestTier": 5
+      },
+      "guardian": {
+        "name": "Lưu Quang Tinh Anh",
+        "type": "Tu sĩ",
+        "skillName": "Lưu Quang Đoạt Mệnh",
+        "description": "Tinh anh biến thần thức thành những luồng sáng đánh thẳng vào sơ hở.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 4.1
     },
     {
@@ -2494,8 +2672,43 @@
       "realmText": "Thần Du cảnh Lục tầng",
       "equipmentLevel": 65,
       "combatPower": 75109,
-      "reward": { "cultivation": 22960, "spiritStones": 1425, "equipmentChestTier": 7 },
-      "guardian": { "name": "Thần Du Thủ Lĩnh", "type": "Tu sĩ", "skillName": "Thần Du Phá Giới", "description": "Thủ lĩnh dùng thần thức khóa chặt đường lui của đối thủ.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 10360,
+        "spiritStones": 875,
+        "equipmentChestTier": 5
+      },
+      "guardian": {
+        "name": "Thần Du Thủ Lĩnh",
+        "type": "Tu sĩ",
+        "skillName": "Thần Du Phá Giới",
+        "description": "Thủ lĩnh dùng thần thức khóa chặt đường lui của đối thủ.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 4.1
     },
     {
@@ -2507,8 +2720,44 @@
       "realmText": "Thần Du cảnh Thất tầng",
       "equipmentLevel": 66,
       "combatPower": 78036,
-      "reward": { "cultivation": 23940, "spiritStones": 1450, "equipmentChestTier": 7, "enhancementStones": 19 },
-      "guardian": { "name": "Tinh Hà Tinh Anh", "type": "Tu sĩ", "skillName": "Tinh Hà Lạc", "description": "Tinh anh kéo sức mạnh tinh hà xuống thành những đợt công kích liên hoàn.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 11115,
+        "spiritStones": 890,
+        "equipmentChestTier": 5,
+        "enhancementStones": 19
+      },
+      "guardian": {
+        "name": "Tinh Hà Tinh Anh",
+        "type": "Tu sĩ",
+        "skillName": "Tinh Hà Lạc",
+        "description": "Tinh anh kéo sức mạnh tinh hà xuống thành những đợt công kích liên hoàn.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 4.2
     },
     {
@@ -2520,8 +2769,43 @@
       "realmText": "Thần Du cảnh Bát tầng",
       "equipmentLevel": 67,
       "combatPower": 79566,
-      "reward": { "cultivation": 24360, "spiritStones": 1475, "equipmentChestTier": 7 },
-      "guardian": { "name": "Hư Không Vệ", "type": "Tu sĩ", "skillName": "Hư Không Chấn", "description": "Thủ vệ làm rung chuyển hư không bằng từng nhịp thần thức.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 11310,
+        "spiritStones": 905,
+        "equipmentChestTier": 5
+      },
+      "guardian": {
+        "name": "Hư Không Vệ",
+        "type": "Tu sĩ",
+        "skillName": "Hư Không Chấn",
+        "description": "Thủ vệ làm rung chuyển hư không bằng từng nhịp thần thức.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 4.2
     },
     {
@@ -2533,8 +2817,43 @@
       "realmText": "Thần Du cảnh Cửu tầng",
       "equipmentLevel": 68,
       "combatPower": 81040,
-      "reward": { "cultivation": 24780, "spiritStones": 1500, "equipmentChestTier": 7 },
-      "guardian": { "name": "Vạn Thức Thủ Lĩnh", "type": "Tu sĩ", "skillName": "Vạn Thức Quy Tông", "description": "Thủ lĩnh vận chuyển vạn luồng thần thức cùng lúc để áp chế đối thủ.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 11505,
+        "spiritStones": 920,
+        "equipmentChestTier": 5
+      },
+      "guardian": {
+        "name": "Vạn Thức Thủ Lĩnh",
+        "type": "Tu sĩ",
+        "skillName": "Vạn Thức Quy Tông",
+        "description": "Thủ lĩnh vận chuyển vạn luồng thần thức cùng lúc để áp chế đối thủ.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 4.2
     },
     {
@@ -2546,8 +2865,44 @@
       "realmText": "Kết Đan cảnh Nhất tầng",
       "equipmentLevel": 69,
       "combatPower": 109766,
-      "reward": { "cultivation": 25800, "spiritStones": 1525, "equipmentChestTier": 7, "enhancementStones": 20 },
-      "guardian": { "name": "Kết Đan Chúa Tể", "type": "Tu sĩ", "skillName": "Kết Đan Thiên Uy", "description": "Chúa tể kết thành đan hạch, linh lực bùng nổ như thiên uy giáng thế.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 12300,
+        "spiritStones": 935,
+        "equipmentChestTier": 5,
+        "enhancementStones": 20
+      },
+      "guardian": {
+        "name": "Kết Đan Chúa Tể",
+        "type": "Tu sĩ",
+        "skillName": "Kết Đan Thiên Uy",
+        "description": "Chúa tể kết thành đan hạch, linh lực bùng nổ như thiên uy giáng thế.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 4.3
     },
     {
@@ -2559,8 +2914,43 @@
       "realmText": "Kết Đan cảnh Nhất tầng",
       "equipmentLevel": 70,
       "combatPower": 102864,
-      "reward": { "cultivation": 27450, "spiritStones": 1550, "equipmentChestTier": 8 },
-      "guardian": { "name": "Kết Đan Tân Vệ", "type": "Tu sĩ", "skillName": "Đan Khí Chưởng", "description": "Thủ vệ vừa kết đan, đan khí vận chuyển ổn định và mạnh mẽ.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 10980,
+        "spiritStones": 950,
+        "equipmentChestTier": 6
+      },
+      "guardian": {
+        "name": "Kết Đan Tân Vệ",
+        "type": "Tu sĩ",
+        "skillName": "Đan Khí Chưởng",
+        "description": "Thủ vệ vừa kết đan, đan khí vận chuyển ổn định và mạnh mẽ.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 4.5
     },
     {
@@ -2572,8 +2962,43 @@
       "realmText": "Kết Đan cảnh Nhị tầng",
       "equipmentLevel": 71,
       "combatPower": 104623,
-      "reward": { "cultivation": 27900, "spiritStones": 1575, "equipmentChestTier": 8 },
-      "guardian": { "name": "Kim Đan Tu Sĩ", "type": "Tu sĩ", "skillName": "Kim Đan Kình", "description": "Tu sĩ dồn đan lực vào quyền kình nặng như núi.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 11160,
+        "spiritStones": 965,
+        "equipmentChestTier": 6
+      },
+      "guardian": {
+        "name": "Kim Đan Tu Sĩ",
+        "type": "Tu sĩ",
+        "skillName": "Kim Đan Kình",
+        "description": "Tu sĩ dồn đan lực vào quyền kình nặng như núi.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 4.5
     },
     {
@@ -2585,8 +3010,44 @@
       "realmText": "Kết Đan cảnh Tam tầng",
       "equipmentLevel": 72,
       "combatPower": 106437,
-      "reward": { "cultivation": 28350, "spiritStones": 1600, "equipmentChestTier": 8, "enhancementStones": 21 },
-      "guardian": { "name": "Đan Hỏa Thủ Vệ", "type": "Tu sĩ", "skillName": "Đan Hỏa Trấn", "description": "Thủ vệ dùng đan hỏa thiêu đốt phòng tuyến của đối thủ.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 11340,
+        "spiritStones": 980,
+        "equipmentChestTier": 6,
+        "enhancementStones": 21
+      },
+      "guardian": {
+        "name": "Đan Hỏa Thủ Vệ",
+        "type": "Tu sĩ",
+        "skillName": "Đan Hỏa Trấn",
+        "description": "Thủ vệ dùng đan hỏa thiêu đốt phòng tuyến của đối thủ.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 4.5
     },
     {
@@ -2598,8 +3059,43 @@
       "realmText": "Kết Đan cảnh Tứ tầng",
       "equipmentLevel": 73,
       "combatPower": 109880,
-      "reward": { "cultivation": 29440, "spiritStones": 1625, "equipmentChestTier": 8 },
-      "guardian": { "name": "Thanh Đan Hộ Pháp", "type": "Tu sĩ", "skillName": "Thanh Đan Liệt", "description": "Hộ pháp điều khiển thanh đan khí, công thủ chuyển đổi trong chớp mắt.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 12160,
+        "spiritStones": 995,
+        "equipmentChestTier": 6
+      },
+      "guardian": {
+        "name": "Thanh Đan Hộ Pháp",
+        "type": "Tu sĩ",
+        "skillName": "Thanh Đan Liệt",
+        "description": "Hộ pháp điều khiển thanh đan khí, công thủ chuyển đổi trong chớp mắt.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 4.6
     },
     {
@@ -2611,8 +3107,43 @@
       "realmText": "Kết Đan cảnh Ngũ tầng",
       "equipmentLevel": 74,
       "combatPower": 111689,
-      "reward": { "cultivation": 29900, "spiritStones": 1650, "equipmentChestTier": 8 },
-      "guardian": { "name": "Tử Kim Tinh Anh", "type": "Tu sĩ", "skillName": "Tử Kim Định Hồn", "description": "Tinh anh dùng đan lực phong tỏa khí huyết và thần hồn.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 12350,
+        "spiritStones": 1010,
+        "equipmentChestTier": 6
+      },
+      "guardian": {
+        "name": "Tử Kim Tinh Anh",
+        "type": "Tu sĩ",
+        "skillName": "Tử Kim Định Hồn",
+        "description": "Tinh anh dùng đan lực phong tỏa khí huyết và thần hồn.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 4.6
     },
     {
@@ -2624,8 +3155,44 @@
       "realmText": "Kết Đan cảnh Lục tầng",
       "equipmentLevel": 75,
       "combatPower": 113553,
-      "reward": { "cultivation": 30360, "spiritStones": 1675, "equipmentChestTier": 8, "enhancementStones": 22 },
-      "guardian": { "name": "Kim Đan Thủ Lĩnh", "type": "Tu sĩ", "skillName": "Kim Đan Phá Thiên", "description": "Thủ lĩnh nén đan lực thành một kích xuyên thủng thiên khung.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 12540,
+        "spiritStones": 1025,
+        "equipmentChestTier": 6,
+        "enhancementStones": 22
+      },
+      "guardian": {
+        "name": "Kim Đan Thủ Lĩnh",
+        "type": "Tu sĩ",
+        "skillName": "Kim Đan Phá Thiên",
+        "description": "Thủ lĩnh nén đan lực thành một kích xuyên thủng thiên khung.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 4.6
     },
     {
@@ -2637,8 +3204,43 @@
       "realmText": "Kết Đan cảnh Thất tầng",
       "equipmentLevel": 76,
       "combatPower": 117212,
-      "reward": { "cultivation": 31490, "spiritStones": 1700, "equipmentChestTier": 8 },
-      "guardian": { "name": "Cửu Chuyển Tinh Anh", "type": "Tu sĩ", "skillName": "Cửu Chuyển Đan Kình", "description": "Tinh anh xoay chuyển đan lực chín vòng, mỗi vòng đều tăng sức phá hoại.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 13400,
+        "spiritStones": 1040,
+        "equipmentChestTier": 6
+      },
+      "guardian": {
+        "name": "Cửu Chuyển Tinh Anh",
+        "type": "Tu sĩ",
+        "skillName": "Cửu Chuyển Đan Kình",
+        "description": "Tinh anh xoay chuyển đan lực chín vòng, mỗi vòng đều tăng sức phá hoại.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 4.7
     },
     {
@@ -2650,8 +3252,43 @@
       "realmText": "Kết Đan cảnh Bát tầng",
       "equipmentLevel": 77,
       "combatPower": 119124,
-      "reward": { "cultivation": 31960, "spiritStones": 1725, "equipmentChestTier": 8 },
-      "guardian": { "name": "Huyền Đan Vệ", "type": "Tu sĩ", "skillName": "Huyền Đan Bạo", "description": "Đan khí bùng nổ thành từng đợt áp lực liên tục.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 13600,
+        "spiritStones": 1055,
+        "equipmentChestTier": 6
+      },
+      "guardian": {
+        "name": "Huyền Đan Vệ",
+        "type": "Tu sĩ",
+        "skillName": "Huyền Đan Bạo",
+        "description": "Đan khí bùng nổ thành từng đợt áp lực liên tục.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 4.7
     },
     {
@@ -2663,8 +3300,44 @@
       "realmText": "Kết Đan cảnh Cửu tầng",
       "equipmentLevel": 78,
       "combatPower": 120967,
-      "reward": { "cultivation": 32430, "spiritStones": 1750, "equipmentChestTier": 8, "enhancementStones": 23 },
-      "guardian": { "name": "Vạn Đan Thủ Lĩnh", "type": "Tu sĩ", "skillName": "Vạn Đan Quy Nhất", "description": "Thủ lĩnh hợp nhất vạn luồng đan lực thành một đòn quyết định.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 13800,
+        "spiritStones": 1070,
+        "equipmentChestTier": 6,
+        "enhancementStones": 23
+      },
+      "guardian": {
+        "name": "Vạn Đan Thủ Lĩnh",
+        "type": "Tu sĩ",
+        "skillName": "Vạn Đan Quy Nhất",
+        "description": "Thủ lĩnh hợp nhất vạn luồng đan lực thành một đòn quyết định.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 4.7
     },
     {
@@ -2676,8 +3349,43 @@
       "realmText": "Nguyên Anh cảnh Nhất tầng",
       "equipmentLevel": 79,
       "combatPower": 163286,
-      "reward": { "cultivation": 33600, "spiritStones": 1775, "equipmentChestTier": 8 },
-      "guardian": { "name": "Nguyên Anh Chúa Tể", "type": "Tu sĩ", "skillName": "Nguyên Anh Thiên Uy", "description": "Chúa tể ngưng tụ nguyên anh, uy áp phủ kín toàn bộ tầng tháp.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 14700,
+        "spiritStones": 1085,
+        "equipmentChestTier": 6
+      },
+      "guardian": {
+        "name": "Nguyên Anh Chúa Tể",
+        "type": "Tu sĩ",
+        "skillName": "Nguyên Anh Thiên Uy",
+        "description": "Chúa tể ngưng tụ nguyên anh, uy áp phủ kín toàn bộ tầng tháp.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 4.8
     },
     {
@@ -2689,8 +3397,43 @@
       "realmText": "Nguyên Anh cảnh Nhất tầng",
       "equipmentLevel": 80,
       "combatPower": 152262,
-      "reward": { "cultivation": 35500, "spiritStones": 1800, "equipmentChestTier": 9 },
-      "guardian": { "name": "Nguyên Anh Tân Vệ", "type": "Tu sĩ", "skillName": "Anh Khí Chưởng", "description": "Thủ vệ dùng nguyên anh điều khiển linh lực ngoài thân.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 13135,
+        "spiritStones": 1100,
+        "equipmentChestTier": 6
+      },
+      "guardian": {
+        "name": "Nguyên Anh Tân Vệ",
+        "type": "Tu sĩ",
+        "skillName": "Anh Khí Chưởng",
+        "description": "Thủ vệ dùng nguyên anh điều khiển linh lực ngoài thân.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 5
     },
     {
@@ -2702,8 +3445,44 @@
       "realmText": "Nguyên Anh cảnh Nhị tầng",
       "equipmentLevel": 81,
       "combatPower": 154725,
-      "reward": { "cultivation": 36000, "spiritStones": 1825, "equipmentChestTier": 9, "enhancementStones": 24 },
-      "guardian": { "name": "Anh Nguyên Tu Sĩ", "type": "Tu sĩ", "skillName": "Anh Nguyên Kình", "description": "Tu sĩ khuếch đại quyền kình bằng sức mạnh nguyên anh.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 13320,
+        "spiritStones": 1115,
+        "equipmentChestTier": 6,
+        "enhancementStones": 24
+      },
+      "guardian": {
+        "name": "Anh Nguyên Tu Sĩ",
+        "type": "Tu sĩ",
+        "skillName": "Anh Nguyên Kình",
+        "description": "Tu sĩ khuếch đại quyền kình bằng sức mạnh nguyên anh.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 5
     },
     {
@@ -2715,8 +3494,43 @@
       "realmText": "Nguyên Anh cảnh Tam tầng",
       "equipmentLevel": 82,
       "combatPower": 157264,
-      "reward": { "cultivation": 36500, "spiritStones": 1850, "equipmentChestTier": 9 },
-      "guardian": { "name": "Huyền Anh Thủ Vệ", "type": "Tu sĩ", "skillName": "Huyền Anh Trấn", "description": "Thủ vệ dùng nguyên anh tạo thành kết giới trấn áp.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 13505,
+        "spiritStones": 1130,
+        "equipmentChestTier": 6
+      },
+      "guardian": {
+        "name": "Huyền Anh Thủ Vệ",
+        "type": "Tu sĩ",
+        "skillName": "Huyền Anh Trấn",
+        "description": "Thủ vệ dùng nguyên anh tạo thành kết giới trấn áp.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 5
     },
     {
@@ -2728,8 +3542,43 @@
       "realmText": "Nguyên Anh cảnh Tứ tầng",
       "equipmentLevel": 83,
       "combatPower": 162084,
-      "reward": { "cultivation": 37740, "spiritStones": 1875, "equipmentChestTier": 9 },
-      "guardian": { "name": "Thanh Anh Hộ Pháp", "type": "Tu sĩ", "skillName": "Thanh Anh Liệt Không", "description": "Hộ pháp kéo nguyên anh lực thành lưỡi chém xuyên không.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 14430,
+        "spiritStones": 1145,
+        "equipmentChestTier": 6
+      },
+      "guardian": {
+        "name": "Thanh Anh Hộ Pháp",
+        "type": "Tu sĩ",
+        "skillName": "Thanh Anh Liệt Không",
+        "description": "Hộ pháp kéo nguyên anh lực thành lưỡi chém xuyên không.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 5.1
     },
     {
@@ -2741,8 +3590,44 @@
       "realmText": "Nguyên Anh cảnh Ngũ tầng",
       "equipmentLevel": 84,
       "combatPower": 164617,
-      "reward": { "cultivation": 38250, "spiritStones": 1900, "equipmentChestTier": 9, "enhancementStones": 25 },
-      "guardian": { "name": "Tử Anh Tinh Anh", "type": "Tu sĩ", "skillName": "Tử Anh Đoạt Mệnh", "description": "Tinh anh dùng nguyên anh khóa chặt sinh cơ của đối thủ.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 14625,
+        "spiritStones": 1160,
+        "equipmentChestTier": 6,
+        "enhancementStones": 25
+      },
+      "guardian": {
+        "name": "Tử Anh Tinh Anh",
+        "type": "Tu sĩ",
+        "skillName": "Tử Anh Đoạt Mệnh",
+        "description": "Tinh anh dùng nguyên anh khóa chặt sinh cơ của đối thủ.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 5.1
     },
     {
@@ -2754,8 +3639,43 @@
       "realmText": "Nguyên Anh cảnh Lục tầng",
       "equipmentLevel": 85,
       "combatPower": 167227,
-      "reward": { "cultivation": 38760, "spiritStones": 1925, "equipmentChestTier": 9 },
-      "guardian": { "name": "Nguyên Anh Thủ Lĩnh", "type": "Tu sĩ", "skillName": "Nguyên Anh Phá Thiên", "description": "Thủ lĩnh đánh vỡ tầng mây bằng sức mạnh nguyên anh thuần túy.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 14820,
+        "spiritStones": 1175,
+        "equipmentChestTier": 7
+      },
+      "guardian": {
+        "name": "Nguyên Anh Thủ Lĩnh",
+        "type": "Tu sĩ",
+        "skillName": "Nguyên Anh Phá Thiên",
+        "description": "Thủ lĩnh đánh vỡ tầng mây bằng sức mạnh nguyên anh thuần túy.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 5.1
     },
     {
@@ -2767,8 +3687,43 @@
       "realmText": "Nguyên Anh cảnh Thất tầng",
       "equipmentLevel": 86,
       "combatPower": 172349,
-      "reward": { "cultivation": 40040, "spiritStones": 1950, "equipmentChestTier": 9 },
-      "guardian": { "name": "Cửu Thiên Tinh Anh", "type": "Tu sĩ", "skillName": "Cửu Thiên Anh Vũ", "description": "Tinh anh mượn uy lực cửu thiên để tăng cường nguyên anh.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 15785,
+        "spiritStones": 1190,
+        "equipmentChestTier": 7
+      },
+      "guardian": {
+        "name": "Cửu Thiên Tinh Anh",
+        "type": "Tu sĩ",
+        "skillName": "Cửu Thiên Anh Vũ",
+        "description": "Tinh anh mượn uy lực cửu thiên để tăng cường nguyên anh.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 5.2
     },
     {
@@ -2780,8 +3735,44 @@
       "realmText": "Nguyên Anh cảnh Bát tầng",
       "equipmentLevel": 87,
       "combatPower": 175026,
-      "reward": { "cultivation": 40560, "spiritStones": 1975, "equipmentChestTier": 9, "enhancementStones": 26 },
-      "guardian": { "name": "Hư Nguyên Vệ", "type": "Tu sĩ", "skillName": "Hư Nguyên Bạo", "description": "Thủ vệ làm nổ tung linh lực trong hư không quanh chiến trường.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 15990,
+        "spiritStones": 1205,
+        "equipmentChestTier": 7,
+        "enhancementStones": 26
+      },
+      "guardian": {
+        "name": "Hư Nguyên Vệ",
+        "type": "Tu sĩ",
+        "skillName": "Hư Nguyên Bạo",
+        "description": "Thủ vệ làm nổ tung linh lực trong hư không quanh chiến trường.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 5.2
     },
     {
@@ -2793,8 +3784,43 @@
       "realmText": "Nguyên Anh cảnh Cửu tầng",
       "equipmentLevel": 88,
       "combatPower": 177606,
-      "reward": { "cultivation": 41080, "spiritStones": 2000, "equipmentChestTier": 9 },
-      "guardian": { "name": "Vạn Anh Thủ Lĩnh", "type": "Tu sĩ", "skillName": "Vạn Anh Quy Tông", "description": "Thủ lĩnh hợp nhất vô số nguyên anh lực thành một đòn áp đảo.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 16195,
+        "spiritStones": 1220,
+        "equipmentChestTier": 7
+      },
+      "guardian": {
+        "name": "Vạn Anh Thủ Lĩnh",
+        "type": "Tu sĩ",
+        "skillName": "Vạn Anh Quy Tông",
+        "description": "Thủ lĩnh hợp nhất vô số nguyên anh lực thành một đòn áp đảo.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 5.2
     },
     {
@@ -2806,8 +3832,43 @@
       "realmText": "Hóa Thần cảnh Nhất tầng",
       "equipmentLevel": 89,
       "combatPower": 234263,
-      "reward": { "cultivation": 42400, "spiritStones": 2025, "equipmentChestTier": 9 },
-      "guardian": { "name": "Hóa Thần Chúa Tể", "type": "Tu sĩ", "skillName": "Hóa Thần Thiên Uy", "description": "Chúa tể hóa thần, thần uy khiến toàn bộ tháp thí luyện rung chuyển.", "equipment": [["weapon", "uncommon"], ["armor", "uncommon"], ["boots", "uncommon"], ["ring", "uncommon"], ["amulet", "uncommon"], ["artifact", "uncommon"]] },
+      "reward": {
+        "cultivation": 17200,
+        "spiritStones": 1235,
+        "equipmentChestTier": 7
+      },
+      "guardian": {
+        "name": "Hóa Thần Chúa Tể",
+        "type": "Tu sĩ",
+        "skillName": "Hóa Thần Thiên Uy",
+        "description": "Chúa tể hóa thần, thần uy khiến toàn bộ tháp thí luyện rung chuyển.",
+        "equipment": [
+          [
+            "weapon",
+            "uncommon"
+          ],
+          [
+            "armor",
+            "uncommon"
+          ],
+          [
+            "boots",
+            "uncommon"
+          ],
+          [
+            "ring",
+            "uncommon"
+          ],
+          [
+            "amulet",
+            "uncommon"
+          ],
+          [
+            "artifact",
+            "uncommon"
+          ]
+        ]
+      },
       "towerPowerMultiplier": 5.3
     }
   ]

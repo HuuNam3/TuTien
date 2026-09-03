@@ -55,8 +55,25 @@
       "earth": 4,
       "heaven": 5
     },
+    "manaCostPerLevelBySchool": {
+      "sword_cultivator": {
+        "mortal": 3,
+        "yellow": 6,
+        "mysterious": 9
+      }
+    },
     "combatPowerPerLevel": 20,
-    "combatPowerPerMilestone": 10
+    "combatPowerPerLevelBySchool": {
+      "sword_cultivator": {
+        "mortal": 60,
+        "yellow": 80,
+        "mysterious": 100
+      }
+    },
+    "combatPowerPerMilestone": 10,
+    "combatPowerPerMilestoneBySchool": {
+      "sword_cultivator": 50
+    }
   },
   "practice": {
     "baseRequired": 100,
@@ -90,10 +107,10 @@
       "description": "Gây sát thương lên kẻ địch và tăng Chính xác.",
       "note": "Gây 120% Công lên kẻ địch và tăng Chính xác 2% trong 2 lượt, không cộng dồn; mỗi cấp tăng 0,2%; thời gian hồi 1 lượt.",
       "gradeId": "mortal",
-      "combatPower": 68,
+      "combatPower": 600,
       "requiredTier": 1,
       "multiplier": 1.2,
-      "cost": 14,
+      "cost": 20,
       "cooldown": 1,
       "effects": [{ "type": "selfBuff", "stat": "accuracy", "value": 0.02, "levelIncrease": 0.002, "duration": 2, "chance": 1 }]
     },
@@ -104,10 +121,10 @@
       "description": "Gây sát thương lên kẻ địch và có cơ hội tăng Công.",
       "note": "50% cơ hội tăng Công 2% trong 2 lượt, không cộng dồn; mỗi cấp tăng 0,2%.",
       "gradeId": "mortal",
-      "combatPower": 72,
+      "combatPower": 700,
       "requiredTier": 1,
       "multiplier": 1.25,
-      "cost": 16,
+      "cost": 22,
       "cooldown": 2,
       "effects": [{ "type": "percentBuff", "stat": "attack", "value": 0.02, "levelIncrease": 0.002, "duration": 2, "chance": 0.5, "nonStacking": true }]
     },
@@ -118,10 +135,10 @@
       "description": "Gây sát thương lớn lên kẻ địch.",
       "note": "Không có hiệu ứng thêm.",
       "gradeId": "yellow",
-      "combatPower": 122,
+      "combatPower": 1800,
       "requiredTier": 4,
       "multiplier": 1.6,
-      "cost": 20,
+      "cost": 26,
       "cooldown": 2,
       "effects": []
     },
@@ -132,10 +149,10 @@
       "description": "Gây sát thương lên kẻ địch và có cơ hội hoàn lại Linh lực.",
       "note": "45% cơ hội hoàn lại linh lực khi sử dụng; thời gian hồi 2 lượt, mỗi cấp tăng 1% tỉ lệ hoàn lại.",
       "gradeId": "yellow",
-      "combatPower": 104,
+      "combatPower": 1700,
       "requiredTier": 4,
       "multiplier": 1.35,
-      "cost": 22,
+      "cost": 28,
       "cooldown": 2,
       "effects": [{ "type": "manaRefund", "value": 1, "chance": 0.45, "levelIncrease": 0.01, "levelIncreaseField": "chance" }]
     },
@@ -146,10 +163,10 @@
       "description": "Gây sát thương lên kẻ địch và tăng Công, Chí mạng.",
       "note": "Tăng Công 2% và Chí mạng 2% trong 3 lượt; mỗi cấp tăng 0,2% cho cả hai thuộc tính.",
       "gradeId": "mysterious",
-      "combatPower": 165,
+      "combatPower": 2200,
       "requiredTier": 7,
       "multiplier": 1.5,
-      "cost": 28,
+      "cost": 34,
       "cooldown": 3,
       "effects": [
         { "type": "percentBuff", "stat": "attack", "value": 0.02, "levelIncrease": 0.002, "duration": 3, "chance": 1, "nonStacking": true },
@@ -163,10 +180,10 @@
       "description": "Gây sát thương lên kẻ địch và có cơ hội thi triển lần hai.",
       "note": "20% cơ hội thi triển lần 2, không tiêu hao thêm linh lực và không kích hoạt lặp lại trong cùng lượt; lần 2 giảm 25% sát thương; mỗi cấp tăng 1%.",
       "gradeId": "mysterious",
-      "combatPower": 141,
+      "combatPower": 2600,
       "requiredTier": 7,
       "multiplier": 1.5,
-      "cost": 30,
+      "cost": 36,
       "cooldown": 3,
       "effects": [{ "type": "extraCast", "chance": 0.2, "levelIncrease": 0.01, "levelIncreaseField": "chance", "secondCastDamageMultiplier": 0.75 }]
     },

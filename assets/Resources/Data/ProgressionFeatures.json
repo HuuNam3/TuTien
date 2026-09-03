@@ -45,7 +45,7 @@
     },
     "cultivationLimitPerMajorRealm": 10,
     "stoneCostPerLevel": 1,
-    "sellPricePerEnhancementLevel": 15,
+    "sellPricePerEnhancementLevel": 30,
     "successRateBase": 1,
     "successRateLossPerLevel": 0.03,
     "successRateMinimum": 0.05,
@@ -121,28 +121,6 @@
       "totalFloors": 30,
       "dailyLimit": 3,
       "requiredLevel": 10
-    },
-    {
-      "id": "chestFarm",
-      "name": "Kho báu phụ bản",
-      "description": "Đánh quái để tìm rương skill hoặc rương trang bị.",
-      "rewardType": "chest",
-      "rewardMin": 1,
-      "rewardMax": 1,
-      "totalFloors": 30,
-      "dailyLimit": 3,
-      "requiredLevel": 10,
-      "skillChestChance": 0.5,
-      "skillChestGradeByFloor": [
-        { "maxFloor": 10, "gradeId": "mortal" },
-        { "maxFloor": 15, "gradeId": "yellow" },
-        { "maxFloor": 30, "gradeId": "mysterious" }
-      ],
-      "equipmentChestTierByFloor": [
-        { "maxFloor": 10, "tier": 1 },
-        { "maxFloor": 20, "tier": 2 },
-        { "maxFloor": 30, "tier": 3 }
-      ]
     }
   ]
 }

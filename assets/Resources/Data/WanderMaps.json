@@ -41,7 +41,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 1,
-        "spiritStoneBonus": 0,
         "equipmentRarityBonus": -0.05,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 3,
@@ -71,7 +70,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 1.2,
-        "spiritStoneBonus": 5,
         "equipmentRarityBonus": 0,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 3,
@@ -101,7 +99,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 1.4,
-        "spiritStoneBonus": 10,
         "equipmentRarityBonus": 0.04,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 3,
@@ -119,7 +116,7 @@
         16,
         20
       ],
-      "equipmentChestTier": 2,
+      "equipmentChestTier": 1,
       "description": "Cổ cảnh Ly Hợp chồng lên hư không, nơi truyền thừa cổ xưa và sát cơ cùng tồn tại.",
       "enemyPoolIds": [
         "iron_back_bear_demon",
@@ -131,7 +128,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 1.6,
-        "spiritStoneBonus": 15,
         "equipmentRarityBonus": 0.05,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 3,
@@ -161,7 +157,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 1.8,
-        "spiritStoneBonus": 20,
         "equipmentRarityBonus": 0.06,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 4,
@@ -192,7 +187,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 2,
-        "spiritStoneBonus": 25,
         "equipmentRarityBonus": 0.08,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
@@ -212,7 +206,7 @@
         31,
         35
       ],
-      "equipmentChestTier": 3,
+      "equipmentChestTier": 2,
       "description": "Vực sâu phủ tro đỏ, nơi linh lực biến thành sát khí trong từng cơn gió.",
       "enemyPoolIds": [
         "mud_corpse",
@@ -224,7 +218,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 2.2,
-        "spiritStoneBonus": 30,
         "equipmentRarityBonus": 0.1,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
@@ -244,7 +237,7 @@
         36,
         40
       ],
-      "equipmentChestTier": 3,
+      "equipmentChestTier": 2,
       "description": "Thiên quan sấm nổ quanh năm, mỗi đạo lôi quang đều thử thách đạo tâm.",
       "enemyPoolIds": [
         "red_mane_boar",
@@ -256,7 +249,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 2.4,
-        "spiritStoneBonus": 35,
         "equipmentRarityBonus": 0.12,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
@@ -288,7 +280,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 2.6,
-        "spiritStoneBonus": 40,
         "equipmentRarityBonus": 0.14,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
@@ -308,7 +299,7 @@
         46,
         50
       ],
-      "equipmentChestTier": 4,
+      "equipmentChestTier": 3,
       "description": "Vân hải chín tầng trời, nơi những kẻ sống sót sau cùng tranh đoạt cơ duyên thượng giới.",
       "enemyPoolIds": [
         "void_gate_guardian",
@@ -320,7 +311,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 2.8,
-        "spiritStoneBonus": 45,
         "equipmentRarityBonus": 0.16,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
@@ -340,7 +330,7 @@
         51,
         55
       ],
-      "equipmentChestTier": 4,
+      "equipmentChestTier": 3,
       "description": "Cổ đạo dẫn lên thiên môn, nơi linh áp dày đặc và những hộ pháp viễn cổ thức tỉnh.",
       "enemyPoolIds": [
         "primordial_bone_dragon",
@@ -352,7 +342,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 3,
-        "spiritStoneBonus": 50,
         "equipmentRarityBonus": 0.18,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
@@ -372,7 +361,7 @@
         56,
         60
       ],
-      "equipmentChestTier": 4,
+      "equipmentChestTier": 3,
       "description": "Thiên vực bị vạn lôi bao phủ, mỗi bước tiến đều là một lần tôi luyện thân hồn.",
       "enemyPoolIds": [
         "frost_moon_tiger",
@@ -384,7 +373,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 3.2,
-        "spiritStoneBonus": 55,
         "equipmentRarityBonus": 0.2,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
@@ -404,7 +392,7 @@
         61,
         65
       ],
-      "equipmentChestTier": 5,
+      "equipmentChestTier": 4,
       "description": "Tinh hà trôi giữa hư không, nơi cổ thú và các hộ vệ lôi mạch tranh giữ đường vào thượng giới.",
       "enemyPoolIds": [
         "jade_serpent",
@@ -416,7 +404,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 3.4,
-        "spiritStoneBonus": 60,
         "equipmentRarityBonus": 0.22,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
@@ -436,7 +423,7 @@
         66,
         70
       ],
-      "equipmentChestTier": 5,
+      "equipmentChestTier": 4,
       "description": "Thánh vực không có điểm cuối, nơi đạo vận hóa thành áp lực và mọi đối thủ đều giữ một phần thiên cơ.",
       "enemyPoolIds": [
         "azure_cloud_dragon",
@@ -448,7 +435,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 3.6,
-        "spiritStoneBonus": 65,
         "equipmentRarityBonus": 0.24,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
@@ -468,7 +454,7 @@
         71,
         75
       ],
-      "equipmentChestTier": 5,
+      "equipmentChestTier": 4,
       "description": "Cổ hải trôi giữa tinh quang, nơi những dị thú thượng giới tuần tra trên từng con sóng đạo vận.",
       "enemyPoolIds": [
         "azure_cloud_dragon",
@@ -480,7 +466,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 3.8,
-        "spiritStoneBonus": 70,
         "equipmentRarityBonus": 0.26,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
@@ -500,7 +485,7 @@
         76,
         80
       ],
-      "equipmentChestTier": 6,
+      "equipmentChestTier": 4,
       "description": "Lôi uyên Cửu U vang tiếng sấm không dứt, từng tia điện đều ẩn chứa sát cơ của cổ thú.",
       "enemyPoolIds": [
         "crimson_nine_tail",
@@ -512,7 +497,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 4,
-        "spiritStoneBonus": 75,
         "equipmentRarityBonus": 0.28,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
@@ -532,7 +516,7 @@
         81,
         85
       ],
-      "equipmentChestTier": 6,
+      "equipmentChestTier": 5,
       "description": "Thần vực Vạn Tượng biến hóa theo từng nhịp thở, nơi mọi đạo pháp đều có thể hóa thành hình thú.",
       "enemyPoolIds": [
         "ancient_mushroom_sage",
@@ -544,7 +528,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 4.2,
-        "spiritStoneBonus": 80,
         "equipmentRarityBonus": 0.3,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
@@ -564,7 +547,7 @@
         86,
         90
       ],
-      "equipmentChestTier": 6,
+      "equipmentChestTier": 5,
       "description": "Tinh môn mở giữa Thái Hư, triệu hồi những hộ vệ canh đường và kiếm hồn lang thang.",
       "enemyPoolIds": [
         "heavenlight_warden",
@@ -576,7 +559,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 4.4,
-        "spiritStoneBonus": 85,
         "equipmentRarityBonus": 0.32,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
@@ -596,7 +578,7 @@
         91,
         95
       ],
-      "equipmentChestTier": 7,
+      "equipmentChestTier": 5,
       "description": "Vương giới hỗn độn đảo lộn phương hướng, các cổ thú và cơ vệ tranh nhau bảo vệ đạo nguyên.",
       "enemyPoolIds": [
         "black_moon_void_knight",
@@ -608,7 +590,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 4.6,
-        "spiritStoneBonus": 90,
         "equipmentRarityBonus": 0.34,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
@@ -628,7 +609,7 @@
         96,
         100
       ],
-      "equipmentChestTier": 7,
+      "equipmentChestTier": 5,
       "description": "Thiên khư sót lại từ buổi sơ khai, nơi những sinh linh nuốt tinh thần giữ cánh cửa cuối cùng.",
       "enemyPoolIds": [
         "moon_lotus_mystic",
@@ -640,7 +621,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 4.8,
-        "spiritStoneBonus": 95,
         "equipmentRarityBonus": 0.36,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
@@ -660,7 +640,7 @@
         101,
         105
       ],
-      "equipmentChestTier": 7,
+      "equipmentChestTier": 6,
       "description": "Cổ lộ rạn vỡ giữa trời sao, nơi những kiếm hồn và lôi thú canh giữ dấu tích thiên môn.",
       "enemyPoolIds": [
         "celestial_sunder_beast",
@@ -672,7 +652,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 5,
-        "spiritStoneBonus": 100,
         "equipmentRarityBonus": 0.38,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
@@ -692,7 +671,7 @@
         106,
         110
       ],
-      "equipmentChestTier": 8,
+      "equipmentChestTier": 6,
       "description": "Tuyết vực đóng băng tinh quang, nơi hộ pháp kim sơn và pháp sư hư diễm tranh đoạt đạo nguyên.",
       "enemyPoolIds": [
         "golden_mountain_guardian",
@@ -704,7 +683,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 5.2,
-        "spiritStoneBonus": 105,
         "equipmentRarityBonus": 0.4,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
@@ -724,7 +702,7 @@
         111,
         115
       ],
-      "equipmentChestTier": 8,
+      "equipmentChestTier": 6,
       "description": "Thần điện nổi trên biển sao, nơi sát thủ nguyệt ảnh và lôi long ấu thú thử thách người vượt biển.",
       "enemyPoolIds": [
         "moonlit_hunter",
@@ -736,7 +714,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 5.4,
-        "spiritStoneBonus": 110,
         "equipmentRarityBonus": 0.42,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
@@ -756,7 +733,7 @@
         116,
         120
       ],
-      "equipmentChestTier": 8,
+      "equipmentChestTier": 6,
       "description": "Đế quan xuyên qua hư không, cơ vệ hỗn tinh và yêu long tinh tú bảo vệ con đường đế vương.",
       "enemyPoolIds": [
         "chaos_crystal_golem",
@@ -768,7 +745,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 5.6,
-        "spiritStoneBonus": 115,
         "equipmentRarityBonus": 0.44,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
@@ -788,7 +764,7 @@
         121,
         125
       ],
-      "equipmentChestTier": 9,
+      "equipmentChestTier": 7,
       "description": "Liên cung hỗn độn nở giữa các tầng không gian, nơi phượng lôi và chu ma săn tìm linh hồn lạc lối.",
       "enemyPoolIds": [
         "star_gate_guardian",
@@ -800,7 +776,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 5.8,
-        "spiritStoneBonus": 120,
         "equipmentRarityBonus": 0.46,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,
@@ -820,7 +795,7 @@
         126,
         130
       ],
-      "equipmentChestTier": 9,
+      "equipmentChestTier": 7,
       "description": "Thần khư buổi khai thiên, nơi liên thú sáng thế và thần long kim thiên giữ cánh cửa cuối cùng.",
       "enemyPoolIds": [
         "creation_lotus_beast",
@@ -832,7 +807,6 @@
       ],
       "rewardSettings": {
         "cultivationMultiplier": 6,
-        "spiritStoneBonus": 125,
         "equipmentRarityBonus": 0.48,
         "equipmentDropChance": 0.2,
         "equipmentQualityMax": 5,

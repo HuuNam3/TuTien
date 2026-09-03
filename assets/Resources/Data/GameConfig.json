@@ -10,15 +10,15 @@
     "turnInterval": 1400,
     "playerMaxMinorLevel": 10,
     "wanderEventDelay": 10000,
+    "wanderChestTierStepMaps": 4,
     "wanderEnemyChance": 0.4,
     "wanderFleeChance": 0.8,
     "wanderHighEnemyChance": 0.7,
     "wanderHighEnemyRequiredWins": 10,
     "wanderBossRequiredWins": 30,
     "wanderSkipEnemyRequiresBoss": true,
-    "equipmentChestDailyPurchaseLimit": 20,
     "dailyShopPurchaseLimits": {
-      "enhancementStone": 30,
+    "enhancementStone": 50,
       "skillChest": 10,
       "cultivation": 10,
       "healthPotion": 30,
@@ -37,10 +37,10 @@
       "cultivation": 0.4,
       "spiritStone": 0.3,
       "chest": 0.15,
-      "healthPotion": 0.05,
-      "manaPotion": 0.05,
-      "enhancementStone": 0.04,
-      "skillChest": 0.01
+      "healthPotion": 0.04,
+      "manaPotion": 0.04,
+      "enhancementStone": 0.05,
+      "skillChest": 0.02
     }
   },
   "dailyFarmLimit": 3,
