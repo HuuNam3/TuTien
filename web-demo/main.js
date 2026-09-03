@@ -262,6 +262,7 @@ let dantianCultivationSeconds = 0;
 let offlineCapSeconds = 0;
 let resourceRegenTimer = 0;
 let selectedStage = null;
+let selectedEnhancementItemId = 0;
 let currentDungeonId = '';
 let currentWanderMapId = '';
 let wanderCarouselCleanup = null;
@@ -345,7 +346,6 @@ const equipmentButton = $('equipmentButton');
 const inventoryButton = $('inventoryButton');
 const petButton = $('petButton');
 const shopButton = $('shopButton');
-const enhancementButton = $('enhancementButton');
 const resourceDungeonButton = $('resourceDungeonButton');
 const trialTowerButton = $('trialTowerButton');
 const devButton = $('devButton');
@@ -359,7 +359,6 @@ const trainingBadge = $('trainingBadge');
 const questBadge = $('questBadge');
 const resourceDungeonBadge = $('resourceDungeonBadge');
 const equipmentBadge = $('equipmentBadge');
-const enhancementPanel = $('enhancementPanel');
 const resourceDungeonPanel = $('resourceDungeonPanel');
 const trialTowerPanel = $('trialTowerPanel');
 const devPanel = $('devPanel');
@@ -419,7 +418,6 @@ const tabButtons = {
   inventory: inventoryButton,
   pets: petButton,
   shop: shopButton,
-  enhancement: enhancementButton,
   resourceDungeon: resourceDungeonButton,
   trialTower: trialTowerButton,
   code: devButton,
@@ -441,6 +439,9 @@ document.body.appendChild(shopDetailOverlay);
 const inventoryDetailOverlay = document.createElement('div');
 inventoryDetailOverlay.className = 'wander-event-overlay is-hidden';
 document.body.appendChild(inventoryDetailOverlay);
+const enhancementDetailOverlay = document.createElement('div');
+enhancementDetailOverlay.className = 'wander-event-overlay is-hidden';
+document.body.appendChild(enhancementDetailOverlay);
 const onboardingOverlay = document.createElement('div');
 onboardingOverlay.className = 'onboarding-overlay is-hidden';
 document.body.appendChild(onboardingOverlay);
@@ -861,7 +862,6 @@ shopCategoryFilters?.addEventListener('click', (event) => {
   shopCategory = button.dataset.shopCategory || 'all';
   renderShop();
 });
-enhancementButton.addEventListener('click', showEnhancement);
 resourceDungeonButton.addEventListener('click', showResourceDungeons);
 trialTowerButton?.addEventListener('click', showTrialTower);
 devButton?.addEventListener('click', showCodePanel);
@@ -904,6 +904,7 @@ document.addEventListener('click', (event) => {
   if (target.dataset.skillAction === 'upgrade') return upgradeSkill(target.dataset.skillId);
   if (target.dataset.resourceDungeon) return challengeResourceDungeon(target.dataset.resourceDungeon);
   if (target.dataset.trialFloor) return startTrialTowerBattle(Number(target.dataset.trialFloor));
+  if (target.dataset.enhanceEquipped) return showEnhancement(Number(target.dataset.enhanceEquipped));
   if (target.dataset.enhanceItem) return enhanceEquipment(Number(target.dataset.enhanceItem));
 });
 resetConfirmModal?.addEventListener('click', (event) => {
@@ -931,6 +932,10 @@ document.addEventListener('keydown', (event) => {
   }
   if (event.key === 'Escape' && !inventoryDetailOverlay.classList.contains('is-hidden')) {
     hideInventoryItemDetail();
+    return;
+  }
+  if (event.key === 'Escape' && !enhancementDetailOverlay.classList.contains('is-hidden')) {
+    hideEnhancementDetail();
   }
   if (event.key === 'Enter' && event.target.closest('.shop-item[data-shop-detail]')
     && !event.target.closest('button, input')) {
@@ -1548,10 +1553,6 @@ function showBattleReturnTab() {
     showShop();
     return;
   }
-  if (returnTab === 'enhancement') {
-    showEnhancement();
-    return;
-  }
   if (returnTab === 'resourceDungeon') {
     showResourceDungeons();
     return;
@@ -1725,7 +1726,6 @@ function renderWanderAmbushOverlay(container, event) {
 function hideFeaturePanels() {
   inventoryPanel?.classList.add('is-hidden');
   petPanel?.classList.add('is-hidden');
-  enhancementPanel?.classList.add('is-hidden');
   resourceDungeonPanel?.classList.add('is-hidden');
   trialTowerPanel?.classList.add('is-hidden');
   devPanel?.classList.add('is-hidden');
@@ -1758,13 +1758,19 @@ function prepareFeatureView(panel, tabId, renderFunction) {
   saveGame();
 }
 
-function showEnhancement() {
+function showEnhancement(itemId = 0) {
   const requiredTier = Math.max(1, Number(progressionFeatures.enhancement.entryRequiredTier) || 15);
   if (!canAccessEnhancement()) {
     showLockedFeatureNotice('Cường hóa', `Cần đạt tu vi ${getTierRealmText(requiredTier)} để mở`);
     return;
   }
-  prepareFeatureView(enhancementPanel, 'enhancement', renderEnhancement);
+  const item = Object.values(equippedItems).find((entry) => entry?.id === Number(itemId));
+  if (!item) {
+    showGameToast('Chưa chọn trang bị để cường hóa.', 'info');
+    return;
+  }
+  selectedEnhancementItemId = item.id;
+  renderEnhancement();
 }
 
 function showResourceDungeons() {
@@ -2302,7 +2308,6 @@ function canAccessResourceDungeons() {
 
 function updateFeatureAvailability() {
   const featureStates = [
-    [enhancementButton, canAccessEnhancement(), Math.max(1, Number(progressionFeatures.enhancement.entryRequiredTier) || 15)],
     [resourceDungeonButton, canAccessResourceDungeons(), Math.max(1, Number(progressionFeatures.resourceDungeonEntryRequiredTier) || 12)],
     [trialTowerButton, canEnterTrialTower(), Math.max(1, Number(trialTowerData.entryRequiredTier) || 10)],
   ];
@@ -2346,7 +2351,6 @@ function claimQuest(questId) {
   renderCultivation();
   renderProfile();
   renderShop();
-  renderEnhancement();
   saveGame();
 }
 
@@ -8135,40 +8139,68 @@ function getEnhancementSuccessRate(targetLevel) {
 }
 
 function renderEnhancement() {
-  $('enhancementStoneText').textContent = `Linh thạch: ${formatGameNumber(playerSpiritStones)} | Đá cường hóa: ${formatGameNumber(enhancementStones)}`;
-  const enhancementItems = Object.values(equippedItems).filter(Boolean);
-  $('enhancementList').innerHTML = enhancementItems.length
-    ? enhancementItems.map((item) => {
-      const qualityMax = getEquipmentEnhancementQualityMax(item);
-      const maxLevel = getEquipmentEnhancementMax(item);
-      const currentLevel = Number(item.enhancementLevel) || 0;
-      const cost = getEnhancementCost(item);
-      const targetLevel = currentLevel + 1;
-      const stoneCost = getEnhancementStoneCost(item, targetLevel);
-      const successRate = getEnhancementSuccessRate(targetLevel);
-      const qualityMaxed = currentLevel >= qualityMax;
-      const cultivationLocked = currentLevel >= maxLevel && !qualityMaxed;
-      const maxed = qualityMaxed;
-      const canEnhance = !maxed && !cultivationLocked
-        && playerSpiritStones >= cost
-        && enhancementStones >= stoneCost;
-      return `
-        <div class="feature-item enhancement-equipment-item ${rarityData[item.rarityKey].className}">
-          ${renderEquippedEquipmentSummary(item, getSlotName(item.slotId), { showStats: false, showSpecials: false })}
-          <div class="enhancement-stat-list">${formatEnhancementStats(item)}</div>
-          <div class="enhancement-cost-grid">
-            <span><i class="item-icon icon-item-enhancement-stone" aria-hidden="true"></i><b>${formatGameNumber(stoneCost)}</b> đá</span>
-            <span><i class="game-icon icon-hammer" aria-hidden="true"></i><b>+${formatGameNumber(currentLevel)}/${formatGameNumber(qualityMax)}</b></span>
-            <span><i class="unique-icon icon-unique-spirit-stone" aria-hidden="true"></i><b>${formatGameNumber(cost)}</b></span>
-            <span><i class="stat-icon icon-stat-reward" aria-hidden="true"></i><b>${toPercent(successRate)}</b></span>
-          </div>
-          <button type="button" class="secondary compact enhancement-action-button" data-enhance-item="${item.id}" ${buttonDisabledAttributes(!canEnhance, maxed ? 'Trang bị đã đạt tối đa phẩm cấp.' : cultivationLocked ? `Tu vi chỉ mở đến +${maxLevel}.` : stoneCost && enhancementStones < stoneCost ? `Cần ${formatGameNumber(stoneCost)} đá cường hóa.` : `Cần ${formatGameNumber(cost)} linh thạch.`)}>
-            <i class="game-icon icon-hammer" aria-hidden="true"></i>${maxed ? 'Đã tối đa phẩm cấp' : cultivationLocked ? `Tu vi chỉ mở đến +${maxLevel}` : canEnhance ? `Cường hóa lên +${targetLevel}` : stoneCost && enhancementStones < stoneCost ? `Cần ${formatGameNumber(stoneCost)} đá cường hóa` : `Cần ${formatGameNumber(cost)} linh thạch`}
-          </button>
-        </div>
-      `;
-    }).join('')
-    : '<div class="inventory-empty"><i class="item-icon icon-item-enhancement-stone" aria-hidden="true"></i><span>Chưa có trang bị để cường hóa.</span></div>';
+  const item = Object.values(equippedItems).find((entry) => entry?.id === selectedEnhancementItemId);
+  if (!item) {
+    hideEnhancementDetail();
+    return;
+  }
+
+  const qualityMax = getEquipmentEnhancementQualityMax(item);
+  const currentLevel = Math.max(0, Math.floor(Number(item.enhancementLevel) || 0));
+  const enhancementColor = getEnhancementLevelColor(currentLevel);
+  const equipmentStyle = `--enhancement-level-color: ${enhancementColor}; --equipment-level-color: ${getEquipmentLevelColor(item)}; --rarity-color: ${getEquipmentRarityColor(item)};`;
+  enhancementDetailOverlay.innerHTML = `
+    <div class="wander-event-modal shop-detail-modal enhancement-detail-modal" role="dialog" aria-modal="true" aria-label="Chi tiết cường hóa">
+      <button type="button" class="icon-button shop-detail-close enhancement-detail-close" title="Đóng" aria-label="Đóng"><i class="unique-icon icon-unique-close" aria-hidden="true"></i></button>
+      <span><i class="game-icon icon-hammer" aria-hidden="true"></i>Chi tiết cường hóa</span>
+      <strong class="enhancement-detail-resource" id="enhancementStoneText">Linh thạch: ${formatGameNumber(playerSpiritStones)} | Đá cường hóa: ${formatGameNumber(enhancementStones)}</strong>
+      <div class="feature-list enhancement-detail-list" id="enhancementList"></div>
+    </div>
+  `;
+  enhancementDetailOverlay.classList.remove('is-hidden');
+  enhancementDetailOverlay.querySelector('.enhancement-detail-close')?.addEventListener('click', hideEnhancementDetail);
+  enhancementDetailOverlay.onclick = (event) => {
+    if (event.target === enhancementDetailOverlay) hideEnhancementDetail();
+  };
+
+  const list = $('enhancementList');
+  list.innerHTML = `<div class="feature-item enhancement-equipment-item ${rarityData[item.rarityKey].className}" style="${equipmentStyle}">${getEnhancementItemMarkup(item)}</div>`;
+}
+
+function getEnhancementItemMarkup(item) {
+  const qualityMax = getEquipmentEnhancementQualityMax(item);
+  const maxLevel = getEquipmentEnhancementMax(item);
+  const currentLevel = Math.max(0, Math.floor(Number(item.enhancementLevel) || 0));
+  const cost = getEnhancementCost(item);
+  const targetLevel = currentLevel + 1;
+  const stoneCost = getEnhancementStoneCost(item, targetLevel);
+  const successRate = getEnhancementSuccessRate(targetLevel);
+  const qualityMaxed = currentLevel >= qualityMax;
+  const cultivationLocked = currentLevel >= maxLevel && !qualityMaxed;
+  const maxed = qualityMaxed;
+  const canEnhance = !maxed && !cultivationLocked
+    && playerSpiritStones >= cost
+    && enhancementStones >= stoneCost;
+  return `
+    ${renderEquippedEquipmentSummary(item, getSlotName(item.slotId), { showStats: false, showSpecials: false })}
+    <div class="enhancement-stat-list">${formatEnhancementStats(item)}</div>
+    <div class="enhancement-cost-grid">
+      <span><i class="item-icon icon-item-enhancement-stone" aria-hidden="true"></i><b>${formatGameNumber(stoneCost)}</b> đá</span>
+      <span><i class="game-icon icon-hammer" aria-hidden="true"></i><b>+${formatGameNumber(currentLevel)}/${formatGameNumber(qualityMax)}</b></span>
+      <span><i class="unique-icon icon-unique-spirit-stone" aria-hidden="true"></i><b>${formatGameNumber(cost)}</b></span>
+      <span><i class="stat-icon icon-stat-reward" aria-hidden="true"></i><b>${toPercent(successRate)}</b></span>
+    </div>
+    <button type="button" class="secondary compact enhancement-action-button" data-enhance-item="${item.id}" ${buttonDisabledAttributes(!canEnhance, maxed ? 'Trang bị đã đạt cấp độ tối đa.' : cultivationLocked ? `Tu vi chỉ mở đến +${maxLevel}.` : stoneCost && enhancementStones < stoneCost ? `Cần ${formatGameNumber(stoneCost)} đá cường hóa.` : `Cần ${formatGameNumber(cost)} linh thạch.`)}>
+      <i class="game-icon icon-hammer" aria-hidden="true"></i>${maxed ? 'Đã đạt cấp độ tối đa' : cultivationLocked ? `Tu vi chỉ mở đến +${maxLevel}` : canEnhance ? `Cường hóa lên +${targetLevel}` : stoneCost && enhancementStones < stoneCost ? `Cần ${formatGameNumber(stoneCost)} đá cường hóa` : `Cần ${formatGameNumber(cost)} linh thạch`}
+    </button>
+  `;
+}
+
+function hideEnhancementDetail() {
+  selectedEnhancementItemId = 0;
+  enhancementDetailOverlay.classList.add('is-hidden');
+  enhancementDetailOverlay.innerHTML = '';
+  enhancementDetailOverlay.onclick = null;
 }
 
 function enhanceEquipment(itemId) {
@@ -8186,8 +8218,6 @@ function enhanceEquipment(itemId) {
   enhancementStones -= stoneCost;
   const successRate = getEnhancementSuccessRate(targetLevel);
   if (Math.random() > successRate) {
-    const failureMessage = `${item.name} cường hóa thất bại ở cấp +${targetLevel}. Chỉ mất ${formatGameNumber(stoneCost)} đá cường hóa, không mất linh thạch. Tỉ lệ lần này: ${toPercent(successRate)}.`;
-    setPanelMessage('enhancementMessage', failureMessage);
     showGameToast(`Cường hóa thất bại: ${item.name} ở cấp +${targetLevel}.`, 'error');
     renderEnhancement();
     renderCultivation();
@@ -8200,8 +8230,6 @@ function enhanceEquipment(itemId) {
     stat,
     getEnhancedStatValue(stat, value),
   ]));
-  const successMessage = `${item.name} đã cường hóa lên +${item.enhancementLevel}. Chỉ số và lực chiến đã tăng.`;
-  setPanelMessage('enhancementMessage', successMessage);
   showGameToast(`Cường hóa thành công: ${item.name} lên +${item.enhancementLevel}.`, 'success');
   renderEnhancement();
   renderEquipment();
@@ -8752,7 +8780,12 @@ function renderEquipment() {
     return `
       <div class="equipment-slot ${item ? `${rarityData[item.rarityKey].className} ${levelClass}` : ''}" style="${item ? `--equipment-level-color: ${levelColor}; --rarity-color: ${rarityColor};` : ''}">
         ${item ? renderEquippedEquipmentSummary(item, slot.name) : `<span>${slot.name}</span><strong>Trống</strong><em>Chưa mặc trang bị</em>`}
-        ${item ? `<button type="button" onclick="unequipItem('${slot.id}')">Tháo</button>` : ''}
+        ${item ? `
+          <div class="equipment-slot-actions">
+            <button type="button" onclick="unequipItem('${slot.id}')">Tháo</button>
+            <button type="button" class="secondary" data-enhance-equipped="${item.id}">Cường hóa</button>
+          </div>
+        ` : ''}
       </div>
     `;
   }).join('');
@@ -9440,7 +9473,7 @@ function getEquipmentSellPrice(item) {
   const enhancementLevel = Math.max(0, Math.floor(Number(item?.enhancementLevel) || 0));
   const bonusPerLevel = Math.max(
     0,
-    Number(progressionFeatures.enhancement?.sellPricePerEnhancementLevel) || 30,
+    Number(progressionFeatures.enhancement?.sellPricePerEnhancementLevel) || 50,
   );
   return Math.max(1, Math.floor(basePrice + enhancementLevel * bonusPerLevel));
 }
@@ -9545,6 +9578,15 @@ function getEquipmentRarityColor(item) {
   return rarityData[item?.rarityKey]?.color || '#f5f7fa';
 }
 
+function getEnhancementLevelColor(level) {
+  const normalizedLevel = Math.max(0, Math.floor(Number(level) || 0));
+  const paletteIndex = normalizedLevel <= 5 ? 0 : Math.floor((normalizedLevel - 1) / 5);
+  const rarityKey = equipmentQualityOrder[paletteIndex]
+    || equipmentQualityOrder[equipmentQualityOrder.length - 1]
+    || 'common';
+  return rarityData[rarityKey]?.color || '#f5f7fa';
+}
+
 function renderEquippedEquipmentSummary(item, slotName, options = {}) {
   const specialMarkup = renderEquipmentSpecials(item.specialLines || []);
   return `
@@ -9570,6 +9612,8 @@ function getEquipmentIconMarkup(item) {
   const frame = Number(assignment?.[1]);
   const enhancementLevel = Math.max(0, Math.floor(Number(item?.enhancementLevel) || 0));
   const equipmentLevel = Math.max(1, Math.floor(Number(item?.level) || 1));
+  const enhancementColor = getEnhancementLevelColor(enhancementLevel);
+  const iconStyle = `--enhancement-level-color:${enhancementColor};`;
   const levelMarkup = `<small class="equipment-level-badge">LV.${formatGameNumber(equipmentLevel)}</small>`;
   const enhancementMarkup = enhancementLevel > 0
     ? `<b class="equipment-enhancement-badge">+${formatGameNumber(enhancementLevel)}</b>`
@@ -9579,9 +9623,9 @@ function getEquipmentIconMarkup(item) {
     const column = frame % 4;
     const row = Math.floor(frame / 4);
     const position = `${(column * 100) / 3}% ${(row * 100) / 3}%`;
-    return `<i class="item-icon equipment-item-icon" style="background-image:url('${sheetPath}');background-position:${position}" aria-hidden="true">${badgeMarkup}</i>`;
+    return `<i class="item-icon equipment-item-icon" style="${iconStyle}background-image:url('${sheetPath}');background-position:${position}" aria-hidden="true">${badgeMarkup}</i>`;
   }
-  return `<i class="item-icon ${getEquipmentIconClass(slotId)}" aria-hidden="true">${badgeMarkup}</i>`;
+  return `<i class="item-icon ${getEquipmentIconClass(slotId)}" style="${iconStyle}" aria-hidden="true">${badgeMarkup}</i>`;
 }
 
 function getEquipmentIconClass(slotId) {

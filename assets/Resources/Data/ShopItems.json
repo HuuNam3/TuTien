@@ -1,11 +1,11 @@
 {
-  "description": "10 mặt hàng trong cửa hàng gồm rương skill Phàm/Hoàng/Huyền, đan dược và đá cường hóa. Dữ liệu quy định giá, loại vật phẩm và giới hạn mua theo ngày; rương trang bị chỉ nhận từ phần thưởng Ngao du, tháp và nhiệm vụ.",
+  "description": "10 mặt hàng trong cửa hàng gồm rương skill Phàm/Hoàng/Huyền, đan dược và đá cường hóa. Dữ liệu quy định giá, loại vật phẩm và giới hạn mua theo ngày; đá cường hóa không giới hạn số lượng mua; rương trang bị chỉ nhận từ phần thưởng Ngao du, tháp và nhiệm vụ.",
   "shopItems": [
     {
       "id": "enhancementStone",
       "name": "Đá Cường Hóa",
       "description": "Nguyên liệu dùng ở mỗi cấp cường hóa.",
-      "cost": 30,
+      "cost": 50,
       "type": "enhancementStone",
       "amount": 1
     },

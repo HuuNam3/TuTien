@@ -10689,7 +10689,8 @@ body.battle-active .battle-panel {
 }
 
 #equipmentSlots .item-icon,
-#equipmentInventoryList .item-icon {
+#equipmentInventoryList .item-icon,
+#enhancementList .enhancement-equipment-item .equipped-equipment-visual > .item-icon {
   position: relative;
   box-sizing: border-box;
   flex-basis: 42px;
@@ -10704,7 +10705,9 @@ body.battle-active .battle-panel {
 #equipmentSlots .item-icon::before,
 #equipmentSlots .item-icon::after,
 #equipmentInventoryList .item-icon::before,
-#equipmentInventoryList .item-icon::after {
+#equipmentInventoryList .item-icon::after,
+#enhancementList .enhancement-equipment-item .equipped-equipment-visual > .item-icon::before,
+#enhancementList .enhancement-equipment-item .equipped-equipment-visual > .item-icon::after {
   content: "";
   position: absolute;
   z-index: 2;
@@ -10726,14 +10729,17 @@ body.battle-active .battle-panel {
 }
 
 #equipmentSlots .item-icon::after,
-#equipmentInventoryList .item-icon::after {
+#equipmentInventoryList .item-icon::after,
+#enhancementList .enhancement-equipment-item .equipped-equipment-visual > .item-icon::after {
   animation-delay: -1.5s;
 }
 
 #equipmentSlots .equipment-slot:is(.immortal, .sacred, .divine, .emperor, .chaos) .item-icon::before,
 #equipmentSlots .equipment-slot:is(.immortal, .sacred, .divine, .emperor, .chaos) .item-icon::after,
 #equipmentInventoryList .inventory-item:is(.immortal, .sacred, .divine, .emperor, .chaos) .item-icon::before,
-#equipmentInventoryList .inventory-item:is(.immortal, .sacred, .divine, .emperor, .chaos) .item-icon::after {
+#equipmentInventoryList .inventory-item:is(.immortal, .sacred, .divine, .emperor, .chaos) .item-icon::after,
+#enhancementList .enhancement-equipment-item:is(.immortal, .sacred, .divine, .emperor, .chaos) .equipped-equipment-visual > .item-icon::before,
+#enhancementList .enhancement-equipment-item:is(.immortal, .sacred, .divine, .emperor, .chaos) .equipped-equipment-visual > .item-icon::after {
   display: block;
 }
 
@@ -10758,6 +10764,82 @@ body.battle-active .battle-panel {
   border-color: var(--rarity-color, #526176);
   background: linear-gradient(145deg, color-mix(in srgb, var(--rarity-color, #526176) 18%, #151d27), #151d27 72%);
   color: #edf3f8;
+}
+
+#equipmentSlots .equipment-slot {
+  grid-template-rows: minmax(auto, 1fr) auto;
+}
+
+#enhancementList .enhancement-equipment-item {
+  border-width: 2px;
+  border-color: var(--rarity-color, #f5f7fa);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--rarity-color, #f5f7fa) 18%, #151d27), #151d27 72%);
+  cursor: default;
+}
+
+#enhancementList .enhancement-equipment-item:hover {
+  border-color: var(--rarity-color, #f5f7fa);
+  box-shadow: none;
+  transform: none;
+}
+
+#enhancementList .enhancement-equipment-item .equipped-equipment-visual {
+  flex-basis: 42px;
+}
+
+#enhancementList .enhancement-equipment-item .equipment-enhancement-badge {
+  display: block;
+  color: var(--enhancement-level-color, #ffe27b);
+}
+
+#enhancementList .enhancement-equipment-item .enhancement-cost-grid > span:nth-child(2) > b {
+  color: var(--enhancement-level-color, #72d8f5);
+}
+
+#enhancementList .enhancement-equipment-item .equipment-level-badge {
+  bottom: 0;
+  left: 50%;
+  padding: 0 1px;
+  transform: translateX(-50%);
+  color: #ffffff;
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.equipment-slot-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  min-width: 0;
+}
+
+.equipment-slot-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  gap: 4px;
+  min-width: 0;
+  min-height: 34px;
+  height: 34px;
+  margin-top: 0;
+  padding: 5px 4px;
+  font-size: 11px;
+  line-height: 1.1;
+  white-space: normal;
+}
+
+.enhancement-detail-modal #enhancementList {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+}
+
+.enhancement-detail-modal .enhancement-detail-resource {
+  color: #72d8f5;
+  font-size: 11px;
+  line-height: 1.35;
 }
 
 #inventoryList .inventory-item.equipment-chest-item {
@@ -10789,7 +10871,7 @@ body.battle-active .battle-panel {
 .equipment-enhancement-badge {
   top: 1px;
   right: 1px;
-  color: #ffe27b;
+  color: var(--enhancement-level-color, #ffe27b);
   font-size: 8px;
   font-style: normal;
   font-weight: 900;

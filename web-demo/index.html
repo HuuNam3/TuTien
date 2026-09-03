@@ -6,7 +6,7 @@
   <title>Đạo Hữu Tu Tiên</title>
   <link rel="icon" type="image/png" href="./assets/Art/Sprites/Characters/chibi-sword-cultivator.png">
   <link rel="apple-touch-icon" href="./assets/Art/Sprites/Characters/chibi-sword-cultivator.png">
-  <link rel="stylesheet" href="./styles.css?v=20260903-shop2">
+  <link rel="stylesheet" href="./styles.css?v=20260904-enhancement-modal">
 </head>
 <body>
   <section class="resource-loader" id="resourceLoader" aria-live="polite">
@@ -77,11 +77,10 @@
           <button id="questButton" class="secondary compact" type="button"><i class="game-icon icon-scroll" aria-hidden="true"></i><span>Nhiệm vụ</span><b class="nav-badge" id="questBadge" hidden aria-hidden="true"></b></button>
           <button id="equipmentButton" class="secondary compact" type="button"><i class="game-icon icon-sword" aria-hidden="true"></i><span>Trang bị</span><b class="nav-badge" id="equipmentBadge" hidden aria-hidden="true"></b></button>
           <button id="inventoryButton" class="secondary compact" type="button"><i class="item-icon icon-item-side-pouch" aria-hidden="true"></i><span>Túi đồ</span></button>
-          <button id="petButton" class="secondary compact" type="button"><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i><span>Linh thú</span></button>
           <button id="shopButton" class="secondary compact" type="button"><i class="game-icon icon-shop" aria-hidden="true"></i><span>Cửa hàng</span></button>
           <button id="trialTowerButton" class="secondary compact" type="button"><i class="game-icon icon-tower" aria-hidden="true"></i><span>Tháp thí luyện</span></button>
           <button id="resourceDungeonButton" class="secondary compact" type="button"><i class="game-icon icon-mountain" aria-hidden="true"></i><span>Phụ bản</span><b class="nav-badge" id="resourceDungeonBadge" hidden aria-hidden="true"></b></button>
-          <button id="enhancementButton" class="secondary compact" type="button"><i class="game-icon icon-hammer" aria-hidden="true"></i><span>Cường hóa</span></button>
+          <button id="petButton" class="secondary compact" type="button" hidden><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i><span>Linh thú</span></button>
           <button id="devButton" class="secondary compact" type="button"><i class="game-icon icon-hammer" aria-hidden="true"></i><span>Code</span></button>
           <button id="resetDataButton" class="danger compact reset-button" type="button"><i class="game-icon icon-reset" aria-hidden="true"></i><span>Đăng xuất</span></button>
         </div>
@@ -164,11 +163,6 @@
         <button id="challengeStageButton" class="breakthrough" type="button"><i class="item-icon icon-item-sword" aria-hidden="true"></i>Đánh</button>
         </div>
       </section>
-    </section>
-
-    <section class="feature-panel is-hidden" id="enhancementPanel">
-      <div class="profile-header"><div><h2><i class="game-icon icon-hammer" aria-hidden="true"></i>Cường hóa</h2><p>Dùng linh thạch để tăng cấp trang bị</p></div><strong id="enhancementStoneText">Linh thạch: 0</strong></div>
-      <article class="profile-card"><div class="feature-list" id="enhancementList"></div></article>
     </section>
 
     <section class="feature-panel is-hidden" id="resourceDungeonPanel">
@@ -486,6 +480,6 @@
     </div>
   </div>
 
-  <script src="./main.js?v=20260903-tower-reward3"></script>
+  <script src="./main.js?v=20260904-enhancement-modal"></script>
 </body>
 </html>

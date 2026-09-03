@@ -18,7 +18,6 @@
     "wanderBossRequiredWins": 30,
     "wanderSkipEnemyRequiresBoss": true,
     "dailyShopPurchaseLimits": {
-    "enhancementStone": 50,
       "skillChest": 10,
       "cultivation": 10,
       "healthPotion": 30,
@@ -86,6 +85,12 @@
         "ascensionPermits": 1,
         "healthPotions": 10,
         "manaPotions": 10
+      }
+    },
+    "chest50tier5": {
+      "once": true,
+      "grant": {
+        "equipmentChestTier5": 50
       }
     }
   },
