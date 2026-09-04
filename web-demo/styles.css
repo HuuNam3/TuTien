@@ -6173,6 +6173,152 @@ button.is-unavailable:active {
   grid-template-columns: 1fr !important;
 }
 
+.world-boss-activity {
+  border-color: #8b5b5b;
+  background: linear-gradient(180deg, rgba(66, 39, 43, 0.82), rgba(27, 34, 45, 0.96));
+}
+
+.world-boss-activity .activity-item-heading strong,
+.world-boss-activity h3 {
+  color: #ffab74;
+}
+
+.world-boss-hp,
+.world-boss-ranking {
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid #40566a;
+  background: #171e28;
+}
+
+.world-boss-hp-heading,
+.world-boss-ranking-heading,
+.world-boss-ranking-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.world-boss-hp-heading strong {
+  color: #ff7b73;
+}
+
+.world-boss-hp-bar {
+  height: 12px;
+  overflow: hidden;
+  border: 1px solid #6c4650;
+  background: #281b24;
+}
+
+.world-boss-hp-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #d84658, #ff9a6b);
+  transition: width 180ms ease;
+}
+
+.world-boss-hp small,
+.world-boss-action-hint,
+.world-boss-ranking-empty {
+  color: #8faac2;
+  font-size: 11px;
+}
+
+.world-boss-player-status {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.world-boss-player-status span {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  min-width: 0;
+  padding: 7px;
+  border: 1px solid rgba(124, 224, 255, 0.22);
+  background: rgba(18, 28, 40, 0.7);
+}
+
+.world-boss-player-status b {
+  color: #8faac2;
+  font-size: 10px;
+}
+
+.world-boss-player-status strong {
+  color: #f4c45b;
+  overflow-wrap: anywhere;
+}
+
+.world-boss-ranking {
+  border-color: #40566a;
+}
+
+.world-boss-ranking-heading {
+  color: #f4c45b;
+  font-size: 12px;
+}
+
+.world-boss-ranking-row {
+  padding: 5px 0;
+  border-top: 1px solid rgba(124, 224, 255, 0.12);
+  color: #c9d4e1;
+  font-size: 12px;
+}
+
+.world-boss-ranking-row span:first-child {
+  display: flex;
+  min-width: 0;
+  gap: 8px;
+}
+
+.world-boss-ranking-row b {
+  flex: 0 0 28px;
+  color: #f4c45b;
+}
+
+.world-boss-ranking-row strong {
+  overflow-wrap: anywhere;
+}
+
+.world-boss-ranking-row span:last-child {
+  flex: 0 0 auto;
+  color: #7ce0ff;
+  text-align: right;
+}
+
+.world-boss-ranking-row.is-current-user {
+  background: rgba(124, 224, 255, 0.08);
+}
+
+.world-boss-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.world-boss-actions button {
+  min-width: 0;
+}
+
+@media (max-width: 480px) {
+  .world-boss-player-status {
+    grid-template-columns: 1fr;
+  }
+
+  .world-boss-ranking-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .world-boss-ranking-row span:last-child {
+    padding-left: 36px;
+  }
+}
+
 .feature-item:hover,
 .equipment-slot:hover,
 .inventory-item:hover,
@@ -11045,6 +11191,7 @@ body.battle-active .battle-panel {
   flex-basis: 42px;
   width: 42px;
   height: 42px;
+  overflow: hidden;
   border: 1px solid var(--equipment-level-color, #f5f7fa);
   border-radius: 5px;
   background-color: color-mix(in srgb, var(--equipment-level-color, #f5f7fa) 18%, #151d27);
@@ -11052,49 +11199,56 @@ body.battle-active .battle-panel {
 }
 
 #equipmentSlots .item-icon::before,
-#equipmentSlots .item-icon::after,
 #equipmentInventoryList .item-icon::before,
+#enhancementList .enhancement-equipment-item .equipped-equipment-visual > .item-icon::before {
+  display: none;
+  content: none;
+}
+
+#equipmentSlots .item-icon::after,
 #equipmentInventoryList .item-icon::after,
-#enhancementList .enhancement-equipment-item .equipped-equipment-visual > .item-icon::before,
 #enhancementList .enhancement-equipment-item .equipped-equipment-visual > .item-icon::after {
   content: "";
   position: absolute;
   z-index: 2;
-  left: 0;
-  top: 0;
-  width: 16px;
-  height: 2px;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 118px;
+  margin: -59px 0 0 -10px;
   border-radius: 999px;
-  clip-path: polygon(0 50%, 76% 28%, 100% 0, 100% 100%, 76% 72%);
-  background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--rarity-color, #f5f7fa) 35%, transparent) 38%, var(--rarity-color, #f5f7fa) 72%, #ffffff 100%);
-  filter: drop-shadow(0 0 2px var(--rarity-color, #f5f7fa));
-  offset-path: path("M 33 2 L 9 2 Q 2 2 2 9 L 2 33 Q 2 40 9 40 L 33 40 Q 40 40 40 33 L 40 9 Q 40 2 33 2");
-  offset-anchor: 50% 50%;
-  offset-rotate: auto;
+  background: linear-gradient(90deg, transparent 0px, color-mix(in srgb, var(--rarity-color, #f5f7fa) 24%, transparent) 6px, color-mix(in srgb, var(--rarity-color, #f5f7fa) 72%, transparent) 12px, color-mix(in srgb, var(--rarity-color, #f5f7fa) 95%, #ffffff) 18px, #ffffff 19px, #ffffff 20px);
+  filter: drop-shadow(0 0 3px var(--rarity-color, #f5f7fa));
   pointer-events: none;
-  will-change: offset-distance, transform;
-  display: none;
-  animation: equipment-icon-orbit 3s linear infinite;
+  opacity: 0;
+  transform: translate3d(-78px, -78px, 0) rotate(45deg);
+  animation: equipment-icon-diagonal-shine 3s ease-in-out infinite;
 }
 
-#equipmentSlots .item-icon::after,
-#equipmentInventoryList .item-icon::after,
-#enhancementList .enhancement-equipment-item .equipped-equipment-visual > .item-icon::after {
-  animation-delay: -1.5s;
-}
-
-#equipmentSlots .equipment-slot:is(.immortal, .sacred, .divine, .emperor, .chaos) .item-icon::before,
 #equipmentSlots .equipment-slot:is(.immortal, .sacred, .divine, .emperor, .chaos) .item-icon::after,
-#equipmentInventoryList .inventory-item:is(.immortal, .sacred, .divine, .emperor, .chaos) .item-icon::before,
 #equipmentInventoryList .inventory-item:is(.immortal, .sacred, .divine, .emperor, .chaos) .item-icon::after,
-#enhancementList .enhancement-equipment-item:is(.immortal, .sacred, .divine, .emperor, .chaos) .equipped-equipment-visual > .item-icon::before,
 #enhancementList .enhancement-equipment-item:is(.immortal, .sacred, .divine, .emperor, .chaos) .equipped-equipment-visual > .item-icon::after {
   display: block;
 }
 
-@keyframes equipment-icon-orbit {
-  from { offset-distance: 0%; }
-  to { offset-distance: 100%; }
+@keyframes equipment-icon-diagonal-shine {
+  0% {
+    opacity: 0;
+    transform: translate3d(-78px, -78px, 0) rotate(45deg);
+  }
+
+  18% {
+    opacity: 0.95;
+  }
+
+  68% {
+    opacity: 0.72;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(78px, 78px, 0) rotate(45deg);
+  }
 }
 
 .equipment-slot.emperor,

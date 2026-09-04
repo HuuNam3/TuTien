@@ -40,6 +40,7 @@ const maxShopPurchaseQuantity = 999;
 const cloudSaveEndpoint = '/api/game-state';
 const cloudAuthEndpoint = '/api/auth';
 const mailEndpoint = '/api/mail';
+const worldBossEndpoint = '/api/world-boss';
 let saveKey = '';
 let baseSaveKey = '';
 let legacySaveKeys = [];
@@ -266,6 +267,12 @@ let equipmentChestInventory = [];
 let busy = false;
 let battleOver = false;
 let lastBattleOutcome = null;
+let trainingDummyDamageDealt = 0;
+let worldBossDamageDealt = 0;
+let worldBossData = null;
+let worldBossLoadInFlight = null;
+let worldBossAttackInFlight = false;
+let worldBossAttackId = '';
 let battleReturnTab = 'map';
 let battleReturnToWander = false;
 let beastHuntBattleActive = false;
@@ -288,6 +295,7 @@ let dantianCultivationSeconds = 0;
 let offlineCapSeconds = 0;
 let resourceRegenTimer = 0;
 let activityRefreshTimer = 0;
+let worldBossRefreshTimer = 0;
 let selectedStage = null;
 let selectedEnhancementItemId = 0;
 let currentDungeonId = '';
@@ -297,6 +305,8 @@ let beastHuntRespawnAt = 0;
 let beastHuntNotificationPending = false;
 let beastHuntPendingReward = null;
 let activeActivityTab = 'beastHunt';
+let trainingDummyLastDamage = 0;
+let trainingDummyLastTurns = 0;
 let wanderCarouselCleanup = null;
 let trialTowerHighestCleared = 0;
 let claimedQuestIds = new Set();
@@ -1749,6 +1759,14 @@ function returnFromBattleScreen() {
     }
     return;
   }
+  if (currentStage?.isTrainingDummy) {
+    showActivities('trainingDummy');
+    return;
+  }
+  if (currentStage?.isWorldBoss) {
+    showActivities('worldBoss');
+    return;
+  }
   if (lastBattleOutcome === 'lose') {
     showTrainingMessage('Đã thua, hãy về tu luyện để hồi phục.');
     return;
@@ -1961,9 +1979,9 @@ function showQuests() {
 }
 
 function showActivities(tabId = activeActivityTab) {
-  activeActivityTab = tabId === 'resourceDungeon' ? 'resourceDungeon' : 'beastHunt';
+  activeActivityTab = ['resourceDungeon', 'trainingDummy', 'worldBoss'].includes(tabId) ? tabId : 'beastHunt';
   prepareFeatureView(activityPanel, 'activities', renderActivities);
-  beastHuntNotificationPending = false;
+  if (activeActivityTab === 'worldBoss') loadWorldBossState({ silent: true });
   updateNotificationBadges();
 }
 
@@ -2850,6 +2868,206 @@ function getBeastHuntRewardConfig() {
     : {};
 }
 
+function getTrainingDummyConfig() {
+  return gameConfig.gameplay?.trainingDummy && typeof gameConfig.gameplay.trainingDummy === 'object'
+    ? gameConfig.gameplay.trainingDummy
+    : {};
+}
+
+function getTrainingDummyMaxHp() {
+  return Math.max(1, Math.floor(Number(getTrainingDummyConfig().maxHp) || 1000000000));
+}
+
+function getTrainingDummyMaxTurns() {
+  return Math.max(1, Math.floor(Number(getTrainingDummyConfig().maxTurns) || maxTurns));
+}
+
+function createTrainingDummyStage() {
+  return {
+    id: `training-dummy-${Date.now()}`,
+    isTrainingDummy: true,
+    dummyMaxHp: getTrainingDummyMaxHp(),
+    enemyTier: playerLevel,
+    enemyLevel: playerLevel,
+    enemyMajorRealmIndex: playerMajorRealmIndex,
+    title: 'Mộc nhân',
+    realmText: 'Mộc nhân thử chiêu',
+    enemyData: {
+      id: 'training_dummy',
+      name: 'Mộc nhân',
+      skillName: 'Không phản công',
+      skillDescription: 'Mộc nhân không tấn công người chơi.',
+    },
+  };
+}
+
+function renderTrainingDummyActivity() {
+  const list = $('activityList');
+  const summary = $('activitySummary');
+  if (!list) return;
+  if (summary) summary.textContent = 'Thử sát thương với mộc nhân, không nhận thưởng và không bị phản công.';
+  const resultMarkup = trainingDummyLastTurns > 0
+    ? `
+      <div class="enemy-encounter-summary training-dummy-result">
+        <span><b>Tổng sát thương lần trước</b><strong>${formatGameNumber(trainingDummyLastDamage)}</strong></span>
+        <span><b>Số lượt thử</b><strong>${formatGameNumber(trainingDummyLastTurns)}</strong></span>
+      </div>
+    `
+    : '';
+  list.innerHTML = `
+    <article class="activity-item training-dummy-activity">
+      <div class="activity-item-heading">
+        <span><i class="game-icon icon-sword" aria-hidden="true"></i>Mộc nhân</span>
+        <strong>${formatGameNumber(getTrainingDummyMaxHp())} sinh lực</strong>
+      </div>
+      <h3>Thử sát thương</h3>
+      <p>Mộc nhân có ${formatGameNumber(getTrainingDummyMaxHp())} sinh lực, không tấn công và không làm thay đổi phần thưởng/ngao du.</p>
+      ${resultMarkup}
+      <button type="button" class="breakthrough compact training-dummy-start-button"><i class="game-icon icon-sword" aria-hidden="true"></i>Bắt đầu thử</button>
+    </article>
+  `;
+  const startButton = list.querySelector('.training-dummy-start-button');
+  setButtonDisabledState(startButton, busy, busy ? 'Trận đấu đang diễn ra.' : '');
+  startButton?.addEventListener('click', () => startTrainingDummyBattle());
+}
+
+function formatWorldBossCountdown(timestamp) {
+  const remainingSeconds = Math.max(0, Math.ceil((new Date(timestamp).getTime() - Date.now()) / 1000));
+  const hours = Math.floor(remainingSeconds / 3600);
+  const minutes = Math.floor((remainingSeconds % 3600) / 60);
+  const seconds = remainingSeconds % 60;
+  if (hours > 0) return `${hours} giờ ${minutes} phút`;
+  if (minutes > 0) return `${minutes} phút ${seconds} giây`;
+  return `${seconds} giây`;
+}
+
+function createWorldBossStage(boss = worldBossData?.boss) {
+  if (!boss || boss.state !== 'active' || Number(boss.currentHp) <= 0) return null;
+  const realmIndex = Math.max(0, Math.floor(Number(boss.realmIndex) || playerMajorRealmIndex));
+  const candidates = stageEnemyData.filter(Boolean);
+  const source = candidates.length ? candidates[(realmIndex * 7) % candidates.length] : {};
+  const enemyData = {
+    ...source,
+    id: 'world_boss',
+    name: boss.bossName || 'Thiên Ngoại Ma Tướng',
+    skillName: source.skillName || 'Thiên Ngoại Trấn Thế',
+    description: 'Boss thế giới cùng đại cảnh giới với người chơi.',
+    rank: 'leader',
+    combatStyle: source.combatStyle || 'defense',
+  };
+  return {
+    id: `world-boss-${boss.bossId}`,
+    isWorldBoss: true,
+    worldBossId: boss.bossId,
+    worldBossMaxHp: Math.max(1, Math.floor(Number(boss.maxHp) || 1000000000)),
+    worldBossCurrentHp: Math.max(1, Math.floor(Number(boss.currentHp) || 1)),
+    enemyTier: 1,
+    enemyLevel: 1,
+    enemyMajorRealmIndex: realmIndex,
+    enemyRankLevel: 3,
+    title: boss.realmText || 'Boss thế giới',
+    realmText: boss.realmText || 'Boss thế giới',
+    enemyData,
+  };
+}
+
+async function loadWorldBossState({ silent = false } = {}) {
+  if (!cloudUser || cloudSessionInvalid) return false;
+  if (worldBossLoadInFlight) return worldBossLoadInFlight;
+  worldBossLoadInFlight = (async () => {
+    try {
+      const response = await fetch(`${worldBossEndpoint}?realmIndex=${encodeURIComponent(playerMajorRealmIndex)}`, {
+        cache: 'no-store',
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (handleCloudResponseFailure(response, payload)) return false;
+      if (!response.ok || !payload.boss) {
+        if (!silent) showGameToast(payload.error || 'Không thể tải Boss thế giới.', 'error');
+        return false;
+      }
+      worldBossData = payload;
+      if (activeActivityTab === 'worldBoss' && !activityPanel?.classList.contains('is-hidden')) {
+        renderWorldBossActivity();
+      }
+      return true;
+    } catch (error) {
+      if (!silent) showGameToast('Dịch vụ Boss thế giới tạm thời không khả dụng.', 'error');
+      return false;
+    } finally {
+      worldBossLoadInFlight = null;
+    }
+  })();
+  return worldBossLoadInFlight;
+}
+
+function renderWorldBossActivity() {
+  const list = $('activityList');
+  const summary = $('activitySummary');
+  if (!list) return;
+  const boss = worldBossData?.boss;
+  if (!boss) {
+    if (summary) summary.textContent = 'Đang tải dữ liệu Boss thế giới...';
+    list.innerHTML = '<div class="activity-empty"><span>Đang tải Boss thế giới...</span></div>';
+    return;
+  }
+  const isActive = boss.state === 'active' && Number(boss.currentHp) > 0;
+  const currentUser = boss.currentUser || {};
+  const maxAttempts = Math.max(1, Number(boss.maxAttemptsPerPlayer) || 3);
+  const canAttack = isActive && Number(currentUser.attemptsRemaining) > 0;
+  if (summary) {
+    summary.textContent = isActive
+      ? `${boss.realmText} · còn ${formatGameNumber(boss.currentHp)} sinh lực (${Number(boss.hpPercent || 0).toFixed(1)}%)`
+      : `Boss đã bị hạ · hồi sinh sau ${formatWorldBossCountdown(boss.respawnAt)}`;
+  }
+  const participantRows = Array.isArray(boss.participants) && boss.participants.length
+    ? boss.participants.map((participant) => `
+      <div class="world-boss-ranking-row${participant.isCurrentUser ? ' is-current-user' : ''}">
+        <span><b>#${participant.rank}</b><strong>${escapeMailHtml(participant.name)}${participant.isCurrentUser ? ' (Bạn)' : ''}</strong></span>
+        <span>${formatGameNumber(participant.damage)} · ${Number(participant.damagePercent || 0).toFixed(2)}%</span>
+      </div>
+    `).join('')
+    : '<div class="world-boss-ranking-empty">Chưa có người chơi gây sát thương.</div>';
+  const actionLabel = !isActive
+    ? 'Boss đang hồi sinh'
+    : canAttack ? 'Vào đánh Boss' : 'Đã hết 3 lượt đánh';
+  const actionHint = !isActive
+    ? `Boss sẽ xuất hiện lại sau ${formatWorldBossCountdown(boss.respawnAt)}.`
+    : `Bạn đã dùng ${Number(currentUser.attacksUsed) || 0}/${maxAttempts} lượt. Mỗi lượt chiến đấu tối đa ${maxTurns} lượt giao tranh.`;
+  list.innerHTML = `
+    <article class="activity-item world-boss-activity">
+      <div class="activity-item-heading">
+        <span><i class="activity-icon icon-activity-breakthrough" aria-hidden="true"></i>${escapeMailHtml(boss.bossName)}</span>
+        <strong>${escapeMailHtml(boss.realmText)}</strong>
+      </div>
+      <h3>Boss thế giới</h3>
+      <p>Người chơi cùng đại cảnh giới chia sẻ một Boss. Bảng xếp hạng được tính theo tổng sát thương gây ra; phần thưởng chỉ gửi qua Thư khi Boss bị hạ.</p>
+      <div class="world-boss-hp">
+        <div class="world-boss-hp-heading"><span>Sinh lực Boss</span><strong>${Number(boss.hpPercent || 0).toFixed(1)}%</strong></div>
+        <div class="world-boss-hp-bar"><i style="width: ${Math.max(0, Math.min(100, Number(boss.hpPercent) || 0))}%"></i></div>
+        <small>${formatGameNumber(boss.currentHp)} / ${formatGameNumber(boss.maxHp)}</small>
+      </div>
+      <div class="world-boss-player-status">
+        <span><b>Thứ hạng của bạn</b><strong>${currentUser.rank ? `Top ${currentUser.rank}` : 'Chưa xếp hạng'}</strong></span>
+        <span><b>Sát thương của bạn</b><strong>${formatGameNumber(currentUser.damage)}</strong></span>
+        <span><b>Lượt còn lại</b><strong>${Math.max(0, Number(currentUser.attemptsRemaining) || 0)}/${maxAttempts}</strong></span>
+      </div>
+      <div class="world-boss-ranking">
+        <div class="world-boss-ranking-heading"><strong>Bảng sát thương Top 10</strong><span>${Number(boss.participantCount) || 0} người tham gia</span></div>
+        ${participantRows}
+      </div>
+      <small class="world-boss-action-hint">${actionHint}</small>
+      <div class="world-boss-actions">
+        <button type="button" class="breakthrough compact world-boss-start-button"><i class="game-icon icon-sword" aria-hidden="true"></i>${actionLabel}</button>
+        <button type="button" class="secondary compact world-boss-refresh-button"><i class="game-icon icon-reset" aria-hidden="true"></i>Làm mới</button>
+      </div>
+    </article>
+  `;
+  const startButton = list.querySelector('.world-boss-start-button');
+  setButtonDisabledState(startButton, !canAttack || worldBossAttackInFlight, worldBossAttackInFlight ? 'Đang cập nhật lượt đánh.' : actionHint);
+  startButton?.addEventListener('click', startWorldBossBattle);
+  list.querySelector('.world-boss-refresh-button')?.addEventListener('click', () => loadWorldBossState());
+}
+
 function canAccessBeastHunt() {
   return getUnlockedWanderMapCount() >= getBeastHuntUnlockMapNumber();
 }
@@ -3086,6 +3304,18 @@ function renderActivities() {
     renderResourceDungeons();
     return;
   }
+  if (activeActivityTab === 'trainingDummy') {
+    list.classList.remove('is-hidden');
+    resourceDungeonPanel?.classList.add('is-hidden');
+    renderTrainingDummyActivity();
+    return;
+  }
+  if (activeActivityTab === 'worldBoss') {
+    list.classList.remove('is-hidden');
+    resourceDungeonPanel?.classList.add('is-hidden');
+    renderWorldBossActivity();
+    return;
+  }
   list.classList.remove('is-hidden');
   resourceDungeonPanel?.classList.add('is-hidden');
   if (!canAccessBeastHunt()) {
@@ -3146,6 +3376,8 @@ function renderActivities() {
 function startActivityRefresh() {
   window.clearInterval(activityRefreshTimer);
   activityRefreshTimer = 0;
+  window.clearInterval(worldBossRefreshTimer);
+  worldBossRefreshTimer = 0;
   if (!gameStarted) return;
   activityRefreshTimer = window.setInterval(() => {
     const hadSpawn = Boolean(beastHuntMapId);
@@ -3158,6 +3390,12 @@ function startActivityRefresh() {
       renderActivities();
     }
   }, 1000);
+  worldBossRefreshTimer = window.setInterval(() => {
+    if (activeActivityTab === 'worldBoss'
+      && !activityPanel?.classList.contains('is-hidden')) {
+      loadWorldBossState({ silent: true });
+    }
+  }, 5000);
 }
 
 function setNotificationBadge(element, count) {
@@ -4549,6 +4787,8 @@ async function resetGameData() {
       beastHuntRespawnAt: 0,
       beastHuntNotificationPending: false,
       beastHuntPendingReward: null,
+      trainingDummyLastDamage: 0,
+      trainingDummyLastTurns: 0,
       autoWanderAfterRecovery: false,
       hasMajorAscensionPermit: false,
       lastActiveAt: Date.now(),
@@ -4667,6 +4907,8 @@ function loadSavedGame() {
     beastHuntRespawnAt = Math.max(0, Number(data.beastHuntRespawnAt) || 0);
     beastHuntNotificationPending = Boolean(data.beastHuntNotificationPending);
     beastHuntPendingReward = normalizeBeastHuntReward(data.beastHuntPendingReward);
+    trainingDummyLastDamage = Math.max(0, Number(data.trainingDummyLastDamage) || 0);
+    trainingDummyLastTurns = Math.max(0, Math.floor(Number(data.trainingDummyLastTurns) || 0));
     beastHuntBattleActive = false;
     activeSkillId = data.activeSkillId || initialState.skillId;
     const savedOwnedPetIds = Array.isArray(data.ownedPetIds) ? data.ownedPetIds : [];
@@ -4893,6 +5135,8 @@ function saveGame() {
     beastHuntRespawnAt,
     beastHuntNotificationPending,
     beastHuntPendingReward,
+    trainingDummyLastDamage,
+    trainingDummyLastTurns,
     autoWanderAfterRecovery,
     trialTowerHighestCleared,
     claimedQuestIds: [...claimedQuestIds],
@@ -5234,6 +5478,9 @@ function resetBattle() {
   busy = false;
   battleOver = false;
   lastBattleOutcome = null;
+  trainingDummyDamageDealt = 0;
+  worldBossDamageDealt = 0;
+  worldBossAttackId = '';
   turn = 0;
   logList.innerHTML = '';
   battleResult.classList.add('is-hidden');
@@ -6535,12 +6782,87 @@ function startBeastHuntBattle(stage = createBeastHuntStage()) {
   if (battlePanel?.classList.contains('is-hidden')) beastHuntBattleActive = false;
 }
 
+function startTrainingDummyBattle(stage = createTrainingDummyStage()) {
+  if (busy || !stage) return;
+  startStageBattle(stage);
+}
+
+async function startWorldBossBattle() {
+  if (busy || worldBossAttackInFlight) return;
+  if (!worldBossData?.boss) {
+    await loadWorldBossState();
+  }
+  const boss = worldBossData?.boss;
+  if (!boss || boss.state !== 'active' || Number(boss.currentHp) <= 0) {
+    showGameToast('Boss thế giới hiện đang hồi sinh.', 'locked');
+    return;
+  }
+  const maxAttempts = Math.max(1, Number(boss.maxAttemptsPerPlayer) || 3);
+  if (Number(boss.currentUser?.attemptsRemaining) <= 0) {
+    showGameToast(`Bạn đã dùng hết ${maxAttempts} lượt đánh Boss thế giới.`, 'locked');
+    return;
+  }
+  const stage = createWorldBossStage(boss);
+  if (!stage) {
+    showGameToast('Chưa thể tạo trận đánh Boss thế giới.', 'error');
+    return;
+  }
+  startStageBattle(stage);
+}
+
+function createWorldBossAttackId() {
+  if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+  return `world-boss-${Date.now()}-${Math.random().toString(36).slice(2, 12)}`;
+}
+
+async function submitWorldBossDamage(stage, damage) {
+  if (!stage?.isWorldBoss || worldBossAttackInFlight) return;
+  worldBossAttackInFlight = true;
+  worldBossAttackId = worldBossAttackId || createWorldBossAttackId();
+  try {
+    const response = await fetch(worldBossEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      cache: 'no-store',
+      body: JSON.stringify({
+        action: 'attack',
+        attackId: worldBossAttackId,
+        damage: Math.max(0, Math.floor(Number(damage) || 0)),
+      }),
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (handleCloudResponseFailure(response, payload)) return;
+    if (!response.ok) {
+      showGameToast(payload.error || 'Không thể ghi nhận sát thương Boss thế giới.', 'error');
+      await loadWorldBossState({ silent: true });
+      return;
+    }
+    worldBossData = { ok: true, boss: payload.boss };
+    if (payload.killed) {
+      showGameToast('Boss thế giới đã bị hạ. Phần thưởng đã được gửi qua Thư.', 'success');
+    } else {
+      showGameToast(`Đã ghi nhận ${formatGameNumber(payload.acceptedDamage)} sát thương Boss.`, 'success');
+    }
+    saveGame();
+    if (activeActivityTab === 'worldBoss' && !activityPanel?.classList.contains('is-hidden')) {
+      renderWorldBossActivity();
+    }
+  } catch (error) {
+    showGameToast('Dịch vụ Boss thế giới tạm thời không khả dụng.', 'error');
+  } finally {
+    worldBossAttackInFlight = false;
+    worldBossAttackId = '';
+  }
+}
+
 function startStageBattle(stage) {
   const isTrialTower = Boolean(stage?.isTrialTower);
   const isResourceDungeon = Boolean(stage?.isResourceDungeon);
   const isBeastHunt = Boolean(stage?.isBeastHunt);
-  const config = isTrialTower || isResourceDungeon ? null : getDungeonConfig();
-  if (!stage || (!isTrialTower && !isResourceDungeon && !isBeastHunt && !isStageUnlockedForDungeon(stage, config.id))) return;
+  const isTrainingDummy = Boolean(stage?.isTrainingDummy);
+  const isWorldBoss = Boolean(stage?.isWorldBoss);
+  const config = isTrialTower || isResourceDungeon || isTrainingDummy || isWorldBoss ? null : getDungeonConfig();
+  if (!stage || (!isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss && !isStageUnlockedForDungeon(stage, config.id))) return;
   if (isBeastHunt && (!canAccessBeastHunt() || stage.mapId !== beastHuntMapId)) return;
   if (isTrialTower && (stage.trialFloor !== trialTowerHighestCleared + 1 || !canEnterTrialTower())) return;
   if (isResourceDungeon) {
@@ -6550,13 +6872,13 @@ function startStageBattle(stage) {
       || getPlayerCultivationTier() < getResourceDungeonRequiredTier(dungeon, expectedFloor)
     || getRemainingResourceAttempts(stage.resourceDungeonId) <= 0) return;
   }
-  if (!isTrialTower && !canEnterDungeon()) {
+  if (!isTrialTower && !isTrainingDummy && !canEnterDungeon()) {
     renderCultivation();
     showTrainingMessage('Đang bị trọng thương, không thể ngao du tiếp.');
     showGameToast('Đang bị trọng thương, không thể bắt đầu trận đấu.', 'error');
     return;
   }
-  if (!isTrialTower && !isResourceDungeon && !isBeastHunt && !canRunDungeon(config.id)) {
+  if (!isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss && !canRunDungeon(config.id)) {
     setSubtitle('');
     renderDungeonModes();
     renderStageDetail(stage);
@@ -6564,7 +6886,7 @@ function startStageBattle(stage) {
   }
   if (isResourceDungeon) {
     if (!consumeResourceAttempt(stage.resourceDungeonId)) return;
-  } else if (!isTrialTower && !isResourceDungeon && !isBeastHunt) {
+  } else if (!isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss) {
     consumeDungeonAttempt(config.id);
   }
 
@@ -6583,6 +6905,10 @@ function startStageBattle(stage) {
   setSubtitle('');
   const entryText = isBeastHunt
     ? 'Săn yêu vật'
+    : isWorldBoss
+    ? 'Boss thế giới'
+    : isTrainingDummy
+    ? 'Thử sát thương với Mộc nhân'
     : isTrialTower
     ? `Tiến vào tháp thí luyện ${stage.title}`
     : isResourceDungeon
@@ -6593,8 +6919,14 @@ function startStageBattle(stage) {
     const resourceDungeon = getResourceDungeon(stage.resourceDungeonId);
     pushLog(`${resourceDungeon?.name || 'Phụ bản'}: còn ${getRemainingResourceAttempts(stage.resourceDungeonId)}/${getResourceDungeonDailyLimit(resourceDungeon)} lượt riêng hôm nay.`);
   }
-  if (!isTrialTower && !isResourceDungeon && !isBeastHunt && !config.unlimited) pushLog(`${config.name}: còn ${getRemainingDungeonAttempts(config.id)}/${dailyFarmLimit} lượt hôm nay.`);
-  pushLog(`${enemy.name} mang ${getEnemyEquipmentText(stage)}, dùng ${enemy.skillName} và có nội tại ${getCombatStyleLabel(stage.enemyData)}.`);
+  if (!isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss && !config.unlimited) pushLog(`${config.name}: còn ${getRemainingDungeonAttempts(config.id)}/${dailyFarmLimit} lượt hôm nay.`);
+  if (isTrainingDummy) {
+    pushLog(`Mộc nhân có ${formatGameNumber(enemy.maxHp)} sinh lực và không tấn công người chơi.`);
+  } else if (isWorldBoss) {
+    pushLog(`${enemy.name} thuộc ${stage.realmText}, sinh lực hiện tại ${formatGameNumber(enemy.hp)}/${formatGameNumber(enemy.maxHp)}.`);
+  } else {
+    pushLog(`${enemy.name} mang ${getEnemyEquipmentText(stage)}, dùng ${enemy.skillName} và có nội tại ${getCombatStyleLabel(stage.enemyData)}.`);
+  }
   saveGame();
   startBattle();
 }
@@ -6774,6 +7106,47 @@ function getNextBattleStage() {
 }
 
 function createStageEnemy(stage) {
+  if (stage?.isWorldBoss) {
+    const boss = createFighter(
+      stage.enemyData?.name || 'Thiên Ngoại Ma Tướng',
+      1,
+      false,
+      stage.enemyMajorRealmIndex || 0,
+      true,
+    );
+    applyEnemySkillRuntime(boss, stage.enemyData || {});
+    applyEnemyCombatStyle(boss, stage.enemyData || {});
+    applyEnemyRankMultiplier(boss, 3);
+    boss.realm = stage.realmText || boss.realm;
+    boss.minorRealm = getMinorRealmName(1, stage.enemyMajorRealmIndex || 0);
+    boss.maxHp = Math.max(1, Math.floor(Number(stage.worldBossMaxHp) || 1000000000));
+    const currentHp = Math.max(1, Math.min(boss.maxHp, Math.floor(Number(stage.worldBossCurrentHp) || boss.maxHp)));
+    boss.displayCombatPower = boss.combatPower;
+    const finalizedBoss = finalizeEnemyFighter(boss);
+    finalizedBoss.hp = currentHp;
+    return finalizedBoss;
+  }
+  if (stage?.isTrainingDummy) {
+    const dummy = createFighter('Mộc nhân', 1, false, 0, true);
+    dummy.maxHp = Math.max(1, Math.floor(Number(stage.dummyMaxHp) || getTrainingDummyMaxHp()));
+    dummy.hp = dummy.maxHp;
+    dummy.maxMana = 1;
+    dummy.mana = 0;
+    dummy.attack = 1;
+    dummy.defense = 1;
+    dummy.speed = 1;
+    dummy.accuracy = 0.1;
+    dummy.dodgeRate = 0;
+    dummy.blockRate = 0;
+    dummy.critRate = 0;
+    dummy.damageReduction = 0;
+    dummy.skills = [];
+    dummy.skillName = 'Không phản công';
+    dummy.skillDescription = 'Mộc nhân không tấn công người chơi.';
+    dummy.combatStyle = 'trainingDummy';
+    dummy.combatStyleState = null;
+    return finalizeEnemyFighter(dummy);
+  }
   const rankMap = stage?.mapId ? wanderMaps[stage.mapId] : null;
   stage.enemyRankLevel = stage.isWanderBoss
     ? 5
@@ -6954,6 +7327,10 @@ function getEnemyEquipmentChestTier(stage) {
 }
 
 function getEnemyEquipment(stage) {
+  if (stage?.isTrainingDummy || stage?.isWorldBoss) {
+    stage.enemyEquipment = [];
+    return [];
+  }
   if (stage.mapId === 'novice') {
     stage.enemyEquipment = [];
     return [];
@@ -7005,7 +7382,12 @@ function getEnemyEquipmentText(stage) {
 
 function playerTurn() {
   if (!busy || battleOver) return;
-  if (turn >= maxTurns) return finishByTurnLimit();
+  const turnLimit = currentStage?.isTrainingDummy ? getTrainingDummyMaxTurns() : maxTurns;
+  if (turn >= turnLimit) {
+    if (currentStage?.isTrainingDummy) return finishBattle('Đã hoàn tất lượt thử sát thương.', 'win');
+    if (currentStage?.isWorldBoss) return finishBattle('Đã hoàn tất 1 lượt đánh Boss thế giới.', 'draw');
+    return finishByTurnLimit();
+  }
 
   turn += 1;
   tickBattleBuffs(player);
@@ -7028,6 +7410,25 @@ function playerTurn() {
     pushLog(`${enemy.name} phản đòn gây ${result.counterDamage} sát thương.`);
   }
 
+  if (currentStage?.isTrainingDummy) {
+    trainingDummyDamageDealt += Math.max(0, Number(result.damage) || 0)
+      + Math.max(0, Number(result.bonusHit?.damage) || 0);
+    if (enemy.hp <= 0 || turn >= getTrainingDummyMaxTurns()) {
+      return finishBattle(`Mộc nhân đã nhận ${formatGameNumber(trainingDummyDamageDealt)} sát thương.`, 'win');
+    }
+    timer = window.setTimeout(playerTurn, turnInterval * 0.5 + (result.skill ? battleEnemyTurnDelay : 0));
+    return;
+  }
+
+  if (currentStage?.isWorldBoss) {
+    worldBossDamageDealt += Math.max(0, Number(result.damage) || 0)
+      + Math.max(0, Number(result.bonusHit?.damage) || 0);
+    if (enemy.hp <= 0) return finishBattle(`Đã hạ Boss thế giới trong lượt đánh.`, 'win');
+    if (turn >= maxTurns) return finishBattle('Đã hoàn tất 1 lượt đánh Boss thế giới.', 'draw');
+    timer = window.setTimeout(playerTurn, turnInterval * 0.5 + (result.skill ? battleEnemyTurnDelay : 0));
+    return;
+  }
+
   if (player.hp <= 0) return finishBattle(`${enemy.name} thắng nhờ phản đòn.`, 'lose');
   if (enemy.hp <= 0) return finishBattle(`${player.name} thắng.`, 'win');
   timer = window.setTimeout(
@@ -7038,6 +7439,12 @@ function playerTurn() {
 
 function enemyTurn() {
   if (!busy || battleOver) return;
+
+  if (currentStage?.isTrainingDummy) {
+    if (turn >= getTrainingDummyMaxTurns()) return finishBattle('Đã hoàn tất lượt thử sát thương.', 'win');
+    timer = window.setTimeout(playerTurn, turnInterval * 0.5);
+    return;
+  }
 
   tickBattleBuffs(enemy);
   const passiveResult = applyEnemyCombatPassives(enemy);
@@ -7054,6 +7461,9 @@ function enemyTurn() {
   pushLog(formatAttackLog(enemy, result));
 
   if (player.hp <= 0) return finishBattle(`${enemy.name} thắng.`, 'lose');
+  if (currentStage?.isWorldBoss && turn >= maxTurns) {
+    return finishBattle('Đã hoàn tất 1 lượt đánh Boss thế giới.', 'draw');
+  }
   if (turn >= maxTurns) return window.setTimeout(finishByTurnLimit, turnInterval * 0.5);
 
   timer = window.setTimeout(
@@ -7374,21 +7784,27 @@ function finishBattle(message, outcome = 'lose') {
   battleOver = true;
   lastBattleOutcome = outcome;
   playAudioCue(outcome === 'win' ? 'victory' : outcome === 'draw' ? 'click' : 'defeat');
-  savePlayerResourcesFromBattle(outcome);
   const isTrialTower = Boolean(currentStage?.isTrialTower);
   const isResourceDungeon = Boolean(currentStage?.isResourceDungeon);
   const isBeastHunt = Boolean(currentStage?.isBeastHunt);
-  const isWanderBattle = !isTrialTower && !isResourceDungeon && !isBeastHunt && Boolean(currentStage?.isWanderGenerated);
+  const isTrainingDummy = Boolean(currentStage?.isTrainingDummy);
+  const isWorldBoss = Boolean(currentStage?.isWorldBoss);
+  if (!isTrainingDummy) savePlayerResourcesFromBattle(outcome);
+  const isWanderBattle = !isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss && Boolean(currentStage?.isWanderGenerated);
   const resourceAttemptRefunded = isResourceDungeon && outcome === 'lose'
     ? refundResourceAttempt(currentStage.resourceDungeonId)
     : false;
   if (currentStage.isAmbush && outcome !== 'win') rollbackAmbushLoot(currentStage);
-  const recovered = applyVictoryRecovery(outcome);
-  if (outcome === 'win' && !isTrialTower && !isResourceDungeon && !isBeastHunt && getDungeonConfig().unlimited && !currentStage.isAmbush && !currentStage.isWanderGenerated) {
+  const recovered = isTrainingDummy || isWorldBoss ? null : applyVictoryRecovery(outcome);
+  if (isTrainingDummy) {
+    trainingDummyLastDamage = Math.max(0, Math.round(trainingDummyDamageDealt));
+    trainingDummyLastTurns = Math.max(0, Math.floor(turn));
+  }
+  if (outcome === 'win' && !isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss && getDungeonConfig().unlimited && !currentStage.isAmbush && !currentStage.isWanderGenerated) {
     completedStages.add(currentStage.id);
   }
   if (outcome === 'win' && isTrialTower) trialTowerWinCount += 1;
-  if (outcome === 'win' && !isTrialTower && !isResourceDungeon && !isBeastHunt) {
+  if (outcome === 'win' && !isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss) {
     wanderWinCount += 1;
     wanderRewardCount += 1;
     if (isWanderBattle && currentStage.isWanderBoss) {
@@ -7400,7 +7816,7 @@ function finishBattle(message, outcome = 'lose') {
   dailyQuestProgress = normalizeDailyQuestProgress(dailyQuestProgress);
   if (outcome === 'win' && isTrialTower) dailyQuestProgress.trialTowerWins += 1;
   if (outcome === 'win' && isResourceDungeon) dailyQuestProgress.resourceDungeonWins += 1;
-  if (outcome === 'win' && !isTrialTower && !isResourceDungeon && !isBeastHunt) {
+  if (outcome === 'win' && !isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss) {
     dailyQuestProgress.wanderWins += 1;
     dailyQuestProgress.wanderRewards += 1;
   }
@@ -7428,7 +7844,7 @@ function finishBattle(message, outcome = 'lose') {
     spiritStoneReward = resourceReward.spiritStones;
     bonusRewardText = formatResourceReward(resourceDungeon, resourceReward.amount, resourceReward);
     message = `${message} Vượt qua ${currentStage.title}.`;
-  } else if (!isTrialTower && !isResourceDungeon && !isBeastHunt) {
+  } else if (!isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss) {
     cultivationAward = getCultivationReward(outcome);
     reward = addPlayerCultivation(cultivationAward);
     spiritStoneReward = addSpiritStoneReward(outcome);
@@ -7447,7 +7863,11 @@ function finishBattle(message, outcome = 'lose') {
   renderBattleResult(message, outcome, reward, spiritStoneReward, droppedItem, bonusRewardText, cultivationAward);
   renderStageMap();
   pushLog(`${message} Trận đấu kết thúc.`);
-  pushLog(isBeastHunt
+  pushLog(isWorldBoss
+    ? `Boss thế giới ghi nhận ${formatGameNumber(worldBossDamageDealt)} sát thương từ lượt đánh này.`
+    : isTrainingDummy
+    ? `Mộc nhân ghi nhận tổng ${formatGameNumber(trainingDummyLastDamage)} sát thương sau ${formatGameNumber(trainingDummyLastTurns)} lượt.`
+    : isBeastHunt
     ? outcome === 'win'
       ? 'Đã mở phần thưởng trong tab Hoạt động > Săn yêu vật.'
       : 'Không nhận phần thưởng săn yêu vật.'
@@ -7479,14 +7899,23 @@ function finishBattle(message, outcome = 'lose') {
   }
   renderCultivation();
   saveGame();
+  if (isWorldBoss) submitWorldBossDamage(currentStage, worldBossDamageDealt);
 }
 
 function renderBattleResult(message, outcome, reward, spiritStoneReward, droppedItem, bonusRewardText = '', cultivationAward = reward) {
   const nextStage = getNextBattleStage();
   const config = getDungeonConfig();
   const isBeastHunt = Boolean(currentStage?.isBeastHunt);
-  const resultTitle = outcome === 'win' ? 'Thắng lợi' : outcome === 'draw' ? 'Hòa' : 'Thất bại';
-  const resultIcon = outcome === 'win' ? 'icon-item-victory' : outcome === 'draw' ? 'icon-unique-draw' : 'icon-item-defeat';
+  const isTrainingDummy = Boolean(currentStage?.isTrainingDummy);
+  const isWorldBoss = Boolean(currentStage?.isWorldBoss);
+  const resultTitle = isWorldBoss
+    ? 'Hoàn tất lượt đánh Boss'
+    : isTrainingDummy
+    ? 'Hoàn tất thử sát thương'
+    : outcome === 'win' ? 'Thắng lợi' : outcome === 'draw' ? 'Hòa' : 'Thất bại';
+  const resultIcon = isWorldBoss || isTrainingDummy
+    ? 'icon-unique-draw'
+    : outcome === 'win' ? 'icon-item-victory' : outcome === 'draw' ? 'icon-unique-draw' : 'icon-item-defeat';
   const itemText = droppedItem
     ? getDroppedRewardText(droppedItem)
     : 'Không rơi trang bị';
@@ -7494,7 +7923,11 @@ function renderBattleResult(message, outcome, reward, spiritStoneReward, dropped
   const storedCultivationNote = displayedCultivation > Number(reward || 0)
     ? ` (đã lưu +${formatGameNumber(reward)} vào Đan điền/thanh tu vi)`
     : '';
-  const nextText = isBeastHunt
+  const nextText = isWorldBoss
+    ? 'Cập nhật bảng sát thương trong Hoạt động > Boss thế giới'
+    : isTrainingDummy
+    ? 'Xem kết quả trong Hoạt động > Mộc nhân'
+    : isBeastHunt
     ? outcome === 'win'
       ? 'Nhận thưởng trong Hoạt động để bắt đầu hồi 1 giờ'
       : `Yêu vật xuất hiện lại sau ${Math.round(getBeastHuntRespawnMs() / 60000)} phút`
@@ -7521,7 +7954,11 @@ function renderBattleResult(message, outcome, reward, spiritStoneReward, dropped
   battleResult.innerHTML = `
     <strong><i class="${resultIcon.startsWith('icon-unique-') ? 'unique-icon' : resultIcon.startsWith('icon-stat') ? 'stat-icon' : 'item-icon'} ${resultIcon}" aria-hidden="true"></i>${resultTitle}</strong>
     <span>${message}</span>
-    <em>${isBeastHunt
+    <em>${isWorldBoss
+      ? `Sát thương lượt này: ${formatGameNumber(worldBossDamageDealt)}`
+      : isTrainingDummy
+      ? `Tổng sát thương gây ra: ${formatGameNumber(trainingDummyLastDamage)}`
+      : isBeastHunt
       ? outcome === 'win'
         ? 'Đã thắng. Mở tab Hoạt động > Săn yêu vật để nhận phần thưởng.'
         : 'Không nhận phần thưởng.'

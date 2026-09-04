@@ -1,5 +1,5 @@
 {
-  "description": "Cấu hình trung tâm cho giao diện, nhịp chiến đấu, animation 0,8 giây, delay sát thương, tỉ lệ gặp địch mặc định 80%, phần thưởng, giới hạn mua, lưu dữ liệu, mã đổi thưởng và các quy tắc Ngao du. Săn yêu vật mở từ Map 5; sau khi thắng phải nhận một phần thưởng ngẫu nhiên rồi mới bắt đầu hồi 1 giờ, còn thua thì không có phần thưởng và bắt đầu hồi ngay. Phần thưởng lấy cấp rương trang bị và phẩm chất rương skill theo map Ngao du cao nhất đã mở khóa; các nhóm phần thưởng có xác suất ngang nhau.",
+  "description": "Cấu hình trung tâm cho giao diện, nhịp chiến đấu, animation 0,8 giây, delay sát thương, tỉ lệ gặp địch mặc định 80%, phần thưởng, giới hạn mua, lưu dữ liệu, mã đổi thưởng và các quy tắc Ngao du. Săn yêu vật mở từ Map 5; sau khi thắng phải nhận một phần thưởng ngẫu nhiên rồi mới bắt đầu hồi 1 giờ, còn thua thì không có phần thưởng và bắt đầu hồi ngay. Phần thưởng lấy cấp rương trang bị và phẩm chất rương skill theo map Ngao du cao nhất đã mở khóa; các nhóm phần thưởng có xác suất ngang nhau. Boss thế giới dùng chung theo từng đại cảnh giới, có 3 lượt đánh mỗi chu kỳ, xếp hạng theo sát thương và hồi sinh sau 8 giờ.",
   "display": {
     "targetViewportWidth": 390,
     "targetViewportHeight": 850,
@@ -32,6 +32,25 @@
         "skillChestMin": 1,
         "skillChestMax": 10
       }
+    },
+    "trainingDummy": {
+      "maxHp": 1000000000,
+      "maxTurns": 20
+    },
+    "worldBoss": {
+      "respawnMs": 28800000,
+      "maxAttemptsPerPlayer": 3,
+      "leaderboardSize": 10,
+      "bossMaxHp": 1000000000,
+      "normalRewards": {
+        "1": { "spiritStones": 5000, "enhancementStones": 20 },
+        "2": { "spiritStones": 4000, "enhancementStones": 16 },
+        "3": { "spiritStones": 3000, "enhancementStones": 12 },
+        "4": { "spiritStones": 2500, "enhancementStones": 10 },
+        "5": { "spiritStones": 2000, "enhancementStones": 8 },
+        "6-10": { "spiritStones": 1000, "enhancementStones": 5 }
+      },
+      "killReward": { "spiritStones": 3000, "enhancementStones": 10 }
     },
     "dailyShopPurchaseLimits": {
       "skillChest": 10,
