@@ -1,5 +1,5 @@
 {
-  "description": "10 mặt hàng trong cửa hàng gồm rương skill Phàm/Hoàng/Huyền, đan dược và đá cường hóa. Dữ liệu quy định giá, loại vật phẩm và giới hạn mua theo ngày; đá cường hóa không giới hạn số lượng mua; rương trang bị chỉ nhận từ phần thưởng Ngao du, tháp và nhiệm vụ.",
+  "description": "12 mặt hàng trong cửa hàng gồm rương linh thú, rương skill Phàm/Hoàng/Huyền, đan dược, đá cường hóa và cục hoàn đá cường hóa. Dữ liệu quy định giá, loại vật phẩm và giới hạn mua theo ngày; đá cường hóa và cục hoàn đá cường hóa không giới hạn số lượng mua; rương trang bị chỉ nhận từ phần thưởng Ngao du, tháp và nhiệm vụ.",
   "shopItems": [
     {
       "id": "enhancementStone",
@@ -7,6 +7,14 @@
       "description": "Nguyên liệu dùng ở mỗi cấp cường hóa.",
       "cost": 50,
       "type": "enhancementStone",
+      "amount": 1
+    },
+    {
+      "id": "enhancementRefund",
+      "name": "Cục Hoàn Đá Cường Hóa",
+      "description": "Dùng trong panel cường hóa để đưa một trang bị về +0 và hoàn lại toàn bộ đá đã dùng.",
+      "cost": 2500,
+      "type": "enhancementRefund",
       "amount": 1
     },
     {
@@ -41,6 +49,18 @@
       "fragmentChance": 0.9,
       "bookChance": 0.1,
       "requiredTier": 19
+    },
+    {
+      "id": "petChest",
+      "name": "Rương Linh Thú",
+      "description": "Mở ra mảnh linh thú. Mỗi lần nhận 1, 2 hoặc 5 mảnh; đủ 50 mảnh của cùng một linh thú sẽ tự ghép thành 1 linh thú.",
+      "cost": 1000,
+      "type": "petChest",
+      "fragmentRewards": [
+        { "amount": 1, "chance": 0.7 },
+        { "amount": 2, "chance": 0.25 },
+        { "amount": 5, "chance": 0.05 }
+      ]
     },
     {
       "id": "cultivationPill",

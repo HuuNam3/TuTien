@@ -23,6 +23,7 @@ loadLocalEnvironment();
 
 const gameStateHandler = require('../api/game-state');
 const authHandler = require('../api/auth');
+const mailHandler = require('../api/mail');
 const types = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -38,6 +39,10 @@ const server = http.createServer((request, response) => {
   }
   if (url.pathname === '/api/auth') {
     authHandler(request, response);
+    return;
+  }
+  if (url.pathname === '/api/mail') {
+    mailHandler(request, response);
     return;
   }
   const pathname = url.pathname === '/' ? '/index.html' : url.pathname;

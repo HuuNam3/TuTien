@@ -1,6 +1,7 @@
 {
   "version": 1,
   "description": "2 linh thú và 5 bậc tư chất, cùng giới hạn 10 sao, thân mật, chi phí cho ăn, chỉ số nền, ảnh sprite và skill. Ví dụ: U Hồn Tiểu Linh bắt đầu ở tư chất Phàm và 10 sao tối đa; 5 sao đầu và 5 sao sau dùng màu giao diện khác nhau.",
+  "fragmentRequirement": 50,
   "maxStars": 10,
   "feed": {
     "pointsPerMeal": 10,

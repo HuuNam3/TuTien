@@ -1014,6 +1014,7 @@ document.addEventListener('click', (event) => {
   if (target.dataset.trialFloor) return startTrialTowerBattle(Number(target.dataset.trialFloor));
   if (target.dataset.enhanceEquipped) return showEnhancement(Number(target.dataset.enhanceEquipped));
   if (target.dataset.enhanceItem) return enhanceEquipment(Number(target.dataset.enhanceItem));
+  if (target.dataset.refundEnhancement) return refundEquipmentEnhancement(Number(target.dataset.refundEnhancement));
 });
 resetConfirmModal?.addEventListener('click', (event) => {
   if (event.target === resetConfirmModal) closeResetConfirm();
@@ -4686,6 +4687,11 @@ function normalizeSavedItem(item) {
     ? Object.fromEntries(Object.entries(item.stats).filter(([stat]) => stat !== 'blockReduction'))
     : createEquipmentStats(item.slotId, Number(item.level) || 1, item.rarityKey);
   const enhancementLevel = Math.max(0, Number(item.enhancementLevel) || 0);
+  const normalizedEnhancementLevel = Math.min(
+    getEquipmentEnhancementQualityMax(item),
+    enhancementLevel,
+  );
+  const baseStats = getBaseEquipmentStats({ stats, baseStats: item.baseStats, enhancementLevel });
   const name = item.name || pickRandom(getEquipmentNamePool(item.slotId, normalizedItemLevel));
   return {
     id: Number(item.id) || equipmentIdSeed++,
@@ -4695,12 +4701,9 @@ function normalizeSavedItem(item) {
     rarityKey: item.rarityKey,
     level: normalizedItemLevel,
     sourceChestTier: Math.max(0, Number(item.sourceChestTier) || 0),
-    enhancementLevel: Math.min(
-      getEquipmentEnhancementQualityMax(item),
-      enhancementLevel,
-    ),
-    stats,
-    baseStats: getBaseEquipmentStats({ stats, baseStats: item.baseStats, enhancementLevel }),
+    enhancementLevel: normalizedEnhancementLevel,
+    stats: getEnhancedEquipmentStats({ stats, baseStats, rarityKey: item.rarityKey }, normalizedEnhancementLevel),
+    baseStats,
     specialLines: Array.isArray(item.specialLines)
       ? item.specialLines
         .filter((line) => !['victoryRecovery', 'reflectDamage'].includes(line?.id))
@@ -8121,7 +8124,7 @@ function buyShopItem(itemId, amount = 1) {
       enhancementStones += Math.max(1, Number(shopItem.amount) || 1);
     }
 
-    if (['cultivation', 'foundation', 'ascension', 'skillChest', 'petChest'].includes(shopItem.type)) {
+    if (['cultivation', 'foundation', 'ascension', 'skillChest', 'petChest', 'enhancementRefund'].includes(shopItem.type)) {
       addShopInventoryItem(shopItem.id);
     }
 
@@ -9142,10 +9145,12 @@ function getEquipmentEnhancementMax(item) {
 function getEnhancementCost(item) {
   const config = progressionFeatures.enhancement;
   const rarityMultiplier = Number(config.linhThachRarityMultiplier?.[item.rarityKey]) || 1;
-  return Math.max(1, Math.round((Number(config.baseCost) || 12) * rarityMultiplier * Math.pow(
-    Number(config.costGrowth) || 1.35,
-    Math.max(0, Number(item.enhancementLevel) || 0),
-  )));
+  const targetLevel = Math.max(1, Math.floor(Number(item.enhancementLevel) || 0) + 1);
+  const stoneCost = getEnhancementStoneCost(item, targetLevel);
+  const baseCostPerStone = Math.max(0, Number(config.spiritStoneBaseCostPerStone) || 50);
+  const costIncreasePerLevel = Math.max(0, Number(config.spiritStoneCostIncreasePerLevel) || 15);
+  const costPerStone = baseCostPerStone + Math.max(0, targetLevel - 1) * costIncreasePerLevel;
+  return Math.max(1, Math.round(costPerStone * stoneCost * rarityMultiplier));
 }
 
 function getEnhancementStatGrowth(stat) {
@@ -9157,11 +9162,29 @@ function getEnhancementStatGrowth(stat) {
   return Number(configured.normalMultiplier) || 0.002;
 }
 
-function getEnhancedStatValue(stat, value) {
-  const current = Math.max(0, Number(value) || 0);
-  const growth = getEnhancementStatGrowth(stat);
-  if (isPercentStat(stat)) return roundStat(current + growth);
-  return Math.max(1, Math.round(current * (1 + growth)));
+function getEquipmentEnhancementRarityMultiplier(item) {
+  const configured = progressionFeatures.enhancement.enhancementStatRarityMultiplier?.[item?.rarityKey];
+  if (Number.isFinite(Number(configured))) return Math.max(1, Number(configured));
+  const rarityIndex = equipmentQualityOrder.indexOf(item?.rarityKey);
+  return 1.5 + Math.max(0, rarityIndex) * 0.5;
+}
+
+function getEnhancedStatValue(stat, baseValue, targetLevel, rarityMultiplier = 1) {
+  const base = Math.max(0, Number(baseValue) || 0);
+  const level = Math.max(0, Math.floor(Number(targetLevel) || 0));
+  const baseMultiplier = Math.max(1, Number(progressionFeatures.enhancement.statGrowth?.baseMultiplier) || 1);
+  const growth = getEnhancementStatGrowth(stat) * Math.max(1, Number(rarityMultiplier) || 1);
+  if (isPercentStat(stat)) return roundStat(base + growth * level);
+  return Math.max(1, Math.round(base * (baseMultiplier + growth * level)));
+}
+
+function getEnhancedEquipmentStats(item, targetLevel = Number(item?.enhancementLevel) || 0) {
+  const baseStats = getBaseEquipmentStats(item);
+  const rarityMultiplier = getEquipmentEnhancementRarityMultiplier(item);
+  return Object.fromEntries(Object.entries(baseStats).map(([stat, value]) => [
+    stat,
+    getEnhancedStatValue(stat, value, targetLevel, rarityMultiplier),
+  ]));
 }
 
 function getBaseEquipmentStats(item) {
@@ -9254,6 +9277,14 @@ function getEnhancementItemMarkup(item) {
   const canEnhance = !maxed && !cultivationLocked
     && playerSpiritStones >= cost
     && enhancementStones >= stoneCost;
+  const refundCount = getShopInventoryCount('enhancementRefund');
+  const refundTotal = getEnhancementRefundAmount(item);
+  const canRefund = currentLevel > 0 && refundCount > 0;
+  const refundDisabledReason = currentLevel <= 0
+    ? 'Trang bị chưa có cấp cường hóa để hoàn.'
+    : refundCount <= 0
+    ? 'Cần Cục Hoàn Đá Cường Hóa trong túi.'
+    : '';
   return `
     ${renderEquippedEquipmentSummary(item, getSlotName(item.slotId), { showStats: false, showSpecials: false })}
     <div class="enhancement-stat-list">${formatEnhancementStats(item)}</div>
@@ -9265,6 +9296,9 @@ function getEnhancementItemMarkup(item) {
     </div>
     <button type="button" class="secondary compact enhancement-action-button" data-enhance-item="${item.id}" ${buttonDisabledAttributes(!canEnhance, maxed ? 'Trang bị đã đạt cấp độ tối đa.' : cultivationLocked ? `Tu vi chỉ mở đến +${maxLevel}.` : stoneCost && enhancementStones < stoneCost ? `Cần ${formatGameNumber(stoneCost)} đá cường hóa.` : `Cần ${formatGameNumber(cost)} linh thạch.`)}>
       <i class="game-icon icon-hammer" aria-hidden="true"></i>${maxed ? 'Đã đạt cấp độ tối đa' : cultivationLocked ? `Tu vi chỉ mở đến +${maxLevel}` : canEnhance ? `Cường hóa lên +${targetLevel}` : stoneCost && enhancementStones < stoneCost ? `Cần ${formatGameNumber(stoneCost)} đá cường hóa` : `Cần ${formatGameNumber(cost)} linh thạch`}
+    </button>
+    <button type="button" class="secondary compact enhancement-refund-button" data-refund-enhancement="${item.id}" ${buttonDisabledAttributes(!canRefund, refundDisabledReason)}>
+      Hoàn đá${currentLevel > 0 ? ` +${formatGameNumber(refundTotal)}` : ''}
     </button>
   `;
 }
@@ -9299,14 +9333,51 @@ function enhanceEquipment(itemId) {
   }
   playerSpiritStones -= cost;
   item.enhancementLevel = currentLevel + 1;
-  item.stats = Object.fromEntries(Object.entries(item.stats || {}).map(([stat, value]) => [
-    stat,
-    getEnhancedStatValue(stat, value),
-  ]));
+  item.stats = getEnhancedEquipmentStats(item, item.enhancementLevel);
   showGameToast(`Cường hóa thành công: ${item.name} lên +${item.enhancementLevel}.`, 'success');
   renderEnhancement();
   renderEquipment();
   renderCultivation();
+  saveGame();
+}
+
+function getEnhancementRefundAmount(item) {
+  const currentLevel = Math.max(0, Math.floor(Number(item?.enhancementLevel) || 0));
+  let total = 0;
+  for (let level = 1; level <= currentLevel; level += 1) {
+    total += getEnhancementStoneCost(item, level);
+  }
+  return total;
+}
+
+function refundEquipmentEnhancement(itemId) {
+  if (busy) return;
+  const item = Object.values(equippedItems).find((entry) => entry?.id === Number(itemId));
+  if (!item) return;
+  const currentLevel = Math.max(0, Math.floor(Number(item.enhancementLevel) || 0));
+  if (currentLevel <= 0) {
+    showGameToast('Trang bị chưa có cấp cường hóa để hoàn.', 'info');
+    return;
+  }
+  if (getShopInventoryCount('enhancementRefund') <= 0) {
+    showGameToast('Cần Cục Hoàn Đá Cường Hóa trong túi.', 'error');
+    return;
+  }
+
+  const refundAmount = getEnhancementRefundAmount(item);
+  if (!window.confirm(`Dùng 1 Cục Hoàn Đá Cường Hóa để đưa ${item.name} từ +${currentLevel} về +0 và nhận lại ${formatGameNumber(refundAmount)} đá cường hóa?`)) return;
+
+  shopInventoryCounts.enhancementRefund = getShopInventoryCount('enhancementRefund') - 1;
+  enhancementStones += refundAmount;
+  item.enhancementLevel = 0;
+  item.stats = { ...getBaseEquipmentStats(item) };
+  const message = `Đã hoàn lại đá cường hóa: ${item.name} nhận ${formatGameNumber(refundAmount)} đá.`;
+  showGameToast(message, 'success');
+  renderEnhancement();
+  renderEquipment();
+  renderCultivation();
+  renderInventory();
+  renderShop();
   saveGame();
 }
 
@@ -9511,7 +9582,7 @@ function getShopItemIconClass(item) {
   if (item.type === 'potion') {
     return item.potionType === 'mana' ? 'icon-item-mana-flame' : 'icon-item-health-pill';
   }
-  if (item.type === 'enhancementStone') return 'icon-item-enhancement-stone';
+  if (item.type === 'enhancementStone' || item.type === 'enhancementRefund') return 'icon-item-enhancement-stone';
   if (item.type === 'foundation') return 'icon-item-jade';
   if (item.type === 'cultivation') return 'icon-stat-cultivation';
   if (item.type === 'ascension') return 'icon-activity-gate';
@@ -9942,7 +10013,7 @@ function getBagItems() {
   ];
 
   shopItems
-    .filter((shopItem) => ['cultivation', 'foundation', 'ascension', 'skillChest'].includes(shopItem.type))
+    .filter((shopItem) => ['cultivation', 'foundation', 'ascension', 'skillChest', 'enhancementRefund'].includes(shopItem.type))
     .forEach((shopItem) => {
       const count = getShopInventoryCount(shopItem.id);
       if (count <= 0) return;
@@ -9952,6 +10023,8 @@ function getBagItems() {
         ? 'Đột phá'
         : shopItem.type === 'foundation'
         ? 'Tu luyện'
+        : shopItem.type === 'enhancementRefund'
+        ? 'Nguyên liệu'
         : 'Tu vi';
       items.push({
         id: `shop-item-${shopItem.id}`,
@@ -9965,8 +10038,8 @@ function getBagItems() {
           : '',
         rarityColor: shopItem.type === 'skillChest' ? getSkillGradeColor(shopItem.gradeId) : '',
         description: shopItem.description || getShopItemDetailLines(shopItem).join(' '),
-        usable: shopItem.type !== 'ascension',
-        useLabel: shopItem.type === 'skillChest' ? 'Mở' : shopItem.type === 'ascension' ? '' : 'Dùng',
+        usable: !['ascension', 'enhancementRefund'].includes(shopItem.type),
+        useLabel: shopItem.type === 'skillChest' ? 'Mở' : shopItem.type === 'ascension' || shopItem.type === 'enhancementRefund' ? '' : 'Dùng',
       });
     });
 
@@ -10096,6 +10169,7 @@ function getInventoryItemDetails(item) {
     if (shopItem?.type === 'ascension') details.push('Chỉ dùng tại nút thăng đại cảnh giới tiếp theo.');
     if (shopItem?.type === 'skillChest') details.push('Mở rương để nhận 1 mảnh skill hoặc 1 sách skill theo tỉ lệ của rương.');
     if (shopItem?.type === 'petChest') details.push(`Mở rương nhận 1, 2 hoặc 5 mảnh linh thú; đủ ${getPetFragmentRequirement()} mảnh sẽ tự ghép thành 1 linh thú.`);
+    if (shopItem?.type === 'enhancementRefund') details.push('Không dùng trực tiếp; chỉ dùng trong panel cường hóa trang bị. Mỗi lần hoàn tiêu hao 1 cục.');
   }
   if (item.category === 'Rương') {
     const profile = getEquipmentRarityProfile(item);
