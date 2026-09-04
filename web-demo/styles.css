@@ -11209,6 +11209,7 @@ body.battle-active .battle-panel {
 #equipmentInventoryList .item-icon::after,
 #enhancementList .enhancement-equipment-item .equipped-equipment-visual > .item-icon::after {
   content: "";
+  display: none;
   position: absolute;
   z-index: 2;
   top: 50%;
