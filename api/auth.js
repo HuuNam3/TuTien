@@ -1,9 +1,12 @@
 const { getDatabase } = require('./_mongodb');
 const {
+  activateUserSession,
   clearSessionCookie,
   createSessionCookie,
-  getAuthenticatedUser,
+  createSessionId,
+  getAuthenticatedSession,
   hashPassword,
+  invalidateActiveSession,
   verifyPassword,
 } = require('./_auth');
 
@@ -52,13 +55,24 @@ module.exports = async function authHandler(request, response) {
 
   try {
     if (request.method === 'GET') {
-      return sendJson(response, 200, { user: await getAuthenticatedUser(request) });
+      const session = await getAuthenticatedSession(request);
+      if (session.error) {
+        return sendJson(response, session.error.status, {
+          error: session.error.message,
+          code: session.error.code,
+        }, { 'Set-Cookie': clearSessionCookie() });
+      }
+      return sendJson(response, 200, {
+        user: session.user ? { id: session.user.id, username: session.user.username } : null,
+        sessionId: session.user?.sessionId || null,
+      });
     }
 
     const payload = await readBody(request);
     if (!payload || typeof payload !== 'object') return sendJson(response, 400, { error: 'Dữ liệu không hợp lệ.' });
     const action = String(payload.action || '').toLowerCase();
     if (action === 'logout') {
+      await invalidateActiveSession(request);
       return sendJson(response, 200, { ok: true }, { 'Set-Cookie': clearSessionCookie() });
     }
     if (!['login', 'register'].includes(action)) return sendJson(response, 400, { error: 'Thao tác tài khoản không hợp lệ.' });
@@ -80,6 +94,7 @@ module.exports = async function authHandler(request, response) {
       if (existing) return sendJson(response, 409, { error: 'Tên đăng nhập đã tồn tại.' });
       const passwordData = hashPassword(password);
       const now = new Date();
+      const sessionId = createSessionId();
       const result = await collection.insertOne({
         username,
         usernameLower,
@@ -87,15 +102,25 @@ module.exports = async function authHandler(request, response) {
         passwordHash: passwordData.hash,
         createdAt: now,
         updatedAt: now,
+        activeSessionId: sessionId,
+        activeSessionUpdatedAt: now,
       });
-      return sendJson(response, 201, { user: { id: result.insertedId.toString(), username } }, { 'Set-Cookie': createSessionCookie(result.insertedId) });
+      return sendJson(response, 201, {
+        user: { id: result.insertedId.toString(), username },
+        sessionId,
+      }, { 'Set-Cookie': createSessionCookie(result.insertedId, sessionId) });
     }
 
     const user = await collection.findOne({ usernameLower });
     if (!user || !verifyPassword(password, user.passwordSalt, user.passwordHash)) {
       return sendJson(response, 401, { error: 'Tên đăng nhập hoặc mật khẩu không đúng.' });
     }
-    return sendJson(response, 200, { user: { id: user._id.toString(), username: user.username } }, { 'Set-Cookie': createSessionCookie(user._id) });
+    const sessionId = createSessionId();
+    await activateUserSession(user._id, sessionId);
+    return sendJson(response, 200, {
+      user: { id: user._id.toString(), username: user.username },
+      sessionId,
+    }, { 'Set-Cookie': createSessionCookie(user._id, sessionId) });
   } catch (error) {
     if (error?.code === 11000) return sendJson(response, 409, { error: 'Tên đăng nhập đã tồn tại.' });
     console.error('MongoDB auth error:', error);
