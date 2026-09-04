@@ -6,8 +6,8 @@ let cultivationRewardMultiplier = 0;
 let questRewardGrowthMultiplier = 1.3;
 let gameConfig = {};
 const cultivationRealmsPath = '/assets/Resources/Data/CultivationRealms.json';
-const gameConfigPath = '/assets/Resources/Data/GameConfig.json?v=20260903-shop2';
-const shopItemsPath = '/assets/Resources/Data/ShopItems.json?v=20260903-shop2';
+const gameConfigPath = '/assets/Resources/Data/GameConfig.json?v=20260904-pet-chest';
+const shopItemsPath = '/assets/Resources/Data/ShopItems.json?v=20260904-pet-chest';
 const starterDataPath = '/assets/Resources/Data/StarterData.json';
 const equipmentPath = '/assets/Resources/Data/equipment.json';
 const progressionFeaturesPath = '/assets/Resources/Data/ProgressionFeatures.json';
@@ -39,6 +39,7 @@ const maxEquipmentInventory = 100;
 const maxShopPurchaseQuantity = 999;
 const cloudSaveEndpoint = '/api/game-state';
 const cloudAuthEndpoint = '/api/auth';
+const mailEndpoint = '/api/mail';
 let saveKey = '';
 let baseSaveKey = '';
 let legacySaveKeys = [];
@@ -52,7 +53,29 @@ let cloudPendingData = null;
 let cloudPeriodicSaveTimer = 0;
 let cloudPeriodicSyncInFlight = false;
 let cloudSyncUnavailable = false;
+let cloudSessionId = '';
+let cloudSaveVersion = 0;
+let cloudSessionInvalid = false;
+let cloudForegroundSyncTimer = 0;
+let cloudForegroundSyncInFlight = false;
+let cloudWasHidden = false;
+let cloudLastForegroundSyncAt = 0;
 let authServiceAvailable = false;
+let mailMessages = [];
+let mailUnreadCount = 0;
+let mailLastCheckedAt = 0;
+let mailNewCount = 0;
+let mailIsAdmin = false;
+let mailAccessChecked = false;
+let mailAccessCheckPromise = null;
+let mailPollingTimer = 0;
+let mailPollingInFlight = false;
+let mailClaimInFlight = new Set();
+let mailCatalog = [];
+let mailAttachmentRows = [{ itemId: '', quantity: 1 }];
+let mailExpandedId = '';
+let mailNextBefore = null;
+let mailRecipientSearchTimer = 0;
 
 let baseStats = {};
 
@@ -215,6 +238,7 @@ let playerComprehension = 1;
 let skillLearningComprehension = 0;
 let devMode = false;
 let redeemedCodes = {};
+let claimedMailIds = [];
 let foundationFindCounts = {};
 let foundationPillPurchases = {};
 let cultivationPillPurchases = {};
@@ -243,6 +267,7 @@ let battleOver = false;
 let lastBattleOutcome = null;
 let battleReturnTab = 'map';
 let battleReturnToWander = false;
+let beastHuntBattleActive = false;
 let turn = 0;
 let timer = 0;
 let battleResultTimer = 0;
@@ -261,10 +286,15 @@ let dantianCultivation = 0;
 let dantianCultivationSeconds = 0;
 let offlineCapSeconds = 0;
 let resourceRegenTimer = 0;
+let activityRefreshTimer = 0;
 let selectedStage = null;
 let selectedEnhancementItemId = 0;
 let currentDungeonId = '';
 let currentWanderMapId = '';
+let beastHuntMapId = '';
+let beastHuntRespawnAt = 0;
+let beastHuntNotificationPending = false;
+let activeActivityTab = 'beastHunt';
 let wanderCarouselCleanup = null;
 let trialTowerHighestCleared = 0;
 let claimedQuestIds = new Set();
@@ -286,6 +316,8 @@ let skillTrainingId = '';
 let expandedSkillDetailsId = '';
 let selectedPetId = '';
 let petStates = {};
+let petFragments = {};
+let ownedPetIds = [];
 let hasMajorAscensionPermit = false;
 let resettingGameData = false;
 let loadingTargetProgress = 1;
@@ -348,21 +380,46 @@ const petButton = $('petButton');
 const shopButton = $('shopButton');
 const resourceDungeonButton = $('resourceDungeonButton');
 const trialTowerButton = $('trialTowerButton');
-const devButton = $('devButton');
 const audioToggleButton = $('audioToggleButton');
 const codeInput = $('codeInput');
 const redeemCodeButton = $('redeemCodeButton');
 const questButton = $('questButton');
+const activityButton = $('activityButton');
+const mailButton = $('mailButton');
+const activityCategoryFilters = $('activityCategoryFilters');
 const questCategoryFilters = $('questCategoryFilters');
 const dungeonBadge = $('dungeonBadge');
 const trainingBadge = $('trainingBadge');
 const questBadge = $('questBadge');
+const activityBadge = $('activityBadge');
+const mailBadge = $('mailBadge');
 const resourceDungeonBadge = $('resourceDungeonBadge');
 const equipmentBadge = $('equipmentBadge');
 const resourceDungeonPanel = $('resourceDungeonPanel');
 const trialTowerPanel = $('trialTowerPanel');
-const devPanel = $('devPanel');
 const questPanel = $('questPanel');
+const activityPanel = $('activityPanel');
+const mailPanel = $('mailPanel');
+const mailInboxPanel = $('mailInboxPanel');
+const mailList = $('mailList');
+const mailSummary = $('mailSummary');
+const mailUnreadSummary = $('mailUnreadSummary');
+const mailRefreshButton = $('mailRefreshButton');
+const mailComposerPanel = $('mailComposerPanel');
+const codeRedeemPanel = $('codeRedeemPanel');
+const mailForm = $('mailForm');
+const mailRecipientInput = $('mailRecipientInput');
+const mailRecipientOptions = $('mailRecipientOptions');
+const mailRecipientHint = $('mailRecipientHint');
+const mailSearchRecipientsButton = $('mailSearchRecipientsButton');
+const mailTitleInput = $('mailTitleInput');
+const mailContentInput = $('mailContentInput');
+const mailAttachmentRowsContainer = $('mailAttachmentRows');
+const mailAddAttachmentButton = $('mailAddAttachmentButton');
+const mailCurrencyInput = $('mailCurrencyInput');
+const mailFormMessage = $('mailFormMessage');
+const mailSendButton = $('mailSendButton');
+const mailLoadMoreButton = $('mailLoadMoreButton');
 const resetDataButton = $('resetDataButton');
 const featureAccessNotice = $('featureAccessNotice');
 const resetConfirmModal = $('resetConfirmModal');
@@ -414,14 +471,14 @@ const startSchoolHint = $('startSchoolHint');
 const tabButtons = {
   map: dungeonButton,
   training: trainingButton,
+  quests: questButton,
+  activities: activityButton,
+  mail: mailButton,
   equipment: equipmentButton,
   inventory: inventoryButton,
   pets: petButton,
   shop: shopButton,
-  resourceDungeon: resourceDungeonButton,
   trialTower: trialTowerButton,
-  code: devButton,
-  quests: questButton,
 };
 const logList = $('battleLog');
 const wanderEventOverlay = document.createElement('div');
@@ -854,7 +911,7 @@ profileButton?.addEventListener('click', showProfile);
 playerAvatarButton?.addEventListener('click', showProfile);
 equipmentButton.addEventListener('click', showEquipment);
 inventoryButton?.addEventListener('click', showInventory);
-petButton?.addEventListener('click', () => showGameToast('Linh thú đang phát triển.', 'locked'));
+petButton?.addEventListener('click', showPets);
 shopButton.addEventListener('click', showShop);
 shopCategoryFilters?.addEventListener('click', (event) => {
   const button = event.target.closest('[data-shop-category]');
@@ -862,14 +919,63 @@ shopCategoryFilters?.addEventListener('click', (event) => {
   shopCategory = button.dataset.shopCategory || 'all';
   renderShop();
 });
-resourceDungeonButton.addEventListener('click', showResourceDungeons);
 trialTowerButton?.addEventListener('click', showTrialTower);
-devButton?.addEventListener('click', showCodePanel);
 redeemCodeButton?.addEventListener('click', redeemCode);
 codeInput?.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') redeemCode();
 });
 questButton?.addEventListener('click', showQuests);
+activityButton?.addEventListener('click', showActivities);
+mailButton?.addEventListener('click', showMail);
+activityCategoryFilters?.addEventListener('click', (event) => {
+  const button = event.target.closest('[data-activity-tab]');
+  if (!button) return;
+  const tabId = button.dataset.activityTab || 'beastHunt';
+  if (tabId === 'arena') {
+    showGameToast('Hoạt động này đang phát triển.', 'locked');
+    return;
+  }
+  showActivities(tabId);
+});
+mailRefreshButton?.addEventListener('click', () => loadMailList(true));
+mailForm?.addEventListener('submit', sendMailFromAdmin);
+mailAddAttachmentButton?.addEventListener('click', () => {
+  mailAttachmentRows.push({ itemId: mailCatalog[0]?.itemId || '', quantity: 1 });
+  renderMailAttachmentRows();
+});
+mailAttachmentRowsContainer?.addEventListener('click', (event) => {
+  const removeButton = event.target.closest('[data-mail-remove-attachment]');
+  if (!removeButton) return;
+  const index = Number(removeButton.dataset.mailRemoveAttachment);
+  if (!Number.isInteger(index)) return;
+  mailAttachmentRows.splice(index, 1);
+  if (!mailAttachmentRows.length) mailAttachmentRows.push({ itemId: '', quantity: 1 });
+  renderMailAttachmentRows();
+});
+mailAttachmentRowsContainer?.addEventListener('change', (event) => {
+  const itemSelect = event.target.closest('[data-mail-attachment-item]');
+  const quantityInput = event.target.closest('[data-mail-attachment-quantity]');
+  const index = Number((itemSelect || quantityInput)?.dataset.mailAttachmentIndex);
+  if (!Number.isInteger(index) || !mailAttachmentRows[index]) return;
+  if (itemSelect) mailAttachmentRows[index].itemId = itemSelect.value;
+  if (quantityInput) mailAttachmentRows[index].quantity = quantityInput.value;
+});
+mailRecipientInput?.addEventListener('input', scheduleMailRecipientSearch);
+mailSearchRecipientsButton?.addEventListener('click', searchMailRecipients);
+mailLoadMoreButton?.addEventListener('click', loadOlderMail);
+mailList?.addEventListener('click', (event) => {
+  const claimButton = event.target.closest('[data-mail-claim]');
+  if (claimButton) {
+    claimMailReward(claimButton.dataset.mailClaim);
+    return;
+  }
+  const openButton = event.target.closest('[data-mail-open]');
+  if (!openButton) return;
+  const mailId = openButton.dataset.mailOpen;
+  mailExpandedId = mailExpandedId === mailId ? '' : mailId;
+  renderMailList();
+  if (mailExpandedId === mailId) markMailRead(mailId);
+});
 questCategoryFilters?.addEventListener('click', (event) => {
   const button = event.target.closest('[data-quest-category]');
   if (!button || temporarilyDisabledQuestCategories.has(button.dataset.questCategory)) return;
@@ -965,8 +1071,10 @@ playerNameInput.addEventListener('keydown', (event) => {
 startPlayerNameInput?.addEventListener('input', updateStartScreenAvailability);
 enterGameButton?.addEventListener('click', completeStartScreen);
 window.addEventListener('beforeunload', () => {
-  if (!resettingGameData) saveGame();
+  if (!resettingGameData && !cloudSessionInvalid) saveGame();
 });
+document.addEventListener('visibilitychange', handleCloudVisibilityChange);
+window.addEventListener('pageshow', handleCloudPageShow);
 
 function setSubtitle(text) {
   if (subtitle) subtitle.textContent = text;
@@ -1124,6 +1232,55 @@ function addSkillFragments(skillId, amount = 1) {
 
 function getSkillChestSkills(shopItem) {
   return getPlayerSkills().filter((skill) => skill.gradeId === shopItem?.gradeId);
+}
+
+function getPetFragmentCount(petId) {
+  return Math.max(0, Math.floor(Number(petFragments[petId]) || 0));
+}
+
+function getPetFragmentRequirement() {
+  return Math.max(1, Math.floor(Number(petData.fragmentRequirement) || 50));
+}
+
+function getOwnedPets() {
+  return petData.pets.filter((pet) => ownedPetIds.includes(pet.id));
+}
+
+function pickPetChestFragmentAmount(shopItem) {
+  const rewards = Array.isArray(shopItem?.fragmentRewards) ? shopItem.fragmentRewards : [];
+  const normalizedRewards = rewards
+    .map((reward) => ({
+      amount: Math.max(1, Math.floor(Number(reward?.amount) || 1)),
+      chance: Math.max(0, Number(reward?.chance) || 0),
+    }))
+    .filter((reward) => reward.chance > 0);
+  const totalChance = normalizedRewards.reduce((total, reward) => total + reward.chance, 0);
+  if (!totalChance) return 1;
+  let roll = Math.random() * totalChance;
+  for (const reward of normalizedRewards) {
+    roll -= reward.chance;
+    if (roll < 0) return reward.amount;
+  }
+  return normalizedRewards[normalizedRewards.length - 1].amount;
+}
+
+function openPetChest(shopItem) {
+  const candidates = petData.pets.filter((pet) => !ownedPetIds.includes(pet.id));
+  const fallbackCandidates = candidates.length ? candidates : petData.pets;
+  if (!fallbackCandidates.length) return null;
+  const pet = fallbackCandidates[Math.floor(Math.random() * fallbackCandidates.length)];
+  const fragments = pickPetChestFragmentAmount(shopItem);
+  let remaining = getPetFragmentCount(pet.id) + fragments;
+  let createdPets = 0;
+  while (remaining >= getPetFragmentRequirement() && !ownedPetIds.includes(pet.id)) {
+    ownedPetIds.push(pet.id);
+    getPetState(pet.id);
+    remaining -= getPetFragmentRequirement();
+    createdPets += 1;
+  }
+  petFragments[pet.id] = remaining;
+  if (createdPets > 0 && !selectedPetId) selectedPetId = pet.id;
+  return { pet, fragments, createdPets };
 }
 
 function openSkillChest(shopItem) {
@@ -1554,7 +1711,7 @@ function showBattleReturnTab() {
     return;
   }
   if (returnTab === 'resourceDungeon') {
-    showResourceDungeons();
+    showActivities('resourceDungeon');
     return;
   }
   if (returnTab === 'trialTower') {
@@ -1562,11 +1719,15 @@ function showBattleReturnTab() {
     return;
   }
   if (returnTab === 'code') {
-    showCodePanel();
+    showMail();
     return;
   }
   if (returnTab === 'quests') {
     showQuests();
+    return;
+  }
+  if (returnTab === 'activities') {
+    showActivities();
     return;
   }
   showMap();
@@ -1728,8 +1889,9 @@ function hideFeaturePanels() {
   petPanel?.classList.add('is-hidden');
   resourceDungeonPanel?.classList.add('is-hidden');
   trialTowerPanel?.classList.add('is-hidden');
-  devPanel?.classList.add('is-hidden');
   questPanel?.classList.add('is-hidden');
+  activityPanel?.classList.add('is-hidden');
+  mailPanel?.classList.add('is-hidden');
 }
 
 function prepareFeatureView(panel, tabId, renderFunction) {
@@ -1779,7 +1941,7 @@ function showResourceDungeons() {
     showLockedFeatureNotice('Phụ bản', `Cần đạt tu vi ${getTierRealmText(requiredTier)} để mở`);
     return;
   }
-  prepareFeatureView(resourceDungeonPanel, 'resourceDungeon', renderResourceDungeons);
+  showActivities('resourceDungeon');
 }
 
 function showTrialTower() {
@@ -1791,13 +1953,407 @@ function showTrialTower() {
   prepareFeatureView(trialTowerPanel, 'trialTower', renderTrialTower);
 }
 
-function showCodePanel() {
-  if (busy) return;
-  prepareFeatureView(devPanel, 'code', renderCodePanel);
-}
-
 function showQuests() {
   prepareFeatureView(questPanel, 'quests', renderQuests);
+}
+
+function showActivities(tabId = activeActivityTab) {
+  activeActivityTab = tabId === 'resourceDungeon' ? 'resourceDungeon' : 'beastHunt';
+  prepareFeatureView(activityPanel, 'activities', renderActivities);
+  beastHuntNotificationPending = false;
+  updateNotificationBadges();
+}
+
+function showMail() {
+  prepareFeatureView(mailPanel, 'mail', () => {
+    if (!mailAccessChecked) {
+      mailInboxPanel?.classList.add('is-hidden');
+      mailComposerPanel?.classList.add('is-hidden');
+      codeRedeemPanel?.classList.add('is-hidden');
+      if (mailSummary) mailSummary.textContent = 'Đang kiểm tra quyền truy cập...';
+      return;
+    }
+    renderMail();
+  });
+  loadMailView();
+}
+
+function escapeMailHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  }[character]));
+}
+
+function formatMailDate(value) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? 'Thời gian không xác định' : date.toLocaleString('vi-VN');
+}
+
+function setMailFormMessage(message = '', variant = '') {
+  if (!mailFormMessage) return;
+  mailFormMessage.textContent = message;
+  mailFormMessage.className = `mail-form-message${variant ? ` mail-form-message-${variant}` : ''}`;
+}
+
+function renderMailAdminControls() {
+  mailInboxPanel?.classList.toggle('is-hidden', mailIsAdmin);
+  mailComposerPanel?.classList.toggle('is-hidden', !mailIsAdmin);
+  codeRedeemPanel?.classList.toggle('is-hidden', mailIsAdmin);
+  mailUnreadSummary?.classList.toggle('is-hidden', mailIsAdmin);
+  if (mailSummary) mailSummary.textContent = mailIsAdmin ? 'Gửi thư hệ thống' : 'Hộp thư hệ thống';
+}
+
+function renderMailHeader() {
+  if (mailUnreadSummary) mailUnreadSummary.textContent = `${mailUnreadCount} thư chưa đọc`;
+  if (mailSummary && (!mailSummary.textContent || mailSummary.textContent === 'Đang tải thư...')) {
+    mailSummary.textContent = 'Hộp thư hệ thống';
+  }
+  setNotificationBadge(mailBadge, mailUnreadCount);
+}
+
+function renderMailAttachmentRows() {
+  if (!mailAttachmentRowsContainer) return;
+  const options = mailCatalog.length
+    ? `<option value="">Chọn vật phẩm</option>${mailCatalog.map((item) => `<option value="${escapeMailHtml(item.itemId)}">${escapeMailHtml(item.name)}</option>`).join('')}`
+    : '<option value="">Đang tải danh sách vật phẩm...</option>';
+  mailAttachmentRowsContainer.innerHTML = mailAttachmentRows.map((row, index) => `
+    <div class="mail-attachment-row">
+      <label class="sr-only" for="mailAttachmentItem${index}">Vật phẩm đính kèm ${index + 1}</label>
+      <select id="mailAttachmentItem${index}" data-mail-attachment-item data-mail-attachment-index="${index}">${options}</select>
+      <label class="sr-only" for="mailAttachmentQuantity${index}">Số lượng</label>
+      <input id="mailAttachmentQuantity${index}" data-mail-attachment-quantity data-mail-attachment-index="${index}" type="number" min="1" max="1000000" step="1" value="${Math.max(1, Number(row.quantity) || 1)}" aria-label="Số lượng vật phẩm">
+      <button type="button" class="secondary compact" data-mail-remove-attachment="${index}" aria-label="Xóa vật phẩm đính kèm">Xóa</button>
+    </div>
+  `).join('');
+  mailAttachmentRows.forEach((row, index) => {
+    const select = document.querySelector(`#mailAttachmentItem${index}`);
+    if (select) select.value = row.itemId || '';
+  });
+}
+
+function getMailAttachmentLabel(attachment) {
+  if (attachment?.type === 'currency') return `Linh thạch x${formatGameNumber(attachment.amount)}`;
+  return `${attachment?.name || attachment?.itemId || 'Vật phẩm'} x${formatGameNumber(attachment?.quantity)}`;
+}
+
+function renderMailList() {
+  if (!mailList) return;
+  if (mailIsAdmin) {
+    mailLoadMoreButton?.classList.add('is-hidden');
+    return;
+  }
+  if (!mailMessages.length) {
+    mailList.innerHTML = `
+      <div class="mail-empty">
+        <i class="game-icon icon-scroll" aria-hidden="true"></i>
+        <strong>Hộp thư đang trống</strong>
+        <span>Thư hệ thống và phần thưởng gửi cho đạo hữu sẽ xuất hiện tại đây.</span>
+      </div>
+    `;
+  } else {
+    mailList.innerHTML = mailMessages.map((mail) => {
+      const expanded = mailExpandedId === mail.id;
+      const attachments = Array.isArray(mail.attachments) ? mail.attachments : [];
+      const attachmentText = attachments.map(getMailAttachmentLabel).join(' · ');
+      const canClaim = attachments.length > 0 && !mail.claimedAt;
+      return `
+        <article class="mail-item${mail.readAt ? '' : ' is-unread'}${expanded ? ' is-expanded' : ''}">
+          <button type="button" class="mail-item-toggle" data-mail-open="${escapeMailHtml(mail.id)}" aria-expanded="${expanded}">
+            <span><strong>${escapeMailHtml(mail.title)}</strong><small>${escapeMailHtml(formatMailDate(mail.createdAt))}</small></span>
+            <b>${mail.readAt ? '' : 'Mới'}</b>
+          </button>
+          ${expanded ? `
+            <div class="mail-item-body">
+              <p>${escapeMailHtml(mail.content).replace(/\n/g, '<br>')}</p>
+              ${attachmentText ? `<div class="mail-attachments"><strong>Đính kèm</strong><span>${escapeMailHtml(attachmentText)}</span></div>` : ''}
+              <div class="mail-item-actions">
+                ${canClaim ? `<button type="button" class="breakthrough compact" data-mail-claim="${escapeMailHtml(mail.id)}"><i class="game-icon icon-gift" aria-hidden="true"></i>Nhận</button>` : ''}
+                ${attachments.length && mail.claimedAt ? '<span class="mail-claimed">Đã nhận phần thưởng</span>' : ''}
+              </div>
+            </div>
+          ` : ''}
+        </article>
+      `;
+    }).join('');
+  }
+  mailLoadMoreButton?.classList.toggle('is-hidden', !mailNextBefore);
+  renderMailHeader();
+}
+
+async function markMailRead(mailId) {
+  const mail = mailMessages.find((entry) => entry.id === mailId);
+  if (!mail || mail.readAt) return;
+  try {
+    const response = await fetch(mailEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'read', mailId }),
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (handleCloudResponseFailure(response, payload) || !response.ok) return;
+    mail.readAt = new Date().toISOString();
+    mailUnreadCount = Math.max(0, mailUnreadCount - 1);
+    renderMailList();
+  } catch (error) {
+    console.warn('Cannot mark mail as read.', error);
+  }
+}
+
+async function claimMailReward(mailId) {
+  if (mailClaimInFlight.has(mailId)) return;
+  mailClaimInFlight.add(mailId);
+  const pendingClaim = mailMessages.find((entry) => entry.id === mailId);
+  try {
+    window.clearTimeout(cloudSaveTimer);
+    cloudSaveTimer = 0;
+    cloudPendingData = null;
+    const deadline = Date.now() + 2500;
+    while (cloudPeriodicSyncInFlight && Date.now() < deadline) {
+      await new Promise((resolve) => window.setTimeout(resolve, 50));
+    }
+    const response = await fetch(mailEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'claim', mailId }),
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (handleCloudResponseFailure(response, payload)) return;
+    if (!response.ok) {
+      showGameToast(payload.error || 'Không thể nhận phần thưởng thư.', 'error');
+      return;
+    }
+    await refreshGameStateAfterMailClaim();
+    if (pendingClaim) {
+      pendingClaim.claimedAt = payload.mail?.claimedAt || new Date().toISOString();
+      pendingClaim.readAt = pendingClaim.readAt || pendingClaim.claimedAt;
+    }
+    mailUnreadCount = mailMessages.filter((mail) => !mail.readAt).length;
+    renderMailList();
+    showGameToast('Đã nhận phần thưởng từ thư.', 'success');
+  } catch (error) {
+    showGameToast('Dịch vụ thư tạm thời không khả dụng.', 'error');
+  } finally {
+    mailClaimInFlight.delete(mailId);
+  }
+}
+
+async function refreshGameStateAfterMailClaim() {
+  window.clearTimeout(cloudSaveTimer);
+  cloudSaveTimer = 0;
+  cloudPendingData = null;
+  const deadline = Date.now() + 2500;
+  while (cloudPeriodicSyncInFlight && Date.now() < deadline) {
+    await new Promise((resolve) => window.setTimeout(resolve, 50));
+  }
+  if (!await loadCloudSave()) return false;
+  if (!loadSavedGame()) return false;
+  renderCultivation();
+  renderInventory();
+  renderShop();
+  renderEquipment();
+  renderProfile();
+  return true;
+}
+
+async function loadMailCatalog() {
+  if (!mailIsAdmin || mailCatalog.length) return;
+  try {
+    const response = await fetch(`${mailEndpoint}?mode=catalog`, { cache: 'no-store' });
+    const payload = await response.json().catch(() => ({}));
+    if (handleCloudResponseFailure(response, payload) || !response.ok) return;
+    mailCatalog = Array.isArray(payload.items) ? payload.items : [];
+    renderMailAttachmentRows();
+  } catch (error) {
+    setMailFormMessage('Không thể tải danh sách vật phẩm.', 'error');
+  }
+}
+
+async function checkMailAccess() {
+  if (!cloudUser || cloudSyncUnavailable) return false;
+  if (mailAccessChecked) return true;
+  if (mailAccessCheckPromise) return mailAccessCheckPromise;
+  mailAccessCheckPromise = (async () => {
+    try {
+      const response = await fetch(`${mailEndpoint}?mode=access`, { cache: 'no-store' });
+      const payload = await response.json().catch(() => ({}));
+      if (handleCloudResponseFailure(response, payload) || !response.ok) return false;
+      mailIsAdmin = Boolean(payload.isAdmin);
+      mailAccessChecked = true;
+      renderMailAdminControls();
+      renderMailHeader();
+      return true;
+    } catch (error) {
+      return false;
+    } finally {
+      mailAccessCheckPromise = null;
+    }
+  })();
+  return mailAccessCheckPromise;
+}
+
+async function loadMailView() {
+  if (!await checkMailAccess()) {
+    if (mailSummary) mailSummary.textContent = 'Dịch vụ thư tạm thời không khả dụng.';
+    return;
+  }
+  renderMail();
+  if (mailIsAdmin) {
+    await loadMailCatalog();
+    renderMailAttachmentRows();
+    mailTitleInput?.focus();
+    return;
+  }
+  await loadMailList(true);
+}
+
+function scheduleMailRecipientSearch() {
+  window.clearTimeout(mailRecipientSearchTimer);
+  mailRecipientSearchTimer = window.setTimeout(searchMailRecipients, 250);
+}
+
+async function searchMailRecipients() {
+  if (!mailIsAdmin) return;
+  const query = String(mailRecipientInput?.value || '').trim();
+  if (query.length < 2) {
+    if (mailRecipientOptions) mailRecipientOptions.replaceChildren();
+    if (mailRecipientHint) mailRecipientHint.textContent = 'Có thể nhập username hoặc ID tài khoản.';
+    return;
+  }
+  try {
+    const response = await fetch(`${mailEndpoint}?mode=accounts&q=${encodeURIComponent(query)}`, { cache: 'no-store' });
+    const payload = await response.json().catch(() => ({}));
+    if (handleCloudResponseFailure(response, payload) || !response.ok) return;
+    mailRecipientOptions?.replaceChildren(...(payload.accounts || []).map((account) => {
+      const option = document.createElement('option');
+      option.value = account.username;
+      option.label = `${account.username} (${account.id})`;
+      return option;
+    }));
+    if (mailRecipientHint) mailRecipientHint.textContent = `${payload.accounts?.length || 0} tài khoản phù hợp.`;
+  } catch (error) {
+    if (mailRecipientHint) mailRecipientHint.textContent = 'Không thể tìm tài khoản lúc này.';
+  }
+}
+
+async function sendMailFromAdmin(event) {
+  event.preventDefault();
+  if (!mailIsAdmin || authSubmitting) return;
+  await loadMailCatalog();
+  const attachments = mailAttachmentRows
+    .filter((row) => row.itemId)
+    .map((row) => ({ type: 'item', itemId: row.itemId, quantity: Math.max(1, Math.floor(Number(row.quantity) || 1)) }));
+  const currency = Math.max(0, Math.floor(Number(mailCurrencyInput?.value) || 0));
+  if (currency > 0) attachments.push({ type: 'currency', currency: 'spiritStones', amount: currency });
+  setMailFormMessage('Đang gửi thư...');
+  setButtonDisabledState(mailSendButton, true, 'Đang gửi thư...');
+  try {
+    const response = await fetch(mailEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'send',
+        recipient: mailRecipientInput?.value || '',
+        title: mailTitleInput?.value || '',
+        content: mailContentInput?.value || '',
+        attachments,
+      }),
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (handleCloudResponseFailure(response, payload)) return;
+    if (!response.ok) {
+      setMailFormMessage(payload.error || 'Không thể gửi thư.', 'error');
+      return;
+    }
+    mailForm?.reset();
+    mailCurrencyInput.value = '0';
+    mailAttachmentRows = [{ itemId: '', quantity: 1 }];
+    renderMailAttachmentRows();
+    showGameToast('Đã gửi thư thành công.', 'success');
+  } catch (error) {
+    setMailFormMessage('Dịch vụ thư tạm thời không khả dụng.', 'error');
+  } finally {
+    setButtonDisabledState(mailSendButton, false);
+  }
+}
+
+async function loadMailList(reset = true) {
+  if (!cloudUser || mailIsAdmin) return;
+  const query = reset ? '?mode=list&limit=30' : `?mode=list&limit=30&before=${encodeURIComponent(mailNextBefore || '')}`;
+  if (!reset && !mailNextBefore) return;
+  if (mailSummary) mailSummary.textContent = 'Đang tải thư...';
+  try {
+    const response = await fetch(`${mailEndpoint}${query}`, { cache: 'no-store' });
+    const payload = await response.json().catch(() => ({}));
+    if (handleCloudResponseFailure(response, payload)) return;
+    if (!response.ok) {
+      if (mailSummary) mailSummary.textContent = payload.error || 'Không thể tải hộp thư.';
+      return;
+    }
+    mailIsAdmin = Boolean(payload.isAdmin);
+    mailUnreadCount = Math.max(0, Number(payload.unreadCount) || 0);
+    const messages = Array.isArray(payload.messages) ? payload.messages : [];
+    mailMessages = reset ? messages : [...mailMessages, ...messages];
+    mailNextBefore = payload.nextBefore || null;
+    const latest = Date.parse(payload.latestCreatedAt || '');
+    if (Number.isFinite(latest)) mailLastCheckedAt = Math.max(mailLastCheckedAt, latest);
+    renderMailAdminControls();
+    renderMailList();
+  } catch (error) {
+    if (mailSummary) mailSummary.textContent = 'Dịch vụ thư tạm thời không khả dụng.';
+  }
+}
+
+async function loadOlderMail() {
+  await loadMailList(false);
+}
+
+async function pollMail() {
+  if (!cloudUser || cloudSyncUnavailable || mailPollingInFlight || mailIsAdmin) return;
+  mailPollingInFlight = true;
+  try {
+    const response = await fetch(`${mailEndpoint}?mode=poll&since=${encodeURIComponent(mailLastCheckedAt || 0)}`, { cache: 'no-store' });
+    const payload = await response.json().catch(() => ({}));
+    if (handleCloudResponseFailure(response, payload) || !response.ok) return;
+    mailIsAdmin = Boolean(payload.isAdmin);
+    if (mailIsAdmin) {
+      window.clearInterval(mailPollingTimer);
+      mailPollingTimer = 0;
+      mailAccessChecked = true;
+    }
+    mailUnreadCount = Math.max(0, Number(payload.unreadCount) || 0);
+    mailNewCount = Math.max(0, Number(payload.newCount) || 0);
+    const latest = Date.parse(payload.latestCreatedAt || '');
+    if (Number.isFinite(latest)) mailLastCheckedAt = Math.max(mailLastCheckedAt, latest);
+    renderMailAdminControls();
+    renderMailHeader();
+    if (!mailIsAdmin && mailNewCount > 0 && !mailPanel?.classList.contains('is-hidden')) await loadMailList(true);
+  } catch (error) {
+    console.warn('Cannot poll system mail.', error);
+  } finally {
+    mailPollingInFlight = false;
+  }
+}
+
+function startMailPolling() {
+  window.clearInterval(mailPollingTimer);
+  mailPollingTimer = 0;
+  if (!cloudUser || cloudSyncUnavailable || !gameStarted) return;
+  checkMailAccess().then(() => {
+    if (!cloudUser || cloudSyncUnavailable || !gameStarted || mailIsAdmin) return;
+    pollMail();
+    mailPollingTimer = window.setInterval(pollMail, 5000);
+  });
+}
+
+function renderMail() {
+  renderMailAdminControls();
+  renderMailHeader();
+  renderMailList();
+  if (mailIsAdmin) renderMailAttachmentRows();
 }
 
 function renderCodePanel() {
@@ -2271,6 +2827,189 @@ function renderQuests() {
   updateNotificationBadges();
 }
 
+function getBeastHuntConfig() {
+  return gameConfig.gameplay?.beastHunt && typeof gameConfig.gameplay.beastHunt === 'object'
+    ? gameConfig.gameplay.beastHunt
+    : {};
+}
+
+function getBeastHuntUnlockMapNumber() {
+  return Math.max(1, Math.floor(Number(getBeastHuntConfig().unlockMapNumber) || 5));
+}
+
+function getBeastHuntRespawnMs() {
+  return Math.max(60000, Math.floor(Number(getBeastHuntConfig().respawnMs) || 3600000));
+}
+
+function canAccessBeastHunt() {
+  return getUnlockedWanderMapCount() >= getBeastHuntUnlockMapNumber();
+}
+
+function getBeastHuntEligibleMaps() {
+  return wanderMapList.filter((map) => (
+    isWanderMapUnlocked(map) && map.id !== currentWanderMapId
+  ));
+}
+
+function ensureBeastHuntSpawn() {
+  if (!canAccessBeastHunt() || beastHuntBattleActive) return false;
+  if (beastHuntMapId && wanderMaps[beastHuntMapId]) return false;
+  beastHuntMapId = '';
+  if (Number(beastHuntRespawnAt) > Date.now()) return false;
+  const eligibleMaps = getBeastHuntEligibleMaps();
+  if (!eligibleMaps.length) return false;
+  const map = eligibleMaps[Math.floor(Math.random() * eligibleMaps.length)];
+  beastHuntMapId = map.id;
+  beastHuntRespawnAt = 0;
+  beastHuntNotificationPending = true;
+  return true;
+}
+
+function formatBeastHuntCountdown(timestamp) {
+  const remainingSeconds = Math.max(0, Math.ceil((Number(timestamp) - Date.now()) / 1000));
+  const hours = Math.floor(remainingSeconds / 3600);
+  const minutes = Math.floor((remainingSeconds % 3600) / 60);
+  const seconds = remainingSeconds % 60;
+  if (hours > 0) return `${hours} giờ ${minutes} phút`;
+  return `${minutes} phút ${seconds} giây`;
+}
+
+function createBeastHuntStage() {
+  const map = wanderMaps[beastHuntMapId];
+  if (!map || !canAccessBeastHunt()) return null;
+  const tier = getPlayerCultivationTier();
+  const enemyData = pickEnemyDataForMapTier(map, tier)
+    || stageEnemyData[Math.floor(Math.random() * Math.max(1, stageEnemyData.length))];
+  if (!enemyData) return null;
+  return {
+    id: `beast-hunt-${map.id}-${Date.now()}`,
+    isBeastHunt: true,
+    mapId: map.id,
+    enemyTier: tier,
+    enemyLevel: playerLevel,
+    enemyMajorRealmIndex: playerMajorRealmIndex,
+    enemyRankLevel: 3,
+    title: 'Săn yêu vật',
+    realmText: getTierRealmText(tier),
+    enemyData: {
+      ...enemyData,
+      name: `${enemyData.name} Thủ lĩnh`,
+    },
+  };
+}
+
+function renderBeastHuntMapEncounter() {
+  if (!canAccessBeastHunt() || beastHuntMapId !== currentWanderMapId || beastHuntBattleActive) return;
+  const stage = createBeastHuntStage();
+  if (!stage) return;
+  const preview = createStageEnemy(stage);
+  const card = document.createElement('div');
+  card.className = 'stage-card dungeon-entry-card wander-card beast-hunt-card';
+  card.innerHTML = `
+    <span><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i>Săn yêu vật</span>
+    <strong>${stage.enemyData.name}</strong>
+    <em>Yêu vật thủ lĩnh đã xuất hiện tại ${wanderMaps[stage.mapId].name}.</em>
+    <div class="enemy-encounter-meta">
+      <span><b>Phẩm chất</b><strong>${getEnemyRankLabel(stage.enemyData, stage.enemyRankLevel)}</strong></span>
+      <span><b>Tu vi</b><strong>${stage.realmText}</strong></span>
+      <span><b>Nội tại</b><strong>${getCombatStyleLabel(stage.enemyData)}</strong></span>
+      <span><b>Skill</b><strong>${stage.enemyData.skillName}</strong></span>
+    </div>
+    <div class="enemy-encounter-summary">
+      <span><b>Lực chiến</b><strong>${formatGameNumber(getCombatPower(preview))}</strong></span>
+      <span><b>Phần thưởng</b><strong>Không nhận tu vi/linh thạch</strong></span>
+    </div>
+    <small class="enemy-equipment-preview"><b>Trang bị</b> ${getEnemyEquipmentText(stage)}</small>
+    <div class="wander-actions beast-hunt-actions">
+      <button type="button" class="breakthrough compact"><i class="item-icon icon-item-sword" aria-hidden="true"></i>Chiến đấu</button>
+    </div>
+  `;
+  const fightButton = card.querySelector('button');
+  setButtonDisabledState(fightButton, !canEnterDungeon(), canEnterDungeon() ? '' : 'Sinh lực chưa đủ để khiêu chiến.');
+  fightButton.addEventListener('click', () => startBeastHuntBattle(stage));
+  stageGrid.appendChild(card);
+}
+
+function renderActivities() {
+  ensureBeastHuntSpawn();
+  const list = $('activityList');
+  const summary = $('activitySummary');
+  if (!list || !activityPanel) return;
+  activityCategoryFilters?.querySelectorAll('[data-activity-tab]').forEach((tab) => {
+    const active = tab.dataset.activityTab === activeActivityTab;
+    tab.classList.toggle('is-active', active);
+    tab.setAttribute('aria-selected', String(active));
+  });
+  if (activeActivityTab === 'resourceDungeon') {
+    list.classList.add('is-hidden');
+    resourceDungeonPanel?.classList.remove('is-hidden');
+    if (summary) summary.textContent = 'Chọn một phụ bản để nhận tài nguyên.';
+    renderResourceDungeons();
+    return;
+  }
+  list.classList.remove('is-hidden');
+  resourceDungeonPanel?.classList.add('is-hidden');
+  if (!canAccessBeastHunt()) {
+    if (summary) summary.textContent = `Mở khóa khi đã mở Map ${getBeastHuntUnlockMapNumber()}.`;
+    list.innerHTML = `
+      <div class="activity-empty">
+        <i class="activity-icon icon-activity-locked" aria-hidden="true"></i>
+        <strong>Săn yêu vật chưa mở</strong>
+        <span>Cần mở khóa Map ${getBeastHuntUnlockMapNumber()} để tham gia hoạt động.</span>
+      </div>
+    `;
+    return;
+  }
+
+  if (beastHuntMapId) {
+    const map = wanderMaps[beastHuntMapId];
+    if (summary) summary.textContent = 'Một hoạt động đang chờ đạo hữu khám phá.';
+    list.innerHTML = `
+      <article class="activity-item beast-hunt-activity">
+        <div class="activity-item-heading">
+          <span><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i>Săn yêu vật</span>
+          <strong>Đang xuất hiện</strong>
+        </div>
+        <h3>${map?.name || 'Một vùng đất chưa rõ'}</h3>
+        <p>Yêu vật thủ lĩnh có tu vi bằng đạo hữu đang ẩn trong map này. Hãy chọn đúng map trong Ngao du để khiêu chiến.</p>
+        <button type="button" class="secondary compact activity-map-button"><i class="activity-icon icon-activity-path" aria-hidden="true"></i>Đi tới map</button>
+      </article>
+    `;
+    list.querySelector('.activity-map-button')?.addEventListener('click', () => {
+      currentWanderMapId = map?.id || currentWanderMapId;
+      showMap();
+      saveGame();
+    });
+    return;
+  }
+
+  if (summary) summary.textContent = `Yêu vật sẽ xuất hiện lại sau ${formatBeastHuntCountdown(beastHuntRespawnAt)}.`;
+  list.innerHTML = `
+    <div class="activity-empty">
+      <i class="activity-icon icon-activity-encounter" aria-hidden="true"></i>
+      <strong>Đang chờ yêu vật xuất hiện lại</strong>
+      <span>Thời gian còn lại: ${formatBeastHuntCountdown(beastHuntRespawnAt)}.</span>
+    </div>
+  `;
+}
+
+function startActivityRefresh() {
+  window.clearInterval(activityRefreshTimer);
+  activityRefreshTimer = 0;
+  if (!gameStarted) return;
+  activityRefreshTimer = window.setInterval(() => {
+    const hadSpawn = Boolean(beastHuntMapId);
+    const spawned = ensureBeastHuntSpawn();
+    updateNotificationBadges();
+    if (spawned && !hadSpawn) {
+      if (!activityPanel?.classList.contains('is-hidden')) renderActivities();
+      if (!mapPanel?.classList.contains('is-hidden')) renderStageMap();
+    } else if (!activityPanel?.classList.contains('is-hidden')) {
+      renderActivities();
+    }
+  }, 1000);
+}
+
 function setNotificationBadge(element, count) {
   if (!element) return;
   const safeCount = Math.max(0, Math.floor(Number(count) || 0));
@@ -2292,6 +3031,8 @@ function updateNotificationBadges() {
     .length;
   setNotificationBadge(questBadge, readyQuestCount);
   setNotificationBadge(dungeonBadge, pendingWanderCount);
+  setNotificationBadge(activityBadge, Number(beastHuntNotificationPending && canAccessBeastHunt()));
+  setNotificationBadge(mailBadge, mailUnreadCount);
   setNotificationBadge(trainingBadge, trainingCount);
   setNotificationBadge(resourceDungeonBadge, resourceSweepCount);
   setNotificationBadge(equipmentBadge, Number(hasQuickEquipCandidate()));
@@ -3193,7 +3934,9 @@ function finishGameStart() {
   showMap();
   autoWanderAfterRecovery = false;
   saveGame();
+  startActivityRefresh();
   startCloudAutoSave();
+  startMailPolling();
   if (shouldShowOnboarding) showOnboardingGuide();
   const refreshResources = () => {
     if (!gameStarted) {
@@ -3252,32 +3995,92 @@ function hideAuthOverlay() {
   setAuthMessage('');
 }
 
+function clearCloudSaveQueue() {
+  window.clearTimeout(cloudSaveTimer);
+  cloudSaveTimer = 0;
+  cloudPendingData = null;
+}
+
+function pauseCloudAutosave() {
+  window.clearInterval(cloudPeriodicSaveTimer);
+  cloudPeriodicSaveTimer = 0;
+  clearCloudSaveQueue();
+}
+
+function showSessionReplaced() {
+  if (cloudSessionInvalid) return;
+  cloudSessionInvalid = true;
+  gameStarted = false;
+  pauseCloudAutosave();
+  startActivityRefresh();
+  clearWanderTimer();
+  window.clearTimeout(timer);
+  window.clearTimeout(resourceRegenTimer);
+  timer = 0;
+  resourceRegenTimer = 0;
+  window.clearInterval(turnInterval);
+  turnInterval = 0;
+  window.clearInterval(mailPollingTimer);
+  mailPollingTimer = 0;
+  window.clearTimeout(cloudForegroundSyncTimer);
+  cloudForegroundSyncTimer = 0;
+  cloudUser = null;
+  cloudSessionId = '';
+  cloudSaveVersion = 0;
+  cloudForegroundSyncInFlight = false;
+  mailAccessChecked = false;
+  mailAccessCheckPromise = null;
+  mailIsAdmin = false;
+  window.sessionStorage.removeItem('tuTienSessionId');
+  renderAccountBar();
+  showAuthOverlay('Tài khoản đã được đăng nhập trên thiết bị khác. Vui lòng đăng nhập lại.');
+}
+
+function handleCloudResponseFailure(response, payload = {}) {
+  if (payload.code === 'SESSION_REPLACED' || response?.status === 409 && payload.code === 'SESSION_REPLACED') {
+    showSessionReplaced();
+    return true;
+  }
+  return false;
+}
+
+function rememberCloudSession(sessionId) {
+  cloudSessionId = String(sessionId || '');
+  if (cloudSessionId) window.sessionStorage.setItem('tuTienSessionId', cloudSessionId);
+  else window.sessionStorage.removeItem('tuTienSessionId');
+}
+
+function resetCloudSessionState() {
+  cloudSessionInvalid = false;
+  cloudSyncUnavailable = false;
+  cloudSaveVersion = 0;
+  cloudLastForegroundSyncAt = 0;
+  rememberCloudSession('');
+}
+
 async function prepareCloudSession() {
   try {
     const response = await fetch(cloudAuthEndpoint, { cache: 'no-store' });
-    if (response.status === 404 || response.status === 503) {
+    const payload = await response.json().catch(() => ({}));
+    if (handleCloudResponseFailure(response, payload)) return false;
+    if (response.status === 404 || response.status === 503 || !response.ok) {
       cloudSyncUnavailable = true;
       setAccountSaveKey();
       showAuthOverlay('Cần đăng nhập để bắt đầu chơi.');
       return false;
     }
-    if (!response.ok) {
-      cloudSyncUnavailable = true;
-      setAccountSaveKey();
-      showAuthOverlay('Cần đăng nhập để bắt đầu chơi.');
-      return false;
-    }
-    const payload = await response.json();
     authServiceAvailable = true;
-    if (!payload.user) {
+    if (!payload.user || !payload.sessionId) {
       showAuthOverlay();
       return false;
     }
+    resetCloudSessionState();
     cloudUser = payload.user;
+    rememberCloudSession(payload.sessionId);
     setAccountSaveKey(cloudUser);
     const cloudStateLoaded = await loadCloudSave();
     if (!cloudStateLoaded) {
-      showAuthOverlay('Không thể tải dữ liệu tài khoản. Vui lòng thử tải lại trang.');
+      if (!cloudSessionInvalid) showAuthOverlay('Không thể tải dữ liệu tài khoản. Vui lòng thử lại trang.');
       return false;
     }
     renderAccountBar();
@@ -3290,14 +4093,15 @@ async function prepareCloudSession() {
   }
 }
 
-async function finishAuthentication(user) {
+async function finishAuthentication(user, sessionId) {
+  resetCloudSessionState();
   cloudUser = user;
+  rememberCloudSession(sessionId);
   authServiceAvailable = true;
-  cloudSyncUnavailable = false;
   setAccountSaveKey(cloudUser);
   const cloudStateLoaded = await loadCloudSave();
   if (!cloudStateLoaded) {
-    showAuthOverlay('Không thể tải dữ liệu tài khoản. Vui lòng thử lại.');
+    if (!cloudSessionInvalid) showAuthOverlay('Không thể tải dữ liệu tài khoản. Vui lòng thử lại.');
     return;
   }
   renderAccountBar();
@@ -3323,11 +4127,12 @@ async function submitAuth(event) {
       }),
     });
     const payload = await response.json().catch(() => ({}));
-    if (!response.ok || !payload.user) {
+    if (handleCloudResponseFailure(response, payload)) return;
+    if (!response.ok || !payload.user || !payload.sessionId) {
       setAuthMessage(payload.error || 'Không thể xác thực tài khoản.', 'error');
       return;
     }
-    await finishAuthentication(payload.user);
+    await finishAuthentication(payload.user, payload.sessionId);
   } catch (error) {
     setAuthMessage('Không thể kết nối dịch vụ tài khoản.', 'error');
   } finally {
@@ -3338,7 +4143,12 @@ async function submitAuth(event) {
 
 async function logout() {
   if (!cloudUser) return;
-  saveGame();
+  const dataToSave = !cloudSessionInvalid ? saveGame() : null;
+  pauseCloudAutosave();
+  if (dataToSave && !cloudSessionInvalid) await syncCloudState(dataToSave);
+  cloudUser = null;
+  cloudSessionId = '';
+  window.sessionStorage.removeItem('tuTienSessionId');
   try {
     await fetch(cloudAuthEndpoint, {
       method: 'POST',
@@ -3346,32 +4156,52 @@ async function logout() {
       body: JSON.stringify({ action: 'logout' }),
     });
   } finally {
-    window.localStorage.removeItem(saveKey);
     window.location.reload();
   }
 }
 
 async function syncCloudState(data) {
-  if (!cloudUser || cloudSyncUnavailable || !data) return false;
+  if (!cloudUser || cloudSessionInvalid || cloudSyncUnavailable || !data) return false;
   try {
     const response = await fetch(cloudSaveEndpoint, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ state: data }),
+      body: JSON.stringify({ state: data, baseSaveVersion: cloudSaveVersion }),
     });
+    const payload = await response.json().catch(() => ({}));
+    if (handleCloudResponseFailure(response, payload)) return false;
     if (!response.ok) {
-      cloudSyncUnavailable = true;
+      if (payload.code === 'SAVE_CONFLICT') {
+        pauseCloudAutosave();
+        cloudSyncUnavailable = true;
+        if (await loadCloudSave() && loadSavedGame()) {
+          renderCultivation();
+          renderInventory();
+          renderShop();
+          renderEquipment();
+          renderProfile();
+          cloudSyncUnavailable = false;
+          startCloudAutoSave();
+        }
+      } else {
+        pauseCloudAutosave();
+        cloudSyncUnavailable = true;
+      }
       return false;
     }
+    cloudSaveVersion = Math.max(cloudSaveVersion, Number(payload.saveVersion) || 0);
     return true;
   } catch (error) {
-    cloudSyncUnavailable = true;
+    if (!cloudSessionInvalid) {
+      pauseCloudAutosave();
+      cloudSyncUnavailable = true;
+    }
     return false;
   }
 }
 
 function queueCloudSave(data) {
-  if (!cloudUser || cloudSyncUnavailable) return;
+  if (!cloudUser || cloudSessionInvalid || cloudSyncUnavailable) return;
   cloudPendingData = data;
   window.clearTimeout(cloudSaveTimer);
   cloudSaveTimer = window.setTimeout(async () => {
@@ -3379,16 +4209,16 @@ function queueCloudSave(data) {
     cloudPendingData = null;
     cloudSaveTimer = 0;
     await syncCloudState(pendingData);
-    if (cloudPendingData) queueCloudSave(cloudPendingData);
+    if (cloudPendingData && !cloudSessionInvalid && !cloudSyncUnavailable) queueCloudSave(cloudPendingData);
   }, 500);
 }
 
 function startCloudAutoSave() {
   window.clearInterval(cloudPeriodicSaveTimer);
   cloudPeriodicSaveTimer = 0;
-  if (!cloudUser || cloudSyncUnavailable) return;
+  if (!cloudUser || cloudSessionInvalid || cloudSyncUnavailable) return;
   cloudPeriodicSaveTimer = window.setInterval(async () => {
-    if (!gameStarted || !cloudUser || cloudSyncUnavailable || cloudPeriodicSyncInFlight) return;
+    if (!gameStarted || !cloudUser || cloudSessionInvalid || cloudSyncUnavailable || cloudPeriodicSyncInFlight || mailClaimInFlight.size > 0) return;
     const latestData = saveGame();
     if (!latestData) return;
     window.clearTimeout(cloudSaveTimer);
@@ -3404,17 +4234,22 @@ function startCloudAutoSave() {
 }
 
 async function loadCloudSave() {
-  if (!cloudUser || !saveKey || cloudSyncUnavailable) return false;
+  if (!cloudUser || !saveKey || cloudSessionInvalid) return false;
   try {
     const response = await fetch(cloudSaveEndpoint, {
       cache: 'no-store',
     });
+    const payload = await response.json().catch(() => ({}));
+    if (handleCloudResponseFailure(response, payload)) return false;
     if (response.status === 404 || response.status === 503) {
       cloudSyncUnavailable = true;
       return false;
     }
-    if (!response.ok) return false;
-    const payload = await response.json();
+    if (!response.ok) {
+      cloudSyncUnavailable = true;
+      return false;
+    }
+    cloudSaveVersion = Math.max(0, Number(payload.saveVersion) || 0);
     if (!payload.state || typeof payload.state !== 'object' || Array.isArray(payload.state)) {
       window.localStorage.removeItem(saveKey);
       return true;
@@ -3425,6 +4260,66 @@ async function loadCloudSave() {
     cloudSyncUnavailable = true;
     return false;
   }
+}
+
+function scheduleCloudForegroundSync() {
+  window.clearTimeout(cloudForegroundSyncTimer);
+  cloudForegroundSyncTimer = window.setTimeout(syncCloudAfterForeground, 350);
+}
+
+async function syncCloudAfterForeground() {
+  cloudForegroundSyncTimer = 0;
+  if (!cloudUser || cloudSessionInvalid || !gameStarted || cloudForegroundSyncInFlight) return;
+  if (Date.now() - cloudLastForegroundSyncAt < 1500) return;
+  cloudLastForegroundSyncAt = Date.now();
+  cloudForegroundSyncInFlight = true;
+  pauseCloudAutosave();
+  try {
+    const authResponse = await fetch(cloudAuthEndpoint, { cache: 'no-store' });
+    const authPayload = await authResponse.json().catch(() => ({}));
+    if (handleCloudResponseFailure(authResponse, authPayload)) return;
+    if (!authResponse.ok || !authPayload.user || !authPayload.sessionId) {
+      cloudSyncUnavailable = true;
+      return;
+    }
+    rememberCloudSession(authPayload.sessionId);
+    if (authPayload.user.id !== cloudUser.id) {
+      showSessionReplaced();
+      return;
+    }
+    if (!await loadCloudSave() || !loadSavedGame()) {
+      cloudSyncUnavailable = true;
+      return;
+    }
+    renderCultivation();
+    renderInventory();
+    renderShop();
+    renderEquipment();
+    renderProfile();
+    cloudSyncUnavailable = false;
+    startCloudAutoSave();
+    startMailPolling();
+  } catch (error) {
+    cloudSyncUnavailable = true;
+  } finally {
+    cloudForegroundSyncInFlight = false;
+  }
+}
+
+function handleCloudVisibilityChange() {
+  if (document.visibilityState === 'hidden') {
+    cloudWasHidden = true;
+    pauseCloudAutosave();
+    return;
+  }
+  if (cloudWasHidden) {
+    cloudWasHidden = false;
+    scheduleCloudForegroundSync();
+  }
+}
+
+function handleCloudPageShow(event) {
+  if (event.persisted || cloudWasHidden) scheduleCloudForegroundSync();
 }
 
 function openResetConfirm() {
@@ -3488,6 +4383,9 @@ async function resetGameData() {
       currentStageId: stages[0]?.id || 1,
       currentDungeonId: initialState.dungeonId,
       currentWanderMapId: initialState.wanderMapId,
+      beastHuntMapId: '',
+      beastHuntRespawnAt: 0,
+      beastHuntNotificationPending: false,
       autoWanderAfterRecovery: false,
       hasMajorAscensionPermit: false,
       lastActiveAt: Date.now(),
@@ -3539,6 +4437,9 @@ function loadSavedGame() {
     redeemedCodes = data.redeemedCodes && typeof data.redeemedCodes === 'object'
       ? Object.fromEntries(Object.entries(data.redeemedCodes).map(([code, used]) => [String(code), Boolean(used)]))
       : {};
+    claimedMailIds = Array.isArray(data.claimedMailIds)
+      ? [...new Set(data.claimedMailIds.map(String))].slice(-500)
+      : [];
     foundationFindCounts = normalizeFoundationFindCounts(data.foundationFindCounts);
     wanderChestRewards = normalizeWanderChestRewards(data.wanderChestRewards);
     highEnemyEncounterChance = Boolean(data.highEnemyEncounterChance);
@@ -3565,6 +4466,12 @@ function loadSavedGame() {
     enhancementStones = Math.max(0, Number(data.enhancementStones) || Number(data.enhancementMaterials) || 0);
     skillBooks = data.skillBooks && typeof data.skillBooks === 'object' ? data.skillBooks : {};
     skillFragments = data.skillFragments && typeof data.skillFragments === 'object' ? data.skillFragments : {};
+    petFragments = data.petFragments && typeof data.petFragments === 'object'
+      ? Object.fromEntries(Object.entries(data.petFragments).map(([petId, count]) => [
+        petId,
+        Math.max(0, Math.floor(Number(count) || 0)),
+      ]))
+      : {};
     shopInventoryCounts = normalizeShopInventoryCounts(data.shopInventoryCounts);
     skillLevels = data.skillLevels && typeof data.skillLevels === 'object' ? data.skillLevels : {};
     skillPractice = data.skillPractice && typeof data.skillPractice === 'object' ? data.skillPractice : {};
@@ -3593,10 +4500,19 @@ function loadSavedGame() {
     dailyEquipmentChestPurchases = normalizeDailyEquipmentChestPurchases(data.dailyEquipmentChestPurchases);
     dailyShopPurchases = normalizeDailyShopPurchases(data.dailyShopPurchases);
     resourceDungeonProgress = normalizeResourceDungeonProgress(data.resourceDungeonProgress);
+    beastHuntMapId = wanderMaps[data.beastHuntMapId] ? data.beastHuntMapId : '';
+    beastHuntRespawnAt = Math.max(0, Number(data.beastHuntRespawnAt) || 0);
+    beastHuntNotificationPending = Boolean(data.beastHuntNotificationPending);
+    beastHuntBattleActive = false;
     activeSkillId = data.activeSkillId || initialState.skillId;
-    selectedPetId = petData.pets.some((pet) => pet.id === data.selectedPetId)
+    const savedOwnedPetIds = Array.isArray(data.ownedPetIds) ? data.ownedPetIds : [];
+    const legacySelectedPetId = petData.pets.some((pet) => pet.id === data.selectedPetId)
       ? data.selectedPetId
       : '';
+    ownedPetIds = [...new Set(savedOwnedPetIds
+      .filter((petId) => petData.pets.some((pet) => pet.id === petId))
+      .concat(savedOwnedPetIds.length ? [] : legacySelectedPetId))];
+    selectedPetId = ownedPetIds.includes(data.selectedPetId) ? data.selectedPetId : ownedPetIds[0] || '';
     petStates = normalizePetStates(data.petStates);
     skillTrainingId = data.skillTrainingManual ? (data.skillTrainingId || '') : '';
     ensureActiveSkill();
@@ -3768,6 +4684,7 @@ function saveGame() {
     skillLearningComprehension,
     devMode,
     redeemedCodes,
+    claimedMailIds,
     foundationFindCounts,
     wanderChestRewards,
     highEnemyEncounterChance,
@@ -3806,6 +4723,9 @@ function saveGame() {
     currentStageId: Number.isInteger(currentStage?.id) ? currentStage.id : getCurrentDungeonStage()?.id || 1,
     currentDungeonId,
     currentWanderMapId,
+    beastHuntMapId,
+    beastHuntRespawnAt,
+    beastHuntNotificationPending,
     autoWanderAfterRecovery,
     trialTowerHighestCleared,
     claimedQuestIds: [...claimedQuestIds],
@@ -3817,6 +4737,8 @@ function saveGame() {
     activeSkillId,
     selectedPetId,
     petStates,
+    petFragments,
+    ownedPetIds,
     hasMajorAscensionPermit: false,
     equipmentIdSeed,
     equipmentChestIdSeed,
@@ -4222,6 +5144,7 @@ function renderStageMap(options = {}) {
   renderWanderMapSelector(previousWanderScrollLeft);
   if (!currentWanderEvent) {
     renderWanderStart(enoughHealth);
+    renderBeastHuntMapEncounter();
     return;
   }
 
@@ -5434,11 +6357,24 @@ function selectStage(stage) {
   showGameToast(`Đã chọn ${stage.title}.`, 'info');
 }
 
+function startBeastHuntBattle(stage = createBeastHuntStage()) {
+  if (busy || battleOver || !stage || !canAccessBeastHunt() || stage.mapId !== beastHuntMapId) return;
+  if (!canEnterDungeon()) {
+    showGameToast('Sinh lực chưa đủ để khiêu chiến yêu vật.', 'error');
+    return;
+  }
+  beastHuntBattleActive = true;
+  startStageBattle(stage);
+  if (battlePanel?.classList.contains('is-hidden')) beastHuntBattleActive = false;
+}
+
 function startStageBattle(stage) {
   const isTrialTower = Boolean(stage?.isTrialTower);
   const isResourceDungeon = Boolean(stage?.isResourceDungeon);
+  const isBeastHunt = Boolean(stage?.isBeastHunt);
   const config = isTrialTower || isResourceDungeon ? null : getDungeonConfig();
-  if (!stage || (!isTrialTower && !isResourceDungeon && !isStageUnlockedForDungeon(stage, config.id))) return;
+  if (!stage || (!isTrialTower && !isResourceDungeon && !isBeastHunt && !isStageUnlockedForDungeon(stage, config.id))) return;
+  if (isBeastHunt && (!canAccessBeastHunt() || stage.mapId !== beastHuntMapId)) return;
   if (isTrialTower && (stage.trialFloor !== trialTowerHighestCleared + 1 || !canEnterTrialTower())) return;
   if (isResourceDungeon) {
     const dungeon = getResourceDungeon(stage.resourceDungeonId);
@@ -5453,7 +6389,7 @@ function startStageBattle(stage) {
     showGameToast('Đang bị trọng thương, không thể bắt đầu trận đấu.', 'error');
     return;
   }
-  if (!isTrialTower && !isResourceDungeon && !canRunDungeon(config.id)) {
+  if (!isTrialTower && !isResourceDungeon && !isBeastHunt && !canRunDungeon(config.id)) {
     setSubtitle('');
     renderDungeonModes();
     renderStageDetail(stage);
@@ -5461,7 +6397,7 @@ function startStageBattle(stage) {
   }
   if (isResourceDungeon) {
     if (!consumeResourceAttempt(stage.resourceDungeonId)) return;
-  } else if (!isTrialTower && !isResourceDungeon) {
+  } else if (!isTrialTower && !isResourceDungeon && !isBeastHunt) {
     consumeDungeonAttempt(config.id);
   }
 
@@ -5478,7 +6414,9 @@ function startStageBattle(stage) {
   document.body.classList.add('battle-active');
   hideBattleResultOverlay();
   setSubtitle('');
-  const entryText = isTrialTower
+  const entryText = isBeastHunt
+    ? 'Săn yêu vật'
+    : isTrialTower
     ? `Tiến vào tháp thí luyện ${stage.title}`
     : isResourceDungeon
     ? `Tiến vào ${stage.title}`
@@ -5488,7 +6426,7 @@ function startStageBattle(stage) {
     const resourceDungeon = getResourceDungeon(stage.resourceDungeonId);
     pushLog(`${resourceDungeon?.name || 'Phụ bản'}: còn ${getRemainingResourceAttempts(stage.resourceDungeonId)}/${getResourceDungeonDailyLimit(resourceDungeon)} lượt riêng hôm nay.`);
   }
-  if (!isTrialTower && !isResourceDungeon && !config.unlimited) pushLog(`${config.name}: còn ${getRemainingDungeonAttempts(config.id)}/${dailyFarmLimit} lượt hôm nay.`);
+  if (!isTrialTower && !isResourceDungeon && !isBeastHunt && !config.unlimited) pushLog(`${config.name}: còn ${getRemainingDungeonAttempts(config.id)}/${dailyFarmLimit} lượt hôm nay.`);
   pushLog(`${enemy.name} mang ${getEnemyEquipmentText(stage)}, dùng ${enemy.skillName} và có nội tại ${getCombatStyleLabel(stage.enemyData)}.`);
   saveGame();
   startBattle();
@@ -6272,17 +7210,18 @@ function finishBattle(message, outcome = 'lose') {
   savePlayerResourcesFromBattle(outcome);
   const isTrialTower = Boolean(currentStage?.isTrialTower);
   const isResourceDungeon = Boolean(currentStage?.isResourceDungeon);
-  const isWanderBattle = !isTrialTower && !isResourceDungeon && Boolean(currentStage?.isWanderGenerated);
+  const isBeastHunt = Boolean(currentStage?.isBeastHunt);
+  const isWanderBattle = !isTrialTower && !isResourceDungeon && !isBeastHunt && Boolean(currentStage?.isWanderGenerated);
   const resourceAttemptRefunded = isResourceDungeon && outcome === 'lose'
     ? refundResourceAttempt(currentStage.resourceDungeonId)
     : false;
   if (currentStage.isAmbush && outcome !== 'win') rollbackAmbushLoot(currentStage);
   const recovered = applyVictoryRecovery(outcome);
-  if (outcome === 'win' && !isTrialTower && !isResourceDungeon && getDungeonConfig().unlimited && !currentStage.isAmbush && !currentStage.isWanderGenerated) {
+  if (outcome === 'win' && !isTrialTower && !isResourceDungeon && !isBeastHunt && getDungeonConfig().unlimited && !currentStage.isAmbush && !currentStage.isWanderGenerated) {
     completedStages.add(currentStage.id);
   }
   if (outcome === 'win' && isTrialTower) trialTowerWinCount += 1;
-  if (outcome === 'win' && !isTrialTower && !isResourceDungeon) {
+  if (outcome === 'win' && !isTrialTower && !isResourceDungeon && !isBeastHunt) {
     wanderWinCount += 1;
     wanderRewardCount += 1;
     if (isWanderBattle && currentStage.isWanderBoss) {
@@ -6294,7 +7233,7 @@ function finishBattle(message, outcome = 'lose') {
   dailyQuestProgress = normalizeDailyQuestProgress(dailyQuestProgress);
   if (outcome === 'win' && isTrialTower) dailyQuestProgress.trialTowerWins += 1;
   if (outcome === 'win' && isResourceDungeon) dailyQuestProgress.resourceDungeonWins += 1;
-  if (outcome === 'win' && !isTrialTower && !isResourceDungeon) {
+  if (outcome === 'win' && !isTrialTower && !isResourceDungeon && !isBeastHunt) {
     dailyQuestProgress.wanderWins += 1;
     dailyQuestProgress.wanderRewards += 1;
   }
@@ -6322,11 +7261,17 @@ function finishBattle(message, outcome = 'lose') {
     spiritStoneReward = resourceReward.spiritStones;
     bonusRewardText = formatResourceReward(resourceDungeon, resourceReward.amount, resourceReward);
     message = `${message} Vượt qua ${currentStage.title}.`;
-  } else if (!isTrialTower && !isResourceDungeon) {
+  } else if (!isTrialTower && !isResourceDungeon && !isBeastHunt) {
     cultivationAward = getCultivationReward(outcome);
     reward = addPlayerCultivation(cultivationAward);
     spiritStoneReward = addSpiritStoneReward(outcome);
     droppedItem = rollEquipmentDrop(outcome);
+  }
+  if (isBeastHunt) {
+    beastHuntBattleActive = false;
+    beastHuntMapId = '';
+    beastHuntRespawnAt = Date.now() + getBeastHuntRespawnMs();
+    beastHuntNotificationPending = false;
   }
   setButtonDisabledState(startButton, false);
   startButton.textContent = getPostBattleButtonText(outcome);
@@ -6347,6 +7292,7 @@ function finishBattle(message, outcome = 'lose') {
   if (outcome === 'win' && isWanderBattle && currentStage.isWanderBoss) {
     pushLog(`Đã chinh phục Boss ${getCurrentWanderMap().name}.`);
   }
+  if (isBeastHunt) pushLog('Săn yêu vật kết thúc. Không nhận tu vi hoặc linh thạch; yêu vật sẽ xuất hiện lại sau 1 giờ.');
   if (bonusRewardText) pushLog(`Nhận ${bonusRewardText}. Căn cơ hiện tại: ${playerFoundation}.`);
   if (playerCultivation >= getCultivationRequiredForNextLevel()) {
     if (playerLevel >= getMinorRealmLevelCap() && hasNextMajorRealm() && getShopInventoryCount('majorAscensionPermit') <= 0) {
@@ -6364,6 +7310,7 @@ function finishBattle(message, outcome = 'lose') {
 function renderBattleResult(message, outcome, reward, spiritStoneReward, droppedItem, bonusRewardText = '', cultivationAward = reward) {
   const nextStage = getNextBattleStage();
   const config = getDungeonConfig();
+  const isBeastHunt = Boolean(currentStage?.isBeastHunt);
   const resultTitle = outcome === 'win' ? 'Thắng lợi' : outcome === 'draw' ? 'Hòa' : 'Thất bại';
   const resultIcon = outcome === 'win' ? 'icon-item-victory' : outcome === 'draw' ? 'icon-unique-draw' : 'icon-item-defeat';
   const itemText = droppedItem
@@ -6373,7 +7320,9 @@ function renderBattleResult(message, outcome, reward, spiritStoneReward, dropped
   const storedCultivationNote = displayedCultivation > Number(reward || 0)
     ? ` (đã lưu +${formatGameNumber(reward)} vào Đan điền/thanh tu vi)`
     : '';
-  const nextText = currentStage?.isResourceDungeon
+  const nextText = isBeastHunt
+    ? `Yêu vật xuất hiện lại sau ${Math.round(getBeastHuntRespawnMs() / 60000)} phút`
+    : currentStage?.isResourceDungeon
     ? outcome !== 'win'
       ? 'Về Phụ bản để thử lại tầng này'
       : getResourceDungeonHighestFloor(currentStage.resourceDungeonId) >= getResourceDungeonTotalFloors(getResourceDungeon(currentStage.resourceDungeonId))
@@ -6396,7 +7345,7 @@ function renderBattleResult(message, outcome, reward, spiritStoneReward, dropped
   battleResult.innerHTML = `
     <strong><i class="${resultIcon.startsWith('icon-unique-') ? 'unique-icon' : resultIcon.startsWith('icon-stat') ? 'stat-icon' : 'item-icon'} ${resultIcon}" aria-hidden="true"></i>${resultTitle}</strong>
     <span>${message}</span>
-    <em>Tu vi nhận +${formatGameNumber(displayedCultivation)}${storedCultivationNote} | Rớt linh thạch +${formatGameNumber(spiritStoneReward)} | ${bonusRewardText || itemText}</em>
+    <em>${isBeastHunt ? 'Không nhận tu vi hoặc linh thạch.' : `Tu vi nhận +${formatGameNumber(displayedCultivation)}${storedCultivationNote} | Rớt linh thạch +${formatGameNumber(spiritStoneReward)} | ${bonusRewardText || itemText}`}</em>
     <small>Tiếp theo: ${nextText}</small>
     <button type="button" class="breakthrough compact">${getPostBattleButtonText(outcome)}</button>
   `;
@@ -7048,7 +7997,7 @@ function buyShopItem(itemId, amount = 1) {
       enhancementStones += Math.max(1, Number(shopItem.amount) || 1);
     }
 
-    if (['cultivation', 'foundation', 'ascension', 'skillChest'].includes(shopItem.type)) {
+    if (['cultivation', 'foundation', 'ascension', 'skillChest', 'petChest'].includes(shopItem.type)) {
       addShopInventoryItem(shopItem.id);
     }
 
@@ -8427,13 +9376,13 @@ function getShopItemCategory(item) {
   if (item.type === 'equipment' || item.type === 'equipmentRandom') return 'equipment';
   if (item.type === 'skillBook' || item.type === 'skillChest') return 'skill';
   if (item.type === 'cultivation' || item.type === 'foundation' || item.type === 'ascension') return 'cultivation';
-  if (item.type === 'potion') return 'consumable';
+  if (item.type === 'potion' || item.type === 'petChest') return 'consumable';
   return 'material';
 }
 
 function getShopItemIconClass(item) {
   if (item.type === 'skillBook') return getSkillItemIconClass(item.skillId);
-  if (item.type === 'skillChest') return 'icon-activity-chest';
+  if (item.type === 'skillChest' || item.type === 'petChest') return 'icon-activity-chest';
   if (item.type === 'equipment' || item.type === 'equipmentRandom') return 'icon-unique-equipment';
   if (item.type === 'potion') {
     return item.potionType === 'mana' ? 'icon-item-mana-flame' : 'icon-item-health-pill';
@@ -8498,6 +9447,7 @@ function getShopItemPriceDetail(item) {
   }
   if (item.type === 'skillBook') return 'Giá bán bằng 1/4 giá gốc, làm tròn đến linh thạch gần nhất.';
   if (item.type === 'skillChest') return 'Giá cố định; mỗi rương mở ra mảnh skill hoặc sách skill.';
+  if (item.type === 'petChest') return 'Giá cố định; mỗi rương mở ra 1, 2 hoặc 5 mảnh linh thú.';
   return 'Giá cố định cho mỗi lần mua.';
 }
 
@@ -8525,6 +9475,13 @@ function getShopItemDetailLines(item) {
     lines.push(`Mỗi lần mở: ${fragmentChance}% nhận 1 mảnh skill, ${bookChance}% nhận 1 sách skill.`);
     lines.push(`Skill có thể nhận: ${skillNames}.`);
     lines.push('Đủ 5 mảnh của cùng một skill sẽ tự ghép thành 1 sách trong Túi đồ.');
+  }
+  if (item.type === 'petChest') {
+    const rewardText = (Array.isArray(item.fragmentRewards) ? item.fragmentRewards : [])
+      .map((reward) => `${formatGameNumber(reward.amount)} mảnh (${Math.round(Number(reward.chance || 0) * 100)}%)`)
+      .join(', ');
+    lines.push(`Mỗi lần mở: ${rewardText || '1, 2 hoặc 5 mảnh linh thú'}.`);
+    lines.push(`Mảnh nhận ngẫu nhiên theo từng linh thú; đủ ${getPetFragmentRequirement()} mảnh sẽ tự ghép thành 1 linh thú.`);
   }
   const dailyLimit = getDailyShopPurchaseLimit(item);
   if (dailyLimit > 0) {
@@ -8600,6 +9557,7 @@ function renderShop() {
     button.setAttribute('aria-selected', String(active));
   });
   const visibleShopItems = shopItems
+    .filter((item) => item.type !== 'petChest')
     .filter((item) => item.type !== 'skillBook' || item.schoolId === playerSchoolId)
     .filter((item) => shopCategory === 'all' || getShopItemCategory(item) === shopCategory);
   if (!visibleShopItems.length) {
@@ -8927,6 +9885,24 @@ function getBagItems() {
     });
   });
 
+  Object.entries(petFragments).forEach(([petId, count]) => {
+    const pet = getPetById(petId);
+    const safeCount = getPetFragmentCount(petId);
+    if (!pet || safeCount <= 0) return;
+    items.push({
+      id: `pet-fragment-${petId}`,
+      name: `Mảnh linh thú: ${pet.name}`,
+      category: 'Mảnh linh thú',
+      petName: pet.name,
+      count: safeCount,
+      iconClass: 'activity-icon icon-activity-encounter',
+      rarityClass: `pet-quality-${getPetRarity(pet).id}`,
+      description: `Mảnh dùng để ghép linh thú ${pet.name}.`,
+      usable: false,
+      sellable: false,
+    });
+  });
+
   equipmentChestInventory.forEach((chest) => {
     const chestRarityKey = getEquipmentChestDisplayRarityKey(chest);
     items.push({
@@ -8985,6 +9961,9 @@ function getInventoryItemDetails(item) {
     const skill = cultivationSkills.find((entry) => entry.id === skillId);
     if (skill) details.push(`Đủ 5 mảnh sẽ tự ghép thành 1 sách skill ${skill.name}.`);
   }
+  if (item.category === 'Mảnh linh thú') {
+    details.push(`Đủ ${getPetFragmentRequirement()} mảnh sẽ tự ghép thành 1 linh thú ${item.petName}.`);
+  }
   if (item.sellable) details.push(`Bán 1 cái nhận ${formatGameNumber(item.sellPrice)} linh thạch.`);
   if (item.shopItemId) {
     const shopItem = shopItems.find((entry) => entry.id === item.shopItemId);
@@ -8992,6 +9971,7 @@ function getInventoryItemDetails(item) {
     if (shopItem?.type === 'foundation') details.push(`Nhận ${formatGameNumber(getFoundationPillAmount(shopItem))} căn cơ khi dùng.`);
     if (shopItem?.type === 'ascension') details.push('Chỉ dùng tại nút thăng đại cảnh giới tiếp theo.');
     if (shopItem?.type === 'skillChest') details.push('Mở rương để nhận 1 mảnh skill hoặc 1 sách skill theo tỉ lệ của rương.');
+    if (shopItem?.type === 'petChest') details.push(`Mở rương nhận 1, 2 hoặc 5 mảnh linh thú; đủ ${getPetFragmentRequirement()} mảnh sẽ tự ghép thành 1 linh thú.`);
   }
   if (item.category === 'Rương') {
     const profile = getEquipmentRarityProfile(item);
@@ -9036,6 +10016,7 @@ function usePurchasedShopItem(item, amount = 1) {
   const requested = Math.max(1, Math.floor(Number(amount) || 1));
   let used = 0;
   const skillChestRewards = [];
+  const petChestRewards = [];
 
   for (let index = 0; index < requested; index += 1) {
     if (getShopInventoryCount(shopItem.id) <= 0) break;
@@ -9050,6 +10031,10 @@ function usePurchasedShopItem(item, amount = 1) {
       const reward = openSkillChest(shopItem);
       canUse = Boolean(reward);
       if (reward) skillChestRewards.push(reward);
+    } else if (shopItem.type === 'petChest') {
+      const reward = openPetChest(shopItem);
+      canUse = Boolean(reward);
+      if (reward) petChestRewards.push(reward);
     }
     if (!canUse) break;
     shopInventoryCounts[shopItem.id] = getShopInventoryCount(shopItem.id) - 1;
@@ -9070,6 +10055,20 @@ function usePurchasedShopItem(item, amount = 1) {
     const rewardParts = Array.from(rewardNameCounts.values())
       .map((reward) => `${reward.kindLabel} ${reward.name} x${reward.count}`);
     if (completedBooks) rewardParts.push(`ghép ${completedBooks} sách skill`);
+    showGameToast(`Đã mở ${shopItem.name}${used > 1 ? ` x${used}` : ''}: ${rewardParts.join(', ')}.`, 'success');
+  } else if (shopItem.type === 'petChest') {
+    const rewardCounts = new Map();
+    petChestRewards.forEach((reward) => {
+      const current = rewardCounts.get(reward.pet.id) || { name: reward.pet.name, count: 0 };
+      current.count += reward.fragments;
+      rewardCounts.set(reward.pet.id, current);
+    });
+    const rewardParts = Array.from(rewardCounts.values())
+      .map((reward) => `Mảnh ${reward.name} x${reward.count}`);
+    const createdPets = [...new Set(petChestRewards
+      .filter((reward) => reward.createdPets > 0)
+      .map((reward) => reward.pet.name))];
+    if (createdPets.length) rewardParts.push(`ghép ${createdPets.join(', ')}`);
     showGameToast(`Đã mở ${shopItem.name}${used > 1 ? ` x${used}` : ''}: ${rewardParts.join(', ')}.`, 'success');
   } else {
     showGameToast(`Đã dùng ${shopItem.name}${used > 1 ? ` x${used}` : ''}.`, 'success');
@@ -9308,6 +10307,9 @@ function renderPetSkills(pet, stars) {
 }
 
 function renderPets() {
+  const ownedPets = getOwnedPets();
+  if (selectedPetId && !ownedPetIds.includes(selectedPetId)) selectedPetId = ownedPets[0]?.id || '';
+  $('petList')?.closest('.profile-card')?.classList.toggle('is-hidden', !ownedPets.length);
   const selectedPet = getPetById(selectedPetId);
   const selectedState = selectedPet ? getPetState(selectedPet.id) : null;
   const feedRequirement = getPetFeedRequirement();
@@ -9341,7 +10343,8 @@ function renderPets() {
     })()
     : '<div class="pet-empty"><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i><strong>Chưa chọn linh thú</strong><span>Chọn một linh thú bên dưới để bắt đầu nuôi dưỡng.</span></div>';
 
-  $('petList').innerHTML = petData.pets.map((pet) => {
+  $('petList').innerHTML = ownedPets.length
+    ? ownedPets.map((pet) => {
     const state = getPetState(pet.id);
     const selected = pet.id === selectedPetId;
     return `
@@ -9351,11 +10354,12 @@ function renderPets() {
         <button type="button" class="${selected ? 'breakthrough' : 'secondary'} compact" data-pet-action="select" data-pet-id="${pet.id}">${selected ? 'Đang chọn' : 'Chọn'}</button>
       </article>
     `;
-  }).join('');
+      }).join('')
+    : `<div class="pet-empty"><i class="activity-icon icon-activity-chest" aria-hidden="true"></i><strong>Chưa sở hữu linh thú</strong><span>Mở Rương Linh Thú và ghép đủ ${getPetFragmentRequirement()} mảnh để nhận linh thú.</span></div>`;
 }
 
 function selectPet(petId) {
-  if (busy || !getPetById(petId)) return;
+  if (busy || !getPetById(petId) || !ownedPetIds.includes(petId)) return;
   selectedPetId = petId;
   const pet = getPetById(petId);
   renderPets();
