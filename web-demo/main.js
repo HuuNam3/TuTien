@@ -2912,60 +2912,116 @@ function createBeastHuntStage() {
 
 function createBeastHuntReward(stage) {
   const config = getBeastHuntRewardConfig();
-  const tier = Math.max(1, Math.floor(Number(stage?.enemyTier) || getPlayerCultivationTier()));
-  const rankMultiplier = getEnemyRewardMultiplier(stage);
-  const getScaledReward = (baseKey, perTierKey) => Math.max(
-    0,
-    Math.round(((Number(config[baseKey]) || 0) + Math.max(0, tier - 1) * (Number(config[perTierKey]) || 0)) * rankMultiplier),
-  );
-  return {
-    cultivation: getScaledReward('cultivationBase', 'cultivationPerTier'),
-    spiritStones: getScaledReward('spiritStonesBase', 'spiritStonesPerTier'),
-    enhancementStones: Math.max(0, Math.floor(Number(config.enhancementStones) || 0)),
-    healthPotions: Math.max(0, Math.floor(Number(config.healthPotions) || 0)),
-    manaPotions: Math.max(0, Math.floor(Number(config.manaPotions) || 0)),
+  const highestMap = getBestUnlockedWanderMap();
+  const equipmentChestTier = getEquipmentChestTier(highestMap);
+  const skillChest = getWanderSkillChestShopItem(highestMap);
+  const rewardTypes = [
+    { type: 'equipmentChest', minKey: 'equipmentChestMin', maxKey: 'equipmentChestMax' },
+    { type: 'enhancementStones', minKey: 'enhancementStonesMin', maxKey: 'enhancementStonesMax' },
+    { type: 'healthPotions', minKey: 'healthPotionsMin', maxKey: 'healthPotionsMax' },
+    { type: 'manaPotions', minKey: 'manaPotionsMin', maxKey: 'manaPotionsMax' },
+    { type: 'skillChest', minKey: 'skillChestMin', maxKey: 'skillChestMax' },
+  ].filter((entry) => entry.type !== 'skillChest' || skillChest);
+  const rewardType = rewardTypes[Math.floor(Math.random() * rewardTypes.length)] || rewardTypes[0];
+  const min = Math.max(1, Math.floor(Number(config[rewardType.minKey]) || 1));
+  const max = Math.max(min, Math.floor(Number(config[rewardType.maxKey]) || min));
+  const reward = {
+    type: rewardType.type,
+    amount: min + Math.floor(Math.random() * (max - min + 1)),
   };
+  if (reward.type === 'equipmentChest') {
+    reward.chestTier = equipmentChestTier;
+    reward.majorRealmIndex = clamp(Number(playerMajorRealmIndex) || 0, 0, 25);
+  }
+  if (reward.type === 'skillChest') reward.shopItemId = skillChest.id;
+  return reward;
 }
 
 function normalizeBeastHuntReward(reward) {
   if (!reward || typeof reward !== 'object') return null;
-  const normalized = {
-    cultivation: Math.max(0, Math.floor(Number(reward.cultivation) || 0)),
-    spiritStones: Math.max(0, Math.floor(Number(reward.spiritStones) || 0)),
-    enhancementStones: Math.max(0, Math.floor(Number(reward.enhancementStones) || 0)),
-    healthPotions: Math.max(0, Math.floor(Number(reward.healthPotions) || 0)),
-    manaPotions: Math.max(0, Math.floor(Number(reward.manaPotions) || 0)),
+  const allowedTypes = new Set(['equipmentChest', 'enhancementStones', 'healthPotions', 'manaPotions', 'skillChest']);
+  const type = String(reward.type || '');
+  if (!allowedTypes.has(type)) return null;
+  const config = getBeastHuntRewardConfig();
+  const minKeyByType = {
+    equipmentChest: 'equipmentChestMin',
+    enhancementStones: 'enhancementStonesMin',
+    healthPotions: 'healthPotionsMin',
+    manaPotions: 'manaPotionsMin',
+    skillChest: 'skillChestMin',
   };
-  return Object.values(normalized).some((amount) => amount > 0) ? normalized : null;
+  const maxKeyByType = {
+    equipmentChest: 'equipmentChestMax',
+    enhancementStones: 'enhancementStonesMax',
+    healthPotions: 'healthPotionsMax',
+    manaPotions: 'manaPotionsMax',
+    skillChest: 'skillChestMax',
+  };
+  const rewardMin = Math.max(1, Math.floor(Number(config[minKeyByType[type]]) || 1));
+  const rewardMax = Math.max(rewardMin, Math.floor(Number(config[maxKeyByType[type]]) || rewardMin));
+  const normalized = {
+    type,
+    amount: clamp(Math.floor(Number(reward.amount) || rewardMin), rewardMin, rewardMax),
+  };
+  if (type === 'equipmentChest') {
+    normalized.chestTier = clamp(Math.floor(Number(reward.chestTier) || 1), 1, 10);
+    normalized.majorRealmIndex = clamp(Math.floor(Number(reward.majorRealmIndex) || 0), 0, 25);
+  }
+  if (type === 'skillChest') {
+    const shopItem = shopItems.find((item) => item.id === reward.shopItemId && item.type === 'skillChest');
+    if (!shopItem) return null;
+    normalized.shopItemId = shopItem.id;
+  }
+  return normalized;
 }
 
 function getBeastHuntRewardEntries(reward = beastHuntPendingReward) {
   if (!reward) return [];
-  return [
-    { key: 'cultivation', icon: 'stat-icon icon-stat-cultivation', label: `Tu vi +${formatGameNumber(reward.cultivation)}` },
-    { key: 'spiritStones', icon: 'item-icon icon-item-spirit-stone', label: `Linh thạch +${formatGameNumber(reward.spiritStones)}` },
-    { key: 'enhancementStones', icon: 'item-icon icon-item-enhancement-stone', label: `Đá cường hóa +${formatGameNumber(reward.enhancementStones)}` },
-    { key: 'healthPotions', icon: 'item-icon icon-item-health-pill', label: `Sinh Huyết Đan +${formatGameNumber(reward.healthPotions)}` },
-    { key: 'manaPotions', icon: 'item-icon icon-item-mana-flame', label: `Tụ Linh Đan +${formatGameNumber(reward.manaPotions)}` },
-  ].filter((entry) => Number(reward[entry.key]) > 0);
+  const amountText = `x${formatGameNumber(reward.amount)}`;
+  if (reward.type === 'equipmentChest') {
+    return [{ iconClass: 'activity-icon icon-activity-chest', label: `Rương trang bị cấp ${formatGameNumber(reward.chestTier)} ${amountText}` }];
+  }
+  if (reward.type === 'enhancementStones') {
+    return [{ iconClass: 'item-icon icon-item-enhancement-stone', label: `Đá cường hóa ${amountText}` }];
+  }
+  if (reward.type === 'healthPotions') {
+    return [{ iconClass: 'item-icon icon-item-health-pill', label: `Sinh Huyết Đan ${amountText}` }];
+  }
+  if (reward.type === 'manaPotions') {
+    return [{ iconClass: 'item-icon icon-item-mana-flame', label: `Tụ Linh Đan ${amountText}` }];
+  }
+  const skillChest = shopItems.find((item) => item.id === reward.shopItemId);
+  return skillChest ? [{ iconClass: 'activity-icon icon-activity-chest', label: `${skillChest.name} ${amountText}` }] : [];
 }
 
 function formatBeastHuntRewardMarkup(reward = beastHuntPendingReward) {
   return getBeastHuntRewardEntries(reward)
-    .map((entry) => `<span><i class="${entry.icon}" aria-hidden="true"></i>${entry.label}</span>`)
+    .map((entry) => `<span><i class="${entry.iconClass}" aria-hidden="true"></i>${entry.label}</span>`)
     .join('');
 }
 
 function claimBeastHuntReward() {
   const reward = normalizeBeastHuntReward(beastHuntPendingReward);
   if (busy || !reward) return;
+  const rewardItems = getBeastHuntRewardEntries(reward);
   beastHuntPendingReward = null;
-  addPlayerCultivation(reward.cultivation);
-  playerSpiritStones += reward.spiritStones;
-  enhancementStones += reward.enhancementStones;
-  healthPotionCount += reward.healthPotions;
-  manaPotionCount += reward.manaPotions;
-  showGameToast('Đã nhận phần thưởng săn yêu vật.', 'success');
+  if (reward.type === 'equipmentChest') {
+    for (let index = 0; index < reward.amount; index += 1) {
+      addEquipmentChest({ majorRealmIndex: reward.majorRealmIndex }, { chestTier: reward.chestTier });
+    }
+  } else if (reward.type === 'enhancementStones') {
+    enhancementStones += reward.amount;
+  } else if (reward.type === 'healthPotions') {
+    healthPotionCount += reward.amount;
+  } else if (reward.type === 'manaPotions') {
+    manaPotionCount += reward.amount;
+  } else if (reward.type === 'skillChest') {
+    addShopInventoryItem(reward.shopItemId, reward.amount);
+  }
+  beastHuntRespawnAt = Date.now() + getBeastHuntRespawnMs();
+  beastHuntMapId = '';
+  beastHuntNotificationPending = false;
+  showGameToast('Đã nhận phần thưởng săn yêu vật.', 'success', rewardItems);
   renderCultivation();
   renderInventory();
   renderShop();
@@ -2976,10 +3032,6 @@ function claimBeastHuntReward() {
 function renderBeastHuntEncounterOverlay(stage) {
   if (!stage) return;
   const preview = createStageEnemy(stage);
-  if (!beastHuntRespawnAt || Number(beastHuntRespawnAt) <= Date.now()) {
-    beastHuntRespawnAt = Date.now() + getBeastHuntRespawnMs();
-    saveGame();
-  }
   wanderEventOverlay.classList.remove('is-hidden');
   wanderEventOverlay.innerHTML = '<div class="wander-event-modal beast-hunt-encounter-modal"></div>';
   const modal = wanderEventOverlay.querySelector('.wander-event-modal');
@@ -3057,7 +3109,7 @@ function renderActivities() {
           <strong>Đang chờ nhận</strong>
         </div>
         <h3>Chiến thắng yêu vật thủ lĩnh</h3>
-        <p>Nhận phần thưởng bên dưới. Yêu vật sẽ xuất hiện lại sau ${formatBeastHuntCountdown(beastHuntRespawnAt)}.</p>
+        <p>Nhận phần thưởng bên dưới để bắt đầu thời gian hồi yêu vật trong 1 giờ.</p>
         <div class="enemy-encounter-summary">${formatBeastHuntRewardMarkup()}</div>
         <button type="button" class="breakthrough compact beast-hunt-claim-button"><i class="game-icon icon-gift" aria-hidden="true"></i>Nhận thưởng</button>
       </article>
@@ -3074,7 +3126,7 @@ function renderActivities() {
           <span><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i>Săn yêu vật</span>
           <strong>Đang xuất hiện</strong>
         </div>
-        <h3>Yêu vật thủ lĩnh đang ẩn</h3>
+        <h3>Yêu vật thủ lĩnh đã xuất hiện</h3>
         <p>Yêu vật có tu vi bằng đạo hữu. Hãy vào Ngao du và lần lượt chọn các map đã mở khóa để tìm kiếm.</p>
       </article>
     `;
@@ -3129,7 +3181,8 @@ function updateNotificationBadges() {
     .length;
   setNotificationBadge(questBadge, readyQuestCount);
   setNotificationBadge(dungeonBadge, pendingWanderCount);
-  setNotificationBadge(activityBadge, Number((beastHuntNotificationPending || beastHuntPendingReward) && canAccessBeastHunt()));
+  const beastHuntNeedsAttention = beastHuntNotificationPending || beastHuntMapId || beastHuntPendingReward;
+  setNotificationBadge(activityBadge, Number(Boolean(beastHuntNeedsAttention) && canAccessBeastHunt()));
   setNotificationBadge(mailBadge, mailUnreadCount);
   setNotificationBadge(trainingBadge, trainingCount);
   setNotificationBadge(resourceDungeonBadge, resourceSweepCount);
@@ -7385,10 +7438,8 @@ function finishBattle(message, outcome = 'lose') {
     beastHuntBattleActive = false;
     beastHuntPendingReward = outcome === 'win' ? createBeastHuntReward(currentStage) : null;
     beastHuntMapId = '';
-    if (!beastHuntRespawnAt || Number(beastHuntRespawnAt) <= Date.now()) {
-      beastHuntRespawnAt = Date.now() + getBeastHuntRespawnMs();
-    }
-    beastHuntNotificationPending = false;
+    beastHuntRespawnAt = outcome === 'win' ? 0 : Date.now() + getBeastHuntRespawnMs();
+    beastHuntNotificationPending = outcome === 'win';
   }
   setButtonDisabledState(startButton, false);
   startButton.textContent = getPostBattleButtonText(outcome);
@@ -7444,7 +7495,9 @@ function renderBattleResult(message, outcome, reward, spiritStoneReward, dropped
     ? ` (đã lưu +${formatGameNumber(reward)} vào Đan điền/thanh tu vi)`
     : '';
   const nextText = isBeastHunt
-    ? `Yêu vật xuất hiện lại sau ${Math.round(getBeastHuntRespawnMs() / 60000)} phút`
+    ? outcome === 'win'
+      ? 'Nhận thưởng trong Hoạt động để bắt đầu hồi 1 giờ'
+      : `Yêu vật xuất hiện lại sau ${Math.round(getBeastHuntRespawnMs() / 60000)} phút`
     : currentStage?.isResourceDungeon
     ? outcome !== 'win'
       ? 'Về Phụ bản để thử lại tầng này'

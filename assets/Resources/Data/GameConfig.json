@@ -1,5 +1,5 @@
 {
-  "description": "Cấu hình trung tâm cho giao diện, nhịp chiến đấu, animation 0,8 giây, delay sát thương, tỉ lệ gặp địch mặc định 80%, phần thưởng, giới hạn mua, lưu dữ liệu, mã đổi thưởng và các quy tắc Ngao du. Ví dụ: khi F5 có token, game lấy dữ liệu Mongo ghi đè dữ liệu cũ; khi chưa có token thì bắt đăng nhập.",
+  "description": "Cấu hình trung tâm cho giao diện, nhịp chiến đấu, animation 0,8 giây, delay sát thương, tỉ lệ gặp địch mặc định 80%, phần thưởng, giới hạn mua, lưu dữ liệu, mã đổi thưởng và các quy tắc Ngao du. Săn yêu vật mở từ Map 5; sau khi thắng phải nhận một phần thưởng ngẫu nhiên rồi mới bắt đầu hồi 1 giờ, còn thua thì không có phần thưởng và bắt đầu hồi ngay. Phần thưởng lấy cấp rương trang bị và phẩm chất rương skill theo map Ngao du cao nhất đã mở khóa; các nhóm phần thưởng có xác suất ngang nhau.",
   "display": {
     "targetViewportWidth": 390,
     "targetViewportHeight": 850,
@@ -21,13 +21,16 @@
       "unlockMapNumber": 5,
       "respawnMs": 3600000,
       "reward": {
-        "cultivationBase": 100,
-        "cultivationPerTier": 20,
-        "spiritStonesBase": 100,
-        "spiritStonesPerTier": 30,
-        "enhancementStones": 5,
-        "healthPotions": 1,
-        "manaPotions": 1
+        "equipmentChestMin": 2,
+        "equipmentChestMax": 20,
+        "enhancementStonesMin": 2,
+        "enhancementStonesMax": 20,
+        "healthPotionsMin": 2,
+        "healthPotionsMax": 20,
+        "manaPotionsMin": 2,
+        "manaPotionsMax": 20,
+        "skillChestMin": 1,
+        "skillChestMax": 10
       }
     },
     "dailyShopPurchaseLimits": {
