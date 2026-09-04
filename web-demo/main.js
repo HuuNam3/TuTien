@@ -52,6 +52,7 @@ let cloudSaveTimer = 0;
 let cloudPendingData = null;
 let cloudPeriodicSaveTimer = 0;
 let cloudPeriodicSyncInFlight = false;
+let cloudSaveInFlight = null;
 let cloudSyncUnavailable = false;
 let cloudSessionId = '';
 let cloudSaveVersion = 0;
@@ -294,6 +295,7 @@ let currentWanderMapId = '';
 let beastHuntMapId = '';
 let beastHuntRespawnAt = 0;
 let beastHuntNotificationPending = false;
+let beastHuntPendingReward = null;
 let activeActivityTab = 'beastHunt';
 let wanderCarouselCleanup = null;
 let trialTowerHighestCleared = 0;
@@ -2841,6 +2843,12 @@ function getBeastHuntRespawnMs() {
   return Math.max(60000, Math.floor(Number(getBeastHuntConfig().respawnMs) || 3600000));
 }
 
+function getBeastHuntRewardConfig() {
+  return getBeastHuntConfig().reward && typeof getBeastHuntConfig().reward === 'object'
+    ? getBeastHuntConfig().reward
+    : {};
+}
+
 function canAccessBeastHunt() {
   return getUnlockedWanderMapCount() >= getBeastHuntUnlockMapNumber();
 }
@@ -2852,8 +2860,11 @@ function getBeastHuntEligibleMaps() {
 }
 
 function ensureBeastHuntSpawn() {
-  if (!canAccessBeastHunt() || beastHuntBattleActive) return false;
-  if (beastHuntMapId && wanderMaps[beastHuntMapId]) return false;
+  if (!canAccessBeastHunt() || beastHuntBattleActive || beastHuntPendingReward) return false;
+  if (beastHuntMapId && wanderMaps[beastHuntMapId]) {
+    if (Number(beastHuntRespawnAt) > Date.now() || !beastHuntRespawnAt) return false;
+    beastHuntMapId = '';
+  }
   beastHuntMapId = '';
   if (Number(beastHuntRespawnAt) > Date.now()) return false;
   const eligibleMaps = getBeastHuntEligibleMaps();
@@ -2898,17 +2909,83 @@ function createBeastHuntStage() {
   };
 }
 
-function renderBeastHuntMapEncounter() {
-  if (!canAccessBeastHunt() || beastHuntMapId !== currentWanderMapId || beastHuntBattleActive) return;
-  const stage = createBeastHuntStage();
+function createBeastHuntReward(stage) {
+  const config = getBeastHuntRewardConfig();
+  const tier = Math.max(1, Math.floor(Number(stage?.enemyTier) || getPlayerCultivationTier()));
+  const rankMultiplier = getEnemyRewardMultiplier(stage);
+  const getScaledReward = (baseKey, perTierKey) => Math.max(
+    0,
+    Math.round(((Number(config[baseKey]) || 0) + Math.max(0, tier - 1) * (Number(config[perTierKey]) || 0)) * rankMultiplier),
+  );
+  return {
+    cultivation: getScaledReward('cultivationBase', 'cultivationPerTier'),
+    spiritStones: getScaledReward('spiritStonesBase', 'spiritStonesPerTier'),
+    enhancementStones: Math.max(0, Math.floor(Number(config.enhancementStones) || 0)),
+    healthPotions: Math.max(0, Math.floor(Number(config.healthPotions) || 0)),
+    manaPotions: Math.max(0, Math.floor(Number(config.manaPotions) || 0)),
+  };
+}
+
+function normalizeBeastHuntReward(reward) {
+  if (!reward || typeof reward !== 'object') return null;
+  const normalized = {
+    cultivation: Math.max(0, Math.floor(Number(reward.cultivation) || 0)),
+    spiritStones: Math.max(0, Math.floor(Number(reward.spiritStones) || 0)),
+    enhancementStones: Math.max(0, Math.floor(Number(reward.enhancementStones) || 0)),
+    healthPotions: Math.max(0, Math.floor(Number(reward.healthPotions) || 0)),
+    manaPotions: Math.max(0, Math.floor(Number(reward.manaPotions) || 0)),
+  };
+  return Object.values(normalized).some((amount) => amount > 0) ? normalized : null;
+}
+
+function getBeastHuntRewardEntries(reward = beastHuntPendingReward) {
+  if (!reward) return [];
+  return [
+    { key: 'cultivation', icon: 'stat-icon icon-stat-cultivation', label: `Tu vi +${formatGameNumber(reward.cultivation)}` },
+    { key: 'spiritStones', icon: 'item-icon icon-item-spirit-stone', label: `Linh thạch +${formatGameNumber(reward.spiritStones)}` },
+    { key: 'enhancementStones', icon: 'item-icon icon-item-enhancement-stone', label: `Đá cường hóa +${formatGameNumber(reward.enhancementStones)}` },
+    { key: 'healthPotions', icon: 'item-icon icon-item-health-pill', label: `Sinh Huyết Đan +${formatGameNumber(reward.healthPotions)}` },
+    { key: 'manaPotions', icon: 'item-icon icon-item-mana-flame', label: `Tụ Linh Đan +${formatGameNumber(reward.manaPotions)}` },
+  ].filter((entry) => Number(reward[entry.key]) > 0);
+}
+
+function formatBeastHuntRewardMarkup(reward = beastHuntPendingReward) {
+  return getBeastHuntRewardEntries(reward)
+    .map((entry) => `<span><i class="${entry.icon}" aria-hidden="true"></i>${entry.label}</span>`)
+    .join('');
+}
+
+function claimBeastHuntReward() {
+  const reward = normalizeBeastHuntReward(beastHuntPendingReward);
+  if (busy || !reward) return;
+  beastHuntPendingReward = null;
+  addPlayerCultivation(reward.cultivation);
+  playerSpiritStones += reward.spiritStones;
+  enhancementStones += reward.enhancementStones;
+  healthPotionCount += reward.healthPotions;
+  manaPotionCount += reward.manaPotions;
+  showGameToast('Đã nhận phần thưởng săn yêu vật.', 'success');
+  renderCultivation();
+  renderInventory();
+  renderShop();
+  renderActivities();
+  saveGame();
+}
+
+function renderBeastHuntEncounterOverlay(stage) {
   if (!stage) return;
   const preview = createStageEnemy(stage);
-  const card = document.createElement('div');
-  card.className = 'stage-card dungeon-entry-card wander-card beast-hunt-card';
-  card.innerHTML = `
+  if (!beastHuntRespawnAt || Number(beastHuntRespawnAt) <= Date.now()) {
+    beastHuntRespawnAt = Date.now() + getBeastHuntRespawnMs();
+    saveGame();
+  }
+  wanderEventOverlay.classList.remove('is-hidden');
+  wanderEventOverlay.innerHTML = '<div class="wander-event-modal beast-hunt-encounter-modal"></div>';
+  const modal = wanderEventOverlay.querySelector('.wander-event-modal');
+  modal.innerHTML = `
     <span><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i>Săn yêu vật</span>
     <strong>${stage.enemyData.name}</strong>
-    <em>Yêu vật thủ lĩnh đã xuất hiện tại ${wanderMaps[stage.mapId].name}.</em>
+    <em>Yêu vật thủ lĩnh đã bị đạo hữu phát hiện.</em>
     <div class="enemy-encounter-meta">
       <span><b>Phẩm chất</b><strong>${getEnemyRankLabel(stage.enemyData, stage.enemyRankLevel)}</strong></span>
       <span><b>Tu vi</b><strong>${stage.realmText}</strong></span>
@@ -2917,17 +2994,26 @@ function renderBeastHuntMapEncounter() {
     </div>
     <div class="enemy-encounter-summary">
       <span><b>Lực chiến</b><strong>${formatGameNumber(getCombatPower(preview))}</strong></span>
-      <span><b>Phần thưởng</b><strong>Không nhận tu vi/linh thạch</strong></span>
+      <span><b>Phần thưởng</b><strong>Nhận trong Hoạt động nếu thắng</strong></span>
     </div>
     <small class="enemy-equipment-preview"><b>Trang bị</b> ${getEnemyEquipmentText(stage)}</small>
     <div class="wander-actions beast-hunt-actions">
       <button type="button" class="breakthrough compact"><i class="item-icon icon-item-sword" aria-hidden="true"></i>Chiến đấu</button>
     </div>
   `;
-  const fightButton = card.querySelector('button');
+  const fightButton = modal.querySelector('button');
   setButtonDisabledState(fightButton, !canEnterDungeon(), canEnterDungeon() ? '' : 'Sinh lực chưa đủ để khiêu chiến.');
-  fightButton.addEventListener('click', () => startBeastHuntBattle(stage));
-  stageGrid.appendChild(card);
+  fightButton.addEventListener('click', () => {
+    hideWanderEventOverlay();
+    startBeastHuntBattle(stage);
+  });
+}
+
+function renderBeastHuntMapEncounter() {
+  if (!canAccessBeastHunt() || beastHuntMapId !== currentWanderMapId || beastHuntBattleActive) return;
+  const stage = createBeastHuntStage();
+  if (!stage) return;
+  renderBeastHuntEncounterOverlay(stage);
 }
 
 function renderActivities() {
@@ -2961,8 +3047,25 @@ function renderActivities() {
     return;
   }
 
+  if (beastHuntPendingReward) {
+    if (summary) summary.textContent = 'Đạo hữu có phần thưởng săn yêu vật chưa nhận.';
+    list.innerHTML = `
+      <article class="activity-item beast-hunt-activity">
+        <div class="activity-item-heading">
+          <span><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i>Phần thưởng săn yêu vật</span>
+          <strong>Đang chờ nhận</strong>
+        </div>
+        <h3>Chiến thắng yêu vật thủ lĩnh</h3>
+        <p>Nhận phần thưởng bên dưới. Yêu vật sẽ xuất hiện lại sau ${formatBeastHuntCountdown(beastHuntRespawnAt)}.</p>
+        <div class="enemy-encounter-summary">${formatBeastHuntRewardMarkup()}</div>
+        <button type="button" class="breakthrough compact beast-hunt-claim-button"><i class="game-icon icon-gift" aria-hidden="true"></i>Nhận thưởng</button>
+      </article>
+    `;
+    list.querySelector('.beast-hunt-claim-button')?.addEventListener('click', claimBeastHuntReward);
+    return;
+  }
+
   if (beastHuntMapId) {
-    const map = wanderMaps[beastHuntMapId];
     if (summary) summary.textContent = 'Một hoạt động đang chờ đạo hữu khám phá.';
     list.innerHTML = `
       <article class="activity-item beast-hunt-activity">
@@ -2970,16 +3073,10 @@ function renderActivities() {
           <span><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i>Săn yêu vật</span>
           <strong>Đang xuất hiện</strong>
         </div>
-        <h3>${map?.name || 'Một vùng đất chưa rõ'}</h3>
-        <p>Yêu vật thủ lĩnh có tu vi bằng đạo hữu đang ẩn trong map này. Hãy chọn đúng map trong Ngao du để khiêu chiến.</p>
-        <button type="button" class="secondary compact activity-map-button"><i class="activity-icon icon-activity-path" aria-hidden="true"></i>Đi tới map</button>
+        <h3>Yêu vật thủ lĩnh đang ẩn</h3>
+        <p>Yêu vật có tu vi bằng đạo hữu. Hãy vào Ngao du và lần lượt chọn các map đã mở khóa để tìm kiếm.</p>
       </article>
     `;
-    list.querySelector('.activity-map-button')?.addEventListener('click', () => {
-      currentWanderMapId = map?.id || currentWanderMapId;
-      showMap();
-      saveGame();
-    });
     return;
   }
 
@@ -3031,7 +3128,7 @@ function updateNotificationBadges() {
     .length;
   setNotificationBadge(questBadge, readyQuestCount);
   setNotificationBadge(dungeonBadge, pendingWanderCount);
-  setNotificationBadge(activityBadge, Number(beastHuntNotificationPending && canAccessBeastHunt()));
+  setNotificationBadge(activityBadge, Number((beastHuntNotificationPending || beastHuntPendingReward) && canAccessBeastHunt()));
   setNotificationBadge(mailBadge, mailUnreadCount);
   setNotificationBadge(trainingBadge, trainingCount);
   setNotificationBadge(resourceDungeonBadge, resourceSweepCount);
@@ -4162,7 +4259,15 @@ async function logout() {
 
 async function syncCloudState(data) {
   if (!cloudUser || cloudSessionInvalid || cloudSyncUnavailable || !data) return false;
+  const previousSave = cloudSaveInFlight;
+  let releaseSave;
+  const currentSave = new Promise((resolve) => {
+    releaseSave = resolve;
+  });
+  cloudSaveInFlight = currentSave;
+  if (previousSave) await previousSave;
   try {
+    if (!cloudUser || cloudSessionInvalid || cloudSyncUnavailable) return false;
     const response = await fetch(cloudSaveEndpoint, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -4197,6 +4302,9 @@ async function syncCloudState(data) {
       cloudSyncUnavailable = true;
     }
     return false;
+  } finally {
+    releaseSave();
+    if (cloudSaveInFlight === currentSave) cloudSaveInFlight = null;
   }
 }
 
@@ -4386,6 +4494,7 @@ async function resetGameData() {
       beastHuntMapId: '',
       beastHuntRespawnAt: 0,
       beastHuntNotificationPending: false,
+      beastHuntPendingReward: null,
       autoWanderAfterRecovery: false,
       hasMajorAscensionPermit: false,
       lastActiveAt: Date.now(),
@@ -4503,6 +4612,7 @@ function loadSavedGame() {
     beastHuntMapId = wanderMaps[data.beastHuntMapId] ? data.beastHuntMapId : '';
     beastHuntRespawnAt = Math.max(0, Number(data.beastHuntRespawnAt) || 0);
     beastHuntNotificationPending = Boolean(data.beastHuntNotificationPending);
+    beastHuntPendingReward = normalizeBeastHuntReward(data.beastHuntPendingReward);
     beastHuntBattleActive = false;
     activeSkillId = data.activeSkillId || initialState.skillId;
     const savedOwnedPetIds = Array.isArray(data.ownedPetIds) ? data.ownedPetIds : [];
@@ -4726,6 +4836,7 @@ function saveGame() {
     beastHuntMapId,
     beastHuntRespawnAt,
     beastHuntNotificationPending,
+    beastHuntPendingReward,
     autoWanderAfterRecovery,
     trialTowerHighestCleared,
     claimedQuestIds: [...claimedQuestIds],
@@ -7269,8 +7380,11 @@ function finishBattle(message, outcome = 'lose') {
   }
   if (isBeastHunt) {
     beastHuntBattleActive = false;
+    beastHuntPendingReward = outcome === 'win' ? createBeastHuntReward(currentStage) : null;
     beastHuntMapId = '';
-    beastHuntRespawnAt = Date.now() + getBeastHuntRespawnMs();
+    if (!beastHuntRespawnAt || Number(beastHuntRespawnAt) <= Date.now()) {
+      beastHuntRespawnAt = Date.now() + getBeastHuntRespawnMs();
+    }
     beastHuntNotificationPending = false;
   }
   setButtonDisabledState(startButton, false);
@@ -7279,7 +7393,11 @@ function finishBattle(message, outcome = 'lose') {
   renderBattleResult(message, outcome, reward, spiritStoneReward, droppedItem, bonusRewardText, cultivationAward);
   renderStageMap();
   pushLog(`${message} Trận đấu kết thúc.`);
-  pushLog((cultivationAward > 0 || reward > 0)
+  pushLog(isBeastHunt
+    ? outcome === 'win'
+      ? 'Đã mở phần thưởng trong tab Hoạt động > Săn yêu vật.'
+      : 'Không nhận phần thưởng săn yêu vật.'
+    : (cultivationAward > 0 || reward > 0)
     ? `Nhận ${formatGameNumber(cultivationAward || reward)} tu vi${cultivationAward > reward ? `, đã lưu ${formatGameNumber(reward)} vào Đan điền/thanh tu vi.` : ''} Hiện tại: ${formatGameNumber(playerCultivation)}/${formatGameNumber(getCultivationRequiredForNextLevel())}.`
     : 'Không nhận tu vi.');
   if (recovered) pushLog(`Dưỡng khí hồi ${recovered.hp} sinh lực và ${recovered.mana} linh lực.`);
@@ -7292,7 +7410,9 @@ function finishBattle(message, outcome = 'lose') {
   if (outcome === 'win' && isWanderBattle && currentStage.isWanderBoss) {
     pushLog(`Đã chinh phục Boss ${getCurrentWanderMap().name}.`);
   }
-  if (isBeastHunt) pushLog('Săn yêu vật kết thúc. Không nhận tu vi hoặc linh thạch; yêu vật sẽ xuất hiện lại sau 1 giờ.');
+  if (isBeastHunt) {
+    pushLog('Săn yêu vật kết thúc. Yêu vật sẽ xuất hiện lại sau 1 giờ.');
+  }
   if (bonusRewardText) pushLog(`Nhận ${bonusRewardText}. Căn cơ hiện tại: ${playerFoundation}.`);
   if (playerCultivation >= getCultivationRequiredForNextLevel()) {
     if (playerLevel >= getMinorRealmLevelCap() && hasNextMajorRealm() && getShopInventoryCount('majorAscensionPermit') <= 0) {
@@ -7345,7 +7465,11 @@ function renderBattleResult(message, outcome, reward, spiritStoneReward, dropped
   battleResult.innerHTML = `
     <strong><i class="${resultIcon.startsWith('icon-unique-') ? 'unique-icon' : resultIcon.startsWith('icon-stat') ? 'stat-icon' : 'item-icon'} ${resultIcon}" aria-hidden="true"></i>${resultTitle}</strong>
     <span>${message}</span>
-    <em>${isBeastHunt ? 'Không nhận tu vi hoặc linh thạch.' : `Tu vi nhận +${formatGameNumber(displayedCultivation)}${storedCultivationNote} | Rớt linh thạch +${formatGameNumber(spiritStoneReward)} | ${bonusRewardText || itemText}`}</em>
+    <em>${isBeastHunt
+      ? outcome === 'win'
+        ? 'Đã thắng. Mở tab Hoạt động > Săn yêu vật để nhận phần thưởng.'
+        : 'Không nhận phần thưởng.'
+      : `Tu vi nhận +${formatGameNumber(displayedCultivation)}${storedCultivationNote} | Rớt linh thạch +${formatGameNumber(spiritStoneReward)} | ${bonusRewardText || itemText}`}</em>
     <small>Tiếp theo: ${nextText}</small>
     <button type="button" class="breakthrough compact">${getPostBattleButtonText(outcome)}</button>
   `;

@@ -17,8 +17,22 @@
     "wanderHighEnemyRequiredWins": 10,
     "wanderBossRequiredWins": 30,
     "wanderSkipEnemyRequiresBoss": true,
+    "beastHunt": {
+      "unlockMapNumber": 5,
+      "respawnMs": 3600000,
+      "reward": {
+        "cultivationBase": 100,
+        "cultivationPerTier": 20,
+        "spiritStonesBase": 100,
+        "spiritStonesPerTier": 30,
+        "enhancementStones": 5,
+        "healthPotions": 1,
+        "manaPotions": 1
+      }
+    },
     "dailyShopPurchaseLimits": {
       "skillChest": 10,
+      "petChest": 10,
       "cultivation": 10,
       "healthPotion": 30,
       "manaPotion": 30
