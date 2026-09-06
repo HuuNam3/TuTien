@@ -1,0 +1,159 @@
+{
+  "description": "Cửa hàng gồm rương linh thú, đan dược, đan phá cảnh, đá cường hóa và cục hoàn đá cường hóa. Rương skill vẫn giữ trong dữ liệu để làm phần thưởng hoạt động nhưng không bán trực tiếp trong shop. Dữ liệu quy định giá, loại vật phẩm và giới hạn mua theo ngày; đan phá cảnh tiểu cảnh giới được tạo theo danh sách đại cảnh giới hiện tại.",
+  "minorBreakthroughPillConfig": {
+    "idPrefix": "minorAscensionPill",
+    "namePrefix": "",
+    "nameSuffix": "Đan",
+    "firstMajorRealmBaseCost": 100,
+    "majorRealmBaseCostStep": 100,
+    "firstMajorRealmPriceStep": 25,
+    "otherMajorRealmBaseCost": 200,
+    "otherMajorRealmPriceStep": 25,
+    "description": "Dùng để đột phá một tiểu cảnh giới. Mỗi lần mua tiếp theo trong cùng đại cảnh giới sẽ tăng giá theo cấu hình."
+  },
+  "majorAscensionTreasureConfig": {
+    "idPrefix": "majorAscensionTreasure",
+    "namePrefix": "Cục Thiên Tài Địa Bảo",
+    "description": "Vật phẩm dùng để đột phá đại cảnh giới tương ứng. Mỗi cục có một lần roll chỉ số ngẫu nhiên.",
+    "minManaPercent": 1,
+    "maxManaPercent": 3,
+    "maxHpPercent": 30,
+    "maxAttackPercent": 50,
+    "maxMasteryPercent": 50,
+    "maxDefensePercent": 20
+  },
+  "majorAscensionTreasureChestConfig": {
+    "idPrefix": "majorAscensionTreasureChest",
+    "namePrefix": "Rương",
+    "description": "Rương rơi từ mọi Boss map. Mở ra 1 Cục Thiên Tài Địa Bảo của đại cảnh giới kế tiếp."
+  },
+  "shopItems": [
+    {
+      "id": "enhancementStone",
+      "name": "Đá Cường Hóa",
+      "description": "Nguyên liệu dùng ở mỗi cấp cường hóa. Giá gốc 50 linh thạch, mỗi lần mua trong ngày tăng 5 linh thạch; sang ngày mới reset về 50.",
+      "cost": 50,
+      "type": "enhancementStone",
+      "amount": 1,
+      "priceStep": 5
+    },
+    {
+      "id": "enhancementRefund",
+      "name": "Cục Hoàn Đá Cường Hóa",
+      "description": "Dùng trong panel cường hóa để đưa một trang bị về +0 và hoàn lại toàn bộ đá đã dùng.",
+      "cost": 2500,
+      "type": "enhancementRefund",
+      "amount": 1
+    },
+    {
+      "id": "skillChestMortal",
+      "name": "Rương skill Phàm phẩm",
+      "description": "Mở ra 1 mảnh skill Phàm phẩm với tỉ lệ 90% hoặc 1 sách skill Phàm phẩm với tỉ lệ 10%.",
+      "cost": 100,
+      "type": "skillChest",
+      "gradeId": "mortal",
+      "fragmentChance": 0.9,
+      "bookChance": 0.1,
+      "requiredTier": 1,
+      "hidden": true
+    },
+    {
+      "id": "skillChestYellow",
+      "name": "Rương skill Hoàng phẩm",
+      "description": "Mở ra 1 mảnh skill Hoàng phẩm với tỉ lệ 90% hoặc 1 sách skill Hoàng phẩm với tỉ lệ 10%.",
+      "cost": 150,
+      "type": "skillChest",
+      "gradeId": "yellow",
+      "fragmentChance": 0.9,
+      "bookChance": 0.1,
+      "requiredTier": 10,
+      "hidden": true
+    },
+    {
+      "id": "skillChestMysterious",
+      "name": "Rương skill Huyền phẩm",
+      "description": "Mở ra 1 mảnh skill Huyền phẩm với tỉ lệ 90% hoặc 1 sách skill Huyền phẩm với tỉ lệ 10%.",
+      "cost": 300,
+      "type": "skillChest",
+      "gradeId": "mysterious",
+      "fragmentChance": 0.9,
+      "bookChance": 0.1,
+      "requiredTier": 19,
+      "hidden": true
+    },
+    {
+      "id": "skillChestEarth",
+      "name": "Rương skill Địa phẩm",
+      "description": "Mở ra 1 mảnh skill Địa phẩm với tỉ lệ 90% hoặc 1 sách skill Địa phẩm với tỉ lệ 10%.",
+      "cost": 0,
+      "type": "skillChest",
+      "gradeId": "earth",
+      "fragmentChance": 0.9,
+      "bookChance": 0.1,
+      "requiredTier": 1,
+      "hidden": true
+    },
+    {
+      "id": "skillChestHeaven",
+      "name": "Rương skill Thiên phẩm",
+      "description": "Mở ra 1 mảnh skill Thiên phẩm với tỉ lệ 90% hoặc 1 sách skill Thiên phẩm với tỉ lệ 10%.",
+      "cost": 0,
+      "type": "skillChest",
+      "gradeId": "heaven",
+      "fragmentChance": 0.9,
+      "bookChance": 0.1,
+      "requiredTier": 1,
+      "hidden": true
+    },
+    {
+      "id": "petChest",
+      "name": "Rương Linh Thú",
+      "description": "Mở ra mảnh linh thú. Mỗi lần nhận 1, 2 hoặc 5 mảnh; đủ 50 mảnh của cùng một linh thú sẽ tự ghép thành 1 linh thú.",
+      "cost": 1000,
+      "type": "petChest",
+      "fragmentRewards": [
+        { "amount": 1, "chance": 0.7 },
+        { "amount": 2, "chance": 0.25 },
+        { "amount": 5, "chance": 0.05 }
+      ]
+    },
+    {
+      "id": "talentTreasureChest",
+      "name": "Rương Thiên Tài Địa Bảo",
+      "description": "Mở ra 1 Cục Thiên Tài Địa Bảo để chuẩn bị đột phá đại cảnh giới.",
+      "cost": 100,
+      "type": "talentTreasureChest",
+      "hidden": true
+    },
+    {
+      "id": "majorAscensionPermit",
+      "name": "Phá Cảnh Đan",
+    "description": "Dùng để đột phá đại cảnh giới. Giá gốc 1000 linh thạch, mỗi lần mua tăng thêm 2000.",
+    "cost": 1000,
+    "type": "ascension",
+    "priceStep": 2000
+    },
+    {
+      "id": "healthPotion",
+      "name": "Sinh Huyết Đan",
+      "description": "Hồi phục 25% HP mỗi lần dùng.",
+      "cost": 5,
+      "type": "potion",
+      "potionType": "health",
+      "recoveryPercent": 0.25,
+      "priceIncreaseEvery": 1,
+      "priceStep": 5
+    },
+    {
+      "id": "manaPotion",
+      "name": "Tụ Linh Đan",
+      "description": "Hồi phục 25% MP mỗi lần dùng.",
+      "cost": 5,
+      "type": "potion",
+      "potionType": "mana",
+      "recoveryPercent": 0.25,
+      "priceIncreaseEvery": 1,
+      "priceStep": 5
+    }
+  ]
+}

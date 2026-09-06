@@ -1,0 +1,651 @@
+{
+  "version": 6,
+  "description": "33 đại cảnh giới tu luyện của nhân vật, được sắp xếp theo tiến trình game và kèm mốc tu vi cần đạt, tên hiển thị cùng 10 tiểu cảnh giới. Thời gian mục tiêu đã tính theo hệ số căn cơ của đại cảnh giới: 1, 2, 3...; các mốc tu vi được nhân theo hệ số đó để thời gian thực tế vẫn giữ nguyên. Công thức gốc là tiểu cảnh giới bắt đầu 3 phút, mỗi tầng tăng 30 giây, đột phá đại cảnh giới 15 phút. Tổng thời gian mỗi đại cảnh giới lấy theo bảng giờ tăng dần và scale đều theo 10 khoảng tiến triển. Thứ tự gồm Thối Thể, Luyện Khí, Khai Nguyên, Khí Động, Kết Tinh, Ly Hợp, Chân Nguyên, Trúc Cơ, Kim Đan, Thần Du, Kết Đan, Nguyên Anh, Cụ Linh, Hóa Thần, Siêu Phàm, Ngộ Đạo, Nhập Thánh, Thánh Vương, Phản Hư, Anh Biến, Vũ Hóa, Hư Vương, Vấn Đỉnh, Đạo Nguyên, Luyện Hư, Hợp Thể, Đại Thừa, Đế Tôn, Độ Kiếp, Đạo Ấn, Khai Thiên, Sáng Thế và Đăng Tiên. Mỗi đại cảnh giới dùng 9 tiểu cảnh giới và Đại viên mãn.",
+  "cultivationTimeFormula": {
+    "unit": "seconds",
+    "baseCultivationRate": 1,
+    "minorStartSeconds": 180,
+    "minorStepSeconds": 30,
+    "majorBreakthroughSeconds": 900,
+    "milestonesPerMajorRealm": 10,
+    "cultivationRateByMajorRealm": "majorRealmNumber tu vi/giây",
+    "majorRealmTotalHours": [1, 3, 7, 11, 17, 23, 31, 39, 49, 59, 71, 83, 97, 111, 127, 143, 161, 179, 199, 219, 241, 263, 287, 311, 337, 363, 391, 419, 449, 479, 511, 543, 577]
+  },
+  "realms": [
+    {
+      "id": 1,
+      "name": "Thối Thể",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 180,
+      "minorStepRequirement": 30,
+      "majorBreakthroughRequirement": 900
+    },
+    {
+      "id": 2,
+      "name": "Luyện Khí",
+      "source": "Quỷ Cốc Bát Hoang",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 1080,
+      "minorStepRequirement": 180,
+      "majorBreakthroughRequirement": 5400
+    },
+    {
+      "id": 3,
+      "name": "Khai Nguyên",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 3780,
+      "minorStepRequirement": 630,
+      "majorBreakthroughRequirement": 18900
+    },
+    {
+      "id": 4,
+      "name": "Khí Động",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 7920,
+      "minorStepRequirement": 1320,
+      "majorBreakthroughRequirement": 39600
+    },
+    {
+      "id": 5,
+      "name": "Kết Tinh",
+      "source": "Quỷ Cốc Bát Hoang",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 15300,
+      "minorStepRequirement": 2550,
+      "majorBreakthroughRequirement": 76500
+    },
+    {
+      "id": 6,
+      "name": "Ly Hợp",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 24840,
+      "minorStepRequirement": 4140,
+      "majorBreakthroughRequirement": 124200
+    },
+    {
+      "id": 7,
+      "name": "Chân Nguyên",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 39060,
+      "minorStepRequirement": 6510,
+      "majorBreakthroughRequirement": 195300
+    },
+    {
+      "id": 8,
+      "name": "Trúc Cơ",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 56160,
+      "minorStepRequirement": 9360,
+      "majorBreakthroughRequirement": 280800
+    },
+    {
+      "id": 9,
+      "name": "Kim Đan",
+      "source": "Quỷ Cốc Bát Hoang",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 79380,
+      "minorStepRequirement": 13230,
+      "majorBreakthroughRequirement": 396900
+    },
+    {
+      "id": 10,
+      "name": "Thần Du",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 106200,
+      "minorStepRequirement": 17700,
+      "majorBreakthroughRequirement": 531000
+    },
+    {
+      "id": 11,
+      "name": "Kết Đan",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 140580,
+      "minorStepRequirement": 23430,
+      "majorBreakthroughRequirement": 702900
+    },
+    {
+      "id": 12,
+      "name": "Nguyên Anh",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 179280,
+      "minorStepRequirement": 29880,
+      "majorBreakthroughRequirement": 896400
+    },
+    {
+      "id": 13,
+      "name": "Cụ Linh",
+      "source": "Quỷ Cốc Bát Hoang",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 226980,
+      "minorStepRequirement": 37830,
+      "majorBreakthroughRequirement": 1134900
+    },
+    {
+      "id": 14,
+      "name": "Hóa Thần",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 279720,
+      "minorStepRequirement": 46620,
+      "majorBreakthroughRequirement": 1398600
+    },
+    {
+      "id": 15,
+      "name": "Siêu Phàm",
+      "minorRealms": [
+        "Nhất Trọng Thiên",
+        "Nhị Trọng Thiên",
+        "Tam Trọng Thiên",
+        "Tứ Trọng Thiên",
+        "Ngũ Trọng Thiên",
+        "Lục Trọng Thiên",
+        "Thất Trọng Thiên",
+        "Bát Trọng Thiên",
+        "Cửu Trọng Thiên",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 342900,
+      "minorStepRequirement": 57150,
+      "majorBreakthroughRequirement": 1714500
+    },
+    {
+      "id": 16,
+      "name": "Ngộ Đạo",
+      "source": "Quỷ Cốc Bát Hoang",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 411840,
+      "minorStepRequirement": 68640,
+      "majorBreakthroughRequirement": 2059200
+    },
+    {
+      "id": 17,
+      "name": "Nhập Thánh",
+      "minorRealms": [
+        "Nhất Trọng Thiên",
+        "Nhị Trọng Thiên",
+        "Tam Trọng Thiên",
+        "Tứ Trọng Thiên",
+        "Ngũ Trọng Thiên",
+        "Lục Trọng Thiên",
+        "Thất Trọng Thiên",
+        "Bát Trọng Thiên",
+        "Cửu Trọng Thiên",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 492660,
+      "minorStepRequirement": 82110,
+      "majorBreakthroughRequirement": 2463300
+    },
+    {
+      "id": 18,
+      "name": "Thánh Vương",
+      "minorRealms": [
+        "Nhất Trọng Thiên",
+        "Nhị Trọng Thiên",
+        "Tam Trọng Thiên",
+        "Tứ Trọng Thiên",
+        "Ngũ Trọng Thiên",
+        "Lục Trọng Thiên",
+        "Thất Trọng Thiên",
+        "Bát Trọng Thiên",
+        "Cửu Trọng Thiên",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 579960,
+      "minorStepRequirement": 96660,
+      "majorBreakthroughRequirement": 2899800
+    },
+    {
+      "id": 19,
+      "name": "Phản Hư",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 680580,
+      "minorStepRequirement": 113430,
+      "majorBreakthroughRequirement": 3402900
+    },
+    {
+      "id": 20,
+      "name": "Anh Biến",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 788400,
+      "minorStepRequirement": 131400,
+      "majorBreakthroughRequirement": 3942000
+    },
+    {
+      "id": 21,
+      "name": "Vũ Hóa",
+      "source": "Quỷ Cốc Bát Hoang",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 910980,
+      "minorStepRequirement": 151830,
+      "majorBreakthroughRequirement": 4554900
+    },
+    {
+      "id": 22,
+      "name": "Hư Vương",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 1041480,
+      "minorStepRequirement": 173580,
+      "majorBreakthroughRequirement": 5207400
+    },
+    {
+      "id": 23,
+      "name": "Vấn Đỉnh",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 1188180,
+      "minorStepRequirement": 198030,
+      "majorBreakthroughRequirement": 5940900
+    },
+    {
+      "id": 24,
+      "name": "Đạo Nguyên",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 1343520,
+      "minorStepRequirement": 223920,
+      "majorBreakthroughRequirement": 6717600
+    },
+    {
+      "id": 25,
+      "name": "Luyện Hư",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 1516500,
+      "minorStepRequirement": 252750,
+      "majorBreakthroughRequirement": 7582500
+    },
+    {
+      "id": 26,
+      "name": "Hợp Thể",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 1698840,
+      "minorStepRequirement": 283140,
+      "majorBreakthroughRequirement": 8494200
+    },
+    {
+      "id": 27,
+      "name": "Đại Thừa",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 1900260,
+      "minorStepRequirement": 316710,
+      "majorBreakthroughRequirement": 9501300
+    },
+    {
+      "id": 28,
+      "name": "Đế Tôn",
+      "minorRealms": [
+        "Đế Nguyên",
+        "Đế Hồn",
+        "Đế Thể",
+        "Đế Vực",
+        "Đế Pháp",
+        "Đế Đạo",
+        "Đế Uy",
+        "Đế Mệnh",
+        "Đại Đế",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 2111760,
+      "minorStepRequirement": 351960,
+      "majorBreakthroughRequirement": 10558800
+    },
+    {
+      "id": 29,
+      "name": "Độ Kiếp",
+      "minorRealms": [
+        "Lôi Kiếp",
+        "Hỏa Kiếp",
+        "Phong Kiếp",
+        "Hồn Kiếp",
+        "Tâm Ma Kiếp",
+        "Sinh Tử Kiếp",
+        "Nhân Quả Kiếp",
+        "Đạo Kiếp",
+        "Thiên Đạo Kiếp",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 2343780,
+      "minorStepRequirement": 390630,
+      "majorBreakthroughRequirement": 11718900
+    },
+    {
+      "id": 30,
+      "name": "Đạo Ấn",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 2586600,
+      "minorStepRequirement": 431100,
+      "majorBreakthroughRequirement": 12933000
+    },
+    {
+      "id": 31,
+      "name": "Khai Thiên",
+      "minorRealms": [
+        "Nhất phẩm",
+        "Nhị phẩm",
+        "Tam phẩm",
+        "Tứ phẩm",
+        "Ngũ phẩm",
+        "Lục phẩm",
+        "Thất phẩm",
+        "Bát phẩm",
+        "Cửu phẩm",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 2851380,
+      "minorStepRequirement": 475230,
+      "majorBreakthroughRequirement": 14256900
+    },
+    {
+      "id": 32,
+      "name": "Sáng Thế",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 3127680,
+      "minorStepRequirement": 521280,
+      "majorBreakthroughRequirement": 15638400
+    },
+    {
+      "id": 33,
+      "name": "Đăng Tiên",
+      "source": "Quỷ Cốc Bát Hoang",
+      "minorRealms": [
+        "Nhất tầng",
+        "Nhị tầng",
+        "Tam tầng",
+        "Tứ tầng",
+        "Ngũ tầng",
+        "Lục tầng",
+        "Thất tầng",
+        "Bát tầng",
+        "Cửu tầng",
+        "Đại viên mãn"
+      ],
+      "minorBaseRequirement": 3427380,
+      "minorStepRequirement": 571230,
+      "majorBreakthroughRequirement": null
+    }
+  ],
+  "orderVersion": 2
+}

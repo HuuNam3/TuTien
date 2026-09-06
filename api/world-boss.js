@@ -38,12 +38,12 @@ function readDataFile(fileName) {
 }
 
 function getGameConfig() {
-  if (!gameConfig) gameConfig = readDataFile('GameConfig.json');
+  if (!gameConfig) gameConfig = readDataFile('System/GameConfig.json');
   return gameConfig;
 }
 
 function getCultivationRealms() {
-  if (!cultivationRealms) cultivationRealms = readDataFile('CultivationRealms.json').realms || [];
+  if (!cultivationRealms) cultivationRealms = readDataFile('Shared/CultivationRealms.json').realms || [];
   return cultivationRealms;
 }
 
@@ -481,6 +481,13 @@ module.exports = async function worldBossHandler(request, response) {
     return;
   }
   if (!['GET', 'POST'].includes(request.method)) return sendJson(response, 405, { error: 'Method not allowed.' });
+  const worldBossConfig = getWorldBossConfig();
+  if (worldBossConfig.enabled === false || worldBossConfig.status === 'development') {
+    return sendJson(response, 503, {
+      error: 'Boss thế giới đang phát triển.',
+      code: 'FEATURE_IN_DEVELOPMENT',
+    });
+  }
   if (!process.env.MONGODB_URI || !process.env.SESSION_SECRET) {
     return sendJson(response, 503, { error: 'World boss service is not configured.' });
   }

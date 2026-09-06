@@ -1,0 +1,1425 @@
+{
+  "version": 7,
+  "description": "81 kẻ địch dùng trong Ngao du, tháp và các trận chiến, phân bổ qua 26 map; tất cả đều được gán 1 trong 8 skill đặc biệt của EnemySkills.json. Mỗi kẻ địch có tên, loại, ảnh sprite và vị trí ảnh, phẩm chất, kỹ năng, trọng số xuất hiện, khả năng trang bị và nội tại CombatStyles. Ví dụ: nhóm hung bạo dùng Liên Kích Cuồng Bạo hoặc Huyết Nộ, khôi lỗi dùng Hộ Thể Nham Giáp hoặc Phá Khí Trảm, còn quỷ và linh thể có thể dùng Hồi Nguyên Thuật; không còn kẻ địch chỉ dùng enemy_basic.",
+  "enemyPools": [
+    {
+      "id": "wild_dog_demon",
+      "name": "Dã Khuyển Lam Phù",
+      "type": "Yêu thú",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-beasts-sheet.png",
+        "position": "0% 0%",
+        "size": "300% 300%"
+      },
+      "skillName": "Cắn Xé",
+      "skillId": "enemy_frenzied_combo",
+      "description": "Yêu thú nhỏ lang thang ngoài thôn, máu không cao nhưng ra đòn nhanh.",
+      "weight": 16,
+      "canEquip": false,
+      "rank": "normal",
+      "combatStyle": "focus"
+    },
+    {
+      "id": "rogue_cultivator",
+      "name": "Tán Tu Hành Cước",
+      "type": "Tu sĩ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-cultivators-sheet.png",
+        "position": "0% 0%",
+        "size": "300% 300%"
+      },
+      "skillName": "Toái Thạch Quyền",
+      "skillId": "enemy_frenzied_combo",
+      "description": "Tán tu mới nhập đạo, thường chặn đường cướp linh thạch.",
+      "weight": 18,
+      "canEquip": true,
+      "rank": "normal",
+      "combatStyle": "berserker"
+    },
+    {
+      "id": "ancient_wasteland_emperor",
+      "name": "Hồng Liên Ma Cơ",
+      "type": "Cổ tộc",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-specials-sheet.png",
+        "position": "0% 50%",
+        "size": "300% 300%"
+      },
+      "skillName": "Cổ Đế Trấn Thế",
+      "skillId": "enemy_blood_rage",
+      "description": "Cổ đế trấn giữ vùng đất không tên, uy áp nặng nề khiến vạn vật quanh đó lặng im.",
+      "weight": 5,
+      "canEquip": true,
+      "rank": "elite",
+      "combatStyle": "defense"
+    },
+    {
+      "id": "young_sword_servant",
+      "name": "Thanh Vân Kiếm Nữ",
+      "type": "Tu sĩ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-cultivators-sheet.png",
+        "position": "100% 0%",
+        "size": "300% 300%"
+      },
+      "skillName": "Thanh Phong Kiếm",
+      "skillId": "enemy_armor_break",
+      "description": "Đệ tử canh ngoài sơn môn, công kích ổn định và có kiếm pháp.",
+      "weight": 11,
+      "canEquip": true,
+      "rank": "elite",
+      "combatStyle": "focus"
+    },
+    {
+      "id": "mist_ghost",
+      "name": "Lam Hỏa U Hồn",
+      "type": "Ma quỷ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-spirits-sheet.png",
+        "position": "0% 0%",
+        "size": "300% 300%"
+      },
+      "skillName": "Âm Khí Nhập Thể",
+      "skillId": "enemy_recovering_soul",
+      "description": "Oán hồn yếu ẩn trong sương, né tránh cao nhưng rất sợ đòn mạnh.",
+      "weight": 9,
+      "canEquip": false,
+      "rank": "normal",
+      "combatStyle": "drain"
+    },
+    {
+      "id": "blood_claw_wolf",
+      "name": "Huyết Trảo Lang Yêu",
+      "type": "Yêu thú",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-beasts-sheet.png",
+        "position": "50% 0%",
+        "size": "300% 300%"
+      },
+      "skillName": "Huyết Trảo Liên Kích",
+      "skillId": "enemy_blood_rage",
+      "description": "Yêu lang trong Rừng Yêu, có sát thương cao và dễ chí mạng.",
+      "weight": 15,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "berserker"
+    },
+    {
+      "id": "poison_vine_spirit",
+      "name": "Hoa Độc Linh Đằng",
+      "type": "Yêu thực",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-specials-sheet.png",
+        "position": "0% 0%",
+        "size": "300% 300%"
+      },
+      "skillName": "Độc Vân Chỉ",
+      "skillId": "enemy_recovering_soul",
+      "description": "Yêu thực hút linh khí, phòng thủ khá và đánh dai.",
+      "weight": 12,
+      "canEquip": false,
+      "rank": "normal",
+      "combatStyle": "defense"
+    },
+    {
+      "id": "dark_saber_cultivator",
+      "name": "Huyết Sát Kiếm Tu",
+      "type": "Tu sĩ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-cultivators-sheet.png",
+        "position": "0% 50%",
+        "size": "300% 300%"
+      },
+      "skillName": "Hắc Nham Trảm",
+      "skillId": "enemy_armor_break",
+      "description": "Tu sĩ dùng trọng đao, đòn đánh chậm nhưng đau.",
+      "weight": 12,
+      "canEquip": true,
+      "rank": "elite",
+      "combatStyle": "predator"
+    },
+    {
+      "id": "bone_charm_ghost",
+      "name": "Bạch Cốt Diện Quỷ",
+      "type": "Ma quỷ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-spirits-sheet.png",
+        "position": "50% 0%",
+        "size": "300% 300%"
+      },
+      "skillName": "Mị Ảnh Tập Kích",
+      "skillId": "enemy_ghost_step",
+      "description": "Quỷ ảnh trong rừng sâu, né tránh và chí mạng đều cao.",
+      "weight": 10,
+      "canEquip": true,
+      "rank": "elite",
+      "combatStyle": "crit"
+    },
+    {
+      "id": "iron_back_bear_demon",
+      "name": "Thiết Bối Hùng Yêu",
+      "type": "Yêu thú",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-beasts-sheet.png",
+        "position": "100% 0%",
+        "size": "300% 300%"
+      },
+      "skillName": "Địa Chấn Chưởng",
+      "skillId": "enemy_frenzied_combo",
+      "description": "Yêu hùng thân cứng như sắt, rất trâu máu.",
+      "weight": 8,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "ironbody"
+    },
+    {
+      "id": "fallen_inner_disciple",
+      "name": "Trọng Thương Kiếm Đồ",
+      "type": "Tu sĩ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-cultivators-sheet.png",
+        "position": "50% 50%",
+        "size": "300% 300%"
+      },
+      "skillName": "Hàn Quang Trảm",
+      "skillId": "enemy_armor_break",
+      "description": "Đệ tử nội môn lạc lối, có trang bị và kỹ năng tốt.",
+      "weight": 7,
+      "canEquip": true,
+      "rank": "elite",
+      "combatStyle": "predator"
+    },
+    {
+      "id": "crystal_cave_guard",
+      "name": "Lam Tinh Khôi Lỗi",
+      "type": "Khôi lỗi",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-constructs-sheet.png",
+        "position": "0% 0%",
+        "size": "300% 300%"
+      },
+      "skillName": "Tinh Thạch Chấn",
+      "skillId": "enemy_thunder_crit",
+      "description": "Khôi lỗi bảo vệ mạch linh thạch, phòng thủ rất cao.",
+      "weight": 13,
+      "canEquip": true,
+      "rank": "elite",
+      "combatStyle": "defense"
+    },
+    {
+      "id": "yin_flame_spirit",
+      "name": "Âm Dương Hư Linh",
+      "type": "Ma quỷ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-spirits-sheet.png",
+        "position": "100% 0%",
+        "size": "300% 300%"
+      },
+      "skillName": "Âm Hỏa Thiêu Tâm",
+      "skillId": "enemy_blood_rage",
+      "description": "Linh thể sinh ra từ âm hỏa, sát thương phép mạnh.",
+      "weight": 11,
+      "canEquip": true,
+      "rank": "elite",
+      "combatStyle": "heal"
+    },
+    {
+      "id": "stone_armor_demon",
+      "name": "Dung Nham Thạch Tướng",
+      "type": "Yêu thú",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-constructs-sheet.png",
+        "position": "50% 0%",
+        "size": "300% 300%"
+      },
+      "skillName": "Nham Cốt Chấn",
+      "skillId": "enemy_blood_rage",
+      "description": "Yêu vật khoác giáp đá, đánh không nhanh nhưng rất khó hạ.",
+      "weight": 10,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "defense"
+    },
+    {
+      "id": "ghost_faced_swordsman",
+      "name": "Lam Diện Kiếm Quỷ",
+      "type": "Tu sĩ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-specials-sheet.png",
+        "position": "50% 0%",
+        "size": "300% 300%"
+      },
+      "skillName": "Quỷ Ảnh Kiếm",
+      "skillId": "enemy_armor_break",
+      "description": "Kiếm khách đeo mặt nạ, tinh thông và chính xác đều cao.",
+      "weight": 9,
+      "canEquip": true,
+      "rank": "elite",
+      "combatStyle": "counter"
+    },
+    {
+      "id": "spirit_mine_keeper",
+      "name": "Tinh Thạch Quyền Nữ",
+      "type": "Tu sĩ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-cultivators-sheet.png",
+        "position": "100% 50%",
+        "size": "300% 300%"
+      },
+      "skillName": "Cửu Tinh Chưởng",
+      "skillId": "enemy_frenzied_combo",
+      "description": "Kẻ canh giữ mỏ linh thạch, toàn diện và có nhiều trang bị.",
+      "weight": 7,
+      "canEquip": true,
+      "rank": "elite",
+      "combatStyle": "drain"
+    },
+    {
+      "id": "ancient_grudge_wraith",
+      "name": "Tóc Dài Oán Hồn",
+      "type": "Ma quỷ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-spirits-sheet.png",
+        "position": "0% 100%",
+        "size": "300% 300%"
+      },
+      "skillName": "Oán Niệm Trói Hồn",
+      "skillId": "enemy_recovering_soul",
+      "description": "Oán linh cổ xưa dưới hang sâu, là kẻ thù nguy hiểm nhất khu vực hiện tại.",
+      "weight": 5,
+      "canEquip": true,
+      "rank": "elite",
+      "combatStyle": "heal"
+    },
+    {
+      "id": "thorn_rat_demon",
+      "name": "Lục Châm Thử Yêu",
+      "type": "Yêu thú",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-beasts-sheet.png",
+        "position": "0% 50%",
+        "size": "300% 300%"
+      },
+      "skillName": "Gai Độc",
+      "skillId": "enemy_frenzied_combo",
+      "description": "Yêu thú nhỏ có lớp gai độc.",
+      "weight": 12,
+      "canEquip": false,
+      "rank": "normal",
+      "combatStyle": "counter"
+    },
+    {
+      "id": "mud_corpse",
+      "name": "Thi Bùn",
+      "type": "Ma quỷ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-spirits-sheet.png",
+        "position": "50% 50%",
+        "size": "300% 300%"
+      },
+      "skillName": "Bùn Âm",
+      "skillId": "enemy_recovering_soul",
+      "description": "Thi thể vùi trong bùn hấp thụ âm khí.",
+      "weight": 10,
+      "canEquip": false,
+      "rank": "normal",
+      "combatStyle": "counter"
+    },
+    {
+      "id": "wandering_miner",
+      "name": "Khổ Lực Đào Linh",
+      "type": "Tu sĩ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-cultivators-sheet.png",
+        "position": "0% 100%",
+        "size": "300% 300%"
+      },
+      "skillName": "Khoáng Sơn Chưởng",
+      "skillId": "enemy_armor_break",
+      "description": "Tán tu tranh giành mạch linh thạch.",
+      "weight": 10,
+      "canEquip": true,
+      "rank": "normal",
+      "combatStyle": "counter"
+    },
+    {
+      "id": "forest_spider",
+      "name": "Bích Giáp Sơn Thú",
+      "type": "Yêu thú",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-specials-sheet.png",
+        "position": "100% 0%",
+        "size": "300% 300%"
+      },
+      "skillName": "Thiên Ti Võng",
+      "skillId": "enemy_frenzied_combo",
+      "description": "Yêu nhện ẩn trong rừng, chuyên khóa chân con mồi.",
+      "weight": 9,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "counter"
+    },
+    {
+      "id": "red_mane_boar",
+      "name": "Xích Viêm Trư Yêu",
+      "type": "Yêu thú",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-beasts-sheet.png",
+        "position": "50% 50%",
+        "size": "300% 300%"
+      },
+      "skillName": "Cuồng Nộ Xung Kích",
+      "skillId": "enemy_frenzied_combo",
+      "description": "Yêu thú hung bạo ở bìa Rừng Yêu.",
+      "weight": 10,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "heal"
+    },
+    {
+      "id": "black_mist_scholar",
+      "name": "Hắc Vụ Vu Sư",
+      "type": "Ma quỷ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-spirits-sheet.png",
+        "position": "0% 50%",
+        "size": "300% 300%"
+      },
+      "skillName": "Hắc Vụ Thực Hồn",
+      "skillId": "enemy_thunder_crit",
+      "description": "Quỷ sinh ẩn trong màn sương đen.",
+      "weight": 9,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "counter"
+    },
+    {
+      "id": "poison_blade_rogue",
+      "name": "Độc Nhận Tà Tu",
+      "type": "Tu sĩ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-cultivators-sheet.png",
+        "position": "50% 100%",
+        "size": "300% 300%"
+      },
+      "skillName": "Độc Nhận Phá Khí",
+      "skillId": "enemy_armor_break",
+      "description": "Tà tu dùng độc kiếm đánh lén.",
+      "weight": 8,
+      "canEquip": true,
+      "rank": "elite",
+      "combatStyle": "berserker"
+    },
+    {
+      "id": "crystal_shell_beast",
+      "name": "Tinh Giáp Thú",
+      "type": "Yêu thú",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-beasts-sheet.png",
+        "position": "100% 50%",
+        "size": "300% 300%"
+      },
+      "skillName": "Tinh Giáp Phản Chấn",
+      "skillId": "enemy_frenzied_combo",
+      "description": "Yêu thú có mai tinh thể cứng rắn.",
+      "weight": 9,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "ironbody"
+    },
+    {
+      "id": "void_miner",
+      "name": "Hư Không Khoáng Linh",
+      "type": "Khôi lỗi",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-constructs-sheet.png",
+        "position": "100% 0%",
+        "size": "300% 300%"
+      },
+      "skillName": "Hư Không Toái",
+      "skillId": "enemy_thunder_crit",
+      "description": "Khôi lỗi cổ đại canh giữ đường hầm.",
+      "weight": 8,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "defense"
+    },
+    {
+      "id": "grave_lord",
+      "name": "Mộ Huyệt Quỷ Vương",
+      "type": "Ma quỷ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-spirits-sheet.png",
+        "position": "100% 50%",
+        "size": "300% 300%"
+      },
+      "skillName": "Quỷ Vương Áp",
+      "skillId": "enemy_blood_rage",
+      "description": "Quỷ vương ngủ say dưới hang linh thạch.",
+      "weight": 6,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "defense"
+    },
+    {
+      "id": "void_gate_guardian",
+      "name": "Huyền Môn Trấn Vệ",
+      "type": "Khôi lỗi",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-constructs-sheet.png",
+        "position": "0% 50%",
+        "size": "300% 300%"
+      },
+      "skillName": "Huyền Môn Trấn",
+      "skillId": "enemy_thunder_crit",
+      "description": "Khôi lỗi canh giữ cánh cửa dẫn vào tầng sâu của Huyền Không Cổ Cảnh.",
+      "weight": 10,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "defense"
+    },
+    {
+      "id": "fractured_soul",
+      "name": "Tinh Hồn Vỡ",
+      "type": "Ma quỷ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-spirits-sheet.png",
+        "position": "50% 100%",
+        "size": "300% 300%"
+      },
+      "skillName": "Tàn Hồn Đoạt Phách",
+      "skillId": "enemy_recovering_soul",
+      "description": "Tàn hồn bị xé khỏi thân xác, lướt qua hư không bằng những đòn đánh hiểm độc.",
+      "weight": 8,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "defense"
+    },
+    {
+      "id": "ancient_sky_beast",
+      "name": "Bạch Vân Lôi Lân",
+      "type": "Yêu thú",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-constructs-sheet.png",
+        "position": "50% 50%",
+        "size": "300% 300%"
+      },
+      "skillName": "Thái Hư Phá Giới",
+      "skillId": "enemy_beastquake",
+      "description": "Cổ thú ngủ quên giữa các mảnh không gian, chỉ thức giấc trước khí tức của người tu hành.",
+      "weight": 6,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "defense"
+    },
+    {
+      "id": "thunderhorn_beast",
+      "name": "Mộc Giác Linh Lộc",
+      "type": "Yêu thú",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-beasts-sheet.png",
+        "position": "0% 100%",
+        "size": "300% 300%"
+      },
+      "skillName": "Lôi Giác Xung Kích",
+      "skillId": "enemy_beastquake",
+      "description": "Dị thú mang sừng lôi đình, mỗi lần lao tới đều để lại một vệt điện quang trên mặt đất.",
+      "weight": 10,
+      "canEquip": true,
+      "rank": "normal",
+      "combatStyle": "drain"
+    },
+    {
+      "id": "stormblade_scholar",
+      "name": "Lục Ảnh Độc Khách",
+      "type": "Tu sĩ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-cultivators-sheet.png",
+        "position": "100% 100%",
+        "size": "300% 300%"
+      },
+      "skillName": "Phong Lôi Liên Trảm",
+      "skillId": "enemy_armor_break",
+      "description": "Kiếm tu ẩn cư trên Lôi Minh Sơn, lấy tiếng sấm rèn luyện kiếm ý và thân pháp.",
+      "weight": 8,
+      "canEquip": true,
+      "rank": "elite",
+      "combatStyle": "defense"
+    },
+    {
+      "id": "lightning_vein_guardian",
+      "name": "Lục Đồng Cơ Quan",
+      "type": "Khôi lỗi",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-constructs-sheet.png",
+        "position": "100% 50%",
+        "size": "300% 300%"
+      },
+      "skillName": "Lôi Mạch Trấn Sơn",
+      "skillId": "enemy_thunder_crit",
+      "description": "Khôi lỗi được đúc từ quặng lôi mạch, phòng thủ vững như núi giữa thiên lôi.",
+      "weight": 6,
+      "canEquip": true,
+      "rank": "elite",
+      "combatStyle": "focus"
+    },
+    {
+      "id": "primordial_bone_dragon",
+      "name": "Tinh Điệp Huyễn Giáp",
+      "type": "Yêu thú",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-constructs-sheet.png",
+        "position": "0% 100%",
+        "size": "300% 300%"
+      },
+      "skillName": "Cốt Long Phệ Thiên",
+      "skillId": "enemy_beastquake",
+      "description": "Cốt long ngủ vùi dưới hoang nguyên, hơi thở lạnh lẽo có thể nuốt cả linh khí quanh mình.",
+      "weight": 10,
+      "canEquip": true,
+      "rank": "normal",
+      "combatStyle": "crit"
+    },
+    {
+      "id": "voidflame_lord",
+      "name": "Hư Diễm Hồn Vương",
+      "type": "Tu sĩ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-spirits-sheet.png",
+        "position": "100% 100%",
+        "size": "300% 300%"
+      },
+      "skillName": "Hư Diễm Luyện Hồn",
+      "skillId": "enemy_thunder_crit",
+      "description": "Tôn giả điều khiển ngọn lửa hư không, chuyên thiêu đốt hộ thể chân nguyên của đối thủ.",
+      "weight": 8,
+      "canEquip": true,
+      "rank": "elite",
+      "combatStyle": "drain"
+    },
+    {
+      "id": "stone_skin_bandit",
+      "name": "Thạch Quyền Hộ Vệ",
+      "type": "Tu sĩ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-cultivators-sheet.png",
+        "position": "50% 0%",
+        "size": "300% 300%"
+      },
+      "skillName": "Thạch Bì Chưởng",
+      "skillId": "enemy_rock_armor",
+      "description": "Luyện thân thô thiển, phòng thủ cao hơn tán tu thường.",
+      "weight": 13,
+      "canEquip": true,
+      "rank": "normal",
+      "combatStyle": "berserker"
+    },
+    {
+      "id": "frost_moon_tiger",
+      "name": "Băng Nguyệt Hổ",
+      "type": "Yêu thú",
+      "skillName": "Băng Nguyệt Hống",
+      "skillId": "enemy_beastquake",
+      "description": "Hổ yêu phủ băng, thân pháp nhanh và đòn đánh mang hàn khí.",
+      "weight": 8,
+      "canEquip": false,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-beasts-sheet.png",
+        "position": "50% 100%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "predator"
+    },
+    {
+      "id": "nine_tail_fox",
+      "name": "Cửu Vĩ Hỏa Hồ",
+      "type": "Yêu thú",
+      "skillName": "Cửu Vĩ Liệt Hỏa",
+      "skillId": "enemy_thunder_crit",
+      "description": "Hỏa hồ chín đuôi dùng yêu hỏa mê hoặc và thiêu đốt đối thủ.",
+      "weight": 8,
+      "canEquip": false,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-beasts-sheet.png",
+        "position": "100% 100%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "focus"
+    },
+    {
+      "id": "moss_temple_golem",
+      "name": "Cổ Mộc Thạch Vệ",
+      "type": "Khôi lỗi",
+      "skillName": "Cổ Mộc Trấn Sơn",
+      "skillId": "enemy_rock_armor",
+      "description": "Thạch vệ phủ rêu canh giữ di tích, phòng thủ cực kỳ vững chắc.",
+      "weight": 7,
+      "canEquip": false,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-constructs-sheet.png",
+        "position": "50% 100%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "ironbody"
+    },
+    {
+      "id": "azure_cloud_dragon",
+      "name": "Thanh Vân Long",
+      "type": "Cổ thú",
+      "skillName": "Vân Long Thổ Tức",
+      "skillId": "enemy_beastquake",
+      "description": "Thanh long cưỡi mây, mỗi lần vẫy cánh đều kéo theo phong lôi.",
+      "weight": 5,
+      "canEquip": true,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-constructs-sheet.png",
+        "position": "100% 100%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "predator"
+    },
+    {
+      "id": "moon_shadow_assassin",
+      "name": "Nguyệt Ảnh Ma Nữ",
+      "type": "Tu sĩ",
+      "skillName": "Nguyệt Ảnh Đoạt Mệnh",
+      "skillId": "enemy_ghost_step",
+      "description": "Sát thủ đeo mặt nạ ẩn trong nguyệt ảnh, ra đòn nhanh và khó đoán.",
+      "weight": 7,
+      "canEquip": true,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-specials-sheet.png",
+        "position": "50% 50%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "shadowstep"
+    },
+    {
+      "id": "verdant_treant",
+      "name": "Thanh Mộc Cự Linh",
+      "type": "Yêu thực",
+      "skillName": "Mộc Linh Hộ Thể",
+      "skillId": "enemy_recovering_soul",
+      "description": "Cự linh cây cổ thụ hấp thụ linh khí để hồi phục thân thể.",
+      "weight": 6,
+      "canEquip": false,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-specials-sheet.png",
+        "position": "100% 50%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "heal"
+    },
+    {
+      "id": "mushroom_demon",
+      "name": "Nấm Quỷ Độc Vương",
+      "type": "Yêu thực",
+      "skillName": "Độc Bào Tán",
+      "skillId": "enemy_blood_rage",
+      "description": "Nấm yêu phun độc bào, khiến đối thủ suy yếu trong lúc giao chiến.",
+      "weight": 7,
+      "canEquip": false,
+      "rank": "normal",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-specials-sheet.png",
+        "position": "0% 100%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "drain"
+    },
+    {
+      "id": "jade_serpent",
+      "name": "Bích Ngọc Xà Yêu",
+      "type": "Yêu thú",
+      "skillName": "Bích Xà Độc Nha",
+      "skillId": "enemy_armor_break",
+      "description": "Thanh xà điều khiển độc khí, chuyên phá vỡ hộ thể của đối thủ.",
+      "weight": 7,
+      "canEquip": false,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-specials-sheet.png",
+        "position": "50% 100%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "predator"
+    },
+    {
+      "id": "lantern_fairy",
+      "name": "Lam Đăng Tinh Linh",
+      "type": "Linh thể",
+      "skillName": "Tinh Đăng Mê Ảnh",
+      "skillId": "enemy_ghost_step",
+      "description": "Tinh linh cầm đèn dẫn dụ thần thức, né tránh linh hoạt giữa màn đêm.",
+      "weight": 6,
+      "canEquip": false,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-specials-sheet.png",
+        "position": "100% 100%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "counter"
+    },
+    {
+      "id": "celestial_lion_guardian",
+      "name": "Kim Giáp Thiên Sư",
+      "type": "Yêu thú",
+      "skillName": "Thiên Sư Liệt Nhật",
+      "skillId": "enemy_beastquake",
+      "description": "Thiên sư khoác giáp vàng, canh giữ cửa vào vùng tinh vực cổ xưa.",
+      "weight": 8,
+      "canEquip": true,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-astral-sheet.png",
+        "position": "0% 0%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "focus"
+    },
+    {
+      "id": "frost_crystal_qilin",
+      "name": "Băng Tinh Kỳ Lân",
+      "type": "Tu sĩ",
+      "skillName": "Băng Tinh Hộ Thể",
+      "skillId": "enemy_rock_armor",
+      "description": "Kỳ lân băng tinh mang linh giáp cổ, bước qua đâu để lại hàn khí đến đó.",
+      "weight": 7,
+      "canEquip": true,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-astral-sheet.png",
+        "position": "50% 0%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "shadowstep"
+    },
+    {
+      "id": "thunder_abyss_ape",
+      "name": "Lôi Uyên Cự Viên",
+      "type": "Ma quỷ",
+      "skillName": "Lôi Uyên Cự Chấn",
+      "skillId": "enemy_thunder_crit",
+      "description": "Cự viên sinh ra trong lôi uyên, mỗi cú đấm đều kéo theo tiếng sấm nổ vang.",
+      "weight": 8,
+      "canEquip": false,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-astral-sheet.png",
+        "position": "100% 0%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "crit"
+    },
+    {
+      "id": "crimson_nine_tail",
+      "name": "Xích Viêm Cửu Vĩ",
+      "type": "Yêu thực",
+      "skillName": "Cửu Vĩ Hồng Liên",
+      "skillId": "enemy_blood_rage",
+      "description": "Hồ linh chín đuôi hấp thụ hỏa linh, dùng huyễn thuật thiêu đốt thần thức.",
+      "weight": 7,
+      "canEquip": false,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-astral-sheet.png",
+        "position": "0% 50%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "crit"
+    },
+    {
+      "id": "star_sword_wraith",
+      "name": "Tinh Kiếm U Hồn",
+      "type": "Ma quỷ",
+      "skillName": "U Hồn Tinh Trảm",
+      "skillId": "enemy_ghost_step",
+      "description": "Kiếm hồn thất lạc giữa tinh hà, chỉ còn lại sát ý và những lưỡi kiếm bay quanh thân.",
+      "weight": 6,
+      "canEquip": false,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-astral-sheet.png",
+        "position": "50% 50%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "counter"
+    },
+    {
+      "id": "starforge_construct",
+      "name": "Tinh Lô Cơ Quan",
+      "type": "Khôi lỗi",
+      "skillName": "Tinh Lô Bạo Chấn",
+      "skillId": "enemy_rock_armor",
+      "description": "Cơ quan chiến đấu rèn từ tinh kim, lõi sao bên trong liên tục phát ra linh áp.",
+      "weight": 7,
+      "canEquip": true,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-astral-sheet.png",
+        "position": "100% 50%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "drain"
+    },
+    {
+      "id": "ancient_mushroom_sage",
+      "name": "Cổ Mộc Nấm Tiên",
+      "type": "Yêu thực",
+      "skillName": "Tiên Bào Mê Hồn",
+      "skillId": "enemy_recovering_soul",
+      "description": "Nấm tiên cổ đại hấp thụ đạo vận, vừa chữa lành thân thể vừa gieo độc bào.",
+      "weight": 6,
+      "canEquip": false,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-astral-sheet.png",
+        "position": "0% 100%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "heal"
+    },
+    {
+      "id": "jade_scale_serpent",
+      "name": "Bích Lân Xà Nữ",
+      "type": "Yêu thú",
+      "skillName": "Bích Lân Độc Vũ",
+      "skillId": "enemy_armor_break",
+      "description": "Xà yêu điều khiển độc khí màu ngọc bích, chuyên phá hộ thể của đối thủ.",
+      "weight": 7,
+      "canEquip": false,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-astral-sheet.png",
+        "position": "50% 100%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "crit"
+    },
+    {
+      "id": "void_mist_fiend",
+      "name": "Hư Không Ma Linh",
+      "type": "Linh thể",
+      "skillName": "Hư Vô Đoạt Linh",
+      "skillId": "enemy_ghost_step",
+      "description": "Ma linh bước ra từ khe nứt hư không, hình thể mờ ảo và khó bị khóa mục tiêu.",
+      "weight": 6,
+      "canEquip": false,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-astral-sheet.png",
+        "position": "100% 100%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "shadowstep"
+    },
+    {
+      "id": "heavenlight_warden",
+      "name": "Thiên Quang Hộ Pháp",
+      "type": "Tu sĩ",
+      "skillName": "Thiên Quang Trấn Ma",
+      "skillId": "enemy_rock_armor",
+      "description": "Hộ pháp mang thánh quang, dùng pháp trượng phong ấn tà vật trong thiên vực.",
+      "weight": 7,
+      "canEquip": true,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-celestial-sheet.png",
+        "position": "0% 0%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "predator"
+    },
+    {
+      "id": "scarlet_phoenix_demon",
+      "name": "Xích Vũ Phượng Yêu",
+      "type": "Yêu thú",
+      "skillName": "Phượng Vũ Phần Thiên",
+      "skillId": "enemy_blood_rage",
+      "description": "Phượng yêu mang hỏa vũ bất diệt, càng bị thương càng bùng lên sát thế.",
+      "weight": 7,
+      "canEquip": false,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-celestial-sheet.png",
+        "position": "50% 0%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "crit"
+    },
+    {
+      "id": "astral_whale_spirit",
+      "name": "Tinh Hải Côn Linh",
+      "type": "Linh thể",
+      "skillName": "Tinh Hải Thôn Thiên",
+      "skillId": "enemy_recovering_soul",
+      "description": "Côn linh bơi giữa tinh hải, hút lấy tinh quang để hồi phục linh lực.",
+      "weight": 6,
+      "canEquip": false,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-celestial-sheet.png",
+        "position": "100% 0%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "heal"
+    },
+    {
+      "id": "black_moon_void_knight",
+      "name": "Hắc Nguyệt Hư Kỵ",
+      "type": "Tu sĩ",
+      "skillName": "Hắc Nguyệt Đoạt Mệnh",
+      "skillId": "enemy_ghost_step",
+      "description": "Kỵ sĩ cưỡi bóng tối, thanh kiếm hư vô chỉ xuất hiện ở khoảnh khắc kết liễu.",
+      "weight": 6,
+      "canEquip": true,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-celestial-sheet.png",
+        "position": "0% 50%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "counter"
+    },
+    {
+      "id": "azure_thunder_dragonling",
+      "name": "Thanh Lôi Long Tử",
+      "type": "Cổ thú",
+      "skillName": "Thanh Lôi Long Tức",
+      "skillId": "enemy_beastquake",
+      "description": "Long tử chưa trưởng thành nhưng đã điều khiển được lôi đình cổ đại.",
+      "weight": 6,
+      "canEquip": false,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-celestial-sheet.png",
+        "position": "50% 50%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "berserker"
+    },
+    {
+      "id": "celestial_clockwork_sentinel",
+      "name": "Thiên Công Cơ Vệ",
+      "type": "Khôi lỗi",
+      "skillName": "Thiên Công Luân Chuyển",
+      "skillId": "enemy_rock_armor",
+      "description": "Cơ vệ do thiên công luyện chế, các vòng linh cơ xoay chuyển không ngừng.",
+      "weight": 6,
+      "canEquip": true,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-celestial-sheet.png",
+        "position": "100% 50%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "focus"
+    },
+    {
+      "id": "moon_lotus_mystic",
+      "name": "Nguyệt Liên Tiên Cơ",
+      "type": "Tu sĩ",
+      "skillName": "Nguyệt Liên Huyễn Vũ",
+      "skillId": "enemy_ghost_step",
+      "description": "Tiên cơ điều khiển nguyệt liên, dùng ánh trăng tạo ra vô số huyễn ảnh.",
+      "weight": 5,
+      "canEquip": true,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-celestial-sheet.png",
+        "position": "0% 100%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "counter"
+    },
+    {
+      "id": "obsidian_mountain_fiend",
+      "name": "Hắc Diệu Sơn Quỷ",
+      "type": "Ma quỷ",
+      "skillName": "Hắc Sơn Trấn Thế",
+      "skillId": "enemy_rock_armor",
+      "description": "Sơn quỷ kết tụ từ núi lửa hắc diệu, thân thể nặng như một ngọn núi nhỏ.",
+      "weight": 6,
+      "canEquip": false,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-celestial-sheet.png",
+        "position": "50% 100%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "berserker"
+    },
+    {
+      "id": "star_eater_imp",
+      "name": "Tinh Thực Tiểu Ma",
+      "type": "Linh thể",
+      "skillName": "Tinh Thực Hư Diệt",
+      "skillId": "enemy_thunder_crit",
+      "description": "Tiểu ma nuốt những mảnh tinh thể vụn, thân hình nhỏ bé nhưng sức mạnh cực kỳ nguy hiểm.",
+      "weight": 5,
+      "canEquip": false,
+      "rank": "elite",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-celestial-sheet.png",
+        "position": "100% 100%",
+        "size": "300% 300%"
+      },
+      "combatStyle": "crit"
+    },
+    {
+      "id": "celestial_sunder_beast",
+      "name": "Cổ Lôi Thiết Giáp",
+      "type": "Cổ thú",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-late-1-sheet.png",
+        "position": "0% 0%",
+        "size": "300% 300%"
+      },
+      "skillName": "Lôi Giáp Trấn Thiên",
+      "skillId": "enemy_beastquake",
+      "description": "Cổ thú khoác lôi giáp, mỗi bước chân làm đá trời rung chuyển.",
+      "weight": 7,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "ironbody"
+    },
+    {
+      "id": "astral_sword_revenant",
+      "name": "Thiên Tinh Kiếm Hồn",
+      "type": "Ma quỷ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-late-1-sheet.png",
+        "position": "50% 0%",
+        "size": "300% 300%"
+      },
+      "skillName": "Kiếm Hồn Tinh Vẫn",
+      "skillId": "enemy_thunder_crit",
+      "description": "Kiếm hồn lang thang giữa di tích, lấy tinh quang tôi luyện sát ý.",
+      "weight": 7,
+      "canEquip": true,
+      "rank": "elite",
+      "combatStyle": "crit"
+    },
+    {
+      "id": "frost_crystal_fiend",
+      "name": "Hàn Tinh Ma Tướng",
+      "type": "Ma quỷ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-late-1-sheet.png",
+        "position": "100% 0%",
+        "size": "300% 300%"
+      },
+      "skillName": "Hàn Tinh Ma Trảo",
+      "skillId": "enemy_ghost_step",
+      "description": "Ma tướng kết tinh từ hàn khí, thân pháp nhanh như mảnh băng vỡ.",
+      "weight": 7,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "shadowstep"
+    },
+    {
+      "id": "golden_mountain_guardian",
+      "name": "Kim Sơn Hộ Pháp",
+      "type": "Khôi lỗi",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-late-1-sheet.png",
+        "position": "0% 50%",
+        "size": "300% 300%"
+      },
+      "skillName": "Kim Sơn Trấn Nhạc",
+      "skillId": "enemy_rock_armor",
+      "description": "Hộ pháp bằng đá vàng, càng bị công kích càng khó lay chuyển.",
+      "weight": 6,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "defense"
+    },
+    {
+      "id": "voidflame_magus",
+      "name": "Tử Diễm Hư Sư",
+      "type": "Tu sĩ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-late-1-sheet.png",
+        "position": "50% 50%",
+        "size": "300% 300%"
+      },
+      "skillName": "Tử Diễm Thôn Linh",
+      "skillId": "enemy_armor_break",
+      "description": "Pháp sư gọi lửa tím từ hư không, thiêu đốt linh lực của đối thủ.",
+      "weight": 7,
+      "canEquip": true,
+      "rank": "elite",
+      "combatStyle": "drain"
+    },
+    {
+      "id": "astral_sea_serpent",
+      "name": "Tinh Hải Lam Xà",
+      "type": "Yêu thú",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-late-1-sheet.png",
+        "position": "100% 50%",
+        "size": "300% 300%"
+      },
+      "skillName": "Tinh Hải Xuyên Vân",
+      "skillId": "enemy_frenzied_combo",
+      "description": "Lam xà bơi trong biển sao, chuyên truy đuổi mục tiêu đã suy yếu.",
+      "weight": 7,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "predator"
+    },
+    {
+      "id": "moonlit_hunter",
+      "name": "Nguyệt Ảnh Liệp Nhân",
+      "type": "Tu sĩ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-late-1-sheet.png",
+        "position": "0% 100%",
+        "size": "300% 300%"
+      },
+      "skillName": "Nguyệt Nhận Đoạt Hồn",
+      "skillId": "enemy_ghost_step",
+      "description": "Liệp nhân ẩn trong ánh trăng, chỉ xuất hiện khi con mồi mất cảnh giác.",
+      "weight": 6,
+      "canEquip": true,
+      "rank": "elite",
+      "combatStyle": "focus"
+    },
+    {
+      "id": "fallen_winged_beast",
+      "name": "Đọa Dực Thiên Thú",
+      "type": "Yêu thú",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-late-1-sheet.png",
+        "position": "50% 100%",
+        "size": "300% 300%"
+      },
+      "skillName": "Đọa Dực Liệt Không",
+      "skillId": "enemy_beastquake",
+      "description": "Thiên thú sa ngã dùng đôi cánh rách xé nát tầng mây.",
+      "weight": 7,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "berserker"
+    },
+    {
+      "id": "lightning_dragon_whelp",
+      "name": "Lôi Long Ấu Thú",
+      "type": "Cổ thú",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-late-1-sheet.png",
+        "position": "100% 100%",
+        "size": "300% 300%"
+      },
+      "skillName": "Ấu Long Lôi Nộ",
+      "skillId": "enemy_blood_rage",
+      "description": "Ấu long chưa trưởng thành nhưng đã điều khiển được lôi hỏa dữ dội.",
+      "weight": 8,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "heal"
+    },
+    {
+      "id": "chaos_crystal_golem",
+      "name": "Hỗn Tinh Thạch Ma",
+      "type": "Khôi lỗi",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-late-2-sheet.png",
+        "position": "0% 0%",
+        "size": "300% 300%"
+      },
+      "skillName": "Hỗn Tinh Phá Sơn",
+      "skillId": "enemy_rock_armor",
+      "description": "Thạch ma hấp thu tinh thể hỗn độn, biến thân thể thành pháo đài sống.",
+      "weight": 7,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "ironbody"
+    },
+    {
+      "id": "void_emperor_wraith",
+      "name": "Hư Hoàng Oán Linh",
+      "type": "Linh thể",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-late-2-sheet.png",
+        "position": "50% 0%",
+        "size": "300% 300%"
+      },
+      "skillName": "Hư Hoàng Đoạt Phách",
+      "skillId": "enemy_recovering_soul",
+      "description": "Tàn hồn của một vị hư hoàng, tồn tại nhờ nuốt ký ức của người xâm nhập.",
+      "weight": 6,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "heal"
+    },
+    {
+      "id": "sacred_fire_qilin",
+      "name": "Thánh Hỏa Kỳ Lân",
+      "type": "Yêu thú",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-late-2-sheet.png",
+        "position": "100% 0%",
+        "size": "300% 300%"
+      },
+      "skillName": "Thánh Hỏa Thiêu Thiên",
+      "skillId": "enemy_beastquake",
+      "description": "Kỳ lân mang thánh hỏa, thiêu sạch tà khí nhưng không dung thứ kẻ xâm phạm.",
+      "weight": 8,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "berserker"
+    },
+    {
+      "id": "star_gate_guardian",
+      "name": "Tinh Môn Thần Vệ",
+      "type": "Khôi lỗi",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-late-2-sheet.png",
+        "position": "0% 50%",
+        "size": "300% 300%"
+      },
+      "skillName": "Tinh Môn Trấn Giới",
+      "skillId": "enemy_rock_armor",
+      "description": "Thần vệ canh cổng sao, dựng kết giới để chặn mọi đường lui.",
+      "weight": 7,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "defense"
+    },
+    {
+      "id": "black_thunder_phoenix",
+      "name": "Hắc Lôi Phượng Hoàng",
+      "type": "Yêu thú",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-late-2-sheet.png",
+        "position": "50% 50%",
+        "size": "300% 300%"
+      },
+      "skillName": "Hắc Lôi Niết Bàn",
+      "skillId": "enemy_thunder_crit",
+      "description": "Phượng hoàng đen tái sinh trong lôi kiếp, mỗi lần bị thương càng hung dữ.",
+      "weight": 8,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "crit"
+    },
+    {
+      "id": "cosmic_spider_demon",
+      "name": "Tinh Vực Chu Ma",
+      "type": "Ma quỷ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-late-2-sheet.png",
+        "position": "100% 50%",
+        "size": "300% 300%"
+      },
+      "skillName": "Tinh Võng Phệ Hồn",
+      "skillId": "enemy_ghost_step",
+      "description": "Chu ma giăng tơ xuyên tinh vực, khóa chặt linh lực của con mồi.",
+      "weight": 7,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "shadowstep"
+    },
+    {
+      "id": "creation_lotus_beast",
+      "name": "Sáng Thế Liên Thú",
+      "type": "Yêu thực",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-late-2-sheet.png",
+        "position": "0% 100%",
+        "size": "300% 300%"
+      },
+      "skillName": "Liên Hoa Khai Thiên",
+      "skillId": "enemy_recovering_soul",
+      "description": "Liên thú sinh ra từ đóa hoa đầu tiên, vừa chữa lành vừa nghiền nát kẻ địch.",
+      "weight": 7,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "drain"
+    },
+    {
+      "id": "golden_celestial_dragon",
+      "name": "Kim Thiên Thần Long",
+      "type": "Cổ thú",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-late-2-sheet.png",
+        "position": "50% 100%",
+        "size": "300% 300%"
+      },
+      "skillName": "Kim Long Hoành Thiên",
+      "skillId": "enemy_frenzied_combo",
+      "description": "Thần long vàng bay giữa tầng trời, long uy khiến linh khí quanh nó bạo động.",
+      "weight": 8,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "predator"
+    },
+    {
+      "id": "chaos_realm_imp",
+      "name": "Hỗn Độn Tiểu Ma",
+      "type": "Ma quỷ",
+      "visual": {
+        "image": "/assets/Art/Sprites/Enemies/chibi-enemy-late-2-sheet.png",
+        "position": "100% 100%",
+        "size": "300% 300%"
+      },
+      "skillName": "Hỗn Độn Ma Chú",
+      "skillId": "enemy_blood_rage",
+      "description": "Tiểu ma sinh ra từ kẽ nứt hỗn độn, nhỏ bé nhưng đánh lén cực kỳ hiểm độc.",
+      "weight": 7,
+      "canEquip": false,
+      "rank": "elite",
+      "combatStyle": "focus"
+    }
+  ],
+  "rankStats": {
+    "1": {
+      "label": "Bình thường",
+      "maxHp": 1,
+      "maxMana": 1,
+      "attack": 1,
+      "defense": 1,
+      "mastery": 1
+    },
+    "2": {
+      "label": "Tinh anh",
+      "maxHp": 1.14,
+      "maxMana": 1.08,
+      "attack": 1.12,
+      "defense": 1.1,
+      "mastery": 1.06
+    },
+    "3": {
+      "label": "Thủ lĩnh",
+      "maxHp": 1.3,
+      "maxMana": 1.18,
+      "attack": 1.26,
+      "defense": 1.22,
+      "mastery": 1.12
+    },
+    "4": {
+      "label": "Vương giả",
+      "maxHp": 1.55,
+      "maxMana": 1.32,
+      "attack": 1.48,
+      "defense": 1.42,
+      "mastery": 1.2
+    },
+    "5": {
+      "label": "Chúa tể",
+      "maxHp": 1.9,
+      "maxMana": 1.55,
+      "attack": 1.78,
+      "defense": 1.7,
+      "mastery": 1.3
+    }
+  }
+}

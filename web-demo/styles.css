@@ -1432,6 +1432,146 @@ button.danger:not(:disabled):hover {
   min-width: 112px;
 }
 
+.breakthrough-modal-card {
+  width: min(520px, 100%);
+  border-color: #d7ad4f;
+}
+
+.breakthrough-modal-card h3 {
+  margin: 0 0 8px;
+  color: #f2c866;
+  font-size: 14px;
+}
+
+.breakthrough-modal-card .reset-modal-actions {
+  display: block;
+}
+
+.breakthrough-modal-card #confirmBreakthroughButton {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.breakthrough-preview-section + .breakthrough-preview-section {
+  margin-top: 16px;
+}
+
+.breakthrough-stat-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px 12px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  background: rgba(10, 16, 24, 0.38);
+}
+
+.breakthrough-treasure-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.breakthrough-treasure-option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: 0 0 52px;
+  width: 52px;
+  height: 52px;
+  padding: 7px;
+  border: 2px solid var(--line);
+  border-radius: 4px;
+  background: rgba(10, 16, 24, 0.38);
+  color: #cbd7e5;
+}
+
+.breakthrough-treasure-option:hover,
+.breakthrough-treasure-option.is-selected {
+  border-color: #d7ad4f;
+  background: rgba(215, 173, 79, 0.12);
+}
+
+.breakthrough-treasure-option span,
+.breakthrough-treasure-option small {
+  min-width: 0;
+}
+
+.breakthrough-treasure-icon {
+  flex: 0 0 26px;
+  width: 26px;
+  height: 26px;
+  vertical-align: middle;
+}
+
+.breakthrough-treasure-option b,
+.breakthrough-treasure-option small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.breakthrough-treasure-option small {
+  color: #9fb4c9;
+}
+
+.breakthrough-treasure-option > strong {
+  color: #f2c866;
+  white-space: nowrap;
+}
+
+.breakthrough-stat,
+.breakthrough-required-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  color: #cbd7e5;
+  font-size: 13px;
+}
+
+.breakthrough-stat b,
+.breakthrough-required-item span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.breakthrough-stat strong,
+.breakthrough-required-item strong {
+  margin-left: auto;
+  color: #e8f4ff;
+  white-space: nowrap;
+}
+
+.breakthrough-required-item {
+  padding: 10px;
+  border: 1px solid #d7ad4f;
+  background: rgba(215, 173, 79, 0.1);
+}
+
+.breakthrough-required-item i {
+  flex: 0 0 auto;
+}
+
+.breakthrough-empty {
+  color: #9aaabd;
+  font-size: 13px;
+}
+
+@media (max-width: 480px) {
+  .breakthrough-stat-list {
+    grid-template-columns: 1fr;
+  }
+
+  .breakthrough-treasure-option {
+    flex-basis: 52px;
+  }
+
+}
+
 .icon-button {
   min-width: 34px;
   width: 34px;
@@ -7185,7 +7325,7 @@ strong > .activity-icon,
 .icon-stat-gem { background-position: 100% 0%; }
 .icon-stat-attack { background-position: 0% 33.333%; }
 .icon-stat-shield { background-position: 33.333% 33.333%; }
-.icon-stat-speed { background-position: 66.666% 33.333%; }
+.icon-stat-mastery { background-position: 66.666% 33.333%; }
 .icon-stat-accuracy { background-position: 100% 33.333%; }
 .icon-stat-dodge { background-position: 0% 66.666%; }
 .icon-stat-crit { background-position: 33.333% 66.666%; }
@@ -10425,9 +10565,9 @@ strong > .unique-icon {
 .icon-unique-close { background-position: 66.666% 100%; }
 .icon-unique-help { background-position: 100% 100%; }
 .icon-unique-critical-damage {
-  background-image: url('/assets/Art/Sprites/UI/chibi-critical-damage-icon.png');
-  background-size: 100% 100%;
-  background-position: center;
+  background-image: url('/assets/Art/Sprites/UI/chibi-extra-icon-sheet-v3.png');
+  background-size: 400% 400%;
+  background-position: 66.666% 100%;
 }
 
 .skill-item-icon {
@@ -10448,12 +10588,51 @@ strong > .unique-icon {
 .icon-skill-item-sword_flow { background-position: 100% 0%; }
 .icon-skill-item-sword_domain { background-position: 0% 50%; }
 .icon-skill-item-sword_storm { background-position: 33.333% 50%; }
+.icon-skill-item-sword_earth_rift { background-position: 66.666% 0%; }
+.icon-skill-item-sword_earth_lotus { background-position: 100% 0%; }
+.icon-skill-item-sword_heaven_starfall { background-position: 0% 50%; }
+.icon-skill-item-sword_heaven_realm { background-position: 33.333% 50%; }
 .icon-skill-item-beginner_blade_art { background-position: 66.666% 50%; }
 .icon-skill-item-blade_heavy { background-position: 100% 50%; }
 .icon-skill-item-blade_blood { background-position: 0% 100%; }
 .icon-skill-item-blade_rend { background-position: 33.333% 100%; }
 .icon-skill-item-blade_heaven { background-position: 66.666% 100%; }
 .icon-skill-item-blade_apocalypse { background-position: 100% 100%; }
+
+/* Extra skill icons use the 4x4 sheet so every current school has a distinct emblem. */
+.icon-skill-item-sword_earth_rift,
+.icon-skill-item-sword_earth_lotus,
+.icon-skill-item-sword_heaven_starfall,
+.icon-skill-item-sword_heaven_realm,
+.icon-skill-item-blade_earth_sunder,
+.icon-skill-item-blade_earth_warcry,
+.icon-skill-item-blade_heaven_overlord,
+.icon-skill-item-blade_heaven_worldsplitter,
+.icon-skill-item-beginner_body_art,
+.icon-skill-item-martial_skin,
+.icon-skill-item-martial_fist,
+.icon-skill-item-martial_guard,
+.icon-skill-item-martial_breaker,
+.icon-skill-item-martial_rebirth {
+  background-image: url('/assets/Art/Sprites/UI/chibi-extra-icon-sheet-v3.png');
+  background-size: 400% 400%;
+  background-color: transparent;
+}
+
+.icon-skill-item-sword_earth_rift { background-position: 0% 0%; }
+.icon-skill-item-sword_earth_lotus { background-position: 33.333% 0%; }
+.icon-skill-item-sword_heaven_starfall { background-position: 66.666% 0%; }
+.icon-skill-item-sword_heaven_realm { background-position: 100% 0%; }
+.icon-skill-item-blade_earth_sunder { background-position: 0% 33.333%; }
+.icon-skill-item-blade_earth_warcry { background-position: 33.333% 33.333%; }
+.icon-skill-item-blade_heaven_overlord { background-position: 66.666% 33.333%; }
+.icon-skill-item-blade_heaven_worldsplitter { background-position: 100% 33.333%; }
+.icon-skill-item-beginner_body_art { background-position: 0% 66.666%; }
+.icon-skill-item-martial_skin { background-position: 33.333% 66.666%; }
+.icon-skill-item-martial_fist { background-position: 66.666% 66.666%; }
+.icon-skill-item-martial_guard { background-position: 100% 66.666%; }
+.icon-skill-item-martial_breaker { background-position: 0% 100%; }
+.icon-skill-item-martial_rebirth { background-position: 33.333% 100%; }
 
 .profile-skill-icon .skill-item-icon {
   width: 21px;
@@ -11135,12 +11314,13 @@ body.battle-active .battle-panel {
 .stage-grid.main-dungeon-grid .wander-map-scroll-hint {
   grid-column: 1 / -1;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 8px;
   padding: 1px 2px 0;
   color: #8fa6bd;
   font-size: 10px;
   line-height: 1.2;
+  text-align: right;
 }
 
 .stage-grid.main-dungeon-grid .wander-map-scroll-hint strong {

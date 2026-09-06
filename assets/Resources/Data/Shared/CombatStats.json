@@ -1,0 +1,193 @@
+{
+  "version": 3,
+  "description": "18 thuộc tính chiến đấu và quy tắc quy đổi sang lực chiến. Mảng stats là nguồn dữ liệu duy nhất cho hệ số lực chiến; chỉ số gốc dùng HP 0.4, Linh lực 0.2, Công 5, Thủ 5, Tinh thông 3 LC mỗi điểm. Thuộc tính tỉ lệ dùng LC mỗi 1% riêng; người chơi luôn ra đòn trước, không còn dùng tốc độ để quyết định thứ tự lượt.",
+  "cultivationPowerTable": {
+    "description": "Bảng lực chiến cảnh giới dùng chung cho mọi phái. Thối Thể là cảnh giới mặc định nên không có T1; T1 của mỗi cảnh giới sau là lực chiến đại cảnh giới được chuyển từ tổng 9 tiểu cảnh giới của cảnh giới trước. T2-T10 là 9 tiểu cảnh giới, mỗi lần tăng chỉ cộng một lần.",
+    "minorRealmCount": 10,
+    "formula": {
+      "majorRealmPower": "Tổng lực chiến T2-T10 của đại cảnh giới trước / 2",
+      "minorTier2Base": "50 + (STT đại cảnh giới - 1) * 50",
+      "minorTierStep": "10 + (STT đại cảnh giới - 1) * 5",
+      "minorTierPower": "T2 base + (STT tiểu cảnh giới - 2) * minorTierStep"
+    },
+    "realms": [
+      { "majorRealmId": 1, "majorRealmPower": null, "minorPowerByTier": [50, 60, 70, 80, 90, 100, 110, 120, 130], "totalPower": 810 },
+      { "majorRealmId": 2, "majorRealmPower": 405, "minorPowerByTier": [100, 115, 130, 145, 160, 175, 190, 205, 220], "totalPower": 1845 },
+      { "majorRealmId": 3, "majorRealmPower": 720, "minorPowerByTier": [150, 170, 190, 210, 230, 250, 270, 290, 310], "totalPower": 2790 },
+      { "majorRealmId": 4, "majorRealmPower": 1035, "minorPowerByTier": [200, 225, 250, 275, 300, 325, 350, 375, 400], "totalPower": 3735 },
+      { "majorRealmId": 5, "majorRealmPower": 1350, "minorPowerByTier": [250, 280, 310, 340, 370, 400, 430, 460, 490], "totalPower": 4680 },
+      { "majorRealmId": 6, "majorRealmPower": 1665, "minorPowerByTier": [300, 335, 370, 405, 440, 475, 510, 545, 580], "totalPower": 5625 },
+      { "majorRealmId": 7, "majorRealmPower": 1980, "minorPowerByTier": [350, 390, 430, 470, 510, 550, 590, 630, 670], "totalPower": 6570 },
+      { "majorRealmId": 8, "majorRealmPower": 2295, "minorPowerByTier": [400, 445, 490, 535, 580, 625, 670, 715, 760], "totalPower": 7515 },
+      { "majorRealmId": 9, "majorRealmPower": 2610, "minorPowerByTier": [450, 500, 550, 600, 650, 700, 750, 800, 850], "totalPower": 8460 },
+      { "majorRealmId": 10, "majorRealmPower": 2925, "minorPowerByTier": [500, 555, 610, 665, 720, 775, 830, 885, 940], "totalPower": 9405 },
+      { "majorRealmId": 11, "majorRealmPower": 3240, "minorPowerByTier": [550, 610, 670, 730, 790, 850, 910, 970, 1030], "totalPower": 10350 },
+      { "majorRealmId": 12, "majorRealmPower": 3555, "minorPowerByTier": [600, 665, 730, 795, 860, 925, 990, 1055, 1120], "totalPower": 11295 },
+      { "majorRealmId": 13, "majorRealmPower": 3870, "minorPowerByTier": [650, 720, 790, 860, 930, 1000, 1070, 1140, 1210], "totalPower": 12240 },
+      { "majorRealmId": 14, "majorRealmPower": 4185, "minorPowerByTier": [700, 775, 850, 925, 1000, 1075, 1150, 1225, 1300], "totalPower": 13185 },
+      { "majorRealmId": 15, "majorRealmPower": 4500, "minorPowerByTier": [750, 830, 910, 990, 1070, 1150, 1230, 1310, 1390], "totalPower": 14130 },
+      { "majorRealmId": 16, "majorRealmPower": 4815, "minorPowerByTier": [800, 885, 970, 1055, 1140, 1225, 1310, 1395, 1480], "totalPower": 15075 },
+      { "majorRealmId": 17, "majorRealmPower": 5130, "minorPowerByTier": [850, 940, 1030, 1120, 1210, 1300, 1390, 1480, 1570], "totalPower": 16020 },
+      { "majorRealmId": 18, "majorRealmPower": 5445, "minorPowerByTier": [900, 995, 1090, 1185, 1280, 1375, 1470, 1565, 1660], "totalPower": 16965 },
+      { "majorRealmId": 19, "majorRealmPower": 5760, "minorPowerByTier": [950, 1050, 1150, 1250, 1350, 1450, 1550, 1650, 1750], "totalPower": 17910 },
+      { "majorRealmId": 20, "majorRealmPower": 6075, "minorPowerByTier": [1000, 1105, 1210, 1315, 1420, 1525, 1630, 1735, 1840], "totalPower": 18855 },
+      { "majorRealmId": 21, "majorRealmPower": 6390, "minorPowerByTier": [1050, 1160, 1270, 1380, 1490, 1600, 1710, 1820, 1930], "totalPower": 19800 },
+      { "majorRealmId": 22, "majorRealmPower": 6705, "minorPowerByTier": [1100, 1215, 1330, 1445, 1560, 1675, 1790, 1905, 2020], "totalPower": 20745 },
+      { "majorRealmId": 23, "majorRealmPower": 7020, "minorPowerByTier": [1150, 1270, 1390, 1510, 1630, 1750, 1870, 1990, 2110], "totalPower": 21690 },
+      { "majorRealmId": 24, "majorRealmPower": 7335, "minorPowerByTier": [1200, 1325, 1450, 1575, 1700, 1825, 1950, 2075, 2200], "totalPower": 22635 },
+      { "majorRealmId": 25, "majorRealmPower": 7650, "minorPowerByTier": [1250, 1380, 1510, 1640, 1770, 1900, 2030, 2160, 2290], "totalPower": 23580 },
+      { "majorRealmId": 26, "majorRealmPower": 7965, "minorPowerByTier": [1300, 1435, 1570, 1705, 1840, 1975, 2110, 2245, 2380], "totalPower": 24525 },
+      { "majorRealmId": 27, "majorRealmPower": 8280, "minorPowerByTier": [1350, 1490, 1630, 1770, 1910, 2050, 2190, 2330, 2470], "totalPower": 25470 },
+      { "majorRealmId": 28, "majorRealmPower": 8595, "minorPowerByTier": [1400, 1545, 1690, 1835, 1980, 2125, 2270, 2415, 2560], "totalPower": 26415 },
+      { "majorRealmId": 29, "majorRealmPower": 8910, "minorPowerByTier": [1450, 1600, 1750, 1900, 2050, 2200, 2350, 2500, 2650], "totalPower": 27360 },
+      { "majorRealmId": 30, "majorRealmPower": 9225, "minorPowerByTier": [1500, 1655, 1810, 1965, 2120, 2275, 2430, 2585, 2740], "totalPower": 28305 },
+      { "majorRealmId": 31, "majorRealmPower": 9540, "minorPowerByTier": [1550, 1710, 1870, 2030, 2190, 2350, 2510, 2670, 2830], "totalPower": 29250 },
+      { "majorRealmId": 32, "majorRealmPower": 9855, "minorPowerByTier": [1600, 1765, 1930, 2095, 2260, 2425, 2590, 2755, 2920], "totalPower": 30195 },
+      { "majorRealmId": 33, "majorRealmPower": 10170, "minorPowerByTier": [1650, 1820, 1990, 2160, 2330, 2500, 2670, 2840, 3010], "totalPower": 31140 }
+    ]
+  },
+  "stats": [
+    {
+      "id": "maxHp",
+      "name": "Sinh lực",
+      "unit": "point",
+      "powerPerPoint": 0.4,
+      "description": "Lượng sát thương nhân vật có thể chịu trước khi bị hạ gục."
+    },
+    {
+      "id": "maxMana",
+      "name": "Linh lực",
+      "unit": "point",
+      "powerPerPoint": 0.2,
+      "description": "Năng lượng dùng để thi triển kỹ năng."
+    },
+    {
+      "id": "foundation",
+      "name": "Căn cơ",
+      "unit": "point",
+      "powerPerPoint": 0,
+      "description": "Nền tảng tu luyện, hỗ trợ tích lũy tu vi khi ngao du."
+    },
+    {
+      "id": "attack",
+      "name": "Công",
+      "unit": "point",
+      "powerPerPoint": 5,
+      "description": "Sát thương cơ bản gây ra trong mỗi đòn đánh."
+    },
+    {
+      "id": "defense",
+      "name": "Thủ",
+      "unit": "point",
+      "powerPerPoint": 5,
+      "description": "Giảm sát thương trực tiếp nhận từ đòn đánh của đối thủ."
+    },
+    {
+      "id": "mastery",
+      "name": "Tinh thông",
+      "unit": "point",
+      "powerPerPoint": 3,
+      "description": "Thuộc tính gốc tăng hiệu quả kỹ năng; một nửa Tinh thông cộng vào sát thương kỹ năng và lượng hồi máu."
+    },
+    {
+      "id": "accuracy",
+      "name": "Chính xác",
+      "unit": "rate",
+      "baseValue": 0.8,
+      "powerPerPoint": 6000,
+      "powerPerPercent": 60,
+      "description": "Tăng tỉ lệ đánh trúng, giảm khả năng đối thủ né hoặc đỡ đòn và làm sát thương ổn định hơn."
+    },
+    {
+      "id": "dodgeRate",
+      "name": "Né tránh",
+      "unit": "rate",
+      "powerPerPoint": 8000,
+      "powerPerPercent": 80,
+      "description": "Tỉ lệ né đòn; một số kỹ năng đặc biệt vẫn có thể đánh trúng."
+    },
+    {
+      "id": "blockRate",
+      "name": "Đỡ đòn",
+      "unit": "rate",
+      "powerPerPoint": 7000,
+      "powerPerPercent": 70,
+      "description": "Tỉ lệ kích hoạt đỡ đòn để giảm sát thương nhận vào, kể cả sát thương kỹ năng."
+    },
+    {
+      "id": "blockReduction",
+      "name": "Giảm đỡ",
+      "unit": "rate",
+      "baseValue": 0.8,
+      "powerPerPoint": 4000,
+      "powerPerPercent": 40,
+      "description": "Tỉ lệ sát thương bị loại bỏ khi đỡ đòn thành công."
+    },
+    {
+      "id": "critRate",
+      "name": "Chí mạng",
+      "unit": "rate",
+      "powerPerPoint": 8000,
+      "powerPerPercent": 80,
+      "description": "Tỉ lệ phát sinh đòn chí mạng; chỉ kỹ năng được phép chí mạng mới áp dụng tỉ lệ riêng của kỹ năng."
+    },
+    {
+      "id": "critDamage",
+      "name": "Sát thương chí mạng",
+      "unit": "multiplier",
+      "baseValue": 1.5,
+      "powerPerPoint": 3000,
+      "powerPerPercent": 30,
+      "description": "Mức sát thương tăng thêm của đòn chí mạng, mặc định là 150%."
+    },
+    {
+      "id": "lifeSteal",
+      "name": "Hút máu",
+      "unit": "rate",
+      "powerPerPoint": 4000,
+      "powerPerPercent": 40,
+      "description": "Chuyển một phần sát thương gây ra thành sinh lực hồi phục."
+    },
+    {
+      "id": "damageReduction",
+      "name": "Giảm sát thương",
+      "unit": "rate",
+      "powerPerPoint": 10000,
+      "powerPerPercent": 100,
+      "description": "Tỉ lệ giảm sát thương nhận vào từ đòn đánh và kỹ năng."
+    },
+    {
+      "id": "luck",
+      "name": "May mắn",
+      "unit": "rate",
+      "powerPerPoint": 0,
+      "countsTowardCombatPower": false,
+      "description": "Tăng cơ hội gặp cơ duyên khi ngao du."
+    },
+    {
+      "id": "spiritSense",
+      "name": "Thần thức",
+      "unit": "point",
+      "powerPerPoint": 0,
+      "countsTowardCombatPower": false,
+      "description": "Năng lực cần cho một số kỹ năng tấn công đặc biệt."
+    },
+    {
+      "id": "comprehension",
+      "name": "Ngộ tính",
+      "unit": "point",
+      "powerPerPoint": 0,
+      "countsTowardCombatPower": false,
+      "description": "Khả năng lĩnh ngộ công pháp."
+    },
+    {
+      "id": "armorPierce",
+      "name": "Xuyên giáp",
+      "unit": "rate",
+      "powerPerPoint": 6000,
+      "powerPerPercent": 60,
+      "defenseIgnoreRate": 0.5,
+      "description": "Xuyên giáp là tỉ lệ kích hoạt trên từng đòn đánh; khi kích hoạt sẽ bỏ qua cố định 50% Thủ của đối thủ. Ví dụ: 10% Xuyên giáp nghĩa là mỗi đòn có 10% cơ hội bỏ qua 50% Thủ."
+    }
+  ]
+}

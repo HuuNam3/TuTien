@@ -1,0 +1,555 @@
+{
+  "version": 3,
+  "description": "Bảng thông số nền của kẻ địch. Kẻ địch dùng chung bảng lực chiến cảnh giới trong CombatStats.json, phân bổ sang thông số theo tỉ lệ riêng và làm tròn từng thông số; các mảng tăng trưởng cố định bên dưới chỉ giữ lại làm dữ liệu tương thích cũ.",
+  "combatPowerAllocation": {
+    "description": "Phân bổ lực chiến cảnh giới của kẻ địch sang thông số theo tỉ lệ.",
+    "rounding": "nearest_integer_per_stat",
+    "maxAllowedErrorCombatPower": 5,
+    "initialCombatPower": 250,
+    "ratios": {
+      "maxHp": 0.39,
+      "attack": 0.3,
+      "mastery": 0.1,
+      "defense": 0.2,
+      "maxMana": 0.01
+    }
+  },
+  "majorRealmRateGrowth": {
+    "description": "Mỗi lần quái bước sang một đại cảnh giới mới, các tỉ lệ chiến đấu tăng theo số lần đột phá; Thối Thể là mốc gốc.",
+    "accuracy": 0.01,
+    "dodgeRate": 0.01,
+    "blockRate": 0.01,
+    "critRate": 0.01,
+    "armorPierce": 0.01,
+    "damageReduction": 0.01,
+    "critDamage": 0.05
+  },
+  "baseStats": {
+    "maxHp": 85,
+    "maxMana": 20,
+    "attack": 10,
+    "defense": 3,
+    "mastery": 10,
+    "accuracy": 0.8,
+    "blockReduction": 0.8,
+    "critDamage": 1.5,
+    "armorPierce": 0,
+    "damageReduction": 0,
+    "lifeSteal": 0,
+    "luck": 0,
+    "spiritSense": 0,
+    "comprehension": 0
+  },
+  "defaultMinorGrowth": {
+    "maxHp": 13,
+    "maxMana": 4,
+    "attack": 3,
+    "defense": 1,
+    "mastery": 1
+  },
+  "minorGrowthByRealm": [
+    {
+      "maxHp": 13,
+      "maxMana": 4,
+      "attack": 4,
+      "defense": 1,
+      "mastery": 1
+    },
+    null,
+    {
+      "maxHp": 24,
+      "maxMana": 7,
+      "attack": 6,
+      "defense": 2,
+      "mastery": 1.5
+    },
+    {
+      "maxHp": 42,
+      "maxMana": 12,
+      "attack": 9,
+      "defense": 3,
+      "mastery": 2
+    },
+    null,
+    {
+      "maxHp": 60,
+      "maxMana": 18,
+      "attack": 13,
+      "defense": 4,
+      "mastery": 2.5
+    },
+    {
+      "maxHp": 78,
+      "maxMana": 24,
+      "attack": 18,
+      "defense": 5,
+      "mastery": 3
+    },
+    {
+      "maxHp": 96,
+      "maxMana": 30,
+      "attack": 24,
+      "defense": 6,
+      "mastery": 3.5
+    },
+    null,
+    {
+      "maxHp": 114,
+      "maxMana": 36,
+      "attack": 31,
+      "defense": 7,
+      "mastery": 4
+    },
+    {
+      "maxHp": 132,
+      "maxMana": 42,
+      "attack": 39,
+      "defense": 8,
+      "mastery": 4.5
+    },
+    {
+      "maxHp": 150,
+      "maxMana": 48,
+      "attack": 48,
+      "defense": 9,
+      "mastery": 5
+    },
+    null,
+    {
+      "maxHp": 222,
+      "maxMana": 72,
+      "attack": 94,
+      "defense": 13,
+      "mastery": 7
+    },
+    {
+      "maxHp": 168,
+      "maxMana": 54,
+      "attack": 58,
+      "defense": 10,
+      "mastery": 5.5
+    },
+    null,
+    {
+      "maxHp": 186,
+      "maxMana": 60,
+      "attack": 69,
+      "defense": 11,
+      "mastery": 6
+    },
+    {
+      "maxHp": 204,
+      "maxMana": 66,
+      "attack": 81,
+      "defense": 12,
+      "mastery": 6.5
+    },
+    {
+      "maxHp": 240,
+      "maxMana": 78,
+      "attack": 108,
+      "defense": 14,
+      "mastery": 7.5
+    },
+    {
+      "maxHp": 258,
+      "maxMana": 84,
+      "attack": 123,
+      "defense": 15,
+      "mastery": 8
+    },
+    null,
+    {
+      "maxHp": 276,
+      "maxMana": 90,
+      "attack": 139,
+      "defense": 16,
+      "mastery": 8.5
+    },
+    {
+      "maxHp": 294,
+      "maxMana": 96,
+      "attack": 156,
+      "defense": 17,
+      "mastery": 9
+    },
+    {
+      "maxHp": 312,
+      "maxMana": 102,
+      "attack": 174,
+      "defense": 18,
+      "mastery": 9.5
+    },
+    {
+      "maxHp": 330,
+      "maxMana": 108,
+      "attack": 193,
+      "defense": 19,
+      "mastery": 10
+    },
+    {
+      "maxHp": 348,
+      "maxMana": 114,
+      "attack": 213,
+      "defense": 20,
+      "mastery": 10.5
+    },
+    {
+      "maxHp": 366,
+      "maxMana": 120,
+      "attack": 234,
+      "defense": 21,
+      "mastery": 11
+    },
+    {
+      "maxHp": 384,
+      "maxMana": 126,
+      "attack": 256,
+      "defense": 22,
+      "mastery": 11.5
+    },
+    {
+      "maxHp": 402,
+      "maxMana": 132,
+      "attack": 279,
+      "defense": 23,
+      "mastery": 12
+    },
+    {
+      "maxHp": 420,
+      "maxMana": 138,
+      "attack": 303,
+      "defense": 24,
+      "mastery": 12.5
+    },
+    {
+      "maxHp": 438,
+      "maxMana": 144,
+      "attack": 328,
+      "defense": 25,
+      "mastery": 13
+    },
+    {
+      "maxHp": 456,
+      "maxMana": 150,
+      "attack": 354,
+      "defense": 26,
+      "mastery": 13.5
+    },
+    null
+  ],
+  "majorBreakthroughByRealm": {
+    "1": {
+      "maxHp": 118,
+      "attack": 16,
+      "defense": 6,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "3": {
+      "maxHp": 200,
+      "attack": 28,
+      "defense": 10,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "4": {
+      "maxHp": 315,
+      "attack": 43,
+      "defense": 16,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "6": {
+      "maxHp": 450,
+      "attack": 61,
+      "defense": 23,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "7": {
+      "maxHp": 605,
+      "attack": 83,
+      "defense": 30,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "8": {
+      "maxHp": 780,
+      "attack": 107,
+      "defense": 39,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "10": {
+      "maxHp": 973,
+      "attack": 133,
+      "defense": 49,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "11": {
+      "maxHp": 1188,
+      "attack": 164,
+      "defense": 59,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "12": {
+      "maxHp": 1423,
+      "attack": 196,
+      "defense": 71,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "14": {
+      "maxHp": 2563,
+      "attack": 352,
+      "defense": 128,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "15": {
+      "maxHp": 1678,
+      "attack": 231,
+      "defense": 84,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "17": {
+      "maxHp": 1953,
+      "attack": 268,
+      "defense": 98,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "18": {
+      "maxHp": 2248,
+      "attack": 309,
+      "defense": 112,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "19": {
+      "maxHp": 2898,
+      "attack": 398,
+      "defense": 145,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "20": {
+      "maxHp": 3253,
+      "attack": 447,
+      "defense": 163,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "22": {
+      "maxHp": 3628,
+      "attack": 499,
+      "defense": 181,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "23": {
+      "maxHp": 4020,
+      "attack": 553,
+      "defense": 201,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "24": {
+      "maxHp": 4435,
+      "attack": 610,
+      "defense": 222,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "25": {
+      "maxHp": 4870,
+      "attack": 669,
+      "defense": 244,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "26": {
+      "maxHp": 5325,
+      "attack": 732,
+      "defense": 266,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "27": {
+      "maxHp": 5800,
+      "attack": 798,
+      "defense": 290,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "28": {
+      "maxHp": 6295,
+      "attack": 865,
+      "defense": 315,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "29": {
+      "maxHp": 6810,
+      "attack": 936,
+      "defense": 341,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "30": {
+      "maxHp": 7345,
+      "attack": 1010,
+      "defense": 367,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    },
+    "31": {
+      "maxHp": 7900,
+      "attack": 1086,
+      "defense": 395,
+      "accuracy": 0.005,
+      "dodgeRate": 0.005,
+      "critRate": 0.005,
+      "blockRate": 0.005,
+      "critDamage": 0.05,
+      "armorPierce": 0.005,
+      "damageReduction": 0.005
+    }
+  },
+  "defaultMajorBreakthrough": {
+    "maxHp": 118,
+    "attack": 16,
+    "defense": 6,
+    "accuracy": 0.005,
+    "dodgeRate": 0.005,
+    "critRate": 0.005,
+    "blockRate": 0.005,
+    "critDamage": 0.05,
+    "armorPierce": 0.005,
+    "damageReduction": 0.005
+  }
+}

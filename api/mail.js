@@ -41,8 +41,8 @@ function readDataFile(fileName) {
 
 function getMailCatalog() {
   if (mailCatalog) return mailCatalog;
-  const shopData = readDataFile('ShopItems.json');
-  const skillData = readDataFile('CultivationSkills.json');
+  const shopData = readDataFile('Tabs/Shop/ShopItems.json');
+  const skillData = readDataFile('Shared/CultivationSkills.json');
   const items = [];
   const byId = new Map();
 

@@ -64,7 +64,7 @@
             <input id="playerNameInput" maxlength="16" type="text" value="Vô danh" aria-label="Tên gọi của đạo hữu">
             <button id="saveNameButton" class="secondary compact" type="button"><i class="activity-icon icon-activity-feather" aria-hidden="true"></i>Lưu tên</button>
           </div>
-          <span id="playerCultivationRealm"><i class="activity-icon icon-activity-lotus" aria-hidden="true"></i>Thối Thể cảnh Nhất tầng</span>
+          <span id="playerCultivationRealm"><i class="activity-icon icon-activity-lotus" aria-hidden="true"></i>Thối Thể Nhất tầng</span>
           <small id="playerPowerText"><i class="unique-icon icon-unique-power" aria-hidden="true"></i>Lực chiến 0</small>
           <small id="playerSpiritStoneText"><i class="unique-icon icon-unique-spirit-stone" aria-hidden="true"></i>Linh thạch 0</small>
         </div>
@@ -155,7 +155,7 @@
         <div>
           <span id="stageDetailStatus">Đối thủ hiện tại</span>
           <strong id="stageDetailTitle">Tầng 1</strong>
-          <small id="stageDetailRealm">Thối Thể cảnh Nhất tầng</small>
+          <small id="stageDetailRealm">Thối Thể Nhất tầng</small>
         </div>
         <div class="stage-detail-grid" id="stageDetailStats"></div>
         <p id="stageDetailRewards">Thắng nhận tu vi và linh thạch.</p>
@@ -197,9 +197,9 @@
       <article class="profile-card">
         <div class="shop-category-filters activity-category-filters" id="activityCategoryFilters" role="tablist" aria-label="Phân loại hoạt động">
           <button type="button" class="secondary compact is-active" data-activity-tab="beastHunt" role="tab" aria-selected="true"><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i>Săn yêu vật</button>
+          <button id="resourceDungeonButton" type="button" class="secondary compact" data-activity-tab="resourceDungeon" role="tab" aria-selected="false"><i class="game-icon icon-mountain" aria-hidden="true"></i>Phụ bản<b class="nav-badge" id="resourceDungeonBadge" hidden aria-hidden="true"></b></button>
           <button type="button" class="secondary compact" data-activity-tab="worldBoss" role="tab" aria-selected="false"><i class="activity-icon icon-activity-breakthrough" aria-hidden="true"></i>Boss thế giới</button>
           <button type="button" class="secondary compact" data-activity-tab="trainingDummy" role="tab" aria-selected="false"><i class="game-icon icon-sword" aria-hidden="true"></i>Mộc nhân</button>
-          <button id="resourceDungeonButton" type="button" class="secondary compact" data-activity-tab="resourceDungeon" role="tab" aria-selected="false" hidden aria-hidden="true"><i class="game-icon icon-mountain" aria-hidden="true"></i>Phụ bản<b class="nav-badge" id="resourceDungeonBadge" hidden aria-hidden="true"></b></button>
           <button type="button" class="secondary compact" data-activity-tab="arena" role="tab" aria-selected="false" hidden aria-hidden="true"><i class="game-icon icon-sword" aria-hidden="true"></i>Lôi đài</button>
         </div>
         <div class="activity-list" id="activityList"></div>
@@ -435,12 +435,12 @@
       <header class="battle-hud" aria-label="Thông tin trận đấu">
         <div class="battle-hud-side player">
           <strong id="playerHudName">Vô danh</strong>
-          <span id="playerHudRealm">Thối Thể cảnh Nhị tầng</span>
+          <span id="playerHudRealm">Thối Thể Nhị tầng</span>
         </div>
         <div class="battle-hud-turn"><span>Lượt</span><strong id="battleTurnText">1</strong></div>
         <div class="battle-hud-side enemy">
           <strong id="enemyHudName">Tán tu</strong>
-          <span id="enemyHudRealm">Thối Thể cảnh Nhị tầng</span>
+          <span id="enemyHudRealm">Thối Thể Nhị tầng</span>
         </div>
       </header>
       <div class="battle-effect-layer" id="battleEffectLayer" aria-hidden="true">
@@ -448,7 +448,7 @@
       </div>
       <section class="arena">
         <article class="fighter player" id="playerCard">
-          <div class="realm" id="playerRealmText">Thối Thể cảnh Nhị tầng</div>
+          <div class="realm" id="playerRealmText">Thối Thể Nhị tầng</div>
           <div class="avatar">Người<br>chơi</div>
           <h2 id="playerNameText">Vô danh</h2>
           <div class="bars">
@@ -471,7 +471,7 @@
         <div class="versus">VS</div>
 
         <article class="fighter enemy" id="enemyCard">
-          <div class="realm" id="enemyRealmText">Thối Thể cảnh Nhị tầng</div>
+          <div class="realm" id="enemyRealmText">Thối Thể Nhị tầng</div>
           <div class="avatar">Tán<br>tu</div>
           <h2 id="enemyNameText">Tán tu</h2>
           <div class="bars">
@@ -501,6 +501,34 @@
     </section>
     <p id="featureAccessNotice" class="toast feature-access-notice is-hidden" role="status" aria-live="polite"></p>
   </main>
+
+  <div class="reset-modal breakthrough-modal is-hidden" id="breakthroughModal" role="dialog" aria-modal="true" aria-labelledby="breakthroughModalTitle">
+    <div class="reset-modal-card breakthrough-modal-card">
+      <div class="reset-modal-header">
+        <div>
+          <span class="reset-modal-kicker">Đột phá cảnh giới</span>
+          <h2 id="breakthroughModalTitle">Đột phá</h2>
+        </div>
+        <button id="closeBreakthroughModalButton" class="icon-button" type="button" title="Đóng" aria-label="Đóng"><i class="unique-icon icon-unique-close" aria-hidden="true"></i></button>
+      </div>
+      <p id="breakthroughModalSummary"></p>
+      <section class="breakthrough-preview-section">
+        <h3>Thông số nhận được</h3>
+        <div class="breakthrough-stat-list" id="breakthroughStatList"></div>
+      </section>
+      <section class="breakthrough-preview-section">
+        <h3>Vật phẩm cần dùng</h3>
+        <div class="breakthrough-required-item" id="breakthroughRequiredItem"></div>
+      </section>
+      <section class="breakthrough-preview-section is-hidden" id="breakthroughTreasureSection">
+        <h3>Chọn Cục Thiên Tài Địa Bảo</h3>
+        <div class="breakthrough-treasure-list" id="breakthroughTreasureList"></div>
+      </section>
+      <div class="reset-modal-actions">
+        <button id="confirmBreakthroughButton" class="breakthrough compact" type="button"><i class="stat-icon icon-stat-cultivation" aria-hidden="true"></i>Đột phá</button>
+      </div>
+    </div>
+  </div>
 
   <div class="reset-modal is-hidden" id="resetConfirmModal" role="dialog" aria-modal="true" aria-labelledby="resetConfirmTitle">
     <div class="reset-modal-card">
@@ -536,6 +564,18 @@
     </div>
   </div>
 
-  <script src="./main.js?v=20260904-enhancement-modal"></script>
+  <script src="./tabs/mail.js?v=20260906-tabs"></script>
+  <script src="./tabs/quests.js?v=20260906-tabs"></script>
+  <script src="./tabs/activity.js?v=20260906-beast-hunt-lock-v1"></script>
+  <script src="./tabs/resource-dungeons.js?v=20260906-tabs"></script>
+  <script src="./tabs/shop.js?v=20260906-shop-whitelist"></script>
+  <script src="./tabs/inventory-equipment-pets.js?v=20260906-tabs"></script>
+  <script src="./tabs/pets.js?v=20260906-tabs"></script>
+  <script src="./tabs/cultivation.js?v=20260906-tabs"></script>
+  <script src="./tabs/breakthrough.js?v=20260906-tabs"></script>
+  <script src="./tabs/trial-tower.js?v=20260906-trial-enemy-progression-v1"></script>
+  <script src="./tabs/wander.js?v=20260906-tabs"></script>
+  <script src="./tabs/battle.js?v=20260906-trial-enemy-progression-v1"></script>
+  <script src="./main.js?v=20260906-beast-hunt-lock-v1"></script>
 </body>
 </html>
