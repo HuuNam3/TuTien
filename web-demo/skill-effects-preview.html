@@ -296,7 +296,7 @@
 
   <script>
     const assetBase = '/assets/Art/Sprites/Effects/';
-    const assetVersion = 'ngukiem-v2';
+    const assetVersion = 'blade-khaithien-dao-v5';
     const schoolAssets = {
       sword: {
         label: 'Kiếm Tu',
@@ -332,7 +332,7 @@
     const pageSize = 16;
     let page = 0;
     const requestedSchool = new URLSearchParams(location.search).get('school');
-    let school = requestedSchool === 'sword' ? 'sword' : 'blade';
+    let school = requestedSchool === 'blade' ? 'blade' : 'sword';
     let playing = true;
     let frameMs = 100;
     let lastTick = 0;

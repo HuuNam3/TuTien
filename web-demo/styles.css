@@ -1520,7 +1520,16 @@ button.danger:not(:disabled):hover {
 .icon-talent-treasure-defense { background-position: 100% 0%; }
 .icon-talent-treasure-maxMana { background-position: 0% 33.333%; }
 .icon-talent-treasure-generic { background-position: 33.333% 33.333%; }
+.icon-special-major-pill { background-position: 0% 33.333%; }
+.icon-special-minor-pill { background-position: 33.333% 33.333%; }
+.icon-special-enhancement-refund { background-position: 100% 33.333%; }
 
+.shop-item strong > .talent-icon {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  vertical-align: -5px;
+}
 .breakthrough-treasure-option b,
 .breakthrough-treasure-option small {
   overflow: hidden;
@@ -2638,6 +2647,10 @@ li {
 }
 
 #inventoryList .bag-item-actions button:only-child {
+  grid-column: 1 / -1;
+}
+
+#inventoryList .bag-item-actions button[data-inventory-detail] {
   grid-column: 1 / -1;
 }
 
@@ -4786,14 +4799,14 @@ li {
 }
 
 .bag-item {
-  grid-template-columns: 34px minmax(0, 1fr) auto;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
   align-items: center;
   min-height: 78px;
 }
 
 .bag-item-icon {
-  width: 30px;
-  height: 30px;
+  width: 60px;
+  height: 60px;
   display: block;
 }
 
@@ -7203,6 +7216,24 @@ strong > .item-icon,
 .icon-item-heal { background-position: 66.666% 100%; }
 .icon-item-mana-flame { background-position: 100% 100%; }
 
+.special-icon {
+  display: inline-block;
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  background-image: url('/assets/Art/Sprites/UI/chibi-activity-special-icon-sheet.png');
+  background-repeat: no-repeat;
+  background-size: 400% 400%;
+  vertical-align: -5px;
+  pointer-events: none;
+}
+
+.icon-special-equipment-chest { background-position: 0% 0%; }
+.icon-special-skill-chest { background-position: 33.333% 0%; }
+.icon-special-pet-chest { background-position: 66.666% 0%; }
+.icon-special-talent-chest { background-position: 100% 0%; }
+.icon-special-major-chest { background-position: 66.666% 33.333%; }
+
 .activity-icon {
   display: inline-block;
   flex: 0 0 22px;
@@ -7265,7 +7296,7 @@ strong > .activity-icon,
 .icon-wander-increase-enemy,
 .icon-wander-skip-enemy {
   background-image: url('/assets/Art/Sprites/UI/chibi-wander-map-icon-sheet.png');
-  background-size: 400% 300%;
+  background-size: 400% 400%;
 }
 
 .icon-wander-map-15,
@@ -10578,9 +10609,9 @@ strong > .unique-icon {
 .icon-unique-close { background-position: 66.666% 100%; }
 .icon-unique-help { background-position: 100% 100%; }
 .icon-unique-critical-damage {
-  background-image: url('/assets/Art/Sprites/UI/chibi-stat-icon-sheet.png');
+  background-image: url('/assets/Art/Sprites/UI/chibi-talent-breakthrough-icon-sheet.png');
   background-size: 400% 400%;
-  background-position: 66.666% 66.666%;
+  background-position: 33.333% 0%;
 }
 
 .skill-item-icon {
@@ -10704,6 +10735,91 @@ strong > .unique-icon {
   width: 21px;
   height: 21px;
   vertical-align: -4px;
+}
+
+/* Inventory cards must keep the larger icon size for every icon family. */
+#inventoryList .bag-item-icon {
+  flex: 0 0 50px;
+  width: 50px;
+  height: 50px;
+  vertical-align: middle;
+}
+
+/* Keep the bag compact and scannable on three columns. */
+#inventoryList {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+#inventoryList .bag-item-identity {
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+#inventoryList .bag-item-header {
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+}
+
+#inventoryList .bag-item-icon-wrap {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 50px;
+  width: 50px;
+  height: 50px;
+}
+
+#inventoryList .bag-item-icon-wrap .bag-item-icon {
+  box-sizing: border-box;
+  flex: 0 0 50px;
+  width: 50px;
+  height: 50px;
+  border: 1px solid #ffffff;
+  border-radius: 5px;
+}
+
+#inventoryList .bag-item-icon-wrap .bag-item-count {
+  position: absolute;
+  right: 1px;
+  bottom: 1px;
+  z-index: 1;
+  max-width: calc(100% - 2px);
+  overflow: hidden;
+  padding: 1px 2px;
+  border-radius: 3px;
+  background: rgba(10, 14, 20, 0.82);
+  color: #ffe082;
+  font-size: 8px;
+  line-height: 1.05;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#inventoryList .bag-item-fragment-mark {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  z-index: 1;
+  min-width: 11px;
+  padding: 1px 2px;
+  border-radius: 3px;
+  background: rgba(17, 32, 48, 0.9);
+  color: #8ee8ff;
+  font-size: 8px;
+  font-weight: 900;
+  line-height: 1;
+  text-align: center;
+}
+
+.inventory-detail-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.inventory-detail-actions button:only-child {
+  grid-column: 1 / -1;
 }
 
 .profile-stat-group-grid .unique-icon {

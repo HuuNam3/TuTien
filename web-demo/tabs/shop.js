@@ -40,7 +40,8 @@ function getShopItemIconClass(item) {
   if (item.type === 'potion') {
     return item.potionType === 'mana' ? 'icon-item-mana-flame' : 'icon-item-health-pill';
   }
-  if (item.type === 'enhancementStone' || item.type === 'enhancementRefund') return 'icon-item-enhancement-stone';
+  if (item.type === 'enhancementRefund') return 'icon-special-enhancement-refund';
+  if (item.type === 'enhancementStone') return 'icon-item-enhancement-stone';
   if (item.type === 'foundation') return 'icon-item-jade';
   if (item.type === 'cultivation') return 'icon-stat-cultivation';
   if (item.type === 'ascension') return 'icon-special-major-pill';
@@ -51,7 +52,7 @@ function getShopItemIconClass(item) {
 
 function getShopItemIconTypeClass(icon) {
   if (icon.startsWith('icon-talent-treasure-') || icon.startsWith('icon-special-minor-pill')
-    || icon.startsWith('icon-special-major-pill')) return 'talent-icon';
+    || icon.startsWith('icon-special-major-pill') || icon.startsWith('icon-special-enhancement-refund')) return 'talent-icon';
   if (icon.startsWith('icon-special-')) return 'special-icon';
   if (icon.startsWith('icon-unique-')) return 'unique-icon';
   if (icon.startsWith('icon-skill-item-')) return 'skill-item-icon';

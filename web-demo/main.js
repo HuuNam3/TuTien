@@ -34,26 +34,26 @@ const battleSkillAnimationDuration = 800;
 const battleSkillDamageDelay = 600;
 const battleEnemyTurnDelay = 100;
 const playerSkillEffectSprites = Object.freeze({
-  beginner_sword_art: '/assets/Art/Sprites/Effects/skill-beginner-sword-art-sheet.png',
-  sword_quickdraw: '/assets/Art/Sprites/Effects/skill-sword-quickdraw-sheet.png',
-  sword_flash: '/assets/Art/Sprites/Effects/skill-sword-flash-sheet.png',
-  sword_flow: '/assets/Art/Sprites/Effects/skill-sword-flow-sheet.png',
-  sword_domain: '/assets/Art/Sprites/Effects/skill-sword-domain-sheet.png',
-  sword_storm: '/assets/Art/Sprites/Effects/skill-sword-storm-sheet.png',
-  sword_earth_rift: '/assets/Art/Sprites/Effects/skill-sword-earth-rift-sheet.png',
-  sword_earth_lotus: '/assets/Art/Sprites/Effects/skill-sword-earth-lotus-sheet.png',
-  sword_heaven_starfall: '/assets/Art/Sprites/Effects/skill-sword-heaven-starfall-sheet.png',
-  sword_heaven_realm: '/assets/Art/Sprites/Effects/skill-sword-heaven-realm-sheet.png',
-  beginner_blade_art: '/assets/Art/Sprites/Effects/skill-blade-beginner-art-sheet.png',
-  blade_heavy: '/assets/Art/Sprites/Effects/skill-blade-heavy-sheet.png',
-  blade_blood: '/assets/Art/Sprites/Effects/skill-blade-blood-sheet.png',
-  blade_rend: '/assets/Art/Sprites/Effects/skill-blade-rend-sheet.png',
-  blade_heaven: '/assets/Art/Sprites/Effects/skill-blade-heaven-sheet.png',
-  blade_apocalypse: '/assets/Art/Sprites/Effects/skill-blade-apocalypse-sheet.png',
-  blade_earth_sunder: '/assets/Art/Sprites/Effects/skill-blade-earth-sunder-sheet.png',
-  blade_earth_warcry: '/assets/Art/Sprites/Effects/skill-blade-earth-warcry-sheet.png',
-  blade_heaven_overlord: '/assets/Art/Sprites/Effects/skill-blade-heaven-overlord-sheet.png',
-  blade_heaven_worldsplitter: '/assets/Art/Sprites/Effects/skill-blade-heaven-worldsplitter-sheet.png',
+  beginner_sword_art: '/assets/Art/Sprites/Effects/skill-beginner-sword-art-sheet-premium.png',
+  sword_quickdraw: '/assets/Art/Sprites/Effects/skill-sword-quickdraw-sheet-premium.png',
+  sword_flash: '/assets/Art/Sprites/Effects/skill-sword-flash-sheet-premium.png',
+  sword_flow: '/assets/Art/Sprites/Effects/skill-sword-flow-sheet-premium.png',
+  sword_domain: '/assets/Art/Sprites/Effects/skill-sword-domain-sheet-premium.png',
+  sword_storm: '/assets/Art/Sprites/Effects/skill-sword-storm-sheet-premium.png',
+  sword_earth_rift: '/assets/Art/Sprites/Effects/skill-sword-earth-rift-sheet-premium.png',
+  sword_earth_lotus: '/assets/Art/Sprites/Effects/skill-sword-earth-lotus-sheet-premium.png',
+  sword_heaven_starfall: '/assets/Art/Sprites/Effects/skill-sword-heaven-starfall-sheet-premium.png',
+  sword_heaven_realm: '/assets/Art/Sprites/Effects/skill-sword-heaven-realm-sheet-premium.png',
+  beginner_blade_art: '/assets/Art/Sprites/Effects/skill-blade-beginner-art-sheet-premium.png',
+  blade_heavy: '/assets/Art/Sprites/Effects/skill-blade-heavy-sheet-premium.png',
+  blade_blood: '/assets/Art/Sprites/Effects/skill-blade-blood-sheet-premium.png',
+  blade_rend: '/assets/Art/Sprites/Effects/skill-blade-rend-sheet-premium.png',
+  blade_heaven: '/assets/Art/Sprites/Effects/skill-blade-heaven-sheet-premium.png',
+  blade_apocalypse: '/assets/Art/Sprites/Effects/skill-blade-apocalypse-sheet-premium.png',
+  blade_earth_sunder: '/assets/Art/Sprites/Effects/skill-blade-earth-sunder-sheet-premium.png',
+  blade_earth_warcry: '/assets/Art/Sprites/Effects/skill-blade-earth-warcry-sheet-premium.png',
+  blade_heaven_overlord: '/assets/Art/Sprites/Effects/skill-blade-heaven-overlord-sheet-premium.png',
+  blade_heaven_worldsplitter: '/assets/Art/Sprites/Effects/skill-blade-heaven-worldsplitter-sheet-premium.png',
 });
 const maxEquipmentLevel = 50;
 const equipmentLevelsPerChestTier = 5;
@@ -1291,11 +1291,11 @@ function getSkillGradeColor(gradeId) {
 }
 
 const talentTreasureStatMeta = Object.freeze({
-  maxHp: { name: 'Cục Huyết Ngọc', icon: 'icon-talent-treasure-maxHp' },
-  attack: { name: 'Cục Liệt Dương', icon: 'icon-talent-treasure-attack' },
-  mastery: { name: 'Cục Ngộ Đạo', icon: 'icon-talent-treasure-mastery' },
-  defense: { name: 'Cục Huyền Giáp', icon: 'icon-talent-treasure-defense' },
-  maxMana: { name: 'Cục Linh Hải', icon: 'icon-talent-treasure-maxMana' },
+  maxHp: { name: 'Huyết Ngọc', icon: 'icon-talent-treasure-maxHp' },
+  attack: { name: 'Liệt Dương', icon: 'icon-talent-treasure-attack' },
+  mastery: { name: 'Ngộ Đạo', icon: 'icon-talent-treasure-mastery' },
+  defense: { name: 'Huyền Giáp', icon: 'icon-talent-treasure-defense' },
+  maxMana: { name: 'Linh Hải', icon: 'icon-talent-treasure-maxMana' },
 });
 
 const talentTreasureStatPriority = ['attack', 'mastery', 'maxHp', 'defense', 'maxMana'];
@@ -6003,6 +6003,9 @@ function playBattleSkillEffect(target, skillId) {
   const left = targetRect.left - panelRect.left + (targetRect.width - size) / 2;
   const top = targetRect.top - panelRect.top + targetRect.height * 0.08;
   const spritePath = playerSkillEffectSprites[skillId] || enemySkillEffectSpritePath;
+  const isPremiumSkillEffect = spritePath.includes('-premium.png');
+  const frameCount = isPremiumSkillEffect ? 16 : 12;
+  const rowCount = isPremiumSkillEffect ? 4 : 3;
 
   window.clearTimeout(effect.hideTimer);
   const animationToken = (effect.animationToken || 0) + 1;
@@ -6011,17 +6014,18 @@ function playBattleSkillEffect(target, skillId) {
   effect.style.left = `${left}px`;
   effect.style.top = `${top}px`;
   effect.style.backgroundImage = `url("${spritePath}")`;
+  effect.style.backgroundSize = `400% ${rowCount * 100}%`;
   effect.style.backgroundPosition = '0% 0%';
   effect.classList.remove('is-hidden', 'is-playing');
   void effect.offsetWidth;
   effect.classList.add('is-playing');
-  const frameDuration = battleSkillAnimationDuration / 12;
-  for (let frame = 0; frame < 12; frame += 1) {
+  const frameDuration = battleSkillAnimationDuration / frameCount;
+  for (let frame = 0; frame < frameCount; frame += 1) {
     window.setTimeout(() => {
       if (effect.animationToken !== animationToken) return;
       const column = frame % 4;
       const row = Math.floor(frame / 4);
-      effect.style.backgroundPosition = `${column * (100 / 3)}% ${row * 50}%`;
+      effect.style.backgroundPosition = `${column * (100 / 3)}% ${row * (100 / (rowCount - 1))}%`;
     }, frame * frameDuration);
   }
   effect.hideTimer = window.setTimeout(() => {
@@ -6223,7 +6227,7 @@ function getEnhancementItemMarkup(item) {
   const refundDisabledReason = currentLevel <= 0
     ? 'Trang bị chưa có cấp cường hóa để hoàn.'
     : refundCount <= 0
-    ? 'Cần Cục Hoàn Đá Cường Hóa trong túi.'
+    ? 'Cần Đá Hoàn Nguyên trong túi.'
     : '';
   return `
     ${renderEquippedEquipmentSummary(item, getSlotName(item.slotId), { showStats: false, showSpecials: false })}
@@ -6300,12 +6304,12 @@ function refundEquipmentEnhancement(itemId) {
     return;
   }
   if (getShopInventoryCount('enhancementRefund') <= 0) {
-    showGameToast('Cần Cục Hoàn Đá Cường Hóa trong túi.', 'error');
+    showGameToast('Cần Đá Hoàn Nguyên trong túi.', 'error');
     return;
   }
 
   const refundAmount = getEnhancementRefundAmount(item);
-  if (!window.confirm(`Dùng 1 Cục Hoàn Đá Cường Hóa để đưa ${item.name} từ +${currentLevel} về +0 và nhận lại ${formatGameNumber(refundAmount)} đá cường hóa?`)) return;
+  if (!window.confirm(`Dùng 1 Đá Hoàn Nguyên để đưa ${item.name} từ +${currentLevel} về +0 và nhận lại ${formatGameNumber(refundAmount)} đá cường hóa?`)) return;
 
   shopInventoryCounts.enhancementRefund = getShopInventoryCount('enhancementRefund') - 1;
   enhancementStones += refundAmount;
