@@ -9,12 +9,12 @@
     "firstMajorRealmPriceStep": 25,
     "otherMajorRealmBaseCost": 200,
     "otherMajorRealmPriceStep": 25,
-    "description": "Dùng để đột phá một tiểu cảnh giới. Mỗi lần mua tiếp theo trong cùng đại cảnh giới sẽ tăng giá theo cấu hình."
+    "description": "Dùng để đột phá một tiểu cảnh giới."
   },
   "majorAscensionTreasureConfig": {
     "idPrefix": "majorAscensionTreasure",
-    "namePrefix": "Cục Thiên Tài Địa Bảo",
-    "description": "Vật phẩm dùng để đột phá đại cảnh giới tương ứng. Mỗi cục có một lần roll chỉ số ngẫu nhiên.",
+    "namePrefix": "Thiên Tài Địa Bảo",
+    "description": "Vật phẩm dùng để đột phá đại cảnh giới tương ứng. Mỗi vật phẩm có một lần roll chỉ số ngẫu nhiên.",
     "minManaPercent": 1,
     "maxManaPercent": 3,
     "maxHpPercent": 30,
@@ -39,7 +39,7 @@
     },
     {
       "id": "enhancementRefund",
-      "name": "Cục Hoàn Đá Cường Hóa",
+      "name": "Đá Hoàn Nguyên",
       "description": "Dùng trong panel cường hóa để đưa một trang bị về +0 và hoàn lại toàn bộ đá đã dùng.",
       "cost": 2500,
       "type": "enhancementRefund",
@@ -48,7 +48,7 @@
     {
       "id": "skillChestMortal",
       "name": "Rương skill Phàm phẩm",
-      "description": "Mở ra 1 mảnh skill Phàm phẩm với tỉ lệ 90% hoặc 1 sách skill Phàm phẩm với tỉ lệ 10%.",
+      "description": "Mở ra nhận 1 mảnh skill Phàm phẩm với tỉ lệ 90% hoặc 1 sách skill Phàm phẩm với tỉ lệ 10%.",
       "cost": 100,
       "type": "skillChest",
       "gradeId": "mortal",
@@ -60,7 +60,7 @@
     {
       "id": "skillChestYellow",
       "name": "Rương skill Hoàng phẩm",
-      "description": "Mở ra 1 mảnh skill Hoàng phẩm với tỉ lệ 90% hoặc 1 sách skill Hoàng phẩm với tỉ lệ 10%.",
+      "description": "Mở ra nhận 1 mảnh skill Hoàng phẩm với tỉ lệ 90% hoặc 1 sách skill Hoàng phẩm với tỉ lệ 10%.",
       "cost": 150,
       "type": "skillChest",
       "gradeId": "yellow",
@@ -72,7 +72,7 @@
     {
       "id": "skillChestMysterious",
       "name": "Rương skill Huyền phẩm",
-      "description": "Mở ra 1 mảnh skill Huyền phẩm với tỉ lệ 90% hoặc 1 sách skill Huyền phẩm với tỉ lệ 10%.",
+      "description": "Mở ra nhận 1 mảnh skill Huyền phẩm với tỉ lệ 90% hoặc 1 sách skill Huyền phẩm với tỉ lệ 10%.",
       "cost": 300,
       "type": "skillChest",
       "gradeId": "mysterious",
@@ -84,7 +84,7 @@
     {
       "id": "skillChestEarth",
       "name": "Rương skill Địa phẩm",
-      "description": "Mở ra 1 mảnh skill Địa phẩm với tỉ lệ 90% hoặc 1 sách skill Địa phẩm với tỉ lệ 10%.",
+      "description": "Mở ra nhận 1 mảnh skill Địa phẩm với tỉ lệ 90% hoặc 1 sách skill Địa phẩm với tỉ lệ 10%.",
       "cost": 0,
       "type": "skillChest",
       "gradeId": "earth",
@@ -96,7 +96,7 @@
     {
       "id": "skillChestHeaven",
       "name": "Rương skill Thiên phẩm",
-      "description": "Mở ra 1 mảnh skill Thiên phẩm với tỉ lệ 90% hoặc 1 sách skill Thiên phẩm với tỉ lệ 10%.",
+      "description": "Mở ra nhận 1 mảnh skill Thiên phẩm với tỉ lệ 90% hoặc 1 sách skill Thiên phẩm với tỉ lệ 10%.",
       "cost": 0,
       "type": "skillChest",
       "gradeId": "heaven",
@@ -108,7 +108,7 @@
     {
       "id": "petChest",
       "name": "Rương Linh Thú",
-      "description": "Mở ra mảnh linh thú. Mỗi lần nhận 1, 2 hoặc 5 mảnh; đủ 50 mảnh của cùng một linh thú sẽ tự ghép thành 1 linh thú.",
+      "description": "Mở ra nhận mảnh linh thú. Mỗi lần nhận 1, 2 hoặc 5 mảnh; đủ 50 mảnh của cùng một linh thú sẽ tự ghép thành 1 linh thú.",
       "cost": 1000,
       "type": "petChest",
       "fragmentRewards": [
@@ -120,7 +120,7 @@
     {
       "id": "talentTreasureChest",
       "name": "Rương Thiên Tài Địa Bảo",
-      "description": "Mở ra 1 Cục Thiên Tài Địa Bảo để chuẩn bị đột phá đại cảnh giới.",
+      "description": "Mở ra nhận 1 Thiên Tài Địa Bảo để chuẩn bị đột phá đại cảnh giới.",
       "cost": 100,
       "type": "talentTreasureChest",
       "requiredMinorRealmLevel": 10,
@@ -129,10 +129,10 @@
     {
       "id": "majorAscensionPermit",
       "name": "Phá Cảnh Đan",
-    "description": "Dùng để đột phá đại cảnh giới. Giá gốc 1000 linh thạch, mỗi lần mua tăng thêm 2000.",
+    "description": "Dùng để đột phá 1 đại cảnh giới.",
     "cost": 1000,
     "type": "ascension",
-    "priceStep": 2000
+    "priceStep": 1000
     },
     {
       "id": "healthPotion",

@@ -152,14 +152,6 @@ function renderEquipment() {
 function getBagItems() {
   const items = [
     {
-      id: 'spirit-stones',
-      name: 'Linh thạch',
-      category: 'Tài nguyên',
-      count: playerSpiritStones,
-      iconClass: 'item-icon icon-item-spirit-stone',
-      description: 'Dùng để mua vật phẩm và công pháp trong cửa hàng.',
-    },
-    {
       id: 'health-potion',
       name: 'Sinh Huyết Đan',
       category: 'Tiêu hao',
@@ -183,7 +175,7 @@ function getBagItems() {
       category: 'Nguyên liệu',
       count: enhancementStones,
       iconClass: 'item-icon icon-item-enhancement-stone',
-      description: 'Nguyên liệu dùng cho các mốc cường hóa trang bị.',
+      description: 'Nguyên liệu để cường hóa trang bị.',
     },
   ];
 
@@ -217,8 +209,14 @@ function getBagItems() {
           ? `${rarityData[getSkillGradeRarityKey(shopItem.gradeId)]?.className || 'common'} skill-rarity-item`
           : '',
         rarityColor: shopItem.type === 'skillChest' ? getSkillGradeColor(shopItem.gradeId) : '',
-        description: shopItem.description || getShopItemDetailLines(shopItem).join(' '),
+        description: getInventoryChestDescription(shopItem) || getShopItemDetailLines(shopItem).join(' '),
         usable: !isBreakthroughPillShopItem(shopItem) && shopItem.type !== 'enhancementRefund' && shopItem.type !== 'majorAscensionTreasure',
+        sellable: ['skillChest', 'petChest', 'talentTreasureChest', 'majorAscensionTreasureChest', 'minorAscension'].includes(shopItem.type),
+        sellPrice: shopItem.type === 'minorAscension'
+          ? getMinorAscensionSellPrice({ shopItemId: shopItem.id })
+          : ['skillChest', 'petChest', 'talentTreasureChest', 'majorAscensionTreasureChest'].includes(shopItem.type)
+          ? getInventoryChestSellPrice({ shopItemId: shopItem.id })
+          : 0,
         useLabel: ['skillChest', 'talentTreasureChest', 'majorAscensionTreasureChest'].includes(shopItem.type)
           ? 'Mở'
           : isBreakthroughPillShopItem(shopItem) || shopItem.type === 'enhancementRefund' || shopItem.type === 'majorAscensionTreasure'
@@ -237,13 +235,15 @@ function getBagItems() {
       category: 'Đột phá',
       count: 1,
       iconClass: 'activity-icon icon-activity-gate',
-      description: `Dành cho đột phá lên ${majorRealmNames[item.targetMajorRealmIndex] || 'đại cảnh giới kế tiếp'}. LC cục: ${formatGameNumber(item.realizedCombatPower || item.combatPower)}.`,
+      description: `Dùng để đột phá ${majorRealmNames[item.targetMajorRealmIndex] || 'đại cảnh giới kế tiếp'}. Thông số cộng: ${formatTalentTreasureStats(item)}. LC: ${formatGameNumber(item.realizedCombatPower || item.combatPower)}.`,
       talentTreasure: true,
       targetMajorRealmIndex: item.targetMajorRealmIndex,
       allocation: item.allocation,
       statBonuses: item.statBonuses,
       usable: false,
       useLabel: '',
+      sellable: true,
+      sellPrice: getTalentTreasureSellPrice(item),
     });
   });
 
@@ -261,7 +261,7 @@ function getBagItems() {
       rarityColor: getSkillGradeColor(skill.gradeId),
       description: `Dùng để nâng cấp ${skill.name}.`,
       usable: !isSkillLearned(skill.id) && getPlayerCultivationTier() >= getSkillRequiredTier(skill),
-      useLabel: 'Học skill',
+      useLabel: 'Học',
       sellable: true,
       sellPrice: getSkillMaterialSellPrice(skill, 'book'),
     });
@@ -316,9 +316,11 @@ function getBagItems() {
       iconClass: 'activity-icon icon-activity-chest',
       rarityClass: chestRarityKey,
       rarityColor: rarityData[chestRarityKey]?.color || '#526176',
-      description: `Rương cấp ${getEquipmentChestTier(chest)} mở trang bị cấp ${getChestLevelRange(chest).join('-')}.`,
+      description: getEquipmentChestRarityDescription(chest),
       usable: true,
       useLabel: 'Mở',
+      sellable: true,
+      sellPrice: getInventoryChestSellPrice(chest),
     });
   });
 
@@ -348,6 +350,74 @@ function learnSkillFromBag(skillId) {
 
 function getInventoryItem(itemId) {
   return getBagItems().find((item) => String(item.id) === String(itemId)) || null;
+}
+
+function getInventoryChestDescription(shopItem) {
+  if (shopItem?.type === 'skillChest') {
+    const gradeName = String(shopItem.name || '').replace(/^Rương skill\s*/, '');
+    const fragmentChance = formatGameNumber((Number(shopItem.fragmentChance) || 0) * 100);
+    const bookChance = formatGameNumber((Number(shopItem.bookChance) || 0) * 100);
+    return `Mở ra nhận 1 mảnh skill ${gradeName} với tỉ lệ ${fragmentChance}% hoặc 1 sách skill ${gradeName} với tỉ lệ ${bookChance}%.`;
+  }
+  if (shopItem?.type === 'petChest') {
+    const rewards = (shopItem.fragmentRewards || [])
+      .map((reward) => `${formatGameNumber((Number(reward.chance) || 0) * 100)}% nhận ${Math.max(1, Number(reward.amount) || 1)} mảnh`)
+      .join(', ');
+    return `Mở ra nhận mảnh linh thú: ${rewards}.`;
+  }
+  if (shopItem?.type === 'talentTreasureChest' || shopItem?.type === 'majorAscensionTreasureChest') {
+    return 'Mở ra nhận 1 Thiên Tài Địa Bảo với tỉ lệ 100%.';
+  }
+  return shopItem?.description || '';
+}
+
+function getEquipmentChestRarityDescription(chest) {
+  const profile = getEquipmentRarityProfile(chest);
+  const rates = equipmentQualityOrder
+    .map((rarityKey, index) => {
+      const chance = Number(profile.weights[index]) || 0;
+      if (chance <= 0) return '';
+      return `<span class="rarity-rate rarity-${rarityKey}">${rarityData[rarityKey]?.name || rarityKey} ${formatGameNumber(chance)}%</span>`;
+    })
+    .filter(Boolean)
+    .join(' · ');
+  return `Mở ra nhận 1 trang bị cấp ${getChestLevelRange(chest).join('-')}. Tỉ lệ phẩm chất: ${rates}.`;
+}
+
+function formatInventoryCount(value) {
+  const count = Math.max(0, Number(value) || 0);
+  const formatUnit = (unit) => {
+    const rounded = Math.round(unit * 10) / 10;
+    return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+  };
+  if (count >= 100000000) return `x${formatUnit(count / 100000000)}tỉ`;
+  if (count >= 10000) return `x${formatUnit(count / 10000)}vạn`;
+  return `x${Math.floor(count)}`;
+}
+
+function getInventoryChestSellPrice(item) {
+  const basePricePerChestTier = Math.max(
+    1,
+    Number(progressionFeatures.enhancement?.sellBasePricePerChestTier) || 15,
+  );
+  if (item?.type === 'equipmentChest') {
+    const chestTier = Math.max(1, Math.floor(Number(item.chestTier ?? item.tier) || 1));
+    return Math.max(1, Math.floor(basePricePerChestTier * chestTier));
+  }
+  const shopItem = shopItems.find((entry) => entry.id === item?.shopItemId);
+  const shopCost = Math.max(0, Math.floor(Number(shopItem?.cost) || 0));
+  return Math.max(1, Math.floor(shopCost > 0 ? shopCost * 0.5 : basePricePerChestTier));
+}
+
+function getMinorAscensionSellPrice(item) {
+  const shopItem = shopItems.find((entry) => entry.id === item?.shopItemId);
+  const majorRealmIndex = Math.max(0, Math.floor(Number(shopItem?.requiredMajorRealmIndex) || 0));
+  return 20 + majorRealmIndex * 20;
+}
+
+function getTalentTreasureSellPrice(item) {
+  const majorRealmIndex = Math.max(0, Math.floor(Number(item?.targetMajorRealmIndex) || 0));
+  return 25 + majorRealmIndex * 25;
 }
 
 function getInventoryItemDetails(item) {
@@ -382,7 +452,7 @@ function getInventoryItemDetails(item) {
     if (shopItem?.type === 'talentTreasureChest') details.push('Mở rương nhận 1 Cục Thiên Tài Địa Bảo.');
     if (shopItem?.type === 'majorAscensionTreasureChest') details.push(`Mở rương nhận 1 Cục Thiên Tài Địa Bảo ${majorRealmNames[shopItem.targetMajorRealmIndex] || 'của đại cảnh giới kế tiếp'}.`);
     if (shopItem?.type === 'majorAscensionTreasure') details.push('Dùng khi đột phá đại cảnh giới để roll ngẫu nhiên chỉ số theo lực chiến nhận được.');
-    if (shopItem?.type === 'enhancementRefund') details.push('Không dùng trực tiếp; chỉ dùng trong panel cường hóa trang bị. Mỗi lần hoàn tiêu hao 1 cục.');
+    if (shopItem?.type === 'enhancementRefund') details.push('Không dùng trực tiếp; chỉ dùng trong panel cường hóa trang bị. Mỗi lần hoàn tiêu hao 1 Đá Hoàn Nguyên.');
   }
   if (item.category === 'Rương') {
     const profile = getEquipmentRarityProfile(item);
@@ -401,6 +471,52 @@ function sellInventoryItem(itemId, amount = 1) {
   const item = getInventoryItem(itemId);
   if (!item?.sellable) return false;
   const requested = clamp(Math.floor(Number(amount) || 1), 1, Math.max(1, Number(item.count) || 1));
+  if (item.talentTreasure) {
+    const index = talentTreasureInventory.findIndex((entry) => String(entry.id) === String(item.id));
+    if (index < 0) return false;
+    const sold = Math.min(requested, 1);
+    const totalPrice = sold * item.sellPrice;
+    if (!window.confirm(`Bán ${item.name} x${sold} để nhận ${formatGameNumber(totalPrice)} linh thạch?`)) return false;
+    talentTreasureInventory.splice(index, 1);
+    playerSpiritStones += totalPrice;
+    showGameToast(`Đã bán ${item.name} x${sold}, nhận ${formatGameNumber(totalPrice)} linh thạch.`, 'success');
+    renderInventory();
+    renderCultivation();
+    renderShop();
+    saveGame();
+    return true;
+  }
+  if (item.type === 'equipmentChest') {
+    const chest = equipmentChestInventory.find((entry) => String(entry.id) === String(item.id));
+    const sold = Math.min(requested, Math.max(0, Number(chest?.count) || 0));
+    if (!chest || sold <= 0) return false;
+    const totalPrice = sold * item.sellPrice;
+    if (!window.confirm(`Bán ${item.name} x${sold} để nhận ${formatGameNumber(totalPrice)} linh thạch?`)) return false;
+    chest.count -= sold;
+    equipmentChestInventory = equipmentChestInventory.filter((entry) => Number(entry.count) > 0);
+    playerSpiritStones += totalPrice;
+    showGameToast(`Đã bán ${item.name} x${sold}, nhận ${formatGameNumber(totalPrice)} linh thạch.`, 'success');
+    renderInventory();
+    renderCultivation();
+    renderShop();
+    saveGame();
+    return true;
+  }
+  if (item.shopItemId) {
+    const available = getShopInventoryCount(item.shopItemId);
+    const sold = Math.min(requested, available);
+    if (sold <= 0) return false;
+    const totalPrice = sold * item.sellPrice;
+    if (!window.confirm(`Bán ${item.name} x${sold} để nhận ${formatGameNumber(totalPrice)} linh thạch?`)) return false;
+    shopInventoryCounts[item.shopItemId] = available - sold;
+    playerSpiritStones += totalPrice;
+    showGameToast(`Đã bán ${item.name} x${sold}, nhận ${formatGameNumber(totalPrice)} linh thạch.`, 'success');
+    renderInventory();
+    renderCultivation();
+    renderShop();
+    saveGame();
+    return true;
+  }
   const skillId = String(item.id).replace(/^skill-(?:book|fragment)-/, '');
   const isFragment = item.category === 'Mảnh skill';
   const counts = isFragment ? skillFragments : skillBooks;
@@ -490,7 +606,7 @@ function usePurchasedShopItem(item, amount = 1) {
     if (createdPets.length) rewardParts.push(`ghép ${createdPets.join(', ')}`);
     showGameToast(`Đã mở ${shopItem.name}${used > 1 ? ` x${used}` : ''}: ${rewardParts.join(', ')}.`, 'success');
   } else if (['talentTreasureChest', 'majorAscensionTreasureChest'].includes(shopItem.type)) {
-    const rewardName = talentTreasureRewards[0]?.name || 'Cục Thiên Tài Địa Bảo';
+    const rewardName = talentTreasureRewards[0]?.name || 'Thiên Tài Địa Bảo';
     showGameToast(`Đã mở ${shopItem.name}${used > 1 ? ` x${used}` : ''}: nhận ${rewardName}${used > 1 ? ` x${used}` : ''}.`, 'success');
   } else {
     showGameToast(`Đã dùng ${shopItem.name}${used > 1 ? ` x${used}` : ''}.`, 'success');
@@ -508,8 +624,8 @@ function useInventoryItem(itemId, amount = 1) {
   if (!item?.usable) return false;
   const maxQuantity = item.category === 'Công pháp' ? 1 : Math.max(1, Number(item.count) || 1);
   const requested = clamp(Math.floor(Number(amount) || 1), 1, maxQuantity);
-  if (requested > 1) {
-    const action = item.category === 'Rương' ? 'mở' : 'dùng';
+  if (requested > 1 || item.useLabel === 'Mở') {
+    const action = item.useLabel === 'Mở' || item.category === 'Rương' ? 'mở' : 'dùng';
     if (!window.confirm(`${action[0].toUpperCase()}${action.slice(1)} ${requested} ${item.name}?`)) return false;
   }
 
@@ -591,18 +707,20 @@ function openInventoryItemDetail(itemId) {
   inventoryDetailOverlay.innerHTML = `
     <div class="wander-event-modal shop-detail-modal inventory-detail-modal" role="dialog" aria-modal="true" aria-labelledby="inventoryDetailTitle">
       <button type="button" class="icon-button inventory-detail-close" title="Đóng" aria-label="Đóng"><i class="unique-icon icon-unique-close" aria-hidden="true"></i></button>
-      <span>${item.iconClass ? `<i class="bag-item-icon ${item.iconClass}" aria-hidden="true"></i>` : ''} Chi tiết vật phẩm</span>
-      <strong id="inventoryDetailTitle" class="shop-detail-title">${item.name}</strong>
+      <span id="inventoryDetailTitle">${item.iconClass ? `<i class="bag-item-icon ${item.iconClass}" aria-hidden="true"></i>` : ''} ${item.name}</span>
       <div class="shop-detail-description">
-        <p>Phân loại: ${item.category}</p>
-        <p>Số lượng trong túi: x${formatGameNumber(item.count)}</p>
-        ${getInventoryItemDetails(item).map((line) => `<p>${line}</p>`).join('')}
+        <p>Số lượng trong túi: ${formatInventoryCount(item.count)}</p>
+        <p>${item.description || 'Vật phẩm trong túi đồ.'}</p>
+        ${item.sellable ? `<p>Bán x1 được ${formatGameNumber(item.sellPrice)} linh thạch.</p>` : ''}
       </div>
       ${potionExchange ? renderPotionExchangePanel(potionExchange) : ''}
-      ${canUse ? `<label class="shop-detail-quantity">Số lượng
+      ${canUse || item.sellable ? `<label class="shop-detail-quantity">Số lượng
         <input id="inventoryDetailQuantity" type="number" min="1" max="${maxQuantity}" value="1">
       </label>
-      <button type="button" class="breakthrough inventory-detail-use">${item.useLabel || 'Dùng'}</button>` : potionExchange ? '' : '<em class="shop-detail-lock">Vật phẩm này chưa có thao tác sử dụng trực tiếp.</em>'}
+      <div class="inventory-detail-actions">
+        ${canUse ? `<button type="button" class="breakthrough inventory-detail-use">${item.useLabel || 'Dùng'}</button>` : ''}
+        ${item.sellable ? '<button type="button" class="secondary inventory-detail-sell">Bán</button>' : ''}
+      </div>` : potionExchange ? '' : '<em class="shop-detail-lock">Vật phẩm này chưa có thao tác sử dụng trực tiếp.</em>'}
     </div>
   `;
   inventoryDetailOverlay.classList.remove('is-hidden');
@@ -610,6 +728,10 @@ function openInventoryItemDetail(itemId) {
   inventoryDetailOverlay.querySelector('.inventory-detail-use')?.addEventListener('click', () => {
     const quantity = clamp(Math.floor(Number(inventoryDetailOverlay.querySelector('#inventoryDetailQuantity')?.value) || 1), 1, maxQuantity);
     if (useInventoryItem(item.id, quantity)) hideInventoryItemDetail();
+  });
+  inventoryDetailOverlay.querySelector('.inventory-detail-sell')?.addEventListener('click', () => {
+    const quantity = clamp(Math.floor(Number(inventoryDetailOverlay.querySelector('#inventoryDetailQuantity')?.value) || 1), 1, maxQuantity);
+    if (sellInventoryItem(item.id, quantity)) hideInventoryItemDetail();
   });
   inventoryDetailOverlay.querySelector('.inventory-detail-exchange-button')?.addEventListener('click', (event) => {
     if (!potionExchange) return;
@@ -643,17 +765,15 @@ function renderInventory() {
       <div class="inventory-item bag-item ${item.rarityClass || ''} ${item.type === 'equipmentChest' ? 'equipment-chest-item' : ''}"${item.rarityColor ? ` style="--rarity-color:${item.rarityColor}"` : ''}>
         <div class="bag-item-header">
           <div class="bag-item-identity">
-            <i class="bag-item-icon ${item.iconClass}" aria-hidden="true"></i>
-            <strong>${item.name}</strong>
-          </div>
-          <div class="bag-item-meta">
-            <b class="bag-item-count">x${formatGameNumber(item.count)}</b>
+            <span class="bag-item-icon-wrap" title="${item.name}">
+              <i class="bag-item-icon ${item.iconClass}" aria-label="${item.name}"></i>
+              ${String(item.category || '').startsWith('Mảnh') ? '<b class="bag-item-fragment-mark" aria-label="Mảnh">M</b>' : ''}
+              <b class="bag-item-count">${formatInventoryCount(item.count)}</b>
+            </span>
           </div>
         </div>
          <div class="bag-item-actions">
-           ${item.usable ? `<button type="button" class="breakthrough" data-inventory-use="${item.id}">${item.useLabel || 'Dùng'}</button>` : ''}
-           ${item.sellable ? `<button type="button" class="secondary" data-inventory-sell="${item.id}">Bán ${formatGameNumber(item.sellPrice)}</button>` : ''}
-           <button type="button" class="secondary" data-inventory-detail="${item.id}">Chi tiết</button>
+           <button type="button" class="secondary" data-inventory-detail="${item.id}">Xem</button>
          </div>
        </div>
     `).join('')
