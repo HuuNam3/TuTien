@@ -871,12 +871,9 @@ function grantWanderBattleBonusRewards(stage) {
 }
 
 function getWanderTalentTreasureChestShopItem(map = getCurrentWanderMap()) {
-  const maxEnemyTier = Math.max(1, Math.floor(Number(map?.maxEnemyTier) || Number(map?.minEnemyTier) || 1));
-  const sourceMajorRealmIndex = clamp(getTierMajorIndex(maxEnemyTier), 0, getMajorRealmMaxIndex());
-  const targetMajorRealmIndex = sourceMajorRealmIndex + 1;
   return shopItems.find((item) => (
-    item.type === 'majorAscensionTreasureChest'
-      && Number(item.targetMajorRealmIndex) === targetMajorRealmIndex
+    item.type === 'talentTreasureChest'
+      && item.id === 'talentTreasureChest'
   )) || null;
 }
 
@@ -886,7 +883,7 @@ function createWanderTalentTreasureChestChoice(map = getCurrentWanderMap()) {
   return {
     type: 'talentTreasureChest',
     title: shopItem.name,
-    detail: `Cất vào Túi đồ | Mở ra Cục Thiên Tài Địa Bảo ${majorRealmNames[shopItem.targetMajorRealmIndex] || 'của đại cảnh giới kế tiếp'}.`,
+    detail: 'Cất vào Túi đồ | Khi mở sẽ nhận Cục Thiên Tài Địa Bảo của đại cảnh giới kế tiếp.',
     amount: 1,
     shopItemId: shopItem.id,
   };

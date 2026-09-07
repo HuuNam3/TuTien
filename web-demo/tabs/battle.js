@@ -370,6 +370,20 @@ function getEnemyRankLabel(enemyData = {}, rankLevel = null) {
 function applyEnemyRankMultiplier(fighter, rank = 1) {
   const rankStats = enemyRankData[String(rank)];
   if (!rankStats) return;
+  const rankMultiplier = Number(rankStats.multiplier);
+  if (Number.isFinite(rankMultiplier) && rankMultiplier > 0) {
+    const scalableStats = [
+      'maxHp', 'maxMana', 'attack', 'defense', 'mastery',
+      'accuracy', 'dodgeRate', 'blockRate', 'critRate', 'critDamage',
+      'armorPierce', 'damageReduction', 'healingReduction', 'lifeSteal',
+      'luck', 'spiritSense', 'comprehension',
+    ];
+    applyEnemyStatMultipliers(
+      fighter,
+      Object.fromEntries(scalableStats.map((stat) => [stat, rankMultiplier])),
+    );
+    return;
+  }
   const { label, ...multipliers } = rankStats;
   applyEnemyStatMultipliers(fighter, multipliers);
 }
@@ -1373,15 +1387,9 @@ function getDroppedRewardText(reward) {
 }
 
 function getWanderBossTreasureChestDefinition(stage) {
-  const bossMajorRealmIndex = clamp(
-    Math.floor(Number(stage?.enemyMajorRealmIndex) || 0),
-    0,
-    getMajorRealmMaxIndex(),
-  );
-  const targetMajorRealmIndex = bossMajorRealmIndex + 1;
   return shopItems.find((item) => (
-    item.type === 'majorAscensionTreasureChest'
-      && item.targetMajorRealmIndex === targetMajorRealmIndex
+    item.type === 'talentTreasureChest'
+      && item.id === 'talentTreasureChest'
   )) || null;
 }
 

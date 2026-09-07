@@ -451,6 +451,9 @@ function usePurchasedShopItem(item, amount = 1) {
       const reward = openTalentTreasureChest(shopItem);
       canUse = Boolean(reward);
       if (reward) talentTreasureRewards.push(reward);
+      if (!canUse) {
+        showGameToast(`Không thể mở ${shopItem.name}: dữ liệu rương không hợp lệ.`, 'error');
+      }
     }
     if (!canUse) break;
     shopInventoryCounts[shopItem.id] = getShopInventoryCount(shopItem.id) - 1;

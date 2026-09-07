@@ -1391,35 +1391,19 @@
     },
     "2": {
       "label": "Tinh anh",
-      "maxHp": 1.14,
-      "maxMana": 1.08,
-      "attack": 1.12,
-      "defense": 1.1,
-      "mastery": 1.06
+      "multiplier": 1.2
     },
     "3": {
       "label": "Thủ lĩnh",
-      "maxHp": 1.3,
-      "maxMana": 1.18,
-      "attack": 1.26,
-      "defense": 1.22,
-      "mastery": 1.12
+      "multiplier": 1.3
     },
     "4": {
       "label": "Vương giả",
-      "maxHp": 1.55,
-      "maxMana": 1.32,
-      "attack": 1.48,
-      "defense": 1.42,
-      "mastery": 1.2
+      "multiplier": 1.4
     },
     "5": {
       "label": "Chúa tể",
-      "maxHp": 1.9,
-      "maxMana": 1.55,
-      "attack": 1.78,
-      "defense": 1.7,
-      "mastery": 1.3
+      "multiplier": 1.5
     }
   }
 }

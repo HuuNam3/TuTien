@@ -1505,6 +1505,22 @@ button.danger:not(:disabled):hover {
   vertical-align: middle;
 }
 
+.talent-icon {
+  display: inline-block;
+  background-image: url('/assets/Art/Sprites/UI/chibi-talent-breakthrough-icon-sheet.png');
+  background-repeat: no-repeat;
+  background-size: 400% 400%;
+  background-color: transparent;
+  pointer-events: none;
+}
+
+.icon-talent-treasure-maxHp { background-position: 0% 0%; }
+.icon-talent-treasure-attack { background-position: 33.333% 0%; }
+.icon-talent-treasure-mastery { background-position: 66.666% 0%; }
+.icon-talent-treasure-defense { background-position: 100% 0%; }
+.icon-talent-treasure-maxMana { background-position: 0% 33.333%; }
+.icon-talent-treasure-generic { background-position: 33.333% 33.333%; }
+
 .breakthrough-treasure-option b,
 .breakthrough-treasure-option small {
   overflow: hidden;
@@ -6953,7 +6969,6 @@ button.is-unavailable:active {
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 4px;
   background-color: #151d27;
-  background-image: url('/assets/Art/Sprites/Characters/chibi-school-roster.png');
   background-repeat: no-repeat;
   background-size: 300% 100%;
   box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.24);
@@ -6979,12 +6994,10 @@ button.is-unavailable:active {
 }
 
 .avatar.chibi-character {
-  background-image: url('/assets/Art/Sprites/Characters/chibi-school-roster.png');
   background-size: 300% 100%;
 }
 
 .profile-avatar.chibi-character {
-  background-image: url('/assets/Art/Sprites/Characters/chibi-school-roster.png');
   background-size: 300% 100%;
   background-repeat: no-repeat;
   color: transparent;
@@ -7090,7 +7103,7 @@ body {
   border: 0;
   background-image: url('/assets/Art/Sprites/UI/chibi-ui-icon-sheet.png');
   background-repeat: no-repeat;
-  background-size: 400% 300%;
+  background-size: 400% 400%;
   vertical-align: middle;
   pointer-events: none;
 }
@@ -10565,9 +10578,9 @@ strong > .unique-icon {
 .icon-unique-close { background-position: 66.666% 100%; }
 .icon-unique-help { background-position: 100% 100%; }
 .icon-unique-critical-damage {
-  background-image: url('/assets/Art/Sprites/UI/chibi-extra-icon-sheet-v3.png');
+  background-image: url('/assets/Art/Sprites/UI/chibi-stat-icon-sheet.png');
   background-size: 400% 400%;
-  background-position: 66.666% 100%;
+  background-position: 66.666% 66.666%;
 }
 
 .skill-item-icon {
@@ -10575,9 +10588,9 @@ strong > .unique-icon {
   flex: 0 0 22px;
   width: 22px;
   height: 22px;
-  background-image: url('/assets/Art/Sprites/Items/chibi-skill-item-sheet.png');
+  background-image: url('/assets/Art/Sprites/Skills/chibi-sword-skill-sheet-4x4-premium.png');
   background-repeat: no-repeat;
-  background-size: 400% 300%;
+  background-size: 400% 400%;
   vertical-align: -5px;
   pointer-events: none;
 }
@@ -10614,7 +10627,7 @@ strong > .unique-icon {
 .icon-skill-item-martial_guard,
 .icon-skill-item-martial_breaker,
 .icon-skill-item-martial_rebirth {
-  background-image: url('/assets/Art/Sprites/UI/chibi-extra-icon-sheet-v3.png');
+  background-image: url('/assets/Art/Sprites/UI/chibi-unique-icon-sheet.png');
   background-size: 400% 400%;
   background-color: transparent;
 }
@@ -10633,6 +10646,59 @@ strong > .unique-icon {
 .icon-skill-item-martial_guard { background-position: 100% 66.666%; }
 .icon-skill-item-martial_breaker { background-position: 0% 100%; }
 .icon-skill-item-martial_rebirth { background-position: 33.333% 100%; }
+
+/* Updated 4x4 school sheets: the first 10 cells follow CultivationSkills.json order. */
+.icon-skill-item-beginner_sword_art,
+.icon-skill-item-sword_quickdraw,
+.icon-skill-item-sword_flash,
+.icon-skill-item-sword_flow,
+.icon-skill-item-sword_domain,
+.icon-skill-item-sword_storm,
+.icon-skill-item-sword_earth_rift,
+.icon-skill-item-sword_earth_lotus,
+.icon-skill-item-sword_heaven_starfall,
+.icon-skill-item-sword_heaven_realm {
+  background-image: url('/assets/Art/Sprites/Skills/chibi-sword-skill-sheet-4x4-premium.png');
+  background-size: 400% 400%;
+  background-color: transparent;
+}
+
+.icon-skill-item-beginner_sword_art { background-position: 0% 0%; }
+.icon-skill-item-sword_quickdraw { background-position: 33.333% 0%; }
+.icon-skill-item-sword_flash { background-position: 66.666% 0%; }
+.icon-skill-item-sword_flow { background-position: 100% 0%; }
+.icon-skill-item-sword_domain { background-position: 0% 33.333%; }
+.icon-skill-item-sword_storm { background-position: 33.333% 33.333%; }
+.icon-skill-item-sword_earth_rift { background-position: 66.666% 33.333%; }
+.icon-skill-item-sword_earth_lotus { background-position: 100% 33.333%; }
+.icon-skill-item-sword_heaven_starfall { background-position: 0% 66.666%; }
+.icon-skill-item-sword_heaven_realm { background-position: 33.333% 66.666%; }
+
+.icon-skill-item-beginner_blade_art,
+.icon-skill-item-blade_heavy,
+.icon-skill-item-blade_blood,
+.icon-skill-item-blade_rend,
+.icon-skill-item-blade_heaven,
+.icon-skill-item-blade_apocalypse,
+.icon-skill-item-blade_earth_sunder,
+.icon-skill-item-blade_earth_warcry,
+.icon-skill-item-blade_heaven_overlord,
+.icon-skill-item-blade_heaven_worldsplitter {
+  background-image: url('/assets/Art/Sprites/Skills/chibi-blade-skill-sheet-4x4-premium.png');
+  background-size: 400% 400%;
+  background-color: transparent;
+}
+
+.icon-skill-item-beginner_blade_art { background-position: 0% 0%; }
+.icon-skill-item-blade_heavy { background-position: 33.333% 0%; }
+.icon-skill-item-blade_blood { background-position: 66.666% 0%; }
+.icon-skill-item-blade_rend { background-position: 100% 0%; }
+.icon-skill-item-blade_heaven { background-position: 0% 33.333%; }
+.icon-skill-item-blade_apocalypse { background-position: 33.333% 33.333%; }
+.icon-skill-item-blade_earth_sunder { background-position: 66.666% 33.333%; }
+.icon-skill-item-blade_earth_warcry { background-position: 100% 33.333%; }
+.icon-skill-item-blade_heaven_overlord { background-position: 0% 66.666%; }
+.icon-skill-item-blade_heaven_worldsplitter { background-position: 33.333% 66.666%; }
 
 .profile-skill-icon .skill-item-icon {
   width: 21px;

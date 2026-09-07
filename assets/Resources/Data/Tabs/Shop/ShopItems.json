@@ -25,7 +25,7 @@
   "majorAscensionTreasureChestConfig": {
     "idPrefix": "majorAscensionTreasureChest",
     "namePrefix": "Rương",
-    "description": "Rương rơi từ mọi Boss map. Mở ra 1 Cục Thiên Tài Địa Bảo của đại cảnh giới kế tiếp."
+    "description": "Dữ liệu rương theo cảnh giới cũ, giữ lại để tương thích save. Phần thưởng mới dùng Rương Thiên Tài Địa Bảo chung."
   },
   "shopItems": [
     {
@@ -123,7 +123,8 @@
       "description": "Mở ra 1 Cục Thiên Tài Địa Bảo để chuẩn bị đột phá đại cảnh giới.",
       "cost": 100,
       "type": "talentTreasureChest",
-      "hidden": true
+      "requiredMinorRealmLevel": 10,
+      "maxPurchasesPerMajorRealm": 1
     },
     {
       "id": "majorAscensionPermit",

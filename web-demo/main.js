@@ -16,7 +16,7 @@ const legacyMajorRealmOrder = Object.freeze([
   'Ngộ Đạo', 'Vũ Hóa', 'Đăng Tiên',
 ]);
 const gameConfigPath = '/assets/Resources/Data/System/GameConfig.json?v=20260906-resource-dungeon-boss-development-v1';
-const shopItemsPath = '/assets/Resources/Data/Tabs/Shop/ShopItems.json?v=20260906-boss-map-chest';
+const shopItemsPath = '/assets/Resources/Data/Tabs/Shop/ShopItems.json?v=20260907-realm-max-talent-chest';
 const starterDataPath = '/assets/Resources/Data/System/StarterData.json';
 const equipmentPath = '/assets/Resources/Data/Shared/equipment.json';
 const progressionFeaturesPath = '/assets/Resources/Data/System/ProgressionFeatures.json?v=20260906-resource-dungeon-boss-development-v1';
@@ -290,6 +290,7 @@ let foundationPillPurchases = {};
 let cultivationPillPurchases = {};
 let potionPurchaseCounts = {};
 let ascensionPillPurchases = {};
+let majorAscensionTreasureChestPurchases = {};
 let cultivationSpeedBonus = 0;
 let playerCurrentHp = null;
 let playerCurrentMana = null;
@@ -1289,6 +1290,53 @@ function getSkillGradeColor(gradeId) {
   return rarityData[rarityKey]?.color || '#f5f7fa';
 }
 
+const talentTreasureStatMeta = Object.freeze({
+  maxHp: { name: 'Cục Huyết Ngọc', icon: 'icon-talent-treasure-maxHp' },
+  attack: { name: 'Cục Liệt Dương', icon: 'icon-talent-treasure-attack' },
+  mastery: { name: 'Cục Ngộ Đạo', icon: 'icon-talent-treasure-mastery' },
+  defense: { name: 'Cục Huyền Giáp', icon: 'icon-talent-treasure-defense' },
+  maxMana: { name: 'Cục Linh Hải', icon: 'icon-talent-treasure-maxMana' },
+});
+
+const talentTreasureStatPriority = ['attack', 'mastery', 'maxHp', 'defense', 'maxMana'];
+
+function getTalentTreasurePrimaryStat(item = {}) {
+  const source = item.allocation && Object.keys(item.allocation).length
+    ? item.allocation
+    : item.statBonuses || {};
+  let selectedStat = talentTreasureStatPriority[0];
+  let selectedValue = -1;
+  talentTreasureStatPriority.forEach((stat) => {
+    const value = Math.max(0, Number(source[stat]) || 0);
+    if (value > selectedValue) {
+      selectedStat = stat;
+      selectedValue = value;
+    }
+  });
+  return selectedStat;
+}
+
+function getTalentTreasureName(item = {}) {
+  const stat = talentTreasureStatMeta[item.talentStat]
+    ? item.talentStat
+    : getTalentTreasurePrimaryStat(item);
+  const meta = talentTreasureStatMeta[stat] || talentTreasureStatMeta.attack;
+  const targetMajorRealmIndex = clamp(
+    Math.floor(Number(item.targetMajorRealmIndex) || 0),
+    0,
+    Math.max(0, cultivationProgression.length - 1),
+  );
+  const realmName = cultivationProgression[targetMajorRealmIndex]?.name || majorRealmNames[targetMajorRealmIndex];
+  return `${meta.name}${realmName ? ` ${realmName}` : ''}`.trim();
+}
+
+function getTalentTreasureIconClass(item = {}) {
+  const stat = talentTreasureStatMeta[item.talentStat]
+    ? item.talentStat
+    : getTalentTreasurePrimaryStat(item);
+  return talentTreasureStatMeta[stat]?.icon || 'icon-talent-treasure-generic';
+}
+
 function getSkillRequiredTier(skill) {
   const gradeTier = cultivationSkillData.gradeRequiredTier?.[skill.gradeId];
   const skillTier = Number(skill.requiredTier ?? skill.requiredLevel);
@@ -1386,8 +1434,12 @@ function openTalentTreasureChest(shopItem) {
   const configuredTarget = Number.isInteger(Number(shopItem?.targetMajorRealmIndex))
     ? Math.floor(Number(shopItem.targetMajorRealmIndex))
     : playerMajorRealmIndex + 1;
-  const targetMajorRealmIndex = clamp(configuredTarget, 0, getMajorRealmMaxIndex());
-  if (targetMajorRealmIndex <= playerMajorRealmIndex || targetMajorRealmIndex > playerMajorRealmIndex + 1) return null;
+  const maxMajorRealmIndex = getMajorRealmMaxIndex();
+  if (configuredTarget < 0 || configuredTarget > maxMajorRealmIndex) return null;
+  // The chest can be opened before its realm is immediately needed. The
+  // breakthrough panel will still filter the resulting treasure to the next
+  // realm, so opening a valid realm-specific chest never silently fails.
+  const targetMajorRealmIndex = configuredTarget;
   const rewardItem = createTalentTreasureItem(targetMajorRealmIndex);
   if (!rewardItem) return null;
   return rewardItem;
@@ -3509,6 +3561,7 @@ async function resetGameData() {
       cultivationPillPurchases: {},
       potionPurchaseCounts: {},
       ascensionPillPurchases: {},
+      majorAscensionTreasureChestPurchases: {},
       talentTreasureInventory: [],
       talentTreasureIdSeed: 1,
       playerTalentStatBonuses: {},
@@ -3600,6 +3653,7 @@ function loadSavedGame() {
     cultivationPillPurchases = normalizeCultivationPillPurchases(data.cultivationPillPurchases);
     potionPurchaseCounts = normalizeCultivationPillPurchases(data.potionPurchaseCounts);
     ascensionPillPurchases = normalizeCultivationPillPurchases(data.ascensionPillPurchases);
+    majorAscensionTreasureChestPurchases = normalizeCultivationPillPurchases(data.majorAscensionTreasureChestPurchases);
     cultivationSpeedBonus = Math.max(0, Number(data.cultivationSpeedBonus) || 0);
     playerCurrentHp = data.playerCurrentHp ?? null;
     playerCurrentMana = data.playerCurrentMana ?? null;
@@ -3890,6 +3944,7 @@ function saveGame() {
     cultivationPillPurchases,
     potionPurchaseCounts,
     ascensionPillPurchases,
+    majorAscensionTreasureChestPurchases,
     cultivationSpeedBonus,
     playerCurrentHp,
     playerCurrentMana,
@@ -5083,6 +5138,7 @@ function addEquipmentChest(source = currentStage, options = {}) {
 }
 
 function getShopItemQuantityLimit(shopItem) {
+  if (shopItem?.type === 'talentTreasureChest') return 1;
   const dailyLimit = getDailyShopPurchaseLimit(shopItem);
   if (dailyLimit <= 0) return maxShopPurchaseQuantity;
   return Math.max(1, Math.min(maxShopPurchaseQuantity, getRemainingShopPurchases(shopItem)));
@@ -5211,6 +5267,9 @@ function buyShopItem(itemId, amount = 1) {
     if (isBreakthroughPillShopItem(shopItem)) {
       ascensionPillPurchases[shopItem.id] = (ascensionPillPurchases[shopItem.id] || 0) + 1;
     }
+    if (shopItem.type === 'talentTreasureChest') {
+      majorAscensionTreasureChestPurchases[playerMajorRealmIndex] = getMajorAscensionTreasureChestPurchaseCount(shopItem) + 1;
+    }
     if (dailyLimit > 0 || ['enhancementStone', 'potion'].includes(shopItem.type)) {
       recordShopItemPurchase(shopItem);
     }
@@ -5258,6 +5317,7 @@ function canBuyShopItem(shopItem) {
     && playerMajorRealmIndex !== shopItem.requiredMajorRealmIndex) return false;
   if (shopItem.requiredMapId && !isWanderMapUnlocked(wanderMaps[shopItem.requiredMapId])) return false;
   if (shopItem.type === 'foundation' && !canBuyFoundationPill(shopItem)) return false;
+  if (shopItem.type === 'talentTreasureChest' && !canBuyMajorAscensionTreasureChest(shopItem)) return false;
   return true;
 }
 
@@ -5318,6 +5378,18 @@ function normalizeCultivationPillPurchases(purchases = {}) {
     itemId,
     Math.max(0, Math.floor(Number(count) || 0)),
   ]));
+}
+
+function getMajorAscensionTreasureChestPurchaseCount(shopItem) {
+  if (shopItem?.type !== 'talentTreasureChest') return 0;
+  return Math.max(0, Math.floor(Number(majorAscensionTreasureChestPurchases[playerMajorRealmIndex]) || 0));
+}
+
+function canBuyMajorAscensionTreasureChest(shopItem) {
+  if (shopItem?.type !== 'talentTreasureChest') return true;
+  const requiredLevel = Math.max(1, Number(shopItem.requiredMinorRealmLevel) || getMinorRealmLevelCap());
+  const limit = Math.max(1, Number(shopItem.maxPurchasesPerMajorRealm) || 1);
+  return playerLevel >= requiredLevel && getMajorAscensionTreasureChestPurchaseCount(shopItem) < limit;
 }
 
 function normalizeShopInventoryCounts(counts = {}) {
@@ -5407,15 +5479,22 @@ function normalizeTalentTreasureInventory(items = []) {
       stat,
       Math.max(0, Math.floor(Number(item.allocation?.[stat]) || 0)),
     ]));
-    return {
+    const normalized = {
       id: String(item.id || `talentTreasure-${index + 1}`),
       shopItemId: definition.id,
-      name: definition.name,
       targetMajorRealmIndex,
       combatPower: Math.max(0, Math.round(Number(item.combatPower) || getMajorAscensionTreasurePower(targetMajorRealmIndex))),
       realizedCombatPower: Math.max(0, Number(item.realizedCombatPower) || 0),
       allocation,
       statBonuses,
+    };
+    const talentStat = talentTreasureStatMeta[item.talentStat]
+      ? item.talentStat
+      : getTalentTreasurePrimaryStat(normalized);
+    return {
+      ...normalized,
+      talentStat,
+      name: getTalentTreasureName({ ...normalized, talentStat }),
     };
   }).filter(Boolean);
 }
@@ -5426,10 +5505,11 @@ function createTalentTreasureItem(targetMajorRealmIndex) {
   const item = {
     id: `talentTreasure-${talentTreasureIdSeed++}`,
     shopItemId: definition.id,
-    name: definition.name,
     targetMajorRealmIndex,
     ...rollTalentTreasureStats(targetMajorRealmIndex),
   };
+  item.talentStat = getTalentTreasurePrimaryStat(item);
+  item.name = getTalentTreasureName(item);
   talentTreasureInventory.unshift(item);
   return item;
 }
@@ -5441,9 +5521,8 @@ function getTalentTreasureStatEntries(item) {
 }
 
 function getTalentTreasureIconMarkup(item, extraClass = '') {
-  const definition = shopItems.find((shopItem) => shopItem.id === item?.shopItemId);
-  const iconClass = definition ? getShopItemBagIconClass(definition) : 'activity-icon icon-activity-gate';
-  return `<i class="${iconClass} breakthrough-treasure-icon ${extraClass}" aria-hidden="true"></i>`;
+  const iconClass = getTalentTreasureIconClass(item);
+  return `<i class="talent-icon ${iconClass} breakthrough-treasure-icon ${extraClass}" aria-hidden="true"></i>`;
 }
 
 function formatTalentTreasureStats(item) {

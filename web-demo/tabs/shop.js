@@ -9,6 +9,10 @@ const SHOP_VISIBLE_FIXED_ITEM_IDS = new Set([
 
 function isShopItemVisible(item) {
   if (SHOP_VISIBLE_FIXED_ITEM_IDS.has(item?.id)) return true;
+  if (item?.type === 'talentTreasureChest') {
+    const requiredLevel = Math.max(1, Number(item.requiredMinorRealmLevel) || getMinorRealmLevelCap());
+    return playerLevel >= requiredLevel;
+  }
   return item?.type === 'minorAscension' && item.requiredMajorRealmIndex === playerMajorRealmIndex;
 }
 
@@ -28,8 +32,10 @@ function getShopItemCategory(item) {
 
 function getShopItemIconClass(item) {
   if (item.type === 'skillBook') return getSkillItemIconClass(item.skillId);
-  if (item.type === 'skillChest' || item.type === 'petChest' || item.type === 'talentTreasureChest'
-    || item.type === 'majorAscensionTreasureChest') return 'icon-activity-chest';
+  if (item.type === 'skillChest') return 'icon-special-skill-chest';
+  if (item.type === 'petChest') return 'icon-special-pet-chest';
+  if (item.type === 'talentTreasureChest') return 'icon-special-talent-chest';
+  if (item.type === 'majorAscensionTreasureChest') return 'icon-special-major-chest';
   if (item.type === 'equipment' || item.type === 'equipmentRandom') return 'icon-unique-equipment';
   if (item.type === 'potion') {
     return item.potionType === 'mana' ? 'icon-item-mana-flame' : 'icon-item-health-pill';
@@ -37,11 +43,16 @@ function getShopItemIconClass(item) {
   if (item.type === 'enhancementStone' || item.type === 'enhancementRefund') return 'icon-item-enhancement-stone';
   if (item.type === 'foundation') return 'icon-item-jade';
   if (item.type === 'cultivation') return 'icon-stat-cultivation';
-  if (isBreakthroughPillShopItem(item) || item.type === 'majorAscensionTreasure') return 'icon-activity-gate';
+  if (item.type === 'ascension') return 'icon-special-major-pill';
+  if (item.type === 'minorAscension') return 'icon-special-minor-pill';
+  if (item.type === 'majorAscensionTreasure') return 'icon-talent-treasure-generic';
   return 'icon-item-spirit-stone';
 }
 
 function getShopItemIconTypeClass(icon) {
+  if (icon.startsWith('icon-talent-treasure-') || icon.startsWith('icon-special-minor-pill')
+    || icon.startsWith('icon-special-major-pill')) return 'talent-icon';
+  if (icon.startsWith('icon-special-')) return 'special-icon';
   if (icon.startsWith('icon-unique-')) return 'unique-icon';
   if (icon.startsWith('icon-skill-item-')) return 'skill-item-icon';
   if (icon.startsWith('icon-activity-')) return 'activity-icon';
@@ -69,6 +80,12 @@ function getShopItemLockText(item) {
     && playerMajorRealmIndex !== item.requiredMajorRealmIndex;
   const lockedByMap = item.requiredMapId && !isWanderMapUnlocked(wanderMaps[item.requiredMapId]);
   const dailyLimit = getDailyShopPurchaseLimit(item);
+  if (item.type === 'talentTreasureChest' && !canBuyMajorAscensionTreasureChest(item)) {
+    const requiredLevel = Math.max(1, Number(item.requiredMinorRealmLevel) || getMinorRealmLevelCap());
+    return playerLevel < requiredLevel
+      ? `Yêu cầu ${getMinorRealmName(requiredLevel)}`
+      : `Đã mua rương tại ${majorRealmNames[playerMajorRealmIndex] || 'đại cảnh giới hiện tại'}`;
+  }
   if (dailyLimit > 0 && getRemainingShopPurchases(item) <= 0) {
     return `Đã đạt giới hạn ${dailyLimit} lần mua ${item.name} hôm nay`;
   }
@@ -245,7 +262,9 @@ function renderShop() {
     const lockedByTier = ['skillBook', 'skillChest'].includes(item.type)
       && getPlayerCultivationTier() < skillRequiredTier;
     const foundationBought = item.type === 'foundation' && !canBuyFoundationPill(item);
-    const bought = foundationBought;
+    const treasureChestBought = item.type === 'talentTreasureChest'
+      && !canBuyMajorAscensionTreasureChest(item);
+    const bought = foundationBought || treasureChestBought;
     const skillBook = item.type === 'skillBook'
       ? cultivationSkills.find((skill) => skill.id === item.skillId)
       : null;
@@ -266,7 +285,9 @@ function renderShop() {
       : item.type === 'potion'
       ? `${formatGameNumber(getShopItemCost(item))} linh thạch · Đã mua ${potionPurchased} viên`
       : bought
-      ? 'Đã mở khóa'
+      ? item.type === 'talentTreasureChest'
+        ? `Đã mua tại ${majorRealmNames[playerMajorRealmIndex] || 'đại cảnh giới hiện tại'}`
+        : 'Đã mở khóa'
       : locked
       ? lockedByMap
         ? `Cần mở ${wanderMaps[item.requiredMapId]?.name || 'map yêu cầu'}`
