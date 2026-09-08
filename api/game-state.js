@@ -57,6 +57,7 @@ module.exports = async function gameStateHandler(request, response) {
         state: document?.state || null,
         saveVersion: Math.max(0, Number(document?.saveVersion) || 0),
         updatedAt: document?.updatedAt instanceof Date ? document.updatedAt.toISOString() : document?.updatedAt || null,
+        adminUpdatedAt: document?.adminUpdatedAt instanceof Date ? document.adminUpdatedAt.toISOString() : document?.adminUpdatedAt || null,
       });
     }
 
@@ -90,19 +91,23 @@ module.exports = async function gameStateHandler(request, response) {
           return;
         }
 
-        const existing = await collection.findOne({ userId: user.id }, { session: transaction });
-        const currentVersion = Math.max(0, Number(existing?.saveVersion) || 0);
-        const requestedBaseVersion = payload.baseSaveVersion;
-        if (requestedBaseVersion !== undefined && requestedBaseVersion !== null
-          && Number(requestedBaseVersion) !== currentVersion) {
-          result = {
-            status: 409,
-            payload: {
-              error: 'Dữ liệu trên máy này đã cũ, cần đồng bộ lại từ máy chủ.',
-              code: 'SAVE_CONFLICT',
-              saveVersion: currentVersion,
-            },
-          };
+      const existing = await collection.findOne({ userId: user.id }, { session: transaction });
+      const currentVersion = Math.max(0, Number(existing?.saveVersion) || 0);
+      const requestedBaseVersion = payload.baseSaveVersion;
+      if (requestedBaseVersion === undefined || requestedBaseVersion === null
+        || !Number.isInteger(Number(requestedBaseVersion)) || Number(requestedBaseVersion) !== currentVersion) {
+        result = {
+          status: 409,
+          payload: {
+            error: 'Dữ liệu trên máy này đã cũ, cần đồng bộ lại từ máy chủ.',
+            code: 'SAVE_CONFLICT',
+            saveVersion: currentVersion,
+            state: existing?.state || null,
+            updatedAt: existing?.updatedAt instanceof Date ? existing.updatedAt.toISOString() : existing?.updatedAt || null,
+            adminUpdatedAt: existing?.adminUpdatedAt instanceof Date ? existing.adminUpdatedAt.toISOString() : existing?.adminUpdatedAt || null,
+            source: existing?.lastWriteSource || 'server',
+          },
+        };
           return;
         }
 
@@ -111,7 +116,7 @@ module.exports = async function gameStateHandler(request, response) {
         if (existing) {
           const updateResult = await collection.updateOne(
             { _id: existing._id, activeSessionId: user.sessionId },
-            { $set: { state: payload.state, updatedAt, activeSessionId: user.sessionId, userId: user.id, saveVersion: nextVersion } },
+            { $set: { state: payload.state, updatedAt, activeSessionId: user.sessionId, userId: user.id, saveVersion: nextVersion, lastWriteSource: 'player' } },
             { session: transaction },
           );
           if (updateResult.matchedCount !== 1) {
@@ -131,6 +136,7 @@ module.exports = async function gameStateHandler(request, response) {
             updatedAt,
             activeSessionId: user.sessionId,
             saveVersion: nextVersion,
+            lastWriteSource: 'player',
           }, { session: transaction });
         }
         result = { status: 200, payload: { ok: true, updatedAt: updatedAt.toISOString(), saveVersion: nextVersion } };
