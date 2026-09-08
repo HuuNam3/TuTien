@@ -195,16 +195,16 @@ function renderWanderStart(enoughHealth) {
     </div>
     <div class="wander-map-rules">
       <div class="wander-reward-list">
-        <strong><i class="activity-icon icon-activity-fortune" aria-hidden="true"></i>Phần thưởng cơ duyên</strong>
+        <strong><i class="game-icon icon-gift" aria-hidden="true"></i>Phần thưởng cơ duyên</strong>
         <span><i class="stat-icon icon-stat-cultivation" aria-hidden="true"></i>Tu vi</span>
         <span><i class="item-icon icon-item-spirit-stone" aria-hidden="true"></i>Linh thạch</span>
-        <span title="${chestRewardText}"><i class="activity-icon icon-activity-chest" aria-hidden="true"></i>Rương trang bị: ${chestRewardText}</span>
-        <span><i class="activity-icon icon-activity-chest" aria-hidden="true"></i>${getWanderSkillChestName(map)}</span>
+        <span title="${chestRewardText}"><i class="special-icon icon-special-equipment-chest" aria-hidden="true"></i>Rương trang bị: ${chestRewardText}</span>
+        <span><i class="special-icon icon-special-skill-chest" aria-hidden="true"></i>${getWanderSkillChestName(map)}</span>
         <span><i class="item-icon icon-item-health-pill" aria-hidden="true"></i>Sinh Huyết Đan</span>
         <span><i class="item-icon icon-item-mana-flame" aria-hidden="true"></i>Tụ Linh Đan</span>
         <span><i class="item-icon icon-item-enhancement-stone" aria-hidden="true"></i>Đá cường hóa</span>
-        <span><i class="activity-icon icon-activity-gate" aria-hidden="true"></i>Đan đột phá tiểu cảnh giới</span>
-        <span><i class="activity-icon icon-activity-chest" aria-hidden="true"></i>Rương Thiên Tài Địa Bảo</span>
+        <span><i class="special-icon icon-special-minor-pill" aria-hidden="true"></i>Đan đột phá tiểu cảnh giới</span>
+        <span><i class="special-icon icon-special-talent-chest" aria-hidden="true"></i>Rương Thiên Tài Địa Bảo</span>
       </div>
     </div>
     <div class="wander-encounter-toggle">

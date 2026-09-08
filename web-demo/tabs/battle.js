@@ -5,8 +5,9 @@ function startStageBattle(stage) {
   const isBeastHunt = Boolean(stage?.isBeastHunt);
   const isTrainingDummy = Boolean(stage?.isTrainingDummy);
   const isWorldBoss = Boolean(stage?.isWorldBoss);
-  const config = isTrialTower || isResourceDungeon || isTrainingDummy || isWorldBoss ? null : getDungeonConfig();
-  if (!stage || (!isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss && !isStageUnlockedForDungeon(stage, config.id))) return;
+  const isPlayerBattle = Boolean(stage?.isPlayerBattle);
+  const config = isTrialTower || isResourceDungeon || isTrainingDummy || isWorldBoss || isPlayerBattle ? null : getDungeonConfig();
+  if (!stage || (!isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss && !isPlayerBattle && !isStageUnlockedForDungeon(stage, config.id))) return;
   if (isBeastHunt && (!canAccessBeastHunt() || stage.mapId !== beastHuntMapId)) return;
   if (isTrialTower && (stage.trialFloor !== trialTowerHighestCleared + 1 || !canEnterTrialTower())) return;
   if (isResourceDungeon) {
@@ -16,13 +17,13 @@ function startStageBattle(stage) {
       || getPlayerCultivationTier() < getResourceDungeonRequiredTier(dungeon, expectedFloor)
     || getRemainingResourceAttempts(stage.resourceDungeonId) <= 0) return;
   }
-  if (!isTrialTower && !isTrainingDummy && !canEnterDungeon()) {
+  if (!isTrialTower && !isTrainingDummy && !isPlayerBattle && !canEnterDungeon()) {
     renderCultivation();
     showTrainingMessage('Đang bị trọng thương, không thể ngao du tiếp.');
     showGameToast('Đang bị trọng thương, không thể bắt đầu trận đấu.', 'error');
     return;
   }
-  if (!isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss && !canRunDungeon(config.id)) {
+  if (!isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss && !isPlayerBattle && !canRunDungeon(config.id)) {
     setSubtitle('');
     renderDungeonModes();
     renderStageDetail(stage);
@@ -30,7 +31,7 @@ function startStageBattle(stage) {
   }
   if (isResourceDungeon) {
     if (!consumeResourceAttempt(stage.resourceDungeonId)) return;
-  } else if (!isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss) {
+  } else if (!isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss && !isPlayerBattle) {
     consumeDungeonAttempt(config.id);
   }
 
@@ -57,17 +58,21 @@ function startStageBattle(stage) {
     ? `Tiến vào tháp thí luyện ${stage.title}`
     : isResourceDungeon
     ? `Tiến vào ${stage.title}`
+    : isPlayerBattle
+    ? 'Đấu pháp với người chơi'
     : 'Bắt đầu ngao du';
   pushLog(`${entryText}. Gặp ${enemy.name}, ${formatRealmDisplayText(stage.realmText)}.`);
   if (isResourceDungeon) {
     const resourceDungeon = getResourceDungeon(stage.resourceDungeonId);
     pushLog(`${resourceDungeon?.name || 'Phụ bản'}: còn ${getRemainingResourceAttempts(stage.resourceDungeonId)}/${getResourceDungeonDailyLimit(resourceDungeon)} lượt riêng hôm nay.`);
   }
-  if (!isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss && !config.unlimited) pushLog(`${config.name}: còn ${getRemainingDungeonAttempts(config.id)}/${dailyFarmLimit} lượt hôm nay.`);
+  if (!isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss && !isPlayerBattle && !config.unlimited) pushLog(`${config.name}: còn ${getRemainingDungeonAttempts(config.id)}/${dailyFarmLimit} lượt hôm nay.`);
   if (isTrainingDummy) {
     pushLog(`Mộc nhân có ${formatGameNumber(enemy.maxHp)} sinh lực và không tấn công người chơi.`);
   } else if (isWorldBoss) {
     pushLog(`${enemy.name} thuộc ${formatRealmDisplayText(stage.realmText)}, sinh lực hiện tại ${formatGameNumber(enemy.hp)}/${formatGameNumber(enemy.maxHp)}.`);
+  } else if (isPlayerBattle) {
+    pushLog(`${enemy.name} dùng ${enemy.skillName}; người chơi ra đòn trước.`);
   } else {
     pushLog(`${enemy.name} dùng ${enemy.skillName} và có nội tại ${getCombatStyleLabel(stage.enemyData)}.`);
   }
@@ -238,7 +243,7 @@ function continueAutoWander() {
 }
 
 function getNextBattleStage() {
-  if (currentStage?.isResourceDungeon) return null;
+  if (currentStage?.isResourceDungeon || currentStage?.isPlayerBattle) return null;
   const config = getDungeonConfig();
   if (!currentStage) return null;
   if (!config.unlimited) return canRunDungeon(config.id) ? currentStage : null;
@@ -248,6 +253,7 @@ function getNextBattleStage() {
 }
 
 function createStageEnemy(stage) {
+  if (stage?.isPlayerBattle) return createPlayerBattleOpponentFighter(stage.playerBattleOpponent);
   if (stage?.isWorldBoss) {
     const boss = createFighter(
       stage.enemyData?.name || 'Thiên Ngoại Ma Tướng',
@@ -1172,8 +1178,9 @@ function finishBattle(message, outcome = 'lose') {
   const isBeastHunt = Boolean(currentStage?.isBeastHunt);
   const isTrainingDummy = Boolean(currentStage?.isTrainingDummy);
   const isWorldBoss = Boolean(currentStage?.isWorldBoss);
+  const isPlayerBattle = Boolean(currentStage?.isPlayerBattle);
   if (!isTrainingDummy) savePlayerResourcesFromBattle(outcome);
-  const isWanderBattle = !isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss && Boolean(currentStage?.isWanderGenerated);
+  const isWanderBattle = !isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss && !isPlayerBattle && Boolean(currentStage?.isWanderGenerated);
   const resourceAttemptRefunded = isResourceDungeon && outcome === 'lose'
     ? refundResourceAttempt(currentStage.resourceDungeonId)
     : false;
@@ -1183,11 +1190,11 @@ function finishBattle(message, outcome = 'lose') {
     trainingDummyLastDamage = Math.max(0, Math.round(trainingDummyDamageDealt));
     trainingDummyLastTurns = Math.max(0, Math.floor(turn));
   }
-  if (outcome === 'win' && !isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss && getDungeonConfig().unlimited && !currentStage.isAmbush && !currentStage.isWanderGenerated) {
+  if (outcome === 'win' && !isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss && !isPlayerBattle && getDungeonConfig().unlimited && !currentStage.isAmbush && !currentStage.isWanderGenerated) {
     completedStages.add(currentStage.id);
   }
   if (outcome === 'win' && isTrialTower) trialTowerWinCount += 1;
-  if (outcome === 'win' && !isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss) {
+  if (outcome === 'win' && !isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss && !isPlayerBattle) {
     wanderWinCount += 1;
     wanderRewardCount += 1;
     if (isWanderBattle && currentStage.isWanderBoss) {
@@ -1199,7 +1206,7 @@ function finishBattle(message, outcome = 'lose') {
   dailyQuestProgress = normalizeDailyQuestProgress(dailyQuestProgress);
   if (outcome === 'win' && isTrialTower) dailyQuestProgress.trialTowerWins += 1;
   if (outcome === 'win' && isResourceDungeon) dailyQuestProgress.resourceDungeonWins += 1;
-  if (outcome === 'win' && !isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss) {
+  if (outcome === 'win' && !isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss && !isPlayerBattle) {
     dailyQuestProgress.wanderWins += 1;
     dailyQuestProgress.wanderRewards += 1;
   }
@@ -1209,6 +1216,7 @@ function finishBattle(message, outcome = 'lose') {
   let droppedItem = null;
   let bonusRewardText = '';
   let bossTreasureChest = null;
+  let playerBattleReward = null;
   if (resourceAttemptRefunded) bonusRewardText = 'Đã hoàn lại 1 lượt Phụ bản';
   if (isTrialTower && outcome === 'win') {
     const towerReward = applyTrialTowerReward(currentStage);
@@ -1228,6 +1236,12 @@ function finishBattle(message, outcome = 'lose') {
     spiritStoneReward = resourceReward.spiritStones;
     bonusRewardText = formatResourceReward(resourceDungeon, resourceReward.amount, resourceReward);
     message = `${message} Vượt qua ${currentStage.title}.`;
+  } else if (isPlayerBattle) {
+    playerBattleReward = settlePlayerBattleResult(outcome);
+    spiritStoneReward = playerBattleReward.stolen;
+    bonusRewardText = outcome === 'win'
+      ? `Cướp được ${formatGameNumber(playerBattleReward.stolen)} Linh thạch`
+      : 'Không cướp được Linh thạch';
   } else if (!isTrialTower && !isResourceDungeon && !isBeastHunt && !isTrainingDummy && !isWorldBoss) {
     cultivationAward = getCultivationReward(outcome);
     reward = addPlayerCultivation(cultivationAward);
@@ -1266,6 +1280,10 @@ function finishBattle(message, outcome = 'lose') {
     ? `Boss thế giới ghi nhận ${formatGameNumber(worldBossDamageDealt)} sát thương từ lượt đánh này.`
     : isTrainingDummy
     ? `Mộc nhân ghi nhận tổng ${formatGameNumber(trainingDummyLastDamage)} sát thương sau ${formatGameNumber(trainingDummyLastTurns)} lượt.`
+    : isPlayerBattle
+    ? outcome === 'win'
+      ? `Đấu thắng ${currentStage.playerBattleOpponent?.name || enemy.name}, nhận ${formatGameNumber(playerBattleReward?.stolen || 0)} Linh thạch.`
+      : `Đấu thua ${enemy.name}, không nhận Linh thạch.`
     : isBeastHunt
     ? outcome === 'win'
       ? 'Đã mở phần thưởng trong tab Hoạt động > Săn yêu vật.'
@@ -1308,6 +1326,7 @@ function renderBattleResult(message, outcome, reward, spiritStoneReward, dropped
   const isBeastHunt = Boolean(currentStage?.isBeastHunt);
   const isTrainingDummy = Boolean(currentStage?.isTrainingDummy);
   const isWorldBoss = Boolean(currentStage?.isWorldBoss);
+  const isPlayerBattle = Boolean(currentStage?.isPlayerBattle);
   const resultTitle = isWorldBoss
     ? 'Hoàn tất lượt đánh Boss'
     : isTrainingDummy
@@ -1327,6 +1346,8 @@ function renderBattleResult(message, outcome, reward, spiritStoneReward, dropped
     ? 'Cập nhật bảng sát thương trong Hoạt động > Boss thế giới'
     : isTrainingDummy
     ? 'Xem kết quả trong Hoạt động > Mộc nhân'
+    : isPlayerBattle
+    ? 'Trở về Hoạt động > Chiến đấu để tìm đối thủ mới'
     : isBeastHunt
     ? outcome === 'win'
       ? 'Nhận thưởng trong Hoạt động để bắt đầu hồi 1 giờ'
@@ -1358,6 +1379,10 @@ function renderBattleResult(message, outcome, reward, spiritStoneReward, dropped
       ? `Sát thương lượt này: ${formatGameNumber(worldBossDamageDealt)}`
       : isTrainingDummy
       ? `Tổng sát thương gây ra: ${formatGameNumber(trainingDummyLastDamage)}`
+      : isPlayerBattle
+      ? outcome === 'win'
+        ? `Cướp được ${formatGameNumber(spiritStoneReward)} Linh thạch từ đối thủ.`
+        : 'Không nhận Linh thạch từ trận đấu này.'
       : isBeastHunt
       ? outcome === 'win'
         ? 'Đã thắng. Mở tab Hoạt động > Săn yêu vật để nhận phần thưởng.'
@@ -1406,7 +1431,7 @@ function getPostBattleButtonText(outcome) {
 
 function finishByTurnLimit() {
   if (battleOver) return;
-  if (currentStage?.isWanderGenerated) {
+  if (currentStage?.isWanderGenerated || currentStage?.isPlayerBattle) {
     const playerRemainingPower = Math.max(0, Number(player.hp) || 0) + Math.max(0, Number(player.mana) || 0);
     const enemyRemainingPower = Math.max(0, Number(enemy.hp) || 0) + Math.max(0, Number(enemy.mana) || 0);
     if (playerRemainingPower > enemyRemainingPower) {

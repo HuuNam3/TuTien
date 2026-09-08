@@ -31,3 +31,10 @@ node_modules/
 # WebStorm
 #//////////////////////////
 .idea/
+
+# Local-only admin console; never include it in the game repository/deployment.
+web-demo/admin.html
+web-demo/admin.css
+web-demo/admin.js
+web-demo/admin-server.js
+api/admin.js

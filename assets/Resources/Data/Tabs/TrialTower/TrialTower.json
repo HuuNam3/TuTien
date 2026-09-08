@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "description": "Tháp thí luyện gồm 80 tầng, quái không trang bị, lực chiến mẫu tính trực tiếp từ chỉ số quái và phần thưởng vượt tầng. Tầng 1 bắt đầu ở Khí Động Nhất tầng, mỗi tầng tăng một tiểu cảnh giới. Tu vi tính theo số tầng nhân hệ số; hệ số gốc nhóm 10 tầng đầu là 150 và mỗi nhóm 10 tầng tăng 5, các mốc 3 tầng trong nhóm cộng thêm 10. Linh thạch bắt đầu từ 50 và tăng 15 mỗi tầng; rương trang bị bắt đầu cấp 2 và tăng 1 cấp sau mỗi 15 tầng.",
+  "description": "Tháp thí luyện gồm 80 tầng, quái không trang bị, lực chiến mẫu được đồng bộ theo EnemyStats.json, CombatStats.json và hệ số phẩm chất hiện tại. Tầng 1 bắt đầu ở Khí Động Nhất tầng, mỗi tầng tăng một tiểu cảnh giới. Tu vi tính theo số tầng nhân hệ số; hệ số gốc nhóm 10 tầng đầu là 150 và mỗi nhóm 10 tầng tăng 5, các mốc 3 tầng trong nhóm cộng thêm 10. Linh thạch bắt đầu từ 50 và tăng 15 mỗi tầng; rương trang bị bắt đầu cấp 2 và tăng 1 cấp sau mỗi 15 tầng.",
   "entryRequiredTier": 31,
   "entryText": "Cần đạt Khí Động tầng 1",
   "enemyStartTier": 31,
@@ -53,7 +53,7 @@
         "equipmentChestTier": 2
       },
       "equipmentLevel": 10,
-      "combatPower": 2168,
+      "combatPower": 16133,
       "towerPowerMultiplier": 1.5
     },
     {
@@ -101,7 +101,7 @@
         "equipmentChestTier": 2
       },
       "equipmentLevel": 11,
-      "combatPower": 2369,
+      "combatPower": 16501,
       "towerPowerMultiplier": 1.5
     },
     {
@@ -150,7 +150,7 @@
         "enhancementStones": 1
       },
       "equipmentLevel": 12,
-      "combatPower": 2530,
+      "combatPower": 16910,
       "towerPowerMultiplier": 1.5
     },
     {
@@ -198,7 +198,7 @@
         "equipmentChestTier": 2
       },
       "equipmentLevel": 13,
-      "combatPower": 2863,
+      "combatPower": 18243,
       "towerPowerMultiplier": 1.6
     },
     {
@@ -246,7 +246,7 @@
         "equipmentChestTier": 2
       },
       "equipmentLevel": 14,
-      "combatPower": 3023,
+      "combatPower": 18778,
       "towerPowerMultiplier": 1.6
     },
     {
@@ -295,7 +295,7 @@
         "enhancementStones": 2
       },
       "equipmentLevel": 15,
-      "combatPower": 3193,
+      "combatPower": 19356,
       "towerPowerMultiplier": 1.6
     },
     {
@@ -343,7 +343,7 @@
         "equipmentChestTier": 2
       },
       "equipmentLevel": 16,
-      "combatPower": 3565,
+      "combatPower": 20981,
       "towerPowerMultiplier": 1.7
     },
     {
@@ -391,7 +391,7 @@
         "equipmentChestTier": 2
       },
       "equipmentLevel": 17,
-      "combatPower": 3745,
+      "combatPower": 21702,
       "towerPowerMultiplier": 1.7
     },
     {
@@ -440,7 +440,7 @@
         "enhancementStones": 3
       },
       "equipmentLevel": 18,
-      "combatPower": 3965,
+      "combatPower": 22471,
       "towerPowerMultiplier": 1.7
     },
     {
@@ -488,7 +488,7 @@
         "equipmentChestTier": 2
       },
       "equipmentLevel": 19,
-      "combatPower": 5671,
+      "combatPower": 27228,
       "towerPowerMultiplier": 1.8
     },
     {
@@ -536,7 +536,7 @@
         "equipmentChestTier": 2
       },
       "equipmentLevel": 20,
-      "combatPower": 5694,
+      "combatPower": 30647,
       "towerPowerMultiplier": 2
     },
     {
@@ -585,7 +585,7 @@
         "enhancementStones": 4
       },
       "equipmentLevel": 21,
-      "combatPower": 6006,
+      "combatPower": 31244,
       "towerPowerMultiplier": 2
     },
     {
@@ -633,7 +633,7 @@
         "equipmentChestTier": 2
       },
       "equipmentLevel": 22,
-      "combatPower": 6316,
+      "combatPower": 31914,
       "towerPowerMultiplier": 2
     },
     {
@@ -681,7 +681,7 @@
         "equipmentChestTier": 2
       },
       "equipmentLevel": 23,
-      "combatPower": 6944,
+      "combatPower": 34049,
       "towerPowerMultiplier": 2.1
     },
     {
@@ -730,7 +730,7 @@
         "enhancementStones": 5
       },
       "equipmentLevel": 24,
-      "combatPower": 7260,
+      "combatPower": 34906,
       "towerPowerMultiplier": 2.1
     },
     {
@@ -778,7 +778,7 @@
         "equipmentChestTier": 3
       },
       "equipmentLevel": 25,
-      "combatPower": 7625,
+      "combatPower": 35834,
       "towerPowerMultiplier": 2.1
     },
     {
@@ -826,7 +826,7 @@
         "equipmentChestTier": 3
       },
       "equipmentLevel": 26,
-      "combatPower": 8272,
+      "combatPower": 38371,
       "towerPowerMultiplier": 2.2
     },
     {
@@ -875,7 +875,7 @@
         "enhancementStones": 6
       },
       "equipmentLevel": 27,
-      "combatPower": 8653,
+      "combatPower": 39505,
       "towerPowerMultiplier": 2.2
     },
     {
@@ -923,7 +923,7 @@
         "equipmentChestTier": 3
       },
       "equipmentLevel": 28,
-      "combatPower": 8993,
+      "combatPower": 40714,
       "towerPowerMultiplier": 2.2
     },
     {
@@ -971,7 +971,7 @@
         "equipmentChestTier": 3
       },
       "equipmentLevel": 29,
-      "combatPower": 12586,
+      "combatPower": 48116,
       "towerPowerMultiplier": 2.3
     },
     {
@@ -1020,7 +1020,7 @@
         "enhancementStones": 7
       },
       "equipmentLevel": 30,
-      "combatPower": 12272,
+      "combatPower": 52814,
       "towerPowerMultiplier": 2.5
     },
     {
@@ -1068,7 +1068,7 @@
         "equipmentChestTier": 3
       },
       "equipmentLevel": 31,
-      "combatPower": 12806,
+      "combatPower": 53714,
       "towerPowerMultiplier": 2.5
     },
     {
@@ -1116,7 +1116,7 @@
         "equipmentChestTier": 3
       },
       "equipmentLevel": 32,
-      "combatPower": 13380,
+      "combatPower": 54711,
       "towerPowerMultiplier": 2.5
     },
     {
@@ -1165,7 +1165,7 @@
         "enhancementStones": 8
       },
       "equipmentLevel": 33,
-      "combatPower": 14403,
+      "combatPower": 57836,
       "towerPowerMultiplier": 2.6
     },
     {
@@ -1213,7 +1213,7 @@
         "equipmentChestTier": 3
       },
       "equipmentLevel": 34,
-      "combatPower": 14998,
+      "combatPower": 59093,
       "towerPowerMultiplier": 2.6
     },
     {
@@ -1261,7 +1261,7 @@
         "equipmentChestTier": 3
       },
       "equipmentLevel": 35,
-      "combatPower": 15553,
+      "combatPower": 60470,
       "towerPowerMultiplier": 2.6
     },
     {
@@ -1310,7 +1310,7 @@
         "enhancementStones": 9
       },
       "equipmentLevel": 36,
-      "combatPower": 16709,
+      "combatPower": 64133,
       "towerPowerMultiplier": 2.7
     },
     {
@@ -1358,7 +1358,7 @@
         "equipmentChestTier": 3
       },
       "equipmentLevel": 37,
-      "combatPower": 17285,
+      "combatPower": 65792,
       "towerPowerMultiplier": 2.7
     },
     {
@@ -1406,7 +1406,7 @@
         "equipmentChestTier": 3
       },
       "equipmentLevel": 38,
-      "combatPower": 17850,
+      "combatPower": 67557,
       "towerPowerMultiplier": 2.7
     },
     {
@@ -1455,7 +1455,7 @@
         "enhancementStones": 10
       },
       "equipmentLevel": 39,
-      "combatPower": 24378,
+      "combatPower": 78565,
       "towerPowerMultiplier": 2.8
     },
     {
@@ -1466,7 +1466,7 @@
       "realmLevel": 1,
       "realmText": "Chân Nguyên cảnh Nhất tầng",
       "equipmentLevel": 40,
-      "combatPower": 23398,
+      "combatPower": 84394,
       "reward": {
         "cultivation": 5115,
         "spiritStones": 500,
@@ -1514,7 +1514,7 @@
       "realmLevel": 2,
       "realmText": "Chân Nguyên cảnh Nhị tầng",
       "equipmentLevel": 41,
-      "combatPower": 24284,
+      "combatPower": 85652,
       "reward": {
         "cultivation": 5280,
         "spiritStones": 515,
@@ -1562,7 +1562,7 @@
       "realmLevel": 3,
       "realmText": "Chân Nguyên cảnh Tam tầng",
       "equipmentLevel": 42,
-      "combatPower": 25129,
+      "combatPower": 87060,
       "reward": {
         "cultivation": 5445,
         "spiritStones": 530,
@@ -1611,7 +1611,7 @@
       "realmLevel": 4,
       "realmText": "Chân Nguyên cảnh Tứ tầng",
       "equipmentLevel": 43,
-      "combatPower": 26809,
+      "combatPower": 91353,
       "reward": {
         "cultivation": 5950,
         "spiritStones": 545,
@@ -1659,7 +1659,7 @@
       "realmLevel": 5,
       "realmText": "Chân Nguyên cảnh Ngũ tầng",
       "equipmentLevel": 44,
-      "combatPower": 27683,
+      "combatPower": 93099,
       "reward": {
         "cultivation": 6125,
         "spiritStones": 560,
@@ -1707,7 +1707,7 @@
       "realmLevel": 6,
       "realmText": "Chân Nguyên cảnh Lục tầng",
       "equipmentLevel": 45,
-      "combatPower": 28555,
+      "combatPower": 95000,
       "reward": {
         "cultivation": 6300,
         "spiritStones": 575,
@@ -1756,7 +1756,7 @@
       "realmLevel": 7,
       "realmText": "Chân Nguyên cảnh Thất tầng",
       "equipmentLevel": 46,
-      "combatPower": 30357,
+      "combatPower": 99973,
       "reward": {
         "cultivation": 6845,
         "spiritStones": 590,
@@ -1804,7 +1804,7 @@
       "realmLevel": 8,
       "realmText": "Chân Nguyên cảnh Bát tầng",
       "equipmentLevel": 47,
-      "combatPower": 31258,
+      "combatPower": 102245,
       "reward": {
         "cultivation": 7030,
         "spiritStones": 605,
@@ -1852,7 +1852,7 @@
       "realmLevel": 9,
       "realmText": "Chân Nguyên cảnh Cửu tầng",
       "equipmentLevel": 48,
-      "combatPower": 32187,
+      "combatPower": 104660,
       "reward": {
         "cultivation": 7215,
         "spiritStones": 620,
@@ -1901,7 +1901,7 @@
       "realmLevel": 1,
       "realmText": "Trúc Cơ cảnh Nhất tầng",
       "equipmentLevel": 49,
-      "combatPower": 42975,
+      "combatPower": 120359,
       "reward": {
         "cultivation": 7800,
         "spiritStones": 635,
@@ -1949,7 +1949,7 @@
       "realmLevel": 1,
       "realmText": "Trúc Cơ cảnh Nhất tầng",
       "equipmentLevel": 50,
-      "combatPower": 40824,
+      "combatPower": 127080,
       "reward": {
         "cultivation": 6970,
         "spiritStones": 650,
@@ -1997,7 +1997,7 @@
       "realmLevel": 2,
       "realmText": "Trúc Cơ cảnh Nhị tầng",
       "equipmentLevel": 51,
-      "combatPower": 42080,
+      "combatPower": 128757,
       "reward": {
         "cultivation": 7140,
         "spiritStones": 665,
@@ -2046,7 +2046,7 @@
       "realmLevel": 3,
       "realmText": "Trúc Cơ cảnh Tam tầng",
       "equipmentLevel": 52,
-      "combatPower": 43376,
+      "combatPower": 130639,
       "reward": {
         "cultivation": 7310,
         "spiritStones": 680,
@@ -2094,7 +2094,7 @@
       "realmLevel": 4,
       "realmText": "Trúc Cơ cảnh Tứ tầng",
       "equipmentLevel": 53,
-      "combatPower": 45836,
+      "combatPower": 136286,
       "reward": {
         "cultivation": 7920,
         "spiritStones": 695,
@@ -2142,7 +2142,7 @@
       "realmLevel": 5,
       "realmText": "Trúc Cơ cảnh Ngũ tầng",
       "equipmentLevel": 54,
-      "combatPower": 47128,
+      "combatPower": 138588,
       "reward": {
         "cultivation": 8100,
         "spiritStones": 710,
@@ -2191,7 +2191,7 @@
       "realmLevel": 6,
       "realmText": "Trúc Cơ cảnh Lục tầng",
       "equipmentLevel": 55,
-      "combatPower": 48459,
+      "combatPower": 141090,
       "reward": {
         "cultivation": 8280,
         "spiritStones": 725,
@@ -2239,7 +2239,7 @@
       "realmLevel": 7,
       "realmText": "Trúc Cơ cảnh Thất tầng",
       "equipmentLevel": 56,
-      "combatPower": 51072,
+      "combatPower": 147606,
       "reward": {
         "cultivation": 8930,
         "spiritStones": 740,
@@ -2287,7 +2287,7 @@
       "realmLevel": 8,
       "realmText": "Trúc Cơ cảnh Bát tầng",
       "equipmentLevel": 57,
-      "combatPower": 52438,
+      "combatPower": 150572,
       "reward": {
         "cultivation": 9120,
         "spiritStones": 755,
@@ -2336,7 +2336,7 @@
       "realmLevel": 9,
       "realmText": "Trúc Cơ cảnh Cửu tầng",
       "equipmentLevel": 58,
-      "combatPower": 53754,
+      "combatPower": 153762,
       "reward": {
         "cultivation": 9310,
         "spiritStones": 770,
@@ -2384,7 +2384,7 @@
       "realmLevel": 1,
       "realmText": "Thần Du cảnh Nhất tầng",
       "equipmentLevel": 59,
-      "combatPower": 70599,
+      "combatPower": 175405,
       "reward": {
         "cultivation": 10000,
         "spiritStones": 785,
@@ -2432,7 +2432,7 @@
       "realmLevel": 1,
       "realmText": "Thần Du cảnh Nhất tầng",
       "equipmentLevel": 60,
-      "combatPower": 66558,
+      "combatPower": 182568,
       "reward": {
         "cultivation": 8925,
         "spiritStones": 800,
@@ -2481,7 +2481,7 @@
       "realmLevel": 2,
       "realmText": "Thần Du cảnh Nhị tầng",
       "equipmentLevel": 61,
-      "combatPower": 67965,
+      "combatPower": 184729,
       "reward": {
         "cultivation": 9100,
         "spiritStones": 815,
@@ -2529,7 +2529,7 @@
       "realmLevel": 3,
       "realmText": "Thần Du cảnh Tam tầng",
       "equipmentLevel": 62,
-      "combatPower": 69416,
+      "combatPower": 187133,
       "reward": {
         "cultivation": 9275,
         "spiritStones": 830,
@@ -2577,7 +2577,7 @@
       "realmLevel": 4,
       "realmText": "Thần Du cảnh Tứ tầng",
       "equipmentLevel": 63,
-      "combatPower": 72171,
+      "combatPower": 194324,
       "reward": {
         "cultivation": 9990,
         "spiritStones": 845,
@@ -2626,7 +2626,7 @@
       "realmLevel": 5,
       "realmText": "Thần Du cảnh Ngũ tầng",
       "equipmentLevel": 64,
-      "combatPower": 73618,
+      "combatPower": 197274,
       "reward": {
         "cultivation": 10175,
         "spiritStones": 860,
@@ -2674,7 +2674,7 @@
       "realmLevel": 6,
       "realmText": "Thần Du cảnh Lục tầng",
       "equipmentLevel": 65,
-      "combatPower": 75109,
+      "combatPower": 200481,
       "reward": {
         "cultivation": 10360,
         "spiritStones": 875,
@@ -2722,7 +2722,7 @@
       "realmLevel": 7,
       "realmText": "Thần Du cảnh Thất tầng",
       "equipmentLevel": 66,
-      "combatPower": 78036,
+      "combatPower": 208705,
       "reward": {
         "cultivation": 11115,
         "spiritStones": 890,
@@ -2771,7 +2771,7 @@
       "realmLevel": 8,
       "realmText": "Thần Du cảnh Bát tầng",
       "equipmentLevel": 67,
-      "combatPower": 79566,
+      "combatPower": 212485,
       "reward": {
         "cultivation": 11310,
         "spiritStones": 905,
@@ -2819,7 +2819,7 @@
       "realmLevel": 9,
       "realmText": "Thần Du cảnh Cửu tầng",
       "equipmentLevel": 68,
-      "combatPower": 81040,
+      "combatPower": 216521,
       "reward": {
         "cultivation": 11505,
         "spiritStones": 920,
@@ -2867,7 +2867,7 @@
       "realmLevel": 1,
       "realmText": "Kết Đan cảnh Nhất tầng",
       "equipmentLevel": 69,
-      "combatPower": 109766,
+      "combatPower": 245475,
       "reward": {
         "cultivation": 12300,
         "spiritStones": 935,
@@ -2916,7 +2916,7 @@
       "realmLevel": 1,
       "realmText": "Kết Đan cảnh Nhất tầng",
       "equipmentLevel": 70,
-      "combatPower": 102864,
+      "combatPower": 252565,
       "reward": {
         "cultivation": 10980,
         "spiritStones": 950,
@@ -2964,7 +2964,7 @@
       "realmLevel": 2,
       "realmText": "Kết Đan cảnh Nhị tầng",
       "equipmentLevel": 71,
-      "combatPower": 104623,
+      "combatPower": 255272,
       "reward": {
         "cultivation": 11160,
         "spiritStones": 965,
@@ -3012,7 +3012,7 @@
       "realmLevel": 3,
       "realmText": "Kết Đan cảnh Tam tầng",
       "equipmentLevel": 72,
-      "combatPower": 106437,
+      "combatPower": 258262,
       "reward": {
         "cultivation": 11340,
         "spiritStones": 980,
@@ -3061,7 +3061,7 @@
       "realmLevel": 4,
       "realmText": "Kết Đan cảnh Tứ tầng",
       "equipmentLevel": 73,
-      "combatPower": 109880,
+      "combatPower": 267179,
       "reward": {
         "cultivation": 12160,
         "spiritStones": 995,
@@ -3109,7 +3109,7 @@
       "realmLevel": 5,
       "realmText": "Kết Đan cảnh Ngũ tầng",
       "equipmentLevel": 74,
-      "combatPower": 111689,
+      "combatPower": 270864,
       "reward": {
         "cultivation": 12350,
         "spiritStones": 1010,
@@ -3157,7 +3157,7 @@
       "realmLevel": 6,
       "realmText": "Kết Đan cảnh Lục tầng",
       "equipmentLevel": 75,
-      "combatPower": 113553,
+      "combatPower": 274838,
       "reward": {
         "cultivation": 12540,
         "spiritStones": 1025,
@@ -3206,7 +3206,7 @@
       "realmLevel": 7,
       "realmText": "Kết Đan cảnh Thất tầng",
       "equipmentLevel": 76,
-      "combatPower": 117212,
+      "combatPower": 285016,
       "reward": {
         "cultivation": 13400,
         "spiritStones": 1040,
@@ -3254,7 +3254,7 @@
       "realmLevel": 8,
       "realmText": "Kết Đan cảnh Bát tầng",
       "equipmentLevel": 77,
-      "combatPower": 119124,
+      "combatPower": 289703,
       "reward": {
         "cultivation": 13600,
         "spiritStones": 1055,
@@ -3302,7 +3302,7 @@
       "realmLevel": 9,
       "realmText": "Kết Đan cảnh Cửu tầng",
       "equipmentLevel": 78,
-      "combatPower": 120967,
+      "combatPower": 294691,
       "reward": {
         "cultivation": 13800,
         "spiritStones": 1070,
@@ -3351,7 +3351,7 @@
       "realmLevel": 1,
       "realmText": "Nguyên Anh cảnh Nhất tầng",
       "equipmentLevel": 79,
-      "combatPower": 163286,
+      "combatPower": 332479,
       "reward": {
         "cultivation": 14700,
         "spiritStones": 1085,
@@ -3399,7 +3399,7 @@
       "realmLevel": 1,
       "realmText": "Nguyên Anh cảnh Nhất tầng",
       "equipmentLevel": 80,
-      "combatPower": 152262,
+      "combatPower": 338762,
       "reward": {
         "cultivation": 13135,
         "spiritStones": 1100,
@@ -3447,7 +3447,7 @@
       "realmLevel": 2,
       "realmText": "Nguyên Anh cảnh Nhị tầng",
       "equipmentLevel": 81,
-      "combatPower": 154725,
+      "combatPower": 342056,
       "reward": {
         "cultivation": 13320,
         "spiritStones": 1115,
@@ -3496,7 +3496,7 @@
       "realmLevel": 3,
       "realmText": "Nguyên Anh cảnh Tam tầng",
       "equipmentLevel": 82,
-      "combatPower": 157264,
+      "combatPower": 345712,
       "reward": {
         "cultivation": 13505,
         "spiritStones": 1130,
@@ -3544,7 +3544,7 @@
       "realmLevel": 4,
       "realmText": "Nguyên Anh cảnh Tứ tầng",
       "equipmentLevel": 83,
-      "combatPower": 162084,
+      "combatPower": 356537,
       "reward": {
         "cultivation": 14430,
         "spiritStones": 1145,
@@ -3592,7 +3592,7 @@
       "realmLevel": 5,
       "realmText": "Nguyên Anh cảnh Ngũ tầng",
       "equipmentLevel": 84,
-      "combatPower": 164617,
+      "combatPower": 361001,
       "reward": {
         "cultivation": 14625,
         "spiritStones": 1160,
@@ -3641,7 +3641,7 @@
       "realmLevel": 6,
       "realmText": "Nguyên Anh cảnh Lục tầng",
       "equipmentLevel": 85,
-      "combatPower": 167227,
+      "combatPower": 365832,
       "reward": {
         "cultivation": 14820,
         "spiritStones": 1175,
@@ -3689,7 +3689,7 @@
       "realmLevel": 7,
       "realmText": "Nguyên Anh cảnh Thất tầng",
       "equipmentLevel": 86,
-      "combatPower": 172349,
+      "combatPower": 378123,
       "reward": {
         "cultivation": 15785,
         "spiritStones": 1190,
@@ -3737,7 +3737,7 @@
       "realmLevel": 8,
       "realmText": "Nguyên Anh cảnh Bát tầng",
       "equipmentLevel": 87,
-      "combatPower": 175026,
+      "combatPower": 383798,
       "reward": {
         "cultivation": 15990,
         "spiritStones": 1205,
@@ -3786,7 +3786,7 @@
       "realmLevel": 9,
       "realmText": "Nguyên Anh cảnh Cửu tầng",
       "equipmentLevel": 88,
-      "combatPower": 177606,
+      "combatPower": 389847,
       "reward": {
         "cultivation": 16195,
         "spiritStones": 1220,
@@ -3834,7 +3834,7 @@
       "realmLevel": 1,
       "realmText": "Hóa Thần cảnh Nhất tầng",
       "equipmentLevel": 89,
-      "combatPower": 234263,
+      "combatPower": 438128,
       "reward": {
         "cultivation": 17200,
         "spiritStones": 1235,

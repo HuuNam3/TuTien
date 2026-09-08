@@ -372,6 +372,7 @@ let dailyResourceAttempts = { date: getDailyKey() };
 let dailyEquipmentChestPurchases = { date: getDailyKey(), total: 0 };
 let dailyShopPurchases = { date: getDailyKey(), counts: {} };
 let resourceDungeonProgress = {};
+let playerBattleState = createDefaultPlayerBattleState();
 let activeSkillId = '';
 let skillTrainingId = '';
 let expandedSkillDetailsId = '';
@@ -395,7 +396,7 @@ let audioFallbackEnabled = false;
 const audioFallbackCache = new Map();
 const criticalAssetPaths = [
   '/assets/Art/Textures/game-background-mobile.png',
-  '/assets/Art/Sprites/UI/chibi-ui-icon-sheet.png',
+  '/assets/Art/Sprites/UI/chibi-ui-icon-sheet-12-1254.png',
   '/assets/Art/Sprites/UI/chibi-stat-icon-sheet.png',
   '/assets/Art/Sprites/UI/chibi-item-status-icon-sheet.png',
   '/assets/Art/Sprites/UI/chibi-activity-icon-sheet.png',
@@ -440,6 +441,7 @@ const inventoryButton = $('inventoryButton');
 const petButton = $('petButton');
 const shopButton = $('shopButton');
 const resourceDungeonButton = $('resourceDungeonButton');
+const playerBattleButton = document.querySelector('[data-activity-tab="playerBattle"]');
 const trialTowerButton = $('trialTowerButton');
 const audioToggleButton = $('audioToggleButton');
 const codeInput = $('codeInput');
@@ -1291,11 +1293,11 @@ function getSkillGradeColor(gradeId) {
 }
 
 const talentTreasureStatMeta = Object.freeze({
-  maxHp: { name: 'Huyết Ngọc', icon: 'icon-talent-treasure-maxHp' },
-  attack: { name: 'Liệt Dương', icon: 'icon-talent-treasure-attack' },
-  mastery: { name: 'Ngộ Đạo', icon: 'icon-talent-treasure-mastery' },
-  defense: { name: 'Huyền Giáp', icon: 'icon-talent-treasure-defense' },
-  maxMana: { name: 'Linh Hải', icon: 'icon-talent-treasure-maxMana' },
+  attack: { name: 'Xích Viêm', icon: 'icon-talent-treasure-attack' },
+  maxHp: { name: 'Thanh Mộc', icon: 'icon-talent-treasure-maxHp' },
+  defense: { name: 'Huyền Thuẫn', icon: 'icon-talent-treasure-defense' },
+  maxMana: { name: 'Lam Hải', icon: 'icon-talent-treasure-maxMana' },
+  mastery: { name: 'Tử Tinh', icon: 'icon-talent-treasure-mastery' },
 });
 
 const talentTreasureStatPriority = ['attack', 'mastery', 'maxHp', 'defense', 'maxMana'];
@@ -1304,10 +1306,18 @@ function getTalentTreasurePrimaryStat(item = {}) {
   const source = item.allocation && Object.keys(item.allocation).length
     ? item.allocation
     : item.statBonuses || {};
+  const config = majorAscensionTreasureConfig || {};
+  const caps = {
+    maxHp: Math.max(1, Number(config.maxHpPercent) || 50),
+    attack: Math.max(1, Number(config.maxAttackPercent) || 50),
+    mastery: Math.max(1, Number(config.maxMasteryPercent) || 50),
+    defense: Math.max(1, Number(config.maxDefensePercent) || 20),
+    maxMana: Math.max(1, Number(config.maxManaPercent) || 5),
+  };
   let selectedStat = talentTreasureStatPriority[0];
   let selectedValue = -1;
   talentTreasureStatPriority.forEach((stat) => {
-    const value = Math.max(0, Number(source[stat]) || 0);
+    const value = Math.max(0, Number(source[stat]) || 0) / caps[stat];
     if (value > selectedValue) {
       selectedStat = stat;
       selectedValue = value;
@@ -1317,9 +1327,7 @@ function getTalentTreasurePrimaryStat(item = {}) {
 }
 
 function getTalentTreasureName(item = {}) {
-  const stat = talentTreasureStatMeta[item.talentStat]
-    ? item.talentStat
-    : getTalentTreasurePrimaryStat(item);
+  const stat = getTalentTreasurePrimaryStat(item);
   const meta = talentTreasureStatMeta[stat] || talentTreasureStatMeta.attack;
   const targetMajorRealmIndex = clamp(
     Math.floor(Number(item.targetMajorRealmIndex) || 0),
@@ -1331,9 +1339,7 @@ function getTalentTreasureName(item = {}) {
 }
 
 function getTalentTreasureIconClass(item = {}) {
-  const stat = talentTreasureStatMeta[item.talentStat]
-    ? item.talentStat
-    : getTalentTreasurePrimaryStat(item);
+  const stat = getTalentTreasurePrimaryStat(item);
   return talentTreasureStatMeta[stat]?.icon || 'icon-talent-treasure-generic';
 }
 
@@ -2018,6 +2024,10 @@ function returnFromBattleScreen() {
     showActivities('worldBoss');
     return;
   }
+  if (currentStage?.isPlayerBattle) {
+    showActivities('playerBattle');
+    return;
+  }
   if (lastBattleOutcome === 'lose') {
     showTrainingMessage('Đã thua, hãy về tu luyện để hồi phục.');
     return;
@@ -2219,7 +2229,11 @@ function showQuests() {
 }
 
 function showActivities(tabId = activeActivityTab) {
-  const requestedTab = ['resourceDungeon', 'trainingDummy', 'worldBoss'].includes(tabId) ? tabId : 'beastHunt';
+  const requestedTab = ['resourceDungeon', 'playerBattle', 'trainingDummy', 'worldBoss'].includes(tabId) ? tabId : 'beastHunt';
+  if (requestedTab === 'playerBattle' && isPlayerBattleInDevelopment()) {
+    showGameToast('Chiến đấu đang phát triển.', 'locked');
+    return;
+  }
   if (requestedTab === 'resourceDungeon' && !canAccessResourceDungeons()) {
     showLockedFeatureNotice('Phụ bản', `Cần đạt tu vi ${getTierRealmText(getResourceDungeonEntryRequiredTier())} để mở`);
     return;
@@ -2266,13 +2280,16 @@ function updateFeatureAvailability() {
   const featureStates = [
     [resourceDungeonButton, canAccessResourceDungeons(), getResourceDungeonEntryRequiredTier()],
     [trialTowerButton, canEnterTrialTower(), getTrialTowerEntryRequiredTier()],
+    [playerBattleButton, !isPlayerBattleInDevelopment(), null],
   ];
   featureStates.forEach(([button, unlocked, requiredTier]) => {
     if (!button) return;
     button.disabled = false;
     button.classList.toggle('locked-tab', !unlocked);
     button.setAttribute('aria-disabled', String(!unlocked));
-    button.title = unlocked ? '' : `Mở từ ${getTierRealmText(requiredTier)}`;
+    button.title = unlocked
+      ? ''
+      : requiredTier ? `Mở từ ${getTierRealmText(requiredTier)}` : 'Chức năng đang phát triển';
   });
 }
 
@@ -3568,6 +3585,7 @@ async function resetGameData() {
       dailyEquipmentChestPurchases: { date: getDailyKey(), total: 0 },
       dailyShopPurchases: { date: getDailyKey(), counts: {} },
       dailyResourceAttempts: { date: getDailyKey() },
+      playerBattleState: createDefaultPlayerBattleState(),
       cultivationSpeedBonus: 0,
       completedStages: [],
       currentStageId: stages[0]?.id || 1,
@@ -3708,6 +3726,7 @@ function loadSavedGame() {
     dailyEquipmentChestPurchases = normalizeDailyEquipmentChestPurchases(data.dailyEquipmentChestPurchases);
     dailyShopPurchases = normalizeDailyShopPurchases(data.dailyShopPurchases);
     resourceDungeonProgress = normalizeResourceDungeonProgress(data.resourceDungeonProgress);
+    playerBattleState = normalizePlayerBattleState(data.playerBattleState);
     const interruptedBeastHuntBattle = Boolean(data.beastHuntBattleActive);
     beastHuntMapId = wanderMaps[data.beastHuntMapId] ? data.beastHuntMapId : '';
     beastHuntRespawnAt = Math.max(0, Number(data.beastHuntRespawnAt) || 0);
@@ -3985,6 +4004,7 @@ function saveGame() {
     dailyEquipmentChestPurchases: normalizeDailyEquipmentChestPurchases(dailyEquipmentChestPurchases),
     dailyShopPurchases: normalizeDailyShopPurchases(dailyShopPurchases),
     resourceDungeonProgress,
+    playerBattleState: normalizePlayerBattleState(playerBattleState),
     activeSkillId,
     selectedPetId,
     petStates,
@@ -5414,10 +5434,16 @@ function getMajorAscensionTreasurePower(targetMajorRealmIndex) {
 function rollTalentTreasureAllocation() {
   const config = majorAscensionTreasureConfig || {};
   const caps = {
-    maxHp: clamp(Math.floor(Number(config.maxHpPercent) || 30), 1, 98),
+    maxHp: clamp(Math.floor(Number(config.maxHpPercent) || 50), 1, 98),
     attack: clamp(Math.floor(Number(config.maxAttackPercent) || 50), 1, 98),
     mastery: clamp(Math.floor(Number(config.maxMasteryPercent) || 50), 1, 98),
     defense: clamp(Math.floor(Number(config.maxDefensePercent) || 20), 1, 98),
+  };
+  const minimums = {
+    maxHp: clamp(Math.floor(Number(config.minHpPercent) || 10), 1, caps.maxHp),
+    attack: clamp(Math.floor(Number(config.minAttackPercent) || 10), 1, caps.attack),
+    mastery: clamp(Math.floor(Number(config.minMasteryPercent) || 10), 1, caps.mastery),
+    defense: clamp(Math.floor(Number(config.minDefensePercent) || 5), 1, caps.defense),
   };
   const manaMinPercent = clamp(
     Math.floor(Number(config.minManaPercent ?? config.fixedManaPercent) || 1),
@@ -5430,8 +5456,8 @@ function rollTalentTreasureAllocation() {
     98,
   );
   const manaPercent = manaMinPercent + Math.floor(Math.random() * (manaMaxPercent - manaMinPercent + 1));
-  const allocation = { maxHp: 1, attack: 1, mastery: 1, defense: 1, maxMana: manaPercent };
-  let remaining = 100 - manaPercent - 4;
+  const allocation = { ...minimums, maxMana: manaPercent };
+  let remaining = 100 - manaPercent - Object.values(minimums).reduce((total, value) => total + value, 0);
   const keys = Object.keys(caps);
   while (remaining > 0) {
     const available = keys.filter((key) => allocation[key] < caps[key]);
@@ -5488,9 +5514,7 @@ function normalizeTalentTreasureInventory(items = []) {
       allocation,
       statBonuses,
     };
-    const talentStat = talentTreasureStatMeta[item.talentStat]
-      ? item.talentStat
-      : getTalentTreasurePrimaryStat(normalized);
+    const talentStat = getTalentTreasurePrimaryStat(normalized);
     return {
       ...normalized,
       talentStat,

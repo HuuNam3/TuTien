@@ -1514,12 +1514,12 @@ button.danger:not(:disabled):hover {
   pointer-events: none;
 }
 
-.icon-talent-treasure-maxHp { background-position: 0% 0%; }
-.icon-talent-treasure-attack { background-position: 33.333% 0%; }
-.icon-talent-treasure-mastery { background-position: 66.666% 0%; }
-.icon-talent-treasure-defense { background-position: 100% 0%; }
-.icon-talent-treasure-maxMana { background-position: 0% 33.333%; }
-.icon-talent-treasure-generic { background-position: 33.333% 33.333%; }
+.icon-talent-treasure-attack { background-position: 0% 66.666%; }
+.icon-talent-treasure-maxHp { background-position: 33.333% 66.666%; }
+.icon-talent-treasure-defense { background-position: 66.666% 66.666%; }
+.icon-talent-treasure-maxMana { background-position: 100% 66.666%; }
+.icon-talent-treasure-mastery { background-position: 100% 100%; }
+.icon-talent-treasure-generic { background-position: 100% 100%; }
 .icon-special-major-pill { background-position: 0% 33.333%; }
 .icon-special-minor-pill { background-position: 33.333% 33.333%; }
 .icon-special-enhancement-refund { background-position: 100% 33.333%; }
@@ -6048,6 +6048,104 @@ button.is-unavailable:active {
   line-height: 1.45;
 }
 
+.player-battle-activity {
+  border-color: #5676a3;
+  background: linear-gradient(180deg, rgba(29, 48, 72, 0.88), rgba(27, 34, 45, 0.96));
+}
+
+.player-battle-activity h3 {
+  color: #8bdfff;
+}
+
+.player-battle-opponent {
+  display: grid;
+  gap: 9px;
+  padding: 10px;
+  border: 1px solid #40566a;
+  background: rgba(10, 17, 26, 0.42);
+}
+
+.player-battle-opponent-heading,
+.player-battle-stats,
+.player-battle-actions {
+  display: grid;
+  gap: 7px;
+}
+
+.player-battle-opponent-heading {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.player-battle-opponent-heading strong {
+  color: #f7f8fb;
+  overflow-wrap: anywhere;
+}
+
+.player-battle-opponent-heading span {
+  color: #f2bb4b;
+  font-size: 12px;
+}
+
+.player-battle-stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.player-battle-stats span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.player-battle-stats b,
+.player-battle-skills > b {
+  color: #8fa1b7;
+  font-size: 11px;
+}
+
+.player-battle-stats strong {
+  color: #72d8ff;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.player-battle-skills {
+  display: grid;
+  gap: 5px;
+}
+
+.player-battle-skills > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 10px;
+}
+
+.player-battle-skills > div span {
+  color: #dce6f3;
+  font-size: 12px;
+}
+
+.player-battle-skills .activity-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 3px;
+}
+
+.player-battle-activity > small {
+  color: #aab8c8;
+  line-height: 1.4;
+}
+
+.player-battle-actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 390px) {
+  .player-battle-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
 .activity-empty {
   justify-items: center;
   min-height: 100px;
@@ -7114,7 +7212,7 @@ body {
   width: 24px;
   height: 24px;
   border: 0;
-  background-image: url('/assets/Art/Sprites/UI/chibi-ui-icon-sheet.png');
+  background-image: url('/assets/Art/Sprites/UI/chibi-ui-icon-sheet-12-1254.png');
   background-repeat: no-repeat;
   background-size: 400% 400%;
   vertical-align: middle;
@@ -7155,14 +7253,14 @@ button > .game-icon {
 .icon-flame { background-position: 33.333% 0%; }
 .icon-scroll { background-position: 66.666% 0%; }
 .icon-profile { background-position: 100% 0%; }
-.icon-sword { background-position: 0% 50%; }
-.icon-shop { background-position: 33.333% 50%; }
-.icon-hammer { background-position: 66.666% 50%; }
-.icon-mountain { background-position: 100% 50%; }
-.icon-tower { background-position: 0% 100%; }
-.icon-book { background-position: 33.333% 100%; }
-.icon-gift { background-position: 66.666% 100%; }
-.icon-reset { background-position: 100% 100%; }
+.icon-sword { background-position: 0% 33.333%; }
+.icon-shop { background-position: 33.333% 33.333%; }
+.icon-hammer { background-position: 66.666% 33.333%; }
+.icon-mountain { background-position: 100% 33.333%; }
+.icon-tower { background-position: 0% 66.666%; }
+.icon-book { background-position: 33.333% 66.666%; }
+.icon-gift { background-position: 66.666% 66.666%; }
+.icon-reset { background-position: 100% 66.666%; }
 
 .danger .game-icon {
   filter: saturate(0.86) hue-rotate(310deg);
@@ -7312,7 +7410,7 @@ strong > .activity-icon,
 .icon-wander-map-25,
 .icon-wander-map-26 {
   background-image: url('/assets/Art/Sprites/UI/chibi-wander-map-icon-sheet-late.png');
-  background-size: 400% 300%;
+  background-size: 400% 400%;
 }
 
 .icon-wander-map-5 { background-position: 0% 0%; }
@@ -7329,16 +7427,16 @@ strong > .activity-icon,
 .icon-wander-map-16 { background-position: 33.333% 0%; }
 .icon-wander-map-17 { background-position: 66.666% 0%; }
 .icon-wander-map-18 { background-position: 100% 0%; }
-.icon-wander-map-19 { background-position: 0% 50%; }
-.icon-wander-map-20 { background-position: 33.333% 50%; }
-.icon-wander-map-21 { background-position: 66.666% 50%; }
-.icon-wander-map-22 { background-position: 100% 50%; }
-.icon-wander-map-23 { background-position: 0% 100%; }
-.icon-wander-map-24 { background-position: 33.333% 100%; }
-.icon-wander-map-25 { background-position: 66.666% 100%; }
-.icon-wander-map-26 { background-position: 100% 100%; }
-.icon-wander-increase-enemy { background-position: 66.666% 100%; }
-.icon-wander-skip-enemy { background-position: 100% 100%; }
+.icon-wander-map-19 { background-position: 0% 33.333%; }
+.icon-wander-map-20 { background-position: 33.333% 33.333%; }
+.icon-wander-map-21 { background-position: 66.666% 33.333%; }
+.icon-wander-map-22 { background-position: 100% 33.333%; }
+.icon-wander-map-23 { background-position: 0% 66.666%; }
+.icon-wander-map-24 { background-position: 33.333% 66.666%; }
+.icon-wander-map-25 { background-position: 66.666% 66.666%; }
+.icon-wander-map-26 { background-position: 100% 66.666%; }
+.icon-wander-increase-enemy { background-position: 66.666% 66.666%; }
+.icon-wander-skip-enemy { background-position: 100% 66.666%; }
 
 .stat-icon {
   display: inline-block;
@@ -11512,8 +11610,8 @@ body.battle-active .battle-panel {
 
 .unique-icon.icon-wander-skip-enemy {
   background-image: url('/assets/Art/Sprites/UI/chibi-wander-map-icon-sheet.png');
-  background-size: 400% 300%;
-  background-position: 100% 100%;
+  background-size: 400% 400%;
+  background-position: 100% 66.666%;
 }
 
 /* Keep every icon in the Ngao du panel at the same readable size. */

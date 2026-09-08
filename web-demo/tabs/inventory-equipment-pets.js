@@ -234,7 +234,7 @@ function getBagItems() {
       name: item.name || definition.name,
       category: 'Đột phá',
       count: 1,
-      iconClass: 'activity-icon icon-activity-gate',
+      iconClass: `talent-icon ${getTalentTreasureIconClass(item)}`,
       description: `Dùng để đột phá ${majorRealmNames[item.targetMajorRealmIndex] || 'đại cảnh giới kế tiếp'}. Thông số cộng: ${formatTalentTreasureStats(item)}. LC: ${formatGameNumber(item.realizedCombatPower || item.combatPower)}.`,
       talentTreasure: true,
       targetMajorRealmIndex: item.targetMajorRealmIndex,

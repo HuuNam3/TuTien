@@ -37,6 +37,13 @@
       "maxHp": 1000000000,
       "maxTurns": 30
     },
+    "playerBattle": {
+      "enabled": false,
+      "status": "development",
+      "dailyBattleLimit": 3,
+      "dailyRerollLimit": 5,
+      "stealRate": 0.1
+    },
     "worldBoss": {
       "enabled": false,
       "status": "development",

@@ -479,6 +479,12 @@ function renderActivities() {
     renderResourceDungeons();
     return;
   }
+  if (activeActivityTab === 'playerBattle') {
+    list.classList.remove('is-hidden');
+    resourceDungeonPanel?.classList.add('is-hidden');
+    renderPlayerBattleActivity();
+    return;
+  }
   if (activeActivityTab === 'trainingDummy') {
     list.classList.remove('is-hidden');
     resourceDungeonPanel?.classList.add('is-hidden');

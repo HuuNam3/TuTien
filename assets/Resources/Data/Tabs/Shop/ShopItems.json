@@ -16,10 +16,14 @@
     "namePrefix": "Thiên Tài Địa Bảo",
     "description": "Vật phẩm dùng để đột phá đại cảnh giới tương ứng. Mỗi vật phẩm có một lần roll chỉ số ngẫu nhiên.",
     "minManaPercent": 1,
-    "maxManaPercent": 3,
-    "maxHpPercent": 30,
+    "maxManaPercent": 5,
+    "minHpPercent": 10,
+    "maxHpPercent": 50,
+    "minAttackPercent": 10,
     "maxAttackPercent": 50,
+    "minMasteryPercent": 10,
     "maxMasteryPercent": 50,
+    "minDefensePercent": 5,
     "maxDefensePercent": 20
   },
   "majorAscensionTreasureChestConfig": {
