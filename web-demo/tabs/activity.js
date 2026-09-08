@@ -289,12 +289,12 @@ function createBeastHuntStage() {
     enemyTier: tier,
     enemyLevel: playerLevel,
     enemyMajorRealmIndex: playerMajorRealmIndex,
-    enemyRankLevel: 3,
+    enemyRankLevel: 1,
     title: 'Săn yêu vật',
     realmText: getTierRealmText(tier),
     enemyData: {
       ...enemyData,
-      name: `${enemyData.name} Thủ lĩnh`,
+      name: `Boss ${enemyData.name}`,
     },
   };
 }
@@ -304,13 +304,21 @@ function createBeastHuntReward(stage) {
   const highestMap = getBestUnlockedWanderMap();
   const equipmentChestTier = getEquipmentChestTier(highestMap);
   const skillChest = getWanderSkillChestShopItem(highestMap);
+  const talentTreasureChest = getWanderTalentTreasureChestShopItem(highestMap);
+  const minorAscensionPill = getWanderMinorAscensionPillShopItem(highestMap, stage);
   const rewardTypes = [
     { type: 'equipmentChest', minKey: 'equipmentChestMin', maxKey: 'equipmentChestMax' },
     { type: 'enhancementStones', minKey: 'enhancementStonesMin', maxKey: 'enhancementStonesMax' },
     { type: 'healthPotions', minKey: 'healthPotionsMin', maxKey: 'healthPotionsMax' },
     { type: 'manaPotions', minKey: 'manaPotionsMin', maxKey: 'manaPotionsMax' },
     { type: 'skillChest', minKey: 'skillChestMin', maxKey: 'skillChestMax' },
-  ].filter((entry) => entry.type !== 'skillChest' || skillChest);
+    { type: 'talentTreasureChest', minKey: 'talentTreasureChestMin', maxKey: 'talentTreasureChestMax' },
+    { type: 'minorAscensionPill', minKey: 'minorAscensionPillMin', maxKey: 'minorAscensionPillMax' },
+  ].filter((entry) => (
+    (entry.type !== 'skillChest' || skillChest)
+    && (entry.type !== 'talentTreasureChest' || talentTreasureChest)
+    && (entry.type !== 'minorAscensionPill' || minorAscensionPill)
+  ));
   const rewardType = rewardTypes[Math.floor(Math.random() * rewardTypes.length)] || rewardTypes[0];
   const min = Math.max(1, Math.floor(Number(config[rewardType.minKey]) || 1));
   const max = Math.max(min, Math.floor(Number(config[rewardType.maxKey]) || min));
@@ -323,12 +331,22 @@ function createBeastHuntReward(stage) {
     reward.majorRealmIndex = clamp(Number(playerMajorRealmIndex) || 0, 0, getMajorRealmMaxIndex());
   }
   if (reward.type === 'skillChest') reward.shopItemId = skillChest.id;
+  if (reward.type === 'talentTreasureChest') reward.shopItemId = talentTreasureChest.id;
+  if (reward.type === 'minorAscensionPill') reward.shopItemId = minorAscensionPill.id;
   return reward;
 }
 
 function normalizeBeastHuntReward(reward) {
   if (!reward || typeof reward !== 'object') return null;
-  const allowedTypes = new Set(['equipmentChest', 'enhancementStones', 'healthPotions', 'manaPotions', 'skillChest']);
+  const allowedTypes = new Set([
+    'equipmentChest',
+    'enhancementStones',
+    'healthPotions',
+    'manaPotions',
+    'skillChest',
+    'talentTreasureChest',
+    'minorAscensionPill',
+  ]);
   const type = String(reward.type || '');
   if (!allowedTypes.has(type)) return null;
   const config = getBeastHuntRewardConfig();
@@ -338,6 +356,8 @@ function normalizeBeastHuntReward(reward) {
     healthPotions: 'healthPotionsMin',
     manaPotions: 'manaPotionsMin',
     skillChest: 'skillChestMin',
+    talentTreasureChest: 'talentTreasureChestMin',
+    minorAscensionPill: 'minorAscensionPillMin',
   };
   const maxKeyByType = {
     equipmentChest: 'equipmentChestMax',
@@ -345,6 +365,8 @@ function normalizeBeastHuntReward(reward) {
     healthPotions: 'healthPotionsMax',
     manaPotions: 'manaPotionsMax',
     skillChest: 'skillChestMax',
+    talentTreasureChest: 'talentTreasureChestMax',
+    minorAscensionPill: 'minorAscensionPillMax',
   };
   const rewardMin = Math.max(1, Math.floor(Number(config[minKeyByType[type]]) || 1));
   const rewardMax = Math.max(rewardMin, Math.floor(Number(config[maxKeyByType[type]]) || rewardMin));
@@ -356,8 +378,11 @@ function normalizeBeastHuntReward(reward) {
     normalized.chestTier = clamp(Math.floor(Number(reward.chestTier) || 1), 1, 10);
     normalized.majorRealmIndex = clamp(Math.floor(Number(reward.majorRealmIndex) || 0), 0, getMajorRealmMaxIndex());
   }
-  if (type === 'skillChest') {
-    const shopItem = shopItems.find((item) => item.id === reward.shopItemId && item.type === 'skillChest');
+  if (['skillChest', 'talentTreasureChest', 'minorAscensionPill'].includes(type)) {
+    const expectedType = type === 'skillChest' ? 'skillChest'
+      : type === 'talentTreasureChest' ? 'talentTreasureChest'
+        : 'minorAscension';
+    const shopItem = shopItems.find((item) => item.id === reward.shopItemId && item.type === expectedType);
     if (!shopItem) return null;
     normalized.shopItemId = shopItem.id;
   }
@@ -378,6 +403,13 @@ function getBeastHuntRewardEntries(reward = beastHuntPendingReward) {
   }
   if (reward.type === 'manaPotions') {
     return [{ iconClass: 'item-icon icon-item-mana-flame', label: `Tụ Linh Đan ${amountText}` }];
+  }
+  if (reward.type === 'talentTreasureChest') {
+    return [{ iconClass: 'activity-icon icon-activity-chest', label: `Rương Thiên Tài Địa Bảo ${amountText}` }];
+  }
+  if (reward.type === 'minorAscensionPill') {
+    const minorPill = shopItems.find((item) => item.id === reward.shopItemId);
+    return minorPill ? [{ iconClass: 'activity-icon icon-activity-gate', label: `${minorPill.name} ${amountText}` }] : [];
   }
   const skillChest = shopItems.find((item) => item.id === reward.shopItemId);
   return skillChest ? [{ iconClass: 'activity-icon icon-activity-chest', label: `${skillChest.name} ${amountText}` }] : [];
@@ -404,7 +436,7 @@ function claimBeastHuntReward() {
     healthPotionCount += reward.amount;
   } else if (reward.type === 'manaPotions') {
     manaPotionCount += reward.amount;
-  } else if (reward.type === 'skillChest') {
+  } else if (['skillChest', 'talentTreasureChest', 'minorAscensionPill'].includes(reward.type)) {
     addShopInventoryItem(reward.shopItemId, reward.amount);
   }
   beastHuntRespawnAt = Date.now() + getBeastHuntRespawnMs();
@@ -427,7 +459,7 @@ function renderBeastHuntEncounterOverlay(stage) {
   modal.innerHTML = `
     <span><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i>Săn yêu vật</span>
     <strong>${stage.enemyData.name}</strong>
-    <em>Yêu vật thủ lĩnh đã bị đạo hữu phát hiện.</em>
+    <em>Boss đã bị đạo hữu phát hiện.</em>
     <div class="enemy-encounter-meta">
       <span><b>Phẩm chất</b><strong>${getEnemyRankLabel(stage.enemyData, stage.enemyRankLevel)}</strong></span>
       <span><b>Tu vi</b><strong>${formatRealmDisplayText(stage.realmText)}</strong></span>
@@ -520,7 +552,7 @@ function renderActivities() {
           <span><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i>Phần thưởng săn yêu vật</span>
           <strong>Đang chờ nhận</strong>
         </div>
-        <h3>Chiến thắng yêu vật thủ lĩnh</h3>
+        <h3>Chiến thắng Boss</h3>
         <p>Nhận phần thưởng bên dưới để bắt đầu thời gian hồi yêu vật trong 1 giờ.</p>
         <div class="enemy-encounter-summary">${formatBeastHuntRewardMarkup()}</div>
         <button type="button" class="breakthrough compact beast-hunt-claim-button"><i class="game-icon icon-gift" aria-hidden="true"></i>Nhận thưởng</button>
@@ -538,7 +570,7 @@ function renderActivities() {
           <span><i class="activity-icon icon-activity-encounter" aria-hidden="true"></i>Săn yêu vật</span>
           <strong>Đang xuất hiện</strong>
         </div>
-        <h3>Yêu vật thủ lĩnh đã xuất hiện</h3>
+        <h3>Boss đã xuất hiện</h3>
         <p>Yêu vật có tu vi bằng đạo hữu. Hãy vào Ngao du và lần lượt chọn các map đã mở khóa để tìm kiếm.</p>
       </article>
     `;

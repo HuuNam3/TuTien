@@ -21,16 +21,20 @@
       "unlockRequiredTier": 21,
       "respawnMs": 3600000,
       "reward": {
-        "equipmentChestMin": 2,
-        "equipmentChestMax": 20,
-        "enhancementStonesMin": 2,
-        "enhancementStonesMax": 20,
-        "healthPotionsMin": 2,
-        "healthPotionsMax": 20,
-        "manaPotionsMin": 2,
-        "manaPotionsMax": 20,
-        "skillChestMin": 1,
-        "skillChestMax": 10
+        "equipmentChestMin": 5,
+        "equipmentChestMax": 10,
+        "enhancementStonesMin": 5,
+        "enhancementStonesMax": 10,
+        "healthPotionsMin": 5,
+        "healthPotionsMax": 10,
+        "manaPotionsMin": 5,
+        "manaPotionsMax": 10,
+        "skillChestMin": 3,
+        "skillChestMax": 6,
+        "talentTreasureChestMin": 1,
+        "talentTreasureChestMax": 1,
+        "minorAscensionPillMin": 1,
+        "minorAscensionPillMax": 1
       }
     },
     "trainingDummy": {
