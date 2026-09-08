@@ -11,6 +11,8 @@ const {
 
 const userCollectionName = process.env.MONGODB_USER_COLLECTION || 'user_accounts';
 const gameStateCollectionName = process.env.MONGODB_COLLECTION || 'gameStates';
+const npcTickIntervalMs = 5 * 60 * 1000;
+const maxDailyCatchUpTicks = 24 * 60 / 5;
 
 function sendJson(response, status, payload) {
   if (typeof response.status === 'function') return response.status(status).json(payload);
@@ -79,9 +81,19 @@ async function createNpc(db, payload) {
   return { account: { _id: result.insertedId, username, npcProfile: profile }, state };
 }
 
-async function tickOneNpc(db, account) {
+function getCatchUpWindow(state, now) {
+  const lastTickAt = Number(new Date(state?.npc?.lastTickAt || state?.lastActiveAt || now).getTime());
+  const elapsedMs = Number.isFinite(lastTickAt) ? Math.max(0, now.getTime() - lastTickAt) : npcTickIntervalMs;
+  const simulatedMs = Math.min(Math.max(npcTickIntervalMs, elapsedMs), maxDailyCatchUpTicks * npcTickIntervalMs);
+  return {
+    startAt: now.getTime() - simulatedMs,
+    ticks: Math.max(1, Math.ceil(simulatedMs / npcTickIntervalMs)),
+  };
+}
+
+async function tickOneNpc(db, account, options = {}) {
   const now = new Date();
-  const lockUntil = new Date(now.getTime() + 30000);
+  const lockUntil = new Date(now.getTime() + (options.catchUp ? 120000 : 30000));
   const claimed = await db.collection(userCollectionName).findOneAndUpdate(
     {
       _id: account._id,
@@ -97,7 +109,20 @@ async function tickOneNpc(db, account) {
   try {
     const document = await db.collection(gameStateCollectionName).findOne({ userId: account._id.toString() });
     const state = document?.state || createNpcState(lockedAccount.npcProfile || {});
-    const result = tickNpcState(state, lockedAccount.npcProfile || {});
+    let result;
+    let catchUpTicks = 1;
+    if (options.catchUp) {
+      const window = getCatchUpWindow(state, now);
+      catchUpTicks = window.ticks;
+      state.npc = state.npc || {};
+      state.npc.lastTickAt = window.startAt;
+      for (let index = 0; index < window.ticks; index += 1) {
+        const virtualNow = Math.min(now.getTime(), window.startAt + ((index + 1) * npcTickIntervalMs));
+        result = tickNpcState(state, lockedAccount.npcProfile || {}, virtualNow);
+      }
+    } else {
+      result = tickNpcState(state, lockedAccount.npcProfile || {}, now.getTime());
+    }
     await db.collection(gameStateCollectionName).updateOne(
       { userId: claimed._id.toString() },
       { $set: { state: result.state, updatedAt: now, saveVersion: Math.max(0, Number(document?.saveVersion) || 0) + 1, activeSessionId: null } },
@@ -107,7 +132,12 @@ async function tickOneNpc(db, account) {
       { _id: claimed._id },
       { $set: { updatedAt: now, npcLastTickAt: now }, $unset: { npcLockUntil: '' } },
     );
-    return { skipped: false, npc: summarizeNpc(lockedAccount, result.state), action: result.action };
+    return {
+      skipped: false,
+      npc: summarizeNpc(lockedAccount, result.state),
+      action: result.action,
+      catchUpTicks,
+    };
   } catch (error) {
     await db.collection(userCollectionName).updateOne({ _id: lockedAccount._id }, { $unset: { npcLockUntil: '' } });
     throw error;
@@ -140,14 +170,17 @@ module.exports = async function npcHandler(request, response) {
       return sendJson(response, 201, { ok: true, npc: summarizeNpc(created.account, created.state) });
     }
     if (['GET', 'POST'].includes(request.method) && action === 'tick') {
-      const limit = Math.min(50, Math.max(1, Number(url.searchParams.get('limit') || 10)));
+      const cronSchedule = request.headers?.['x-vercel-cron-schedule'] || request.headers?.['X-Vercel-Cron-Schedule'];
+      const isCatchUp = url.searchParams.get('mode') === 'daily' || Boolean(cronSchedule);
+      const defaultLimit = isCatchUp ? 50 : 10;
+      const limit = Math.min(50, Math.max(1, Number(url.searchParams.get('limit') || defaultLimit)));
       const accounts = await db.collection(userCollectionName).find(
         { isNpc: true, 'npcProfile.enabled': { $ne: false } },
         { projection: { username: 1, npcProfile: 1 }, limit },
       ).toArray();
       const results = [];
-      for (const account of accounts) results.push(await tickOneNpc(db, account));
-      return sendJson(response, 200, { ok: true, processed: results.length, results });
+      for (const account of accounts) results.push(await tickOneNpc(db, account, { catchUp: isCatchUp }));
+      return sendJson(response, 200, { ok: true, processed: results.length, catchUp: isCatchUp, results });
     }
     if (request.method === 'GET' && action === 'list') {
       const accounts = await db.collection(userCollectionName).find(

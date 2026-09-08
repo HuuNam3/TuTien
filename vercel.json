@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
   "crons": [
-    { "path": "/api/npc?action=tick", "schedule": "*/5 * * * *" }
+    { "path": "/api/npc?action=tick", "schedule": "0 0 * * *" }
   ],
   "rewrites": [
     { "source": "/", "destination": "/web-demo/index.html" },

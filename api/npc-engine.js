@@ -8,14 +8,17 @@ const schools = require('../assets/Resources/Data/Shared/CultivationSchools.json
 const skills = require('../assets/Resources/Data/Shared/CultivationSkills.json');
 const equipment = require('../assets/Resources/Data/Shared/equipment.json');
 const shop = require('../assets/Resources/Data/Tabs/Shop/ShopItems.json');
-const petData = require('../assets/Resources/Data/Tabs/Pets/PetData.json');
+const wanderData = require('../assets/Resources/Data/Tabs/Wander/WanderMaps.json');
 
 const maxMinorLevel = Math.max(1, Number(gameConfig.gameplay?.playerMaxMinorLevel) || 10);
+const npcDailyHangSeconds = 8 * 60 * 60;
 const realms = Array.isArray(progression.realms) ? progression.realms : [];
 const schoolList = Array.isArray(schools.schools) ? schools.schools : [];
 const skillList = Array.isArray(skills.skills) ? skills.skills : [];
 const equipmentSlots = Array.isArray(equipment.slots) ? equipment.slots : [];
 const baseShopItems = Array.isArray(shop.shopItems) ? shop.shopItems : [];
+const wanderMaps = Array.isArray(wanderData.maps) ? wanderData.maps : [];
+const wanderBossRequiredWins = Math.max(1, int(gameConfig.gameplay?.wanderBossRequiredWins, 30));
 const npcPersonalities = new Set(['balanced', 'aggressive', 'cautious', 'collector']);
 
 function clamp(value, min, max) {
@@ -129,6 +132,7 @@ function createNpcState(profile = {}) {
   const skillId = starterSkill?.id || initialState.skillId || '';
   const initialHp = 100;
   const initialMana = 20;
+  const firstWanderMapId = wanderMaps[0]?.id || initialState.wanderMapId || 'novice';
   return {
     playerName: String(profile.name || initial.name || 'NPC Tu sĩ').slice(0, 40),
     hasSetPlayerName: true,
@@ -166,12 +170,8 @@ function createNpcState(profile = {}) {
     equippedItems: Object.fromEntries(equipmentSlots.map((slot) => [slot.id, null])),
     talentTreasureInventory: [],
     shopInventoryCounts: {},
-    ownedPetIds: [],
-    selectedPetId: '',
-    petStates: {},
-    petFragments: {},
     currentDungeonId: initialState.dungeonId || 'main',
-    currentWanderMapId: initialState.wanderMapId || 'novice',
+    currentWanderMapId: firstWanderMapId,
     currentStageId: 1,
     completedStages: [],
     wanderWinCount: 0,
@@ -193,6 +193,14 @@ function createNpcState(profile = {}) {
       actionCount: 0,
       lastAction: 'Khởi tạo tài khoản NPC',
       lastActionAt: Date.now(),
+      activityDate: getToday(),
+      wanderSecondsToday: 0,
+      wanderMapId: firstWanderMapId,
+      wanderMapIndex: 0,
+      wanderWinsByMap: { [firstWanderMapId]: 0 },
+      wanderBossDefeatedByMap: {},
+      wanderBossAttemptsByMap: {},
+      mode: 'maintenance',
     },
   };
 }
@@ -202,8 +210,7 @@ function getNpcPower(state) {
   const equipmentPower = Object.values(state.equippedItems || {}).reduce((total, item) => (
     total + int(item?.level) * (1 + int(item?.enhancementLevel)) * 10
   ), 0);
-  const petPower = Object.values(state.petStates || {}).reduce((total, pet) => total + int(pet?.stars) * 50, 0);
-  return Math.max(1, tier * 100 + int(state.playerFoundation) * 20 + int(state.playerComprehension) * 8 + equipmentPower + petPower);
+  return Math.max(1, tier * 100 + int(state.playerFoundation) * 20 + int(state.playerComprehension) * 8 + equipmentPower);
 }
 
 function buyNpcItem(state, id, amount = 1) {
@@ -274,20 +281,128 @@ function recoverNpc(state, elapsedSeconds) {
   }
 }
 
-function runNpcWander(state, personality) {
+function ensureNpcWanderProgress(state) {
+  const firstMap = wanderMaps[0] || { id: 'novice', name: 'Thôn Tân thủ', tierRange: [1, 5] };
+  state.npc = state.npc || {};
+  state.npc.wanderWinsByMap = state.npc.wanderWinsByMap || {};
+  state.npc.wanderBossDefeatedByMap = state.npc.wanderBossDefeatedByMap || {};
+  state.npc.wanderBossAttemptsByMap = state.npc.wanderBossAttemptsByMap || {};
+
+  const requestedMapId = state.npc.wanderMapId || state.currentWanderMapId || firstMap.id;
+  const requestedIndex = wanderMaps.findIndex((map) => map.id === requestedMapId);
+  const mapIndex = clamp(
+    int(state.npc.wanderMapIndex, requestedIndex >= 0 ? requestedIndex : 0),
+    0,
+    Math.max(0, wanderMaps.length - 1),
+  );
+  const currentMap = wanderMaps[mapIndex] || firstMap;
+
+  state.npc.wanderMapIndex = mapIndex;
+  state.npc.wanderMapId = currentMap.id;
+  state.currentWanderMapId = currentMap.id;
+  if (!Number.isFinite(Number(state.npc.wanderWinsByMap[currentMap.id]))) {
+    state.npc.wanderWinsByMap[currentMap.id] = Math.max(0, int(state.wanderWinCount));
+  }
+  state.wanderDefeatedByMap = state.npc.wanderWinsByMap;
+  state.wanderBossDefeatedByMap = state.npc.wanderBossDefeatedByMap;
+  return currentMap;
+}
+
+function getNpcMapTierRange(map) {
+  const rawRange = Array.isArray(map?.tierRange) ? map.tierRange : [1, 5];
+  const minTier = Math.max(1, int(rawRange[0], 1));
+  const maxTier = Math.max(minTier, int(rawRange[1], minTier));
+  return [minTier, maxTier];
+}
+
+function getNpcMapWinCount(state, mapId) {
+  return Math.max(0, int(state.npc?.wanderWinsByMap?.[mapId]));
+}
+
+function getNpcCombatChance(state, enemyPower, personality, isBoss = false) {
+  const personalityBonus = personality === 'aggressive' ? 0.08 : personality === 'cautious' ? -0.03 : 0;
+  const powerRatio = getNpcPower(state) / Math.max(1, enemyPower);
+  const baseChance = isBoss ? 0.36 : 0.58;
+  return clamp(baseChance + (powerRatio - 1) * (isBoss ? 0.32 : 0.24) + personalityBonus, 0.12, 0.94);
+}
+
+function rewardNpcWanderVictory(state, map, personality, mapWinCount) {
   const multiplier = personality === 'aggressive' ? 1.25 : personality === 'cautious' ? 0.85 : 1;
-  const won = Math.random() < (personality === 'cautious' ? 0.78 : 0.68);
-  state.wanderWinCount = int(state.wanderWinCount) + (won ? 1 : 0);
+  const rewardSettings = map.rewardSettings || {};
+  const cultivationMultiplier = Math.max(0.5, Number(rewardSettings.cultivationMultiplier) || 1);
+  advanceCultivation(state, Math.max(10, Math.round((25 + getTier(state) * 8) * multiplier * cultivationMultiplier)));
+  state.playerSpiritStones += Math.max(5, Math.round((10 + getTier(state) * 2) * cultivationMultiplier));
+  state.wanderRewardCount = int(state.wanderRewardCount) + 1;
+
+  if (mapWinCount % 3 === 0) {
+    grantChest(state, clamp(int(map.equipmentChestTier, Math.ceil(getTier(state) / 10)), 1, 10));
+  }
+  if (mapWinCount % 5 === 0) state.healthPotionCount += 1;
+}
+
+function advanceNpcWanderMap(state, map) {
+  const currentIndex = clamp(int(state.npc.wanderMapIndex), 0, Math.max(0, wanderMaps.length - 1));
+  const nextMap = wanderMaps[currentIndex + 1];
+  if (!nextMap) return '';
+  state.npc.wanderMapIndex = currentIndex + 1;
+  state.npc.wanderMapId = nextMap.id;
+  state.npc.wanderWinsByMap[nextMap.id] = getNpcMapWinCount(state, nextMap.id);
+  state.currentWanderMapId = nextMap.id;
+  return nextMap;
+}
+
+function runNpcWanderBoss(state, map, personality) {
+  const [, maxTier] = getNpcMapTierRange(map);
+  const bossPower = Math.max(80, maxTier * 105);
+  state.npc.wanderBossAttemptsByMap[map.id] = int(state.npc.wanderBossAttemptsByMap[map.id]) + 1;
+  const won = Math.random() < getNpcCombatChance(state, bossPower, personality, true);
+
+  if (!won) {
+    state.npc.wanderWinsByMap[map.id] = 0;
+    state.wanderWinCount = 0;
+    state.playerCurrentHp = Math.max(1, Math.floor((int(state.playerCurrentHp) || 100) * 0.35));
+    return `Thua Boss ${map.name}; làm lại 0/${wanderBossRequiredWins} trận quái`;
+  }
+
+  state.npc.wanderBossDefeatedByMap[map.id] = true;
+  state.npc.wanderWinsByMap[map.id] = 0;
+  state.wanderWinCount = 0;
+  state.wanderRewardCount = int(state.wanderRewardCount) + 1;
+  grantChest(state, clamp(int(map.equipmentChestTier, Math.ceil(maxTier / 10)), 1, 10), 2);
+  const nextMap = advanceNpcWanderMap(state, map);
+  if (nextMap) return `Hạ Boss ${map.name}; chuyển sang ${nextMap.name}`;
+  return `Hạ Boss ${map.name}; đã chinh phục toàn bộ map Ngao du`;
+}
+
+function runNpcWander(state, personality) {
+  const map = ensureNpcWanderProgress(state);
+  const mapWinCount = getNpcMapWinCount(state, map.id);
+  const bossDefeated = Boolean(state.npc.wanderBossDefeatedByMap[map.id]);
+  if (!bossDefeated && mapWinCount >= wanderBossRequiredWins) {
+    return runNpcWanderBoss(state, map, personality);
+  }
+
+  const [minTier, maxTier] = getNpcMapTierRange(map);
+  const currentTier = clamp(getTier(state), minTier, maxTier);
+  const enemyTier = clamp(currentTier + Math.floor(Math.random() * 3) - 1, minTier, maxTier);
+  const enemyPower = Math.max(40, enemyTier * 72);
+  const encounterChance = Number(gameConfig.gameplay?.wanderEnemyChance) || 0.4;
+  if (Math.random() >= encounterChance) return `Ngao du ${map.name}, tìm thấy cơ duyên`;
+
+  const won = Math.random() < getNpcCombatChance(state, enemyPower, personality);
   if (!won) {
     state.playerCurrentHp = Math.max(1, Math.floor((int(state.playerCurrentHp) || 100) * 0.55));
-    return 'Ngao du thất bại và lui về hồi phục';
+    return `Ngao du ${map.name}, đánh quái thất bại và lui về hồi phục`;
   }
-  advanceCultivation(state, Math.max(10, Math.round((25 + getTier(state) * 8) * multiplier)));
-  state.playerSpiritStones += Math.max(5, Math.round(10 + getTier(state) * 2));
-  state.wanderRewardCount = int(state.wanderRewardCount) + 1;
-  if (state.wanderWinCount % 3 === 0) grantChest(state, clamp(Math.ceil(getTier(state) / 10), 1, 10));
-  if (state.wanderWinCount % 5 === 0) state.healthPotionCount += 1;
-  return 'Ngao du, chiến thắng và nhận phần thưởng';
+
+  const nextWinCount = mapWinCount + 1;
+  state.npc.wanderWinsByMap[map.id] = nextWinCount;
+  state.wanderWinCount = nextWinCount;
+  rewardNpcWanderVictory(state, map, personality, nextWinCount);
+  if (nextWinCount >= wanderBossRequiredWins) {
+    return `Ngao du ${map.name}, thắng quái ${wanderBossRequiredWins}/${wanderBossRequiredWins}; sẵn sàng đánh Boss`;
+  }
+  return `Ngao du ${map.name}, thắng quái ${nextWinCount}/${wanderBossRequiredWins}`;
 }
 
 function runNpcResources(state) {
@@ -346,28 +461,6 @@ function trainNpcSkill(state) {
   return `Tu luyện ${skill?.name || 'skill'}`;
 }
 
-function trainNpcPet(state) {
-  const owned = state.ownedPetIds || [];
-  if (!owned.length) {
-    const pet = petData.pets?.[int(state.npc?.actionCount) % Math.max(1, petData.pets.length)];
-    if (!pet || int(state.playerSpiritStones) < 1000) return false;
-    state.playerSpiritStones -= 1000;
-    state.ownedPetIds = [pet.id];
-    state.selectedPetId = pet.id;
-    state.petStates[pet.id] = { stars: 0, intimacy: 0, quality: pet.rarity };
-    return `Chiêu mộ ${pet.name}`;
-  }
-  const petId = state.selectedPetId || owned[0];
-  const pet = state.petStates[petId] || (state.petStates[petId] = { stars: 0, intimacy: 0 });
-  pet.intimacy = int(pet.intimacy) + int(petData.feed?.pointsPerMeal, 10);
-  if (pet.intimacy >= int(petData.feed?.pointsPerStar, 100) && int(pet.stars) < int(petData.maxStars, 10)) {
-    pet.intimacy -= int(petData.feed?.pointsPerStar, 100);
-    pet.stars += 1;
-    return `Nuôi dưỡng linh thú lên ${pet.stars} sao`;
-  }
-  return 'Cho linh thú ăn và tăng thân mật';
-}
-
 function improveNpcEquipment(state) {
   const tier = clamp(Math.ceil(getTier(state) / 10), 1, 10);
   const chest = state.equipmentChestInventory.find((item) => int(item.tier) <= tier && int(item.count) > 0);
@@ -409,8 +502,20 @@ function tickNpcState(state, profile = {}, now = Date.now()) {
   const personality = npcPersonalities.has(profile.personality) ? profile.personality : 'balanced';
   ensureDailyState(state);
   state.npc = state.npc || { version: 1, actionCount: 0 };
+  const today = getToday();
+  if (state.npc.activityDate !== today) {
+    state.npc.activityDate = today;
+    state.npc.wanderSecondsToday = 0;
+    state.npc.lastTickAt = now;
+  }
   const lastTick = int(state.npc.lastTickAt, int(state.lastActiveAt, now));
   const elapsedSeconds = clamp(Math.floor((now - lastTick) / 1000), 1, 3600);
+  const previousWanderSeconds = Math.max(0, int(state.npc.wanderSecondsToday, int(state.npc.activeSecondsToday)));
+  if (state.npc.mode === 'wandering') {
+    state.npc.wanderSecondsToday = Math.min(npcDailyHangSeconds, previousWanderSeconds + elapsedSeconds);
+  } else if (!Number.isFinite(Number(state.npc.wanderSecondsToday))) {
+    state.npc.wanderSecondsToday = previousWanderSeconds;
+  }
   state.npc.lastTickAt = now;
   state.lastActiveAt = now;
   state.dantianCultivationSeconds = int(state.dantianCultivationSeconds) + elapsedSeconds;
@@ -419,23 +524,28 @@ function tickNpcState(state, profile = {}, now = Date.now()) {
 
   let action = prepareNpcBreakthrough(state);
   if (!action) {
-    const actionIndex = int(state.npc.actionCount) % 8;
+    const actionIndex = int(state.npc.actionCount) % 6;
     const actions = [
       () => runNpcWander(state, personality),
       () => runNpcResources(state),
       () => runNpcTower(state),
       () => runNpcPlayerBattle(state),
       () => trainNpcSkill(state),
-      () => trainNpcPet(state),
       () => improveNpcEquipment(state),
-      () => runNpcWander(state, personality),
     ];
-    action = actions[actionIndex]();
+    const wanderSeconds = Math.max(0, int(state.npc.wanderSecondsToday, int(state.npc.activeSecondsToday)));
+    if (wanderSeconds >= npcDailyHangSeconds) {
+      const maintenanceActions = actions.slice(1);
+      action = maintenanceActions[int(state.npc.actionCount) % maintenanceActions.length]();
+    } else {
+      action = actions[actionIndex]();
+    }
   }
   action = action || 'Tu luyện và hồi phục';
   state.npc.actionCount = int(state.npc.actionCount) + 1;
   state.npc.lastAction = action;
   state.npc.lastActionAt = now;
+  state.npc.mode = /^Ngao du/i.test(action) ? 'wandering' : 'maintenance';
   state.npc.nextActionAt = now + (personality === 'aggressive' ? 30000 : 60000);
   return { state, action, elapsedSeconds, power: getNpcPower(state) };
 }
@@ -454,6 +564,8 @@ function createNpcUsername(name) {
 
 function summarizeNpc(account, state) {
   const npc = state?.npc || {};
+  const currentMap = ensureNpcWanderProgress(state || {});
+  const currentMapWins = getNpcMapWinCount(state || {}, currentMap.id);
   return {
     id: account?._id?.toString?.() || String(account?.id || ''),
     username: account?.username || '',
@@ -467,6 +579,12 @@ function summarizeNpc(account, state) {
     spiritStones: int(state?.playerSpiritStones),
     lastAction: npc.lastAction || '',
     lastActionAt: npc.lastActionAt || null,
+    currentWanderMapId: currentMap.id,
+    currentWanderMapName: currentMap.name || currentMap.id,
+    wanderMapWins: currentMapWins,
+    wanderBossReady: currentMapWins >= wanderBossRequiredWins && !Boolean(npc.wanderBossDefeatedByMap?.[currentMap.id]),
+    wanderHoursToday: Math.min(8, Math.round((Math.max(0, int(npc.wanderSecondsToday, int(npc.activeSecondsToday))) / 3600) * 100) / 100),
+    hangHoursRemaining: Math.max(0, Math.round(((npcDailyHangSeconds - Math.max(0, int(npc.wanderSecondsToday, int(npc.activeSecondsToday))) ) / 3600) * 100) / 100),
     enabled: account?.npcProfile?.enabled !== false,
   };
 }
