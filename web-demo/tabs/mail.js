@@ -14,46 +14,12 @@ function formatMailDate(value) {
   return Number.isNaN(date.getTime()) ? 'Thời gian không xác định' : date.toLocaleString('vi-VN');
 }
 
-function setMailFormMessage(message = '', variant = '') {
-  if (!mailFormMessage) return;
-  mailFormMessage.textContent = message;
-  mailFormMessage.className = `mail-form-message${variant ? ` mail-form-message-${variant}` : ''}`;
-}
-
-function renderMailAdminControls() {
-  mailInboxPanel?.classList.toggle('is-hidden', mailIsAdmin);
-  mailComposerPanel?.classList.toggle('is-hidden', !mailIsAdmin);
-  codeRedeemPanel?.classList.toggle('is-hidden', mailIsAdmin);
-  mailUnreadSummary?.classList.toggle('is-hidden', mailIsAdmin);
-  if (mailSummary) mailSummary.textContent = mailIsAdmin ? 'Gửi thư hệ thống' : 'Hộp thư hệ thống';
-}
-
 function renderMailHeader() {
   if (mailUnreadSummary) mailUnreadSummary.textContent = `${mailUnreadCount} thư chưa đọc`;
   if (mailSummary && (!mailSummary.textContent || mailSummary.textContent === 'Đang tải thư...')) {
     mailSummary.textContent = 'Hộp thư hệ thống';
   }
   setNotificationBadge(mailBadge, mailUnreadCount);
-}
-
-function renderMailAttachmentRows() {
-  if (!mailAttachmentRowsContainer) return;
-  const options = mailCatalog.length
-    ? `<option value="">Chọn vật phẩm</option>${mailCatalog.map((item) => `<option value="${escapeMailHtml(item.itemId)}">${escapeMailHtml(item.name)}</option>`).join('')}`
-    : '<option value="">Đang tải danh sách vật phẩm...</option>';
-  mailAttachmentRowsContainer.innerHTML = mailAttachmentRows.map((row, index) => `
-    <div class="mail-attachment-row">
-      <label class="sr-only" for="mailAttachmentItem${index}">Vật phẩm đính kèm ${index + 1}</label>
-      <select id="mailAttachmentItem${index}" data-mail-attachment-item data-mail-attachment-index="${index}">${options}</select>
-      <label class="sr-only" for="mailAttachmentQuantity${index}">Số lượng</label>
-      <input id="mailAttachmentQuantity${index}" data-mail-attachment-quantity data-mail-attachment-index="${index}" type="number" min="1" max="1000000" step="1" value="${Math.max(1, Number(row.quantity) || 1)}" aria-label="Số lượng vật phẩm">
-      <button type="button" class="secondary compact" data-mail-remove-attachment="${index}" aria-label="Xóa vật phẩm đính kèm">Xóa</button>
-    </div>
-  `).join('');
-  mailAttachmentRows.forEach((row, index) => {
-    const select = document.querySelector(`#mailAttachmentItem${index}`);
-    if (select) select.value = row.itemId || '';
-  });
 }
 
 function getMailAttachmentLabel(attachment) {
@@ -63,10 +29,6 @@ function getMailAttachmentLabel(attachment) {
 
 function renderMailList() {
   if (!mailList) return;
-  if (mailIsAdmin) {
-    mailLoadMoreButton?.classList.add('is-hidden');
-    return;
-  }
   if (!mailMessages.length) {
     mailList.innerHTML = `
       <div class="mail-empty">
@@ -180,129 +142,13 @@ async function refreshGameStateAfterMailClaim() {
   return true;
 }
 
-async function loadMailCatalog() {
-  if (!mailIsAdmin || mailCatalog.length) return;
-  try {
-    const response = await fetch(`${mailEndpoint}?mode=catalog`, { cache: 'no-store' });
-    const payload = await response.json().catch(() => ({}));
-    if (handleCloudResponseFailure(response, payload) || !response.ok) return;
-    mailCatalog = Array.isArray(payload.items) ? payload.items : [];
-    renderMailAttachmentRows();
-  } catch (error) {
-    setMailFormMessage('Không thể tải danh sách vật phẩm.', 'error');
-  }
-}
-
-async function checkMailAccess() {
-  if (!cloudUser || cloudSyncUnavailable) return false;
-  if (mailAccessChecked) return true;
-  if (mailAccessCheckPromise) return mailAccessCheckPromise;
-  mailAccessCheckPromise = (async () => {
-    try {
-      const response = await fetch(`${mailEndpoint}?mode=access`, { cache: 'no-store' });
-      const payload = await response.json().catch(() => ({}));
-      if (handleCloudResponseFailure(response, payload) || !response.ok) return false;
-      mailIsAdmin = Boolean(payload.isAdmin);
-      mailAccessChecked = true;
-      renderMailAdminControls();
-      renderMailHeader();
-      return true;
-    } catch (error) {
-      return false;
-    } finally {
-      mailAccessCheckPromise = null;
-    }
-  })();
-  return mailAccessCheckPromise;
-}
-
 async function loadMailView() {
-  if (!await checkMailAccess()) {
-    if (mailSummary) mailSummary.textContent = 'Dịch vụ thư tạm thời không khả dụng.';
-    return;
-  }
   renderMail();
-  if (mailIsAdmin) {
-    await loadMailCatalog();
-    renderMailAttachmentRows();
-    mailTitleInput?.focus();
-    return;
-  }
   await loadMailList(true);
 }
 
-function scheduleMailRecipientSearch() {
-  window.clearTimeout(mailRecipientSearchTimer);
-  mailRecipientSearchTimer = window.setTimeout(searchMailRecipients, 250);
-}
-
-async function searchMailRecipients() {
-  if (!mailIsAdmin) return;
-  const query = String(mailRecipientInput?.value || '').trim();
-  if (query.length < 2) {
-    if (mailRecipientOptions) mailRecipientOptions.replaceChildren();
-    if (mailRecipientHint) mailRecipientHint.textContent = 'Có thể nhập username hoặc ID tài khoản.';
-    return;
-  }
-  try {
-    const response = await fetch(`${mailEndpoint}?mode=accounts&q=${encodeURIComponent(query)}`, { cache: 'no-store' });
-    const payload = await response.json().catch(() => ({}));
-    if (handleCloudResponseFailure(response, payload) || !response.ok) return;
-    mailRecipientOptions?.replaceChildren(...(payload.accounts || []).map((account) => {
-      const option = document.createElement('option');
-      option.value = account.username;
-      option.label = `${account.username} (${account.id})`;
-      return option;
-    }));
-    if (mailRecipientHint) mailRecipientHint.textContent = `${payload.accounts?.length || 0} tài khoản phù hợp.`;
-  } catch (error) {
-    if (mailRecipientHint) mailRecipientHint.textContent = 'Không thể tìm tài khoản lúc này.';
-  }
-}
-
-async function sendMailFromAdmin(event) {
-  event.preventDefault();
-  if (!mailIsAdmin || authSubmitting) return;
-  await loadMailCatalog();
-  const attachments = mailAttachmentRows
-    .filter((row) => row.itemId)
-    .map((row) => ({ type: 'item', itemId: row.itemId, quantity: Math.max(1, Math.floor(Number(row.quantity) || 1)) }));
-  const currency = Math.max(0, Math.floor(Number(mailCurrencyInput?.value) || 0));
-  if (currency > 0) attachments.push({ type: 'currency', currency: 'spiritStones', amount: currency });
-  setMailFormMessage('Đang gửi thư...');
-  setButtonDisabledState(mailSendButton, true, 'Đang gửi thư...');
-  try {
-    const response = await fetch(mailEndpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'send',
-        recipient: mailRecipientInput?.value || '',
-        title: mailTitleInput?.value || '',
-        content: mailContentInput?.value || '',
-        attachments,
-      }),
-    });
-    const payload = await response.json().catch(() => ({}));
-    if (handleCloudResponseFailure(response, payload)) return;
-    if (!response.ok) {
-      setMailFormMessage(payload.error || 'Không thể gửi thư.', 'error');
-      return;
-    }
-    mailForm?.reset();
-    mailCurrencyInput.value = '0';
-    mailAttachmentRows = [{ itemId: '', quantity: 1 }];
-    renderMailAttachmentRows();
-    showGameToast('Đã gửi thư thành công.', 'success');
-  } catch (error) {
-    setMailFormMessage('Dịch vụ thư tạm thời không khả dụng.', 'error');
-  } finally {
-    setButtonDisabledState(mailSendButton, false);
-  }
-}
-
 async function loadMailList(reset = true) {
-  if (!cloudUser || mailIsAdmin) return;
+  if (!cloudUser) return;
   const query = reset ? '?mode=list&limit=30' : `?mode=list&limit=30&before=${encodeURIComponent(mailNextBefore || '')}`;
   if (!reset && !mailNextBefore) return;
   if (mailSummary) mailSummary.textContent = 'Đang tải thư...';
@@ -314,14 +160,12 @@ async function loadMailList(reset = true) {
       if (mailSummary) mailSummary.textContent = payload.error || 'Không thể tải hộp thư.';
       return;
     }
-    mailIsAdmin = Boolean(payload.isAdmin);
     mailUnreadCount = Math.max(0, Number(payload.unreadCount) || 0);
     const messages = Array.isArray(payload.messages) ? payload.messages : [];
     mailMessages = reset ? messages : [...mailMessages, ...messages];
     mailNextBefore = payload.nextBefore || null;
     const latest = Date.parse(payload.latestCreatedAt || '');
     if (Number.isFinite(latest)) mailLastCheckedAt = Math.max(mailLastCheckedAt, latest);
-    renderMailAdminControls();
     renderMailList();
   } catch (error) {
     if (mailSummary) mailSummary.textContent = 'Dịch vụ thư tạm thời không khả dụng.';
@@ -333,25 +177,18 @@ async function loadOlderMail() {
 }
 
 async function pollMail() {
-  if (!cloudUser || cloudSyncUnavailable || mailPollingInFlight || mailIsAdmin) return;
+  if (!cloudUser || cloudSyncUnavailable || mailPollingInFlight) return;
   mailPollingInFlight = true;
   try {
     const response = await fetch(`${mailEndpoint}?mode=poll&since=${encodeURIComponent(mailLastCheckedAt || 0)}`, { cache: 'no-store' });
     const payload = await response.json().catch(() => ({}));
     if (handleCloudResponseFailure(response, payload) || !response.ok) return;
-    mailIsAdmin = Boolean(payload.isAdmin);
-    if (mailIsAdmin) {
-      window.clearInterval(mailPollingTimer);
-      mailPollingTimer = 0;
-      mailAccessChecked = true;
-    }
     mailUnreadCount = Math.max(0, Number(payload.unreadCount) || 0);
     mailNewCount = Math.max(0, Number(payload.newCount) || 0);
     const latest = Date.parse(payload.latestCreatedAt || '');
     if (Number.isFinite(latest)) mailLastCheckedAt = Math.max(mailLastCheckedAt, latest);
-    renderMailAdminControls();
     renderMailHeader();
-    if (!mailIsAdmin && mailNewCount > 0 && !mailPanel?.classList.contains('is-hidden')) await loadMailList(true);
+    if (mailNewCount > 0 && !mailPanel?.classList.contains('is-hidden')) await loadMailList(true);
   } catch (error) {
     console.warn('Cannot poll system mail.', error);
   } finally {
@@ -363,18 +200,13 @@ function startMailPolling() {
   window.clearInterval(mailPollingTimer);
   mailPollingTimer = 0;
   if (!cloudUser || cloudSyncUnavailable || !gameStarted) return;
-  checkMailAccess().then(() => {
-    if (!cloudUser || cloudSyncUnavailable || !gameStarted || mailIsAdmin) return;
-    pollMail();
-    mailPollingTimer = window.setInterval(pollMail, 5000);
-  });
+  pollMail();
+  mailPollingTimer = window.setInterval(pollMail, 5000);
 }
 
 function renderMail() {
-  renderMailAdminControls();
   renderMailHeader();
   renderMailList();
-  if (mailIsAdmin) renderMailAttachmentRows();
 }
 
 function renderCodePanel() {
@@ -389,40 +221,6 @@ function getRedeemCodeConfig(code) {
 }
 
 function getRedeemRewardToastItems(code, grant = {}) {
-  if (code === 'devgame') {
-    const items = [
-      { iconClass: 'item-icon icon-item-spirit-stone', label: `Linh thạch +${formatGameNumber(grant.spiritStones)}` },
-      { iconClass: 'stat-icon icon-stat-gem', label: `Căn cơ +${formatGameNumber(grant.foundation)}` },
-      { iconClass: 'unique-icon icon-unique-comprehension', label: `Ngộ tính +${formatGameNumber(grant.comprehension)}` },
-      { iconClass: 'activity-icon icon-activity-gate', label: `Phá Cảnh Đan x${formatGameNumber(grant.ascensionPermits)}` },
-    ];
-    Object.entries(grant).forEach(([key, amount]) => {
-      const equipmentMatch = key.match(/^equipmentChestTier(\d+)$/);
-      if (equipmentMatch) {
-        items.push({
-          iconClass: 'activity-icon icon-activity-chest',
-          label: `Rương trang bị cấp ${equipmentMatch[1]} x${formatGameNumber(amount)}`,
-        });
-        return;
-      }
-      const shopChest = shopItems.find((item) => item.id === key && [
-        'skillChest', 'petChest', 'talentTreasureChest', 'majorAscensionTreasureChest',
-      ].includes(item.type));
-      if (shopChest && Number(amount) > 0) {
-        items.push({
-          iconClass: 'activity-icon icon-activity-chest',
-          label: `${shopChest.name} x${formatGameNumber(amount)}`,
-        });
-      }
-    });
-    items.push(
-      { iconClass: 'item-icon icon-item-enhancement-stone', label: `Đá cường hóa x${formatGameNumber(grant.enhancementStones)}` },
-      { iconClass: 'item-icon icon-item-health-pill', label: `Sinh Huyết Đan x${formatGameNumber(grant.healthPotions)}` },
-      { iconClass: 'item-icon icon-item-mana-flame', label: `Tụ Linh Đan x${formatGameNumber(grant.manaPotions)}` },
-      { iconClass: 'activity-icon icon-activity-path', label: 'Đã mở tất cả map Ngao du' },
-    );
-    return items;
-  }
   if (code === 'newbie') {
     const minorPill = shopItems.find((item) => item.id === 'minorAscensionPill1');
     return [
@@ -511,7 +309,6 @@ function redeemCode() {
     });
   }
 
-  if (code === 'devgame') devMode = true;
   redeemedCodes[code] = true;
   syncPlayerResourceCaps();
   updateNotificationBadges();
@@ -524,7 +321,7 @@ function redeemCode() {
   saveGame();
   if (codeInput) codeInput.value = '';
   showGameToast(
-    code === 'devgame' ? 'Đã nhận quà Dev:' : code === 'newbie' ? 'Đã nhận quà tân thủ:' : 'Đã nhận quà từ mã redeem:',
+    code === 'newbie' ? 'Đã nhận quà tân thủ:' : 'Đã nhận quà từ mã redeem:',
     'success',
     getRedeemRewardToastItems(code, grant),
   );

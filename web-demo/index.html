@@ -228,36 +228,6 @@
         <div class="mail-list" id="mailList"></div>
         <button id="mailLoadMoreButton" class="secondary compact is-hidden" type="button">Xem thư cũ hơn</button>
       </article>
-      <article class="profile-card mail-composer is-hidden" id="mailComposerPanel">
-        <div class="mail-composer-header">
-          <h3>Gửi thư</h3>
-        </div>
-        <form id="mailForm" class="mail-form">
-          <label for="mailRecipientInput">Tài khoản nhận
-            <input id="mailRecipientInput" type="text" maxlength="64" list="mailRecipientOptions" autocomplete="off" placeholder="Nhập username hoặc ID" required>
-          </label>
-          <datalist id="mailRecipientOptions"></datalist>
-          <div class="mail-form-search-row">
-            <span id="mailRecipientHint" class="mail-form-hint">Có thể nhập username hoặc ID tài khoản.</span>
-            <button id="mailSearchRecipientsButton" class="secondary compact" type="button"><i class="game-icon icon-compass" aria-hidden="true"></i>Tìm</button>
-          </div>
-          <label for="mailTitleInput">Tiêu đề
-            <input id="mailTitleInput" type="text" maxlength="120" required>
-          </label>
-          <label for="mailContentInput">Nội dung
-            <textarea id="mailContentInput" maxlength="5000" rows="4" required></textarea>
-          </label>
-          <div class="mail-form-section">
-            <div class="mail-form-section-heading"><strong>Vật phẩm đính kèm</strong><button id="mailAddAttachmentButton" class="secondary compact" type="button"><i class="game-icon icon-scroll" aria-hidden="true"></i>Thêm vật phẩm</button></div>
-            <div id="mailAttachmentRows" class="mail-attachment-rows"></div>
-          </div>
-          <label for="mailCurrencyInput">Linh thạch đính kèm
-            <input id="mailCurrencyInput" type="number" min="0" max="1000000000000" step="1" value="0">
-          </label>
-          <p id="mailFormMessage" class="mail-form-message" role="status" aria-live="polite"></p>
-          <button id="mailSendButton" class="breakthrough" type="submit"><i class="game-icon icon-scroll" aria-hidden="true"></i>Gửi thư</button>
-        </form>
-      </article>
       <article class="profile-card code-redeem-card is-hidden" id="codeRedeemPanel">
         <div class="profile-header">
           <div><h3><i class="game-icon icon-hammer" aria-hidden="true"></i>Code</h3><p>Nhập mã để nhận phần thưởng.</p></div>

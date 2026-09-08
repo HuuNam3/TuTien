@@ -185,32 +185,14 @@ function getMailSummaryView(document) {
   };
 }
 
-async function getUserGameState(db, userId) {
-  return db.collection(gameStateCollectionName).findOne(
-    { userId },
-    { projection: { state: 1 } },
-  );
-}
-
-function hasClaimedDevGame(state) {
-  return state?.redeemedCodes && state.redeemedCodes.devgame === true;
-}
-
-async function getRequestUser(request, requireAdmin = false) {
+async function getRequestUser(request) {
   const authentication = await getAuthenticatedSession(request);
   if (authentication.error) return { error: authentication.error };
   const user = authentication.user;
   if (!user) return { error: { status: 401, code: 'AUTHENTICATION_REQUIRED', message: 'Authentication required.' } };
   const db = await getDatabase();
-  const gameState = await getUserGameState(db, user.id);
-  const isAdmin = hasClaimedDevGame(gameState?.state);
-  if (requireAdmin) {
-    if (!isAdmin) {
-      return { error: { status: 403, message: 'Chỉ tài khoản đã nhận code devgame mới được gửi thư.' } };
-    }
-  }
   await ensureMailIndexes(db);
-  return { user, db, isAdmin };
+  return { user, db };
 }
 
 function sendRequestError(response, error) {
@@ -419,26 +401,6 @@ async function handleGet(request, response, url) {
   const { user, db } = context;
   const mode = String(url.searchParams.get('mode') || 'list').toLowerCase();
   const collection = db.collection(mailCollectionName);
-  if (mode === 'access') {
-    return sendJson(response, 200, { ok: true, mode: 'access', isAdmin: context.isAdmin });
-  }
-  if (mode === 'catalog') {
-    const admin = await getRequestUser(request, true);
-    if (admin.error) return sendRequestError(response, admin.error);
-    return sendJson(response, 200, { items: getMailCatalog().items, isAdmin: true });
-  }
-  if (mode === 'accounts') {
-    const admin = await getRequestUser(request, true);
-    if (admin.error) return sendRequestError(response, admin.error);
-    const query = String(url.searchParams.get('q') || '').trim().slice(0, 32);
-    if (query.length < 2) return sendJson(response, 200, { accounts: [] });
-    const users = db.collection(userCollectionName);
-    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const conditions = [{ usernameLower: { $regex: escaped.toLowerCase(), $options: 'i' } }];
-    if (ObjectId.isValid(query)) conditions.push({ _id: new ObjectId(query) });
-    const accounts = await users.find({ $or: conditions }, { projection: { username: 1 } }).limit(8).toArray();
-    return sendJson(response, 200, { accounts: accounts.map((account) => ({ id: account._id.toString(), username: account.username })), isAdmin: true });
-  }
   if (mode === 'poll') {
     const since = toDate(url.searchParams.get('since'));
     const newQuery = { recipientId: user.id };
@@ -450,7 +412,6 @@ async function handleGet(request, response, url) {
       return sendJson(response, 200, {
         ok: true,
         mode: 'poll',
-        isAdmin: context.isAdmin,
         newCount: 0,
         unreadCount,
         latestCreatedAt: latest?.createdAt?.toISOString?.() || null,
@@ -463,7 +424,6 @@ async function handleGet(request, response, url) {
     return sendJson(response, 200, {
       ok: true,
       mode: 'poll',
-      isAdmin: context.isAdmin,
       newCount,
       unreadCount,
       latestCreatedAt: latest?.createdAt?.toISOString?.() || null,
@@ -482,7 +442,6 @@ async function handleGet(request, response, url) {
   return sendJson(response, 200, {
     ok: true,
     mode: 'list',
-    isAdmin: context.isAdmin,
     messages: visibleMessages.map(getMailDocumentView),
     unreadCount,
     latestCreatedAt: latest?.createdAt?.toISOString?.() || null,
@@ -494,28 +453,6 @@ async function handlePost(request, response) {
   const payload = await readBody(request);
   if (!payload || typeof payload !== 'object') return sendJson(response, 400, { error: 'Dữ liệu không hợp lệ.' });
   const action = String(payload.action || '').toLowerCase();
-  if (action === 'send') {
-    const context = await getRequestUser(request, true);
-    if (context.error) return sendRequestError(response, context.error);
-    const recipient = await resolveRecipient(context.db, payload.recipientId, payload.recipientUsername || payload.recipient);
-    if (!recipient) return sendJson(response, 404, { error: 'Không tìm thấy tài khoản người nhận.' });
-    let mail;
-    try {
-      mail = await createMail({
-        db: context.db,
-        recipientId: recipient._id.toString(),
-        senderType: 'admin',
-        senderId: context.user.id,
-        title: payload.title,
-        content: payload.content,
-        attachments: payload.attachments,
-        expiresAt: payload.expiresAt,
-      });
-    } catch (error) {
-      return sendJson(response, 400, { error: error.message || 'Dữ liệu thư không hợp lệ.' });
-    }
-    return sendJson(response, 201, { ok: true, mail });
-  }
 
   const context = await getRequestUser(request);
   if (context.error) return sendRequestError(response, context.error);

@@ -89,17 +89,11 @@ let mailMessages = [];
 let mailUnreadCount = 0;
 let mailLastCheckedAt = 0;
 let mailNewCount = 0;
-let mailIsAdmin = false;
-let mailAccessChecked = false;
-let mailAccessCheckPromise = null;
 let mailPollingTimer = 0;
 let mailPollingInFlight = false;
 let mailClaimInFlight = new Set();
-let mailCatalog = [];
-let mailAttachmentRows = [{ itemId: '', quantity: 1 }];
 let mailExpandedId = '';
 let mailNextBefore = null;
-let mailRecipientSearchTimer = 0;
 
 let baseStats = {};
 
@@ -282,7 +276,6 @@ let playerSpiritStones = 0;
 let playerFoundation = 0;
 let playerComprehension = 1;
 let skillLearningComprehension = 0;
-let devMode = false;
 let redeemedCodes = {};
 let claimedMailIds = [];
 let foundationFindCounts = {};
@@ -468,20 +461,7 @@ const mailList = $('mailList');
 const mailSummary = $('mailSummary');
 const mailUnreadSummary = $('mailUnreadSummary');
 const mailRefreshButton = $('mailRefreshButton');
-const mailComposerPanel = $('mailComposerPanel');
 const codeRedeemPanel = $('codeRedeemPanel');
-const mailForm = $('mailForm');
-const mailRecipientInput = $('mailRecipientInput');
-const mailRecipientOptions = $('mailRecipientOptions');
-const mailRecipientHint = $('mailRecipientHint');
-const mailSearchRecipientsButton = $('mailSearchRecipientsButton');
-const mailTitleInput = $('mailTitleInput');
-const mailContentInput = $('mailContentInput');
-const mailAttachmentRowsContainer = $('mailAttachmentRows');
-const mailAddAttachmentButton = $('mailAddAttachmentButton');
-const mailCurrencyInput = $('mailCurrencyInput');
-const mailFormMessage = $('mailFormMessage');
-const mailSendButton = $('mailSendButton');
 const mailLoadMoreButton = $('mailLoadMoreButton');
 const resetDataButton = $('resetDataButton');
 const featureAccessNotice = $('featureAccessNotice');
@@ -1011,30 +991,6 @@ activityCategoryFilters?.addEventListener('click', (event) => {
   showActivities(tabId);
 });
 mailRefreshButton?.addEventListener('click', () => loadMailList(true));
-mailForm?.addEventListener('submit', sendMailFromAdmin);
-mailAddAttachmentButton?.addEventListener('click', () => {
-  mailAttachmentRows.push({ itemId: mailCatalog[0]?.itemId || '', quantity: 1 });
-  renderMailAttachmentRows();
-});
-mailAttachmentRowsContainer?.addEventListener('click', (event) => {
-  const removeButton = event.target.closest('[data-mail-remove-attachment]');
-  if (!removeButton) return;
-  const index = Number(removeButton.dataset.mailRemoveAttachment);
-  if (!Number.isInteger(index)) return;
-  mailAttachmentRows.splice(index, 1);
-  if (!mailAttachmentRows.length) mailAttachmentRows.push({ itemId: '', quantity: 1 });
-  renderMailAttachmentRows();
-});
-mailAttachmentRowsContainer?.addEventListener('change', (event) => {
-  const itemSelect = event.target.closest('[data-mail-attachment-item]');
-  const quantityInput = event.target.closest('[data-mail-attachment-quantity]');
-  const index = Number((itemSelect || quantityInput)?.dataset.mailAttachmentIndex);
-  if (!Number.isInteger(index) || !mailAttachmentRows[index]) return;
-  if (itemSelect) mailAttachmentRows[index].itemId = itemSelect.value;
-  if (quantityInput) mailAttachmentRows[index].quantity = quantityInput.value;
-});
-mailRecipientInput?.addEventListener('input', scheduleMailRecipientSearch);
-mailSearchRecipientsButton?.addEventListener('click', searchMailRecipients);
 mailLoadMoreButton?.addEventListener('click', loadOlderMail);
 mailList?.addEventListener('click', (event) => {
   const claimButton = event.target.closest('[data-mail-claim]');
@@ -2248,13 +2204,9 @@ function showActivities(tabId = activeActivityTab) {
 
 function showMail() {
   prepareFeatureView(mailPanel, 'mail', () => {
-    if (!mailAccessChecked) {
-      mailInboxPanel?.classList.add('is-hidden');
-      mailComposerPanel?.classList.add('is-hidden');
-      codeRedeemPanel?.classList.add('is-hidden');
-      if (mailSummary) mailSummary.textContent = 'Đang kiểm tra quyền truy cập...';
-      return;
-    }
+    mailInboxPanel?.classList.remove('is-hidden');
+    codeRedeemPanel?.classList.remove('is-hidden');
+    mailUnreadSummary?.classList.remove('is-hidden');
     renderMail();
   });
   loadMailView();
@@ -3220,9 +3172,6 @@ function showSessionReplaced() {
   cloudSessionId = '';
   cloudSaveVersion = 0;
   cloudForegroundSyncInFlight = false;
-  mailAccessChecked = false;
-  mailAccessCheckPromise = null;
-  mailIsAdmin = false;
   window.sessionStorage.removeItem('tuTienSessionId');
   renderAccountBar();
   showAuthOverlay('Tài khoản đã được đăng nhập trên thiết bị khác. Vui lòng đăng nhập lại.');
@@ -3374,7 +3323,15 @@ async function syncCloudState(data) {
       if (payload.code === 'SAVE_CONFLICT') {
         pauseCloudAutosave();
         cloudSyncUnavailable = true;
-        if (await loadCloudSave() && loadSavedGame()) {
+        let replacedWithServerState = false;
+        if (payload.state && typeof payload.state === 'object' && !Array.isArray(payload.state)) {
+          cloudSaveVersion = Math.max(0, Number(payload.saveVersion) || 0);
+          window.localStorage.setItem(saveKey, JSON.stringify(payload.state));
+          replacedWithServerState = loadSavedGame();
+        } else {
+          replacedWithServerState = await loadCloudSave() && loadSavedGame();
+        }
+        if (replacedWithServerState) {
           renderCultivation();
           renderInventory();
           renderShop();
@@ -3564,7 +3521,6 @@ async function resetGameData() {
   if (savedData && typeof savedData === 'object') {
     const resetData = {
       ...savedData,
-      devMode: false,
       foundationFindCounts: {},
       highEnemyEncounterChance: false,
       autoWanderEnabled: false,
@@ -3646,7 +3602,6 @@ function loadSavedGame() {
     playerSpiritStones = Math.max(0, Number(data.playerSpiritStones) || 0);
     playerFoundation = Math.max(1, Number(data.playerFoundation) || 1);
     playerComprehension = Math.max(1, Math.floor(Number(data.playerComprehension) || 1));
-    devMode = Boolean(data.devMode);
     redeemedCodes = data.redeemedCodes && typeof data.redeemedCodes === 'object'
       ? Object.fromEntries(Object.entries(data.redeemedCodes).map(([code, used]) => [String(code), Boolean(used)]))
       : {};
@@ -3754,7 +3709,7 @@ function loadSavedGame() {
     skillTrainingId = data.skillTrainingManual ? (data.skillTrainingId || '') : '';
     ensureActiveSkill();
     hasMajorAscensionPermit = false;
-    if (Boolean(data.hasMajorAscensionPermit) && hasNextMajorRealm() && !devMode
+    if (Boolean(data.hasMajorAscensionPermit) && hasNextMajorRealm()
       && getShopInventoryCount('majorAscensionPermit') <= 0) {
       addShopInventoryItem('majorAscensionPermit');
     }
@@ -3944,7 +3899,6 @@ function saveGame() {
     playerFoundation,
     playerComprehension,
     skillLearningComprehension,
-    devMode,
     redeemedCodes,
     claimedMailIds,
     foundationFindCounts,
