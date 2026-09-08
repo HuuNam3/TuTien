@@ -1507,7 +1507,7 @@ button.danger:not(:disabled):hover {
 
 .talent-icon {
   display: inline-block;
-  background-image: url('/assets/Art/Sprites/UI/chibi-talent-breakthrough-icon-sheet.png');
+  background-image: url('/assets/Art/Sprites/UI/chibi-talent-breakthrough-icon-sheet.png?v=20260908-talent-treasure');
   background-repeat: no-repeat;
   background-size: 400% 400%;
   background-color: transparent;
@@ -10707,7 +10707,7 @@ strong > .unique-icon {
 .icon-unique-close { background-position: 66.666% 100%; }
 .icon-unique-help { background-position: 100% 100%; }
 .icon-unique-critical-damage {
-  background-image: url('/assets/Art/Sprites/UI/chibi-talent-breakthrough-icon-sheet.png');
+  background-image: url('/assets/Art/Sprites/UI/chibi-talent-breakthrough-icon-sheet.png?v=20260908-talent-treasure');
   background-size: 400% 400%;
   background-position: 33.333% 0%;
 }
