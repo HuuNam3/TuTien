@@ -30,7 +30,7 @@
     "attack": 10,
     "defense": 3,
     "mastery": 10,
-    "accuracy": 0.8,
+    "accuracy": 0.9,
     "blockReduction": 0.8,
     "critDamage": 1.5,
     "armorPierce": 0,

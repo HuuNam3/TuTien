@@ -93,7 +93,7 @@
       "id": "accuracy",
       "name": "Chính xác",
       "unit": "rate",
-      "baseValue": 0.8,
+      "baseValue": 0.9,
       "powerPerPoint": 6000,
       "powerPerPercent": 60,
       "description": "Tăng tỉ lệ đánh trúng, giảm khả năng đối thủ né hoặc đỡ đòn và làm sát thương ổn định hơn."
