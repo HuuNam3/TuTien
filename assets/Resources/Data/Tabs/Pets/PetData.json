@@ -44,12 +44,12 @@
       "name": "Lôi Vân Linh Lang",
       "type": "Lôi thú",
       "rarity": "mortal",
-      "image": "/assets/Art/Sprites/pet/pet-thundercloud-spirit-wolf-2x2-625-native.png",
+      "image": "/assets/Art/Sprites/pet/pet-thundercloud-spirit-wolf-2x2-625-native.png?v=20260909-pet-assets-v1",
       "evolutionImages": [
-        { "minStars": 1, "maxStars": 3, "image": "/assets/Art/Sprites/pet/pet-thundercloud-spirit-wolf-2x2-625-native.png", "backgroundPosition": "0% 0%" },
-        { "minStars": 4, "maxStars": 6, "image": "/assets/Art/Sprites/pet/pet-thundercloud-spirit-wolf-2x2-625-native.png", "backgroundPosition": "100% 0%" },
-        { "minStars": 7, "maxStars": 9, "image": "/assets/Art/Sprites/pet/pet-thundercloud-spirit-wolf-2x2-625-native.png", "backgroundPosition": "0% 100%" },
-        { "minStars": 10, "maxStars": 10, "image": "/assets/Art/Sprites/pet/pet-thundercloud-spirit-wolf-2x2-625-native.png", "backgroundPosition": "100% 100%" }
+        { "minStars": 1, "maxStars": 3, "image": "/assets/Art/Sprites/pet/pet-thundercloud-spirit-wolf-2x2-625-native.png?v=20260909-pet-assets-v1", "backgroundPosition": "0% 0%" },
+        { "minStars": 4, "maxStars": 6, "image": "/assets/Art/Sprites/pet/pet-thundercloud-spirit-wolf-2x2-625-native.png?v=20260909-pet-assets-v1", "backgroundPosition": "100% 0%" },
+        { "minStars": 7, "maxStars": 9, "image": "/assets/Art/Sprites/pet/pet-thundercloud-spirit-wolf-2x2-625-native.png?v=20260909-pet-assets-v1", "backgroundPosition": "0% 100%" },
+        { "minStars": 10, "maxStars": 10, "image": "/assets/Art/Sprites/pet/pet-thundercloud-spirit-wolf-2x2-625-native.png?v=20260909-pet-assets-v1", "backgroundPosition": "100% 100%" }
       ],
       "description": "Linh lang mang lôi vân, càng trưởng thành càng thức tỉnh sức mạnh sấm chớp.",
       "baseStats": {
@@ -80,12 +80,12 @@
       "name": "Nguyệt Mặc Ma Điệp",
       "type": "Ma thú",
       "rarity": "mortal",
-      "image": "/assets/Art/Sprites/pet/pet-moonveil-demon-moth-2x2-625-native.png",
+      "image": "/assets/Art/Sprites/pet/pet-moonveil-demon-moth-2x2-625-native.png?v=20260909-pet-assets-v1",
       "evolutionImages": [
-        { "minStars": 1, "maxStars": 3, "image": "/assets/Art/Sprites/pet/pet-moonveil-demon-moth-2x2-625-native.png", "backgroundPosition": "0% 0%" },
-        { "minStars": 4, "maxStars": 6, "image": "/assets/Art/Sprites/pet/pet-moonveil-demon-moth-2x2-625-native.png", "backgroundPosition": "100% 0%" },
-        { "minStars": 7, "maxStars": 9, "image": "/assets/Art/Sprites/pet/pet-moonveil-demon-moth-2x2-625-native.png", "backgroundPosition": "0% 100%" },
-        { "minStars": 10, "maxStars": 10, "image": "/assets/Art/Sprites/pet/pet-moonveil-demon-moth-2x2-625-native.png", "backgroundPosition": "100% 100%" }
+        { "minStars": 1, "maxStars": 3, "image": "/assets/Art/Sprites/pet/pet-moonveil-demon-moth-2x2-625-native.png?v=20260909-pet-assets-v1", "backgroundPosition": "0% 0%" },
+        { "minStars": 4, "maxStars": 6, "image": "/assets/Art/Sprites/pet/pet-moonveil-demon-moth-2x2-625-native.png?v=20260909-pet-assets-v1", "backgroundPosition": "100% 0%" },
+        { "minStars": 7, "maxStars": 9, "image": "/assets/Art/Sprites/pet/pet-moonveil-demon-moth-2x2-625-native.png?v=20260909-pet-assets-v1", "backgroundPosition": "0% 100%" },
+        { "minStars": 10, "maxStars": 10, "image": "/assets/Art/Sprites/pet/pet-moonveil-demon-moth-2x2-625-native.png?v=20260909-pet-assets-v1", "backgroundPosition": "100% 100%" }
       ],
       "description": "Ma điệp phủ cánh nguyệt mặc, hấp thụ ánh trăng để nuôi dưỡng linh lực.",
       "baseStats": {

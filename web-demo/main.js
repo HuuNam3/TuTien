@@ -396,7 +396,7 @@ const criticalAssetPaths = [
   '/assets/Art/Sprites/UI/chibi-stat-icon-sheet.png',
   '/assets/Art/Sprites/UI/chibi-item-status-icon-sheet.png',
   '/assets/Art/Sprites/UI/chibi-activity-icon-sheet.png',
-  '/assets/Art/Sprites/UI/chibi-pet-reward-action-icon-sheet-16-1254.png',
+  '/assets/Art/Sprites/UI/chibi-pet-reward-action-icon-sheet-16-1254.png?v=20260909-pet-assets-v1',
 ];
 
 const $ = (id) => document.getElementById(id);
