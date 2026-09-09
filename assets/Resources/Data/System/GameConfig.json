@@ -88,7 +88,13 @@
       "enhancementStone": 0.06,
       "minorAscensionPill": 0.01,
       "skillChest": 0.04,
-      "talentTreasureChest": 0.01
+      "talentTreasureChest": 0.01,
+      "petChest": 0
+    },
+    "wanderRewardTypeMapAdjustments": {
+      "fromMap": 11,
+      "cultivationWeightDelta": -0.02,
+      "petChestWeight": 0.02
     },
     "wanderBattleBonusRewardWeights": {
       "healthPotion": 0.02,

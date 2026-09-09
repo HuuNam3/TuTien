@@ -16,7 +16,7 @@ const legacyMajorRealmOrder = Object.freeze([
   'Ngộ Đạo', 'Vũ Hóa', 'Đăng Tiên',
 ]);
 const gameConfigPath = '/assets/Resources/Data/System/GameConfig.json?v=20260906-resource-dungeon-boss-development-v1';
-const shopItemsPath = '/assets/Resources/Data/Tabs/Shop/ShopItems.json?v=20260907-realm-max-talent-chest';
+const shopItemsPath = '/assets/Resources/Data/Tabs/Shop/ShopItems.json?v=20260909-pet-chest-rates-v1';
 const starterDataPath = '/assets/Resources/Data/System/StarterData.json';
 const equipmentPath = '/assets/Resources/Data/Shared/equipment.json';
 const progressionFeaturesPath = '/assets/Resources/Data/System/ProgressionFeatures.json?v=20260906-resource-dungeon-boss-development-v1';
@@ -27,11 +27,12 @@ const combatStylesPath = '/assets/Resources/Data/Shared/CombatStyles.json';
 const enemyStatsPath = '/assets/Resources/Data/Shared/EnemyStats.json?v=20260906-enemy-realm-rates-v1';
 const enemySkillsPath = '/assets/Resources/Data/Shared/EnemySkills.json?v=20260906-enemy-skill-damage-v2';
 const questDataPath = '/assets/Resources/Data/Tabs/Quests/Quests.json?v=20260906-explore-reward-v1';
-const petDataPath = '/assets/Resources/Data/Tabs/Pets/PetData.json';
+const petDataPath = '/assets/Resources/Data/Tabs/Pets/PetData.json?v=20260909-pet-ui-v1';
 const petRealmsPath = '/assets/Resources/Data/Tabs/Pets/PetRealms.json';
 const enemySkillEffectSpritePath = '/assets/Art/Sprites/Effects/chibi-sword-slash-sheet.png';
-const battleSkillAnimationDuration = 800;
-const battleSkillDamageDelay = 600;
+const battleSkillAnimationFps = 12;
+const battleSkillImpactRatio = 0.5;
+const battleSkillTurnBuffer = 120;
 const battleEnemyTurnDelay = 100;
 const playerSkillEffectSprites = Object.freeze({
   beginner_sword_art: '/assets/Art/Sprites/Effects/skill-beginner-sword-art-sheet-premium.png',
@@ -84,6 +85,7 @@ let cloudForegroundSyncTimer = 0;
 let cloudForegroundSyncInFlight = false;
 let cloudWasHidden = false;
 let cloudLastForegroundSyncAt = 0;
+let cloudExitSaveSent = false;
 let authServiceAvailable = false;
 let mailMessages = [];
 let mailUnreadCount = 0;
@@ -370,6 +372,7 @@ let activeSkillId = '';
 let skillTrainingId = '';
 let expandedSkillDetailsId = '';
 let selectedPetId = '';
+let deployedPetId = '';
 let petStates = {};
 let petFragments = {};
 let ownedPetIds = [];
@@ -393,6 +396,7 @@ const criticalAssetPaths = [
   '/assets/Art/Sprites/UI/chibi-stat-icon-sheet.png',
   '/assets/Art/Sprites/UI/chibi-item-status-icon-sheet.png',
   '/assets/Art/Sprites/UI/chibi-activity-icon-sheet.png',
+  '/assets/Art/Sprites/UI/chibi-pet-reward-action-icon-sheet-16-1254.png',
 ];
 
 const $ = (id) => document.getElementById(id);
@@ -1033,8 +1037,14 @@ document.addEventListener('click', (event) => {
   if (target.dataset.inventorySell) return sellInventoryItem(target.dataset.inventorySell);
   if (target.dataset.inventoryDetail) return openInventoryItemDetail(target.dataset.inventoryDetail);
   if (target.dataset.petAction === 'select') return selectPet(target.dataset.petId);
-  if (target.dataset.petAction === 'feed') return feedSelectedPet();
+  if (target.dataset.petAction === 'feed') return openPetConsumablePanel();
+  if (target.dataset.petAction === 'close-items') return closePetConsumablePanel();
+  if (target.dataset.petAction === 'use-item') {
+    const quantity = target.closest('.pet-item-row')?.querySelector('input[type="number"]')?.value || 1;
+    return usePetConsumableItem(target.dataset.itemId, quantity);
+  }
   if (target.dataset.petAction === 'star') return upgradeSelectedPetStar();
+  if (target.dataset.petAction === 'deploy') return deploySelectedPet();
   if (target.dataset.skillAction === 'details') return toggleSkillDetails(target.dataset.skillId);
   if (target.dataset.skillAction === 'select') return selectSkillTraining(target.dataset.skillId);
   if (target.dataset.skillAction === 'equip') return toggleEquipSkill(target.dataset.skillId);
@@ -1115,8 +1125,9 @@ playerNameInput.addEventListener('keydown', (event) => {
 });
 startPlayerNameInput?.addEventListener('input', updateStartScreenAvailability);
 enterGameButton?.addEventListener('click', completeStartScreen);
-window.addEventListener('beforeunload', () => {
-  if (!resettingGameData && !cloudSessionInvalid) saveGame();
+window.addEventListener('beforeunload', flushCloudSaveOnPageExit);
+window.addEventListener('pagehide', (event) => {
+  flushCloudSaveForLifecycle({ markExit: !event.persisted });
 });
 document.addEventListener('visibilitychange', handleCloudVisibilityChange);
 window.addEventListener('pageshow', handleCloudPageShow);
@@ -1361,7 +1372,49 @@ function pickPetChestFragmentAmount(shopItem) {
   return normalizedRewards[normalizedRewards.length - 1].amount;
 }
 
+function pickWeightedPetChestReward(shopItem, rewardsKey, fallbackType) {
+  const rewards = Array.isArray(shopItem?.[rewardsKey]) ? shopItem[rewardsKey] : [];
+  const normalizedRewards = rewards
+    .map((reward) => ({
+      value: reward?.shopItemId || reward?.type,
+      chance: Math.max(0, Number(reward?.chance) || 0),
+    }))
+    .filter((reward) => reward.value && reward.chance > 0);
+  const totalChance = normalizedRewards.reduce((total, reward) => total + reward.chance, 0);
+  if (!totalChance) return fallbackType;
+  let roll = Math.random() * totalChance;
+  for (const reward of normalizedRewards) {
+    roll -= reward.chance;
+    if (roll < 0) return reward.value;
+  }
+  return normalizedRewards[normalizedRewards.length - 1].value;
+}
+
+function pickPetChestItemReward(shopItem, rewardsKey) {
+  const itemId = pickWeightedPetChestReward(shopItem, rewardsKey, '');
+  return shopItems.find((item) => item.id === itemId) || null;
+}
+
 function openPetChest(shopItem) {
+  const rewardType = ownedPetIds.length
+    ? pickWeightedPetChestReward(shopItem, 'rewardTypes', 'fragment')
+    : 'fragment';
+  if (rewardType === 'petFood') {
+    const item = pickPetChestItemReward(shopItem, 'petFoodRewards');
+    return item ? { kind: 'item', item, amount: 1 } : null;
+  }
+  if (rewardType === 'petCultivationPill') {
+    const item = pickPetChestItemReward(shopItem, 'petCultivationRewards');
+    return item ? { kind: 'item', item, amount: 1 } : null;
+  }
+  if (rewardType === 'petSoulJade') {
+    const item = shopItems.find((entry) => entry.id === shopItem?.petSoulJadeReward);
+    return item ? { kind: 'item', item, amount: 1 } : null;
+  }
+  if (rewardType === 'petBreakthroughStone') {
+    const item = shopItems.find((entry) => entry.id === shopItem?.petBreakthroughStoneReward);
+    return item ? { kind: 'item', item, amount: 1 } : null;
+  }
   const candidates = petData.pets.filter((pet) => !ownedPetIds.includes(pet.id));
   const fallbackCandidates = candidates.length ? candidates : petData.pets;
   if (!fallbackCandidates.length) return null;
@@ -1377,7 +1430,7 @@ function openPetChest(shopItem) {
   }
   petFragments[pet.id] = remaining;
   if (createdPets > 0 && !selectedPetId) selectedPetId = pet.id;
-  return { pet, fragments, createdPets };
+  return { kind: 'fragment', pet, fragments, createdPets };
 }
 
 function openSkillChest(shopItem) {
@@ -3196,6 +3249,7 @@ function resetCloudSessionState() {
   cloudSyncUnavailable = false;
   cloudSaveVersion = 0;
   cloudLastForegroundSyncAt = 0;
+  cloudExitSaveSent = false;
   rememberCloudSession('');
 }
 
@@ -3332,12 +3386,13 @@ async function syncCloudState(data) {
           replacedWithServerState = await loadCloudSave() && loadSavedGame();
         }
         if (replacedWithServerState) {
+          cloudSyncUnavailable = false;
+          saveGame();
           renderCultivation();
           renderInventory();
           renderShop();
           renderEquipment();
           renderProfile();
-          cloudSyncUnavailable = false;
           startCloudAutoSave();
         }
       } else {
@@ -3447,16 +3502,24 @@ async function syncCloudAfterForeground() {
       showSessionReplaced();
       return;
     }
+    if (busy) {
+      cloudSyncUnavailable = false;
+      startCloudAutoSave();
+      startMailPolling();
+      return;
+    }
+    if (!await flushPendingCloudSaveBeforePull()) return;
     if (!await loadCloudSave() || !loadSavedGame()) {
       cloudSyncUnavailable = true;
       return;
     }
+    cloudSyncUnavailable = false;
+    saveGame();
     renderCultivation();
     renderInventory();
     renderShop();
     renderEquipment();
     renderProfile();
-    cloudSyncUnavailable = false;
     startCloudAutoSave();
     startMailPolling();
   } catch (error) {
@@ -3470,6 +3533,7 @@ function handleCloudVisibilityChange() {
   if (document.visibilityState === 'hidden') {
     cloudWasHidden = true;
     pauseCloudAutosave();
+    flushCloudSaveForLifecycle();
     return;
   }
   if (cloudWasHidden) {
@@ -3480,6 +3544,43 @@ function handleCloudVisibilityChange() {
 
 function handleCloudPageShow(event) {
   if (event.persisted || cloudWasHidden) scheduleCloudForegroundSync();
+}
+
+async function flushPendingCloudSaveBeforePull() {
+  if (cloudSaveInFlight) await cloudSaveInFlight;
+  const pendingData = cloudPendingData;
+  if (!pendingData) return true;
+  window.clearTimeout(cloudSaveTimer);
+  cloudSaveTimer = 0;
+  cloudPendingData = null;
+  return syncCloudState(pendingData);
+}
+
+function flushCloudSaveForLifecycle({ markExit = false } = {}) {
+  if (!gameStarted || resettingGameData || !cloudUser || cloudSessionInvalid || cloudSyncUnavailable) return;
+  if (markExit && cloudExitSaveSent) return;
+  if (markExit) cloudExitSaveSent = true;
+
+  const data = saveGame();
+  if (!data) return;
+  window.clearTimeout(cloudSaveTimer);
+  cloudSaveTimer = 0;
+  cloudPendingData = null;
+
+  const body = JSON.stringify({ state: data, baseSaveVersion: cloudSaveVersion });
+  const blob = new Blob([body], { type: 'application/json' });
+  if (navigator.sendBeacon?.(cloudSaveEndpoint, blob)) return;
+
+  void fetch(cloudSaveEndpoint, {
+    method: 'PUT',
+    keepalive: true,
+    headers: { 'Content-Type': 'application/json' },
+    body,
+  }).catch(() => {});
+}
+
+function flushCloudSaveOnPageExit() {
+  flushCloudSaveForLifecycle({ markExit: true });
 }
 
 function openResetConfirm() {
@@ -3705,6 +3806,7 @@ function loadSavedGame() {
       .filter((petId) => petData.pets.some((pet) => pet.id === petId))
       .concat(savedOwnedPetIds.length ? [] : legacySelectedPetId))];
     selectedPetId = ownedPetIds.includes(data.selectedPetId) ? data.selectedPetId : ownedPetIds[0] || '';
+    deployedPetId = ownedPetIds.includes(data.deployedPetId) ? data.deployedPetId : '';
     petStates = normalizePetStates(data.petStates);
     skillTrainingId = data.skillTrainingManual ? (data.skillTrainingId || '') : '';
     ensureActiveSkill();
@@ -3961,6 +4063,7 @@ function saveGame() {
     playerBattleState: normalizePlayerBattleState(playerBattleState),
     activeSkillId,
     selectedPetId,
+    deployedPetId,
     petStates,
     petFragments,
     ownedPetIds,
@@ -5910,6 +6013,38 @@ function formatAttackLog(attacker, result) {
   return `Lượt ${turn}: ${attacker.name} ${action} gây ${formatGameNumber(result.damage)} sát thương${extras.length ? ` (${extras.join(', ')})` : ''}.${bonusText}`;
 }
 
+function getBattleSkillFrameMeta(skillId) {
+  const spritePath = playerSkillEffectSprites[skillId] || enemySkillEffectSpritePath;
+  const isPremiumSkillEffect = spritePath.includes('-premium.png');
+  return {
+    spritePath,
+    frameCount: isPremiumSkillEffect ? 16 : 12,
+    rowCount: isPremiumSkillEffect ? 4 : 3,
+  };
+}
+
+function getBattleSkillAnimationDuration(skillId) {
+  const { frameCount } = getBattleSkillFrameMeta(skillId);
+  return frameCount * (1000 / battleSkillAnimationFps);
+}
+
+function getBattleSkillSequenceDuration(result) {
+  if (!result?.skill) return 0;
+  const primaryDuration = getBattleSkillAnimationDuration(result.skillId);
+  const followupDuration = result.bonusHit
+    ? getBattleSkillAnimationDuration(result.bonusHit.skillId || result.skillId)
+    : 0;
+  return primaryDuration + followupDuration;
+}
+
+function getBattleActionDelay(result, baseDelay) {
+  if (!result?.skill) return baseDelay;
+  return Math.max(
+    baseDelay,
+    getBattleSkillSequenceDuration(result) + battleSkillTurnBuffer,
+  );
+}
+
 function animateAttack(sourceId, targetId, floatId, result, attacker) {
   const source = $(sourceId);
   const target = $(targetId);
@@ -5963,7 +6098,10 @@ function animateAttack(sourceId, targetId, floatId, result, attacker) {
   const damageClass = result.dodged ? 'dodge' : result.blocked ? 'block' : result.critical ? 'crit' : result.skill ? 'skill' : '';
   const showDamageFloat = () => spawnFloat($(floatId), text, damageClass);
   if (result.skill) {
-    window.setTimeout(showDamageFloat, battleSkillDamageDelay);
+    window.setTimeout(
+      showDamageFloat,
+      getBattleSkillAnimationDuration(result.skillId) * battleSkillImpactRatio,
+    );
   } else {
     showDamageFloat();
   }
@@ -5980,10 +6118,7 @@ function playBattleSkillEffect(target, skillId) {
   const size = Math.min(190, Math.max(130, targetRect.width * 0.72));
   const left = targetRect.left - panelRect.left + (targetRect.width - size) / 2;
   const top = targetRect.top - panelRect.top + targetRect.height * 0.08;
-  const spritePath = playerSkillEffectSprites[skillId] || enemySkillEffectSpritePath;
-  const isPremiumSkillEffect = spritePath.includes('-premium.png');
-  const frameCount = isPremiumSkillEffect ? 16 : 12;
-  const rowCount = isPremiumSkillEffect ? 4 : 3;
+  const { spritePath, frameCount, rowCount } = getBattleSkillFrameMeta(skillId);
 
   window.clearTimeout(effect.hideTimer);
   const animationToken = (effect.animationToken || 0) + 1;
@@ -5994,10 +6129,12 @@ function playBattleSkillEffect(target, skillId) {
   effect.style.backgroundImage = `url("${spritePath}")`;
   effect.style.backgroundSize = `400% ${rowCount * 100}%`;
   effect.style.backgroundPosition = '0% 0%';
+  const frameDuration = 1000 / battleSkillAnimationFps;
+  const animationDuration = getBattleSkillAnimationDuration(skillId);
+  effect.style.animationDuration = `${animationDuration}ms`;
   effect.classList.remove('is-hidden', 'is-playing');
   void effect.offsetWidth;
   effect.classList.add('is-playing');
-  const frameDuration = battleSkillAnimationDuration / frameCount;
   for (let frame = 0; frame < frameCount; frame += 1) {
     window.setTimeout(() => {
       if (effect.animationToken !== animationToken) return;
@@ -6010,7 +6147,7 @@ function playBattleSkillEffect(target, skillId) {
     if (effect.animationToken !== animationToken) return;
     effect.classList.remove('is-playing');
     effect.classList.add('is-hidden');
-  }, battleSkillAnimationDuration);
+  }, animationDuration);
 }
 
 function spawnFloat(parent, text, className) {

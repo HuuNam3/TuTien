@@ -33,7 +33,7 @@ module.exports = async function gameStateHandler(request, response) {
     response.end();
     return;
   }
-  if (!['GET', 'PUT'].includes(request.method)) {
+  if (!['GET', 'PUT', 'POST'].includes(request.method)) {
     return sendJson(response, 405, { error: 'Method not allowed.' });
   }
 

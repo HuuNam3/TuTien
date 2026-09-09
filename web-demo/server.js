@@ -26,6 +26,8 @@ const authHandler = require('../api/auth');
 const mailHandler = require('../api/mail');
 const worldBossHandler = require('../api/world-boss');
 const npcHandler = require('../api/npc');
+const cronNpcHandler = require('../api/cron-npc');
+const { runNpcTick } = npcHandler;
 const types = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -53,6 +55,10 @@ const server = http.createServer((request, response) => {
   }
   if (url.pathname === '/api/npc') {
     npcHandler(request, response);
+    return;
+  }
+  if (url.pathname === '/api/cron-npc') {
+    cronNpcHandler(request, response);
     return;
   }
   const pathname = url.pathname === '/' ? '/index.html' : url.pathname;
@@ -88,6 +94,24 @@ const server = http.createServer((request, response) => {
   });
 });
 
+const localNpcTickIntervalMs = 60 * 1000;
+let npcTickInFlight = false;
+async function runLocalNpcTick(catchUp = false) {
+  if (npcTickInFlight || !process.env.MONGODB_URI) return;
+  npcTickInFlight = true;
+  try {
+    const result = await runNpcTick({ catchUp, limit: catchUp ? 50 : 10 });
+    console.log(`NPC worker: processed ${result.processed} NPC(s)${catchUp ? ' with catch-up' : ''}.`);
+  } catch (error) {
+    console.error(`NPC worker chưa thể cập nhật (${error.name || 'error'}). Sẽ thử lại ở chu kỳ kế tiếp.`);
+  } finally {
+    npcTickInFlight = false;
+  }
+}
+
 server.listen(port, '0.0.0.0', () => {
   console.log(`Web demo running on port ${port}`);
+  runLocalNpcTick(true);
+  const npcTimer = setInterval(() => runLocalNpcTick(false), localNpcTickIntervalMs);
+  npcTimer.unref?.();
 });

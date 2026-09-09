@@ -181,11 +181,14 @@ function getBagItems() {
 
   shopItems
     .filter((shopItem) => !shopItem.hidden || getShopInventoryCount(shopItem.id) > 0 || shopItem.type === 'majorAscensionTreasureChest')
-    .filter((shopItem) => ['cultivation', 'foundation', 'ascension', 'minorAscension', 'skillChest', 'talentTreasureChest', 'majorAscensionTreasureChest', 'enhancementRefund'].includes(shopItem.type))
+    .filter((shopItem) => ['cultivation', 'foundation', 'ascension', 'minorAscension', 'skillChest', 'petChest', 'petFood', 'petCultivationPill', 'petSoulJade', 'petBreakthroughStone', 'talentTreasureChest', 'majorAscensionTreasureChest', 'enhancementRefund'].includes(shopItem.type))
     .forEach((shopItem) => {
       const count = getShopInventoryCount(shopItem.id);
       if (count <= 0) return;
-      const category = shopItem.type === 'skillChest'
+      const isPetRewardItem = ['petFood', 'petCultivationPill', 'petSoulJade', 'petBreakthroughStone'].includes(shopItem.type);
+      const category = ['petChest', 'petFood', 'petCultivationPill', 'petSoulJade', 'petBreakthroughStone'].includes(shopItem.type)
+        ? 'Linh thú'
+        : shopItem.type === 'skillChest'
         ? 'Rương skill'
         : ['talentTreasureChest', 'majorAscensionTreasureChest'].includes(shopItem.type)
         ? 'Đột phá'
@@ -210,14 +213,16 @@ function getBagItems() {
           : '',
         rarityColor: shopItem.type === 'skillChest' ? getSkillGradeColor(shopItem.gradeId) : '',
         description: getInventoryChestDescription(shopItem) || getShopItemDetailLines(shopItem).join(' '),
-        usable: !isBreakthroughPillShopItem(shopItem) && shopItem.type !== 'enhancementRefund' && shopItem.type !== 'majorAscensionTreasure',
+        usable: !isPetRewardItem && !isBreakthroughPillShopItem(shopItem) && shopItem.type !== 'enhancementRefund' && shopItem.type !== 'majorAscensionTreasure',
         sellable: ['skillChest', 'petChest', 'talentTreasureChest', 'majorAscensionTreasureChest', 'minorAscension'].includes(shopItem.type),
         sellPrice: shopItem.type === 'minorAscension'
           ? getMinorAscensionSellPrice({ shopItemId: shopItem.id })
           : ['skillChest', 'petChest', 'talentTreasureChest', 'majorAscensionTreasureChest'].includes(shopItem.type)
           ? getInventoryChestSellPrice({ shopItemId: shopItem.id })
           : 0,
-        useLabel: ['skillChest', 'talentTreasureChest', 'majorAscensionTreasureChest'].includes(shopItem.type)
+        useLabel: isPetRewardItem
+          ? ''
+          : ['skillChest', 'petChest', 'talentTreasureChest', 'majorAscensionTreasureChest'].includes(shopItem.type)
           ? 'Mở'
           : isBreakthroughPillShopItem(shopItem) || shopItem.type === 'enhancementRefund' || shopItem.type === 'majorAscensionTreasure'
           ? ''
@@ -296,7 +301,11 @@ function getBagItems() {
       category: 'Mảnh linh thú',
       petName: pet.name,
       count: safeCount,
-      iconClass: 'activity-icon icon-activity-encounter',
+      iconClass: petId === 'mist_ghost_pet'
+        ? 'pet-sprite-icon icon-pet-1'
+        : petId === 'jade_spider_pet'
+        ? 'pet-sprite-icon icon-pet-2'
+        : 'activity-icon icon-activity-encounter',
       rarityClass: `pet-quality-${getPetRarity(pet).id}`,
       description: `Mảnh dùng để ghép linh thú ${pet.name}.`,
       usable: false,
@@ -363,7 +372,10 @@ function getInventoryChestDescription(shopItem) {
     const rewards = (shopItem.fragmentRewards || [])
       .map((reward) => `${formatGameNumber((Number(reward.chance) || 0) * 100)}% nhận ${Math.max(1, Number(reward.amount) || 1)} mảnh`)
       .join(', ');
-    return `Mở ra nhận mảnh linh thú: ${rewards}.`;
+    const typeText = ownedPetIds.length
+      ? 'Tỉ lệ loại thưởng: 30% mảnh, 38,8% thức ăn, 30% linh đan tu vi, 1% Hồn Ngọc, 0,2% Đá Tiến Giai.'
+      : 'Chưa sở hữu linh thú: 100% nhận mảnh linh thú.';
+    return `Mở ra nhận mảnh linh thú: ${rewards}. ${typeText}`;
   }
   if (shopItem?.type === 'talentTreasureChest' || shopItem?.type === 'majorAscensionTreasureChest') {
     return 'Mở ra nhận 1 Thiên Tài Địa Bảo với tỉ lệ 100%.';
@@ -563,6 +575,25 @@ function usePurchasedShopItem(item, amount = 1) {
       const reward = openPetChest(shopItem);
       canUse = Boolean(reward);
       if (reward) petChestRewards.push(reward);
+      if (reward?.kind === 'item') addShopInventoryItem(reward.item.id, reward.amount);
+    } else if (['petFood', 'petCultivationPill', 'petSoulJade', 'petBreakthroughStone'].includes(shopItem.type)) {
+      const reward = usePetRewardItem(shopItem);
+      canUse = Boolean(reward);
+      if (reward) petChestRewards.push(reward);
+      if (!canUse) {
+        const pet = selectedPetId ? getPetById(selectedPetId) : null;
+        const petState = pet ? getPetState(pet.id) : null;
+        const message = !pet
+          ? 'Bạn chưa có linh thú để sử dụng vật phẩm.'
+          : shopItem.type === 'petFood' && Number(petState.feedPoints) >= getPetFeedRequirement()
+          ? `${pet.name} đã đầy thể lực (${getPetFeedRequirement()}/${getPetFeedRequirement()}).`
+          : shopItem.type === 'petSoulJade'
+          ? `${pet.name} đã đạt tối đa tiểu cảnh giới.`
+          : shopItem.type === 'petBreakthroughStone'
+          ? `${pet.name} chưa đủ tiểu cảnh giới để tăng đại cảnh giới.`
+          : 'Không thể dùng vật phẩm linh thú lúc này.';
+        showGameToast(message, 'error');
+      }
     } else if (['talentTreasureChest', 'majorAscensionTreasureChest'].includes(shopItem.type)) {
       const reward = openTalentTreasureChest(shopItem);
       canUse = Boolean(reward);
@@ -593,15 +624,24 @@ function usePurchasedShopItem(item, amount = 1) {
     showGameToast(`Đã mở ${shopItem.name}${used > 1 ? ` x${used}` : ''}: ${rewardParts.join(', ')}.`, 'success');
   } else if (shopItem.type === 'petChest') {
     const rewardCounts = new Map();
+    const itemRewardCounts = new Map();
     petChestRewards.forEach((reward) => {
+      if (reward.kind !== 'fragment') {
+        const current = itemRewardCounts.get(reward.item.id) || { name: reward.item.name, count: 0 };
+        current.count += reward.amount;
+        itemRewardCounts.set(reward.item.id, current);
+        return;
+      }
       const current = rewardCounts.get(reward.pet.id) || { name: reward.pet.name, count: 0 };
       current.count += reward.fragments;
       rewardCounts.set(reward.pet.id, current);
     });
     const rewardParts = Array.from(rewardCounts.values())
       .map((reward) => `Mảnh ${reward.name} x${reward.count}`);
+    rewardParts.push(...Array.from(itemRewardCounts.values())
+      .map((reward) => `${reward.name} x${reward.count}`));
     const createdPets = [...new Set(petChestRewards
-      .filter((reward) => reward.createdPets > 0)
+      .filter((reward) => reward.kind === 'fragment' && reward.createdPets > 0)
       .map((reward) => reward.pet.name))];
     if (createdPets.length) rewardParts.push(`ghép ${createdPets.join(', ')}`);
     showGameToast(`Đã mở ${shopItem.name}${used > 1 ? ` x${used}` : ''}: ${rewardParts.join(', ')}.`, 'success');
@@ -612,6 +652,7 @@ function usePurchasedShopItem(item, amount = 1) {
     showGameToast(`Đã dùng ${shopItem.name}${used > 1 ? ` x${used}` : ''}.`, 'success');
   }
   renderCultivation();
+  if (typeof renderPets === 'function') renderPets();
   renderInventory();
   renderShop();
   saveGame();

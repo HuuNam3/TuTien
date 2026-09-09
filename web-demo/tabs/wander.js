@@ -415,13 +415,14 @@ function rollWanderEvent() {
 }
 
 function createWanderReward(map = getCurrentWanderMap()) {
-  const type = pickWanderRewardType();
+  const type = pickWanderRewardType(map);
   if (type === 'cultivation') return createWanderCultivationChoice(map);
   if (type === 'spiritStone') return createWanderSpiritStoneChoice(map);
   if (['healthPotion', 'manaPotion', 'enhancementStone'].includes(type)) return createWanderConsumableChoice(type, map);
   if (type === 'minorAscensionPill') return createWanderMinorAscensionPillChoice(map) || createWanderChestChoice(map);
   if (type === 'skillChest') return createWanderSkillChestChoice(map) || createWanderChestChoice(map);
   if (type === 'talentTreasureChest') return createWanderTalentTreasureChestChoice(map) || createWanderChestChoice(map);
+  if (type === 'petChest') return createWanderPetChestChoice() || createWanderChestChoice(map);
   return createWanderChestChoice(map);
 }
 
@@ -667,23 +668,37 @@ function updateWanderCountdown(event) {
     : 'Đang tìm kiếm cơ duyên...';
 }
 
-function getWanderRewardTypeWeights() {
+function getWanderRewardTypeWeights(map = getCurrentWanderMap()) {
   const weights = gameConfig.gameplay?.wanderRewardTypeWeights || {};
+  const adjustedWeights = { ...weights };
+  const adjustments = gameConfig.gameplay?.wanderRewardTypeMapAdjustments || {};
+  const fromMap = Math.max(1, Math.floor(Number(adjustments.fromMap) || Infinity));
+  if (getWanderMapNumber(map) >= fromMap) {
+    adjustedWeights.cultivation = Math.max(
+      0,
+      (Number(adjustedWeights.cultivation) || 0) + (Number(adjustments.cultivationWeightDelta) || 0),
+    );
+    adjustedWeights.petChest = Math.max(
+      0,
+      (Number(adjustedWeights.petChest) || 0) + (Number(adjustments.petChestWeight) || 0),
+    );
+  }
   return [
-    { type: 'cultivation', weight: Math.max(0, Number(weights.cultivation) || 0) },
-    { type: 'spiritStone', weight: Math.max(0, Number(weights.spiritStone) || 0) },
-    { type: 'chest', weight: Math.max(0, Number(weights.chest) || 0) },
-    { type: 'healthPotion', weight: Math.max(0, Number(weights.healthPotion) || 0) },
-    { type: 'manaPotion', weight: Math.max(0, Number(weights.manaPotion) || 0) },
-    { type: 'enhancementStone', weight: Math.max(0, Number(weights.enhancementStone) || 0) },
-    { type: 'minorAscensionPill', weight: Math.max(0, Number(weights.minorAscensionPill) || 0) },
-    { type: 'skillChest', weight: Math.max(0, Number(weights.skillChest) || 0) },
-    { type: 'talentTreasureChest', weight: Math.max(0, Number(weights.talentTreasureChest) || 0) },
+    { type: 'cultivation', weight: Math.max(0, Number(adjustedWeights.cultivation) || 0) },
+    { type: 'spiritStone', weight: Math.max(0, Number(adjustedWeights.spiritStone) || 0) },
+    { type: 'chest', weight: Math.max(0, Number(adjustedWeights.chest) || 0) },
+    { type: 'healthPotion', weight: Math.max(0, Number(adjustedWeights.healthPotion) || 0) },
+    { type: 'manaPotion', weight: Math.max(0, Number(adjustedWeights.manaPotion) || 0) },
+    { type: 'enhancementStone', weight: Math.max(0, Number(adjustedWeights.enhancementStone) || 0) },
+    { type: 'minorAscensionPill', weight: Math.max(0, Number(adjustedWeights.minorAscensionPill) || 0) },
+    { type: 'skillChest', weight: Math.max(0, Number(adjustedWeights.skillChest) || 0) },
+    { type: 'talentTreasureChest', weight: Math.max(0, Number(adjustedWeights.talentTreasureChest) || 0) },
+    { type: 'petChest', weight: Math.max(0, Number(adjustedWeights.petChest) || 0) },
   ];
 }
 
-function pickWanderRewardType() {
-  const entries = getWanderRewardTypeWeights();
+function pickWanderRewardType(map = getCurrentWanderMap()) {
+  const entries = getWanderRewardTypeWeights(map);
   const totalWeight = entries.reduce((total, entry) => total + entry.weight, 0);
   if (!totalWeight) return 'cultivation';
   let roll = Math.random() * totalWeight;
@@ -813,6 +828,18 @@ function createWanderSkillChestChoice(map = getCurrentWanderMap()) {
     type: 'skillChest',
     title: shopItem.name,
     detail: 'Cất vào Túi đồ | Mở rương có 90% nhận mảnh skill và 10% nhận sách skill.',
+    amount: 1,
+    shopItemId: shopItem.id,
+  };
+}
+
+function createWanderPetChestChoice() {
+  const shopItem = shopItems.find((item) => item.id === 'petChest' && item.type === 'petChest');
+  if (!shopItem) return null;
+  return {
+    type: 'petChest',
+    title: shopItem.name,
+    detail: 'Cất vào Túi đồ | Mở rương nhận mảnh linh thú.',
     amount: 1,
     shopItemId: shopItem.id,
   };
@@ -1066,6 +1093,19 @@ function applyWanderChoice(choice) {
       title: 'Đã cất rương skill vào Túi đồ',
       message: `${shopItem.name} x${amount}.`,
       detail: 'Khi mở: 90% nhận mảnh skill, 10% nhận sách skill.',
+      iconClass: 'activity-icon icon-activity-chest',
+    };
+  }
+
+  if (choice.type === 'petChest') {
+    const shopItem = shopItems.find((item) => item.id === choice.shopItemId);
+    if (!shopItem) return null;
+    const amount = Math.max(1, Math.floor(Number(choice.amount) || 1));
+    addShopInventoryItem(shopItem.id, amount);
+    return {
+      title: 'Đã cất Rương Linh Thú vào Túi đồ',
+      message: `${shopItem.name} x${amount}.`,
+      detail: 'Mở rương để nhận mảnh linh thú.',
       iconClass: 'activity-icon icon-activity-chest',
     };
   }

@@ -480,7 +480,10 @@ function playerTurn() {
   const result = attack(player, enemy);
   animateAttack('playerCard', 'enemyCard', 'enemyFloat', result, player);
   if (result.bonusHit) {
-    window.setTimeout(() => animateAttack('playerCard', 'enemyCard', 'enemyFloat', result.bonusHit, player), battleSkillAnimationDuration);
+    window.setTimeout(
+      () => animateAttack('playerCard', 'enemyCard', 'enemyFloat', result.bonusHit, player),
+      getBattleSkillAnimationDuration(result.skillId),
+    );
   }
   render();
   pushLog(formatAttackLog(player, result));
@@ -502,7 +505,10 @@ function playerTurn() {
     if (enemy.hp <= 0 || turn >= getTrainingDummyMaxTurns()) {
       return finishBattle(`Mộc nhân đã nhận ${formatGameNumber(trainingDummyDamageDealt)} sát thương.`, 'win');
     }
-    timer = window.setTimeout(playerTurn, turnInterval * 0.5 + (result.skill ? battleEnemyTurnDelay : 0));
+    timer = window.setTimeout(
+      playerTurn,
+      getBattleActionDelay(result, turnInterval * 0.5 + (result.skill ? battleEnemyTurnDelay : 0)),
+    );
     return;
   }
 
@@ -511,7 +517,10 @@ function playerTurn() {
       + Math.max(0, Number(result.bonusHit?.damage) || 0);
     if (enemy.hp <= 0) return finishBattle(`Đã hạ Boss thế giới trong lượt đánh.`, 'win');
     if (turn >= maxTurns) return finishBattle('Đã hoàn tất 1 lượt đánh Boss thế giới.', 'draw');
-    timer = window.setTimeout(playerTurn, turnInterval * 0.5 + (result.skill ? battleEnemyTurnDelay : 0));
+    timer = window.setTimeout(
+      playerTurn,
+      getBattleActionDelay(result, turnInterval * 0.5 + (result.skill ? battleEnemyTurnDelay : 0)),
+    );
     return;
   }
 
@@ -519,7 +528,7 @@ function playerTurn() {
   if (enemy.hp <= 0) return finishBattle(`${player.name} thắng.`, 'win');
   timer = window.setTimeout(
     enemyTurn,
-    turnInterval * 0.5 + (result.skill ? battleEnemyTurnDelay : 0),
+    getBattleActionDelay(result, turnInterval * 0.5 + (result.skill ? battleEnemyTurnDelay : 0)),
   );
 }
 
@@ -552,7 +561,10 @@ function enemyTurn() {
   enemy.combatStyleState.critBoost = 0;
   animateAttack('enemyCard', 'playerCard', 'playerFloat', result, enemy);
   if (result.bonusHit) {
-    window.setTimeout(() => animateAttack('enemyCard', 'playerCard', 'playerFloat', result.bonusHit, enemy), battleSkillAnimationDuration);
+    window.setTimeout(
+      () => animateAttack('enemyCard', 'playerCard', 'playerFloat', result.bonusHit, enemy),
+      getBattleSkillAnimationDuration(result.skillId),
+    );
   }
   render();
   if (passiveResult.healAmount > 0) {
@@ -564,11 +576,16 @@ function enemyTurn() {
   if (currentStage?.isWorldBoss && turn >= maxTurns) {
     return finishBattle('Đã hoàn tất 1 lượt đánh Boss thế giới.', 'draw');
   }
-  if (turn >= maxTurns) return window.setTimeout(finishByTurnLimit, turnInterval * 0.5);
+  if (turn >= maxTurns) {
+    return window.setTimeout(
+      finishByTurnLimit,
+      getBattleActionDelay(result, turnInterval * 0.5),
+    );
+  }
 
   timer = window.setTimeout(
     playerTurn,
-    turnInterval + (result.skill ? battleEnemyTurnDelay : 0),
+    getBattleActionDelay(result, turnInterval + (result.skill ? battleEnemyTurnDelay : 0)),
   );
 }
 

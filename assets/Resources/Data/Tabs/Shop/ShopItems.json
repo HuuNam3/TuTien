@@ -1,5 +1,5 @@
 {
-  "description": "Cửa hàng gồm rương linh thú, đan dược, đan phá cảnh, đá cường hóa và cục hoàn đá cường hóa. Rương skill vẫn giữ trong dữ liệu để làm phần thưởng hoạt động nhưng không bán trực tiếp trong shop. Dữ liệu quy định giá, loại vật phẩm và giới hạn mua theo ngày; đan phá cảnh tiểu cảnh giới được tạo theo danh sách đại cảnh giới hiện tại.",
+  "description": "Cửa hàng gồm rương linh thú, các vật phẩm nuôi linh thú, đan dược, đan phá cảnh, đá cường hóa và cục hoàn đá cường hóa. Rương skill vẫn giữ trong dữ liệu để làm phần thưởng hoạt động nhưng không bán trực tiếp trong shop. Dữ liệu quy định giá, loại vật phẩm và giới hạn mua theo ngày; đan phá cảnh tiểu cảnh giới được tạo theo danh sách đại cảnh giới hiện tại.",
   "minorBreakthroughPillConfig": {
     "idPrefix": "minorAscensionPill",
     "namePrefix": "",
@@ -112,14 +112,115 @@
     {
       "id": "petChest",
       "name": "Rương Linh Thú",
-      "description": "Mở ra nhận mảnh linh thú. Mỗi lần nhận 1, 2 hoặc 5 mảnh; đủ 50 mảnh của cùng một linh thú sẽ tự ghép thành 1 linh thú.",
+      "description": "Chưa sở hữu linh thú sẽ nhận mảnh 100%. Sau khi sở hữu pet: 30% mảnh, 38,8% thức ăn, 30% linh đan tu vi, 1% Hồn Ngọc, 0,2% Đá Tiến Giai. Mỗi lần nhận 1, 2 hoặc 5 mảnh; đủ 50 mảnh của cùng một linh thú sẽ tự ghép thành 1 linh thú.",
       "cost": 1000,
       "type": "petChest",
       "fragmentRewards": [
         { "amount": 1, "chance": 0.7 },
         { "amount": 2, "chance": 0.25 },
         { "amount": 5, "chance": 0.05 }
-      ]
+      ],
+      "rewardTypes": [
+        { "type": "fragment", "chance": 0.3 },
+        { "type": "petFood", "chance": 0.388 },
+        { "type": "petCultivationPill", "chance": 0.3 },
+        { "type": "petSoulJade", "chance": 0.01 },
+        { "type": "petBreakthroughStone", "chance": 0.002 }
+      ],
+      "petFoodRewards": [
+        { "shopItemId": "petFood1", "chance": 0.6 },
+        { "shopItemId": "petFood2", "chance": 0.25 },
+        { "shopItemId": "petFood5", "chance": 0.1 },
+        { "shopItemId": "petFood10", "chance": 0.05 }
+      ],
+      "petCultivationRewards": [
+        { "shopItemId": "petCultivationPill10", "chance": 0.6 },
+        { "shopItemId": "petCultivationPill20", "chance": 0.25 },
+        { "shopItemId": "petCultivationPill50", "chance": 0.1 },
+        { "shopItemId": "petCultivationPill100", "chance": 0.05 }
+      ],
+      "petSoulJadeReward": "petSoulJade",
+      "petBreakthroughStoneReward": "petBreakthroughStone"
+    },
+    {
+      "id": "petFood1",
+      "name": "Thức ăn linh thú +1 thể lực",
+      "description": "Dùng cho linh thú, tăng 1 điểm thể lực.",
+      "type": "petFood",
+      "feedPoints": 1,
+      "hidden": true
+    },
+    {
+      "id": "petFood2",
+      "name": "Thức ăn linh thú +2 thể lực",
+      "description": "Dùng cho linh thú, tăng 2 điểm thể lực.",
+      "type": "petFood",
+      "feedPoints": 2,
+      "hidden": true
+    },
+    {
+      "id": "petFood5",
+      "name": "Thức ăn linh thú +5 thể lực",
+      "description": "Dùng cho linh thú, tăng 5 điểm thể lực.",
+      "type": "petFood",
+      "feedPoints": 5,
+      "hidden": true
+    },
+    {
+      "id": "petFood10",
+      "name": "Thức ăn linh thú +10 thể lực",
+      "description": "Dùng cho linh thú, tăng 10 điểm thể lực.",
+      "type": "petFood",
+      "feedPoints": 10,
+      "hidden": true
+    },
+    {
+      "id": "petCultivationPill10",
+      "name": "Linh đan tăng tu vi +10",
+      "description": "Dùng cho linh thú, tăng 10 tu vi.",
+      "type": "petCultivationPill",
+      "cultivation": 10,
+      "hidden": true
+    },
+    {
+      "id": "petCultivationPill20",
+      "name": "Linh đan tăng tu vi +20",
+      "description": "Dùng cho linh thú, tăng 20 tu vi.",
+      "type": "petCultivationPill",
+      "cultivation": 20,
+      "hidden": true
+    },
+    {
+      "id": "petCultivationPill50",
+      "name": "Linh đan tăng tu vi +50",
+      "description": "Dùng cho linh thú, tăng 50 tu vi.",
+      "type": "petCultivationPill",
+      "cultivation": 50,
+      "hidden": true
+    },
+    {
+      "id": "petCultivationPill100",
+      "name": "Linh đan tăng tu vi +100",
+      "description": "Dùng cho linh thú, tăng 100 tu vi.",
+      "type": "petCultivationPill",
+      "cultivation": 100,
+      "hidden": true
+    },
+    {
+      "id": "petSoulJade",
+      "name": "Hồn Ngọc",
+      "description": "Dùng cho linh thú, tăng 1 tiểu cảnh giới.",
+      "type": "petSoulJade",
+      "amount": 1,
+      "hidden": true
+    },
+    {
+      "id": "petBreakthroughStone",
+      "name": "Đá Tiến Giai",
+      "description": "Dùng cho linh thú, tăng 1 đại cảnh giới.",
+      "type": "petBreakthroughStone",
+      "amount": 1,
+      "hidden": true
     },
     {
       "id": "talentTreasureChest",

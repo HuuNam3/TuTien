@@ -42,9 +42,17 @@ function readDataFile(fileName) {
 function getMailCatalog() {
   if (mailCatalog) return mailCatalog;
   const shopData = readDataFile('Tabs/Shop/ShopItems.json');
+  const realmData = readDataFile('Shared/CultivationRealms.json');
   const skillData = readDataFile('Shared/CultivationSkills.json');
+  const equipmentData = readDataFile('Shared/equipment.json');
+  const petData = readDataFile('Tabs/Pets/PetData.json');
   const items = [];
   const byId = new Map();
+  const addCatalogItem = (item) => {
+    if (!item?.itemId || byId.has(item.itemId)) return;
+    items.push(item);
+    byId.set(item.itemId, item);
+  };
 
   (shopData.shopItems || []).forEach((item) => {
     const normalized = {
@@ -53,8 +61,19 @@ function getMailCatalog() {
       kind: String(item.type || 'shopItem'),
       source: 'shop',
     };
-    items.push(normalized);
-    byId.set(normalized.itemId, normalized);
+    addCatalogItem(normalized);
+  });
+  Object.entries(equipmentData.templates || {}).forEach(([slotId, template]) => {
+    (template.names || []).forEach((name) => {
+      const normalized = {
+        itemId: `equipment:${slotId}:${name}`,
+        name: String(name),
+        kind: 'equipment',
+      slotId,
+      source: 'equipment',
+      };
+      addCatalogItem(normalized);
+    });
   });
   for (let chestTier = 1; chestTier <= 10; chestTier += 1) {
     const chest = {
@@ -64,9 +83,45 @@ function getMailCatalog() {
       chestTier,
       source: 'equipmentChest',
     };
-    items.push(chest);
-    byId.set(chest.itemId, chest);
+    addCatalogItem(chest);
   }
+
+  const realms = Array.isArray(realmData.realms) ? realmData.realms : [];
+  const minorConfig = shopData.minorBreakthroughPillConfig || {};
+  const minorPrefix = String(minorConfig.idPrefix || 'minorAscensionPill');
+  const minorSuffix = String(minorConfig.nameSuffix || 'Đan');
+  const majorConfig = shopData.majorAscensionTreasureConfig || {};
+  const majorPrefix = String(majorConfig.idPrefix || 'majorAscensionTreasure');
+  const majorNamePrefix = String(majorConfig.namePrefix || 'Cục Thiên Tài Địa Bảo');
+  const chestConfig = shopData.majorAscensionTreasureChestConfig || {};
+  const chestPrefix = String(chestConfig.idPrefix || 'majorAscensionTreasureChest');
+  const chestNamePrefix = String(chestConfig.namePrefix || 'Rương');
+  realms.forEach((realm, index) => {
+    const realmName = String(realm.name || realm.id || `Cảnh giới ${index + 1}`);
+    addCatalogItem({
+      itemId: `${minorPrefix}${realm.id}`,
+      name: `${String(minorConfig.namePrefix || '')}${realmName}${minorSuffix ? ` ${minorSuffix}` : ''}`.trim(),
+      kind: 'minorAscension',
+      source: 'cultivation',
+      requiredMajorRealmIndex: index,
+    });
+    addCatalogItem({
+      itemId: `${majorPrefix}${realm.id}`,
+      name: `${majorNamePrefix} ${realmName}`.trim(),
+      kind: 'majorAscensionTreasure',
+      source: 'cultivation',
+      targetMajorRealmIndex: index,
+    });
+    if (index > 0) {
+      addCatalogItem({
+        itemId: `${chestPrefix}${realm.id}`,
+        name: `${chestNamePrefix} ${realmName}`.trim(),
+        kind: 'majorAscensionTreasureChest',
+        source: 'cultivation',
+        targetMajorRealmIndex: index,
+      });
+    }
+  });
   (skillData.skills || []).forEach((skill) => {
     const book = {
       itemId: `skillBook:${skill.id}`,
@@ -82,11 +137,20 @@ function getMailCatalog() {
       skillId: String(skill.id),
       source: 'skill',
     };
-    items.push(book, fragment);
-    byId.set(book.itemId, book);
-    byId.set(fragment.itemId, fragment);
+    addCatalogItem(book);
+    addCatalogItem(fragment);
   });
-  mailCatalog = { items, byId };
+  (petData.pets || []).forEach((pet) => {
+    const normalized = {
+      itemId: `petFragment:${pet.id}`,
+      name: `Mảnh linh thú: ${pet.name || pet.id}`,
+      kind: 'petFragment',
+      petId: String(pet.id),
+      source: 'pet',
+    };
+    addCatalogItem(normalized);
+  });
+  mailCatalog = { items, byId, equipmentRarityKeys: new Set(Object.keys(equipmentData.rarities || {})) };
   return mailCatalog;
 }
 
@@ -146,15 +210,32 @@ function normalizeAttachments(input) {
     const itemId = String(entry.itemId || '').trim();
     const item = catalog.byId.get(itemId);
     if (!item) throw new Error(`Vật phẩm đính kèm không tồn tại: ${itemId || 'trống'}.`);
-    const quantity = toPositiveInteger(entry.quantity ?? entry.amount, 1);
+    const quantity = toPositiveInteger(
+      entry.quantity ?? entry.amount,
+      1,
+      item.kind === 'equipment' ? 20 : maxAttachmentQuantity,
+    );
     if (quantity <= 0) throw new Error('Số lượng vật phẩm phải lớn hơn 0.');
     const current = merged.get(`item:${item.itemId}`);
-    merged.set(`item:${item.itemId}`, {
+    const normalizedAttachment = {
       type: 'item',
       itemId: item.itemId,
       name: item.name,
       quantity: Math.min(maxAttachmentQuantity, (current?.quantity || 0) + quantity),
-    });
+    };
+    if (item.kind === 'equipment') {
+      normalizedAttachment.kind = 'equipment';
+      normalizedAttachment.slotId = item.slotId;
+      normalizedAttachment.level = Math.max(1, toPositiveInteger(entry.level, 1, 50));
+      normalizedAttachment.rarityKey = catalog.equipmentRarityKeys.has(String(entry.rarityKey || 'common'))
+        ? String(entry.rarityKey)
+        : 'common';
+      normalizedAttachment.quantity = Math.min(20, normalizedAttachment.quantity);
+    } else if (item.kind === 'petFragment') {
+      normalizedAttachment.kind = 'petFragment';
+      normalizedAttachment.petId = item.petId;
+    }
+    merged.set(`item:${item.itemId}`, normalizedAttachment);
   });
   return [...merged.values()];
 }
@@ -256,6 +337,11 @@ function applyAttachmentsToState(state, attachments) {
   nextState.skillFragments = {
     ...(nextState.skillFragments && typeof nextState.skillFragments === 'object' ? nextState.skillFragments : {}),
   };
+  nextState.petFragments = {
+    ...(nextState.petFragments && typeof nextState.petFragments === 'object' ? nextState.petFragments : {}),
+  };
+  nextState.inventory = Array.isArray(nextState.inventory) ? nextState.inventory : [];
+  let equipmentIdSeed = Math.max(1, Number(nextState.equipmentIdSeed) || 1);
   attachments.forEach((attachment) => {
     if (attachment.type === 'currency') {
       nextState.playerSpiritStones = Math.max(0, Number(nextState.playerSpiritStones) || 0) + attachment.amount;
@@ -271,6 +357,31 @@ function applyAttachmentsToState(state, attachments) {
     if (itemId.startsWith('skillFragment:')) {
       const skillId = itemId.slice('skillFragment:'.length);
       nextState.skillFragments[skillId] = (Number(nextState.skillFragments[skillId]) || 0) + quantity;
+      return;
+    }
+    if (itemId.startsWith('petFragment:')) {
+      const petId = attachment.petId || itemId.slice('petFragment:'.length);
+      nextState.petFragments[petId] = (Number(nextState.petFragments[petId]) || 0) + quantity;
+      return;
+    }
+    if (itemId.startsWith('equipment:') || attachment.kind === 'equipment') {
+      const slotId = attachment.slotId || itemId.split(':')[1];
+      for (let index = 0; index < quantity; index += 1) {
+        nextState.inventory.push({
+          id: equipmentIdSeed++,
+          slotId,
+          name: attachment.name,
+          setName: '',
+          rarityKey: attachment.rarityKey || 'common',
+          level: Math.max(1, Math.min(50, Number(attachment.level) || 1)),
+          sourceChestTier: 0,
+          enhancementLevel: 0,
+          stats: null,
+          baseStats: null,
+          specialLines: [],
+        });
+      }
+      nextState.equipmentIdSeed = equipmentIdSeed;
       return;
     }
     const equipmentChestMatch = itemId.match(/^equipmentChestTier(\d+)$/);
@@ -508,3 +619,5 @@ module.exports = async function mailHandler(request, response) {
 };
 
 module.exports.sendSystemMail = sendSystemMail;
+module.exports.createMail = createMail;
+module.exports.getMailCatalog = getMailCatalog;

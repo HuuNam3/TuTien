@@ -26,7 +26,9 @@ function getShopItemCategory(item) {
   if (item.type === 'cultivation' || item.type === 'foundation' || isBreakthroughPillShopItem(item)
     || item.type === 'talentTreasureChest' || item.type === 'majorAscensionTreasure'
     || item.type === 'majorAscensionTreasureChest') return 'cultivation';
-  if (item.type === 'potion' || item.type === 'petChest') return 'consumable';
+  if (item.type === 'potion' || item.type === 'petChest' || item.type === 'petFood'
+    || item.type === 'petCultivationPill' || item.type === 'petSoulJade'
+    || item.type === 'petBreakthroughStone') return 'consumable';
   return 'material';
 }
 
@@ -34,6 +36,24 @@ function getShopItemIconClass(item) {
   if (item.type === 'skillBook') return getSkillItemIconClass(item.skillId);
   if (item.type === 'skillChest') return 'icon-special-skill-chest';
   if (item.type === 'petChest') return 'icon-special-pet-chest';
+  if (item.type === 'petFood') {
+    return {
+      petFood1: 'icon-pet-food-1',
+      petFood2: 'icon-pet-food-2',
+      petFood5: 'icon-pet-food-5',
+      petFood10: 'icon-pet-food-10',
+    }[item.id] || 'icon-pet-food-1';
+  }
+  if (item.type === 'petCultivationPill') {
+    return {
+      petCultivationPill10: 'icon-pet-cultivation-10',
+      petCultivationPill20: 'icon-pet-cultivation-20',
+      petCultivationPill50: 'icon-pet-cultivation-50',
+      petCultivationPill100: 'icon-pet-cultivation-100',
+    }[item.id] || 'icon-pet-cultivation-10';
+  }
+  if (item.type === 'petSoulJade') return 'icon-pet-soul-jade';
+  if (item.type === 'petBreakthroughStone') return 'icon-pet-breakthrough-stone';
   if (item.type === 'talentTreasureChest') return 'icon-special-talent-chest';
   if (item.type === 'majorAscensionTreasureChest') return 'icon-special-major-chest';
   if (item.type === 'equipment' || item.type === 'equipmentRandom') return 'icon-unique-equipment';
@@ -51,6 +71,7 @@ function getShopItemIconClass(item) {
 }
 
 function getShopItemIconTypeClass(icon) {
+  if (icon.startsWith('icon-pet-')) return 'pet-sprite-icon';
   if (icon.startsWith('icon-talent-treasure-') || icon.startsWith('icon-special-minor-pill')
     || icon.startsWith('icon-special-major-pill') || icon.startsWith('icon-special-enhancement-refund')) return 'talent-icon';
   if (icon.startsWith('icon-special-')) return 'special-icon';
@@ -154,7 +175,16 @@ function getShopItemDetailLines(item) {
       .join(', ');
     lines.push(`Mỗi lần mở: ${rewardText || '1, 2 hoặc 5 mảnh linh thú'}.`);
     lines.push(`Mảnh nhận ngẫu nhiên theo từng linh thú; đủ ${getPetFragmentRequirement()} mảnh sẽ tự ghép thành 1 linh thú.`);
+    if (ownedPetIds.length) {
+      lines.push('Tỉ lệ loại thưởng: 30% mảnh linh thú, 38,8% thức ăn linh thú, 30% linh đan tăng tu vi, 1% Hồn Ngọc, 0,2% Đá Tiến Giai.');
+    } else {
+      lines.push('Chưa sở hữu linh thú: 100% nhận mảnh linh thú.');
+    }
   }
+  if (item.type === 'petFood') lines.push(`Dùng cho linh thú, tăng ${formatGameNumber(item.feedPoints)} điểm thể lực.`);
+  if (item.type === 'petCultivationPill') lines.push(`Dùng cho linh thú, tăng ${formatGameNumber(item.cultivation)} tu vi.`);
+  if (item.type === 'petSoulJade') lines.push('Dùng cho linh thú, tăng 1 tiểu cảnh giới.');
+  if (item.type === 'petBreakthroughStone') lines.push('Dùng cho linh thú, tăng 1 đại cảnh giới.');
   if (item.type === 'talentTreasureChest') {
     lines.push('Mỗi lần mở nhận 1 Cục Thiên Tài Địa Bảo.');
     lines.push('Cục này dùng khi đột phá đại cảnh giới và sẽ roll ngẫu nhiên chỉ số theo lực chiến nhận được.');

@@ -144,6 +144,19 @@ async function tickOneNpc(db, account, options = {}) {
   }
 }
 
+async function runNpcTick({ catchUp = false, limit } = {}) {
+  const db = await getDatabase();
+  const defaultLimit = catchUp ? 50 : 10;
+  const safeLimit = Math.min(50, Math.max(1, Number(limit || defaultLimit)));
+  const accounts = await db.collection(userCollectionName).find(
+    { isNpc: true, 'npcProfile.enabled': { $ne: false } },
+    { projection: { username: 1, npcProfile: 1 }, limit: safeLimit },
+  ).toArray();
+  const results = [];
+  for (const account of accounts) results.push(await tickOneNpc(db, account, { catchUp }));
+  return { processed: results.length, catchUp, results };
+}
+
 module.exports = async function npcHandler(request, response) {
   if (request.method === 'OPTIONS') { response.writeHead(204); response.end(); return; }
   if (!process.env.MONGODB_URI || !process.env.SESSION_SECRET) return sendJson(response, 503, { error: 'NPC service is not configured.' });
@@ -174,13 +187,8 @@ module.exports = async function npcHandler(request, response) {
       const isCatchUp = url.searchParams.get('mode') === 'daily' || Boolean(cronSchedule);
       const defaultLimit = isCatchUp ? 50 : 10;
       const limit = Math.min(50, Math.max(1, Number(url.searchParams.get('limit') || defaultLimit)));
-      const accounts = await db.collection(userCollectionName).find(
-        { isNpc: true, 'npcProfile.enabled': { $ne: false } },
-        { projection: { username: 1, npcProfile: 1 }, limit },
-      ).toArray();
-      const results = [];
-      for (const account of accounts) results.push(await tickOneNpc(db, account, { catchUp: isCatchUp }));
-      return sendJson(response, 200, { ok: true, processed: results.length, catchUp: isCatchUp, results });
+      const result = await runNpcTick({ catchUp: isCatchUp, limit });
+      return sendJson(response, 200, { ok: true, ...result });
     }
     if (request.method === 'GET' && action === 'list') {
       const accounts = await db.collection(userCollectionName).find(
@@ -197,3 +205,5 @@ module.exports = async function npcHandler(request, response) {
     return sendJson(response, 500, { error: 'NPC service unavailable.' });
   }
 };
+
+module.exports.runNpcTick = runNpcTick;
