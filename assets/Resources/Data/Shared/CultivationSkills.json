@@ -382,7 +382,7 @@
       "requiredTier": 41,
       "multiplier": 2.2,
       "cost": 82,
-      "cooldown": 5,
+      "cooldown": 4,
       "effects": [{ "type": "selfBuff", "stat": "lifeSteal", "value": 0.07, "duration": 2, "chance": 1, "nonStacking": true, "levelIncrease": 0.002 }]
     },
     {
@@ -397,7 +397,7 @@
       "multiplier": 2.5,
       "cost": 105,
       "cooldown": 5,
-      "effects": [{ "type": "hpSacrifice", "value": 0.1, "nextNormalAttackDamageBonus": 0.5, "duration": 2, "chance": 1, "levelIncrease": 0.03, "levelIncreaseField": "nextNormalAttackDamageBonus", "consumesMana": true }]
+      "effects": [{ "type": "hpSacrifice", "value": 0.1, "nextNormalAttackDamageBonus": 0.55, "duration": 2, "chance": 1, "levelIncrease": 0.03, "levelIncreaseField": "nextNormalAttackDamageBonus", "consumesMana": true }]
     },
     {
       "id": "blade_earth_warcry",
